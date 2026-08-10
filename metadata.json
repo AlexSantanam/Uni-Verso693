@@ -1,0 +1,6 @@
+{
+  "name": "Uni-Verso693",
+  "description": "Uni-Verso693 - AI Agency Landing Page for AI Agents and AI Short Videos",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
