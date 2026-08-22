@@ -1,7 +1,8 @@
 import React from 'react';
 import { Language } from '../types';
 import { siteUiText } from '../data/content';
-import { Sparkles, ArrowRight, Play, CheckCircle2, Cpu, Zap, Activity } from 'lucide-react';
+import { Sparkles, ArrowRight, Play, CheckCircle2, Activity } from 'lucide-react';
+import { LiveAgentDemo } from './LiveAgentDemo';
 
 interface HeroProps {
   lang: Language;
@@ -142,55 +143,8 @@ export const Hero: React.FC<HeroProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Console log box */}
-              <div className="space-y-4 font-mono text-xs">
-                
-                <div className="p-3 rounded-lg bg-zinc-900/80 border border-zinc-800/80 text-zinc-300">
-                  <div className="text-[10px] text-purple-400 font-bold mb-1 flex items-center gap-1.5">
-                    <Cpu className="w-3 h-3" />
-                    <span>SYSTEM EVENT</span>
-                  </div>
-                  <p className="text-zinc-300">{t.demoCardPrompt}</p>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-purple-950/50 border border-purple-800/60 text-purple-200 space-y-2">
-                  <div className="flex items-center justify-between text-[10px] text-purple-400 font-bold">
-                    <span className="flex items-center gap-1">
-                      <Zap className="w-3 h-3" /> AGENT RESPONSE
-                    </span>
-                    <span className="text-emerald-400 font-semibold">1.2s latency</span>
-                  </div>
-                  <p className="text-xs leading-relaxed text-zinc-100 italic">
-                    {t.demoCardResponse}
-                  </p>
-                </div>
-
-                {/* Workflow Execution steps */}
-                <div className="p-3 rounded-lg bg-black/60 border border-zinc-800 text-zinc-400 space-y-2 text-[11px]">
-                  <div className="flex items-center justify-between">
-                    <span>⚡ Vector DB Search (RAG)</span>
-                    <span className="text-emerald-400">Match 99.4%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>📱 WhatsApp API Webhook</span>
-                    <span className="text-emerald-400">Connected</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>🎬 Short Video Generator</span>
-                    <span className="text-purple-400">Rendering MP4</span>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Glowing bottom badge */}
-              <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-purple-500 animate-ping" />
-                  <span>Uni-Verso693 Core v3.8</span>
-                </span>
-                <span className="text-purple-300 font-semibold">100% Autonomous</span>
-              </div>
+              {/* Live AI Agent Chat Widget — real Claude API calls via Netlify Function */}
+              <LiveAgentDemo lang={lang} />
 
             </div>
           </div>
