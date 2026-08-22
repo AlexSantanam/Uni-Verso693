@@ -256,6 +256,7 @@ export const AuditForm: React.FC<AuditFormProps> = ({ lang, selectedPlan }) => {
                       <option value={t.formOption2}>{t.formOption2}</option>
                       <option value={t.formOption5}>{t.formOption5}</option>
                       <option value={t.formOption6}>{t.formOption6}</option>
+                      <option value={t.formOption7}>{t.formOption7}</option>
                       <option value={t.formOption3}>{t.formOption3}</option>
                       <option value={t.formOption4}>{t.formOption4}</option>
                       {selectedPlan && <option value={`Plan: ${selectedPlan}`}>{`Plan: ${selectedPlan}`}</option>}

@@ -3,6 +3,11 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[[redirects]]
+  from = "/api/chat"
+  to = "/.netlify/functions/chat"
+  status = 200
+
 [dev]
   command = "npm run dev"
   targetPort = 4890

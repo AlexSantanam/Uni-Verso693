@@ -1,7 +1,7 @@
 import React from 'react';
 import { Language } from '../types';
 import { servicesData, siteUiText } from '../data/content';
-import { Bot, Video, Zap, Cpu, Layout, PenTool, Check, ArrowUpRight } from 'lucide-react';
+import { Bot, Video, Zap, Cpu, Layout, PenTool, Smartphone, Check, ArrowUpRight } from 'lucide-react';
 
 interface ServicesProps {
   lang: Language;
@@ -24,6 +24,8 @@ export const Services: React.FC<ServicesProps> = ({ lang }) => {
         return <Layout className="w-7 h-7 text-purple-400" />;
       case 'PenTool':
         return <PenTool className="w-7 h-7 text-purple-400" />;
+      case 'Smartphone':
+        return <Smartphone className="w-7 h-7 text-purple-400" />;
       default:
         return <Bot className="w-7 h-7 text-purple-400" />;
     }

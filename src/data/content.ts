@@ -11,15 +11,15 @@ export const trustedClientsData: TrustedClientItem[] = [
 
 export const landingPageExamplesData: LandingExampleItem[] = [
   {
-    id: 'ecommerce',
-    categoryEn: 'E-COMMERCE',
-    categoryEs: 'E-COMMERCE',
-    titleEn: 'Aura Skincare — Online Store',
-    titleEs: 'Aura Skincare — Tienda Online',
-    descriptionEn: 'Vibrant, product-first design built to drive impulse purchases with bold sale banners and a frictionless checkout flow.',
-    descriptionEs: 'Diseño vibrante centrado en el producto, pensado para impulsar compras con banners de oferta y un checkout sin fricción.',
-    tagsEn: ['Product Grid', 'Cart & Checkout UX', 'Sale Countdown'],
-    tagsEs: ['Cuadrícula de Productos', 'UX de Carrito y Pago', 'Contador de Oferta']
+    id: 'memora',
+    categoryEn: 'SAAS · DIGITAL MEMORIALS',
+    categoryEs: 'SAAS · MEMORIALES DIGITALES',
+    titleEn: 'MEMORA — Digital Memorials Platform',
+    titleEs: 'MEMORA — Plataforma de Memoriales Digitales',
+    descriptionEn: 'A production SaaS platform for digital memorials — people and pets — built for the Chilean market, with real payment processing, secure Postgres data, and a published Android app.',
+    descriptionEs: 'Plataforma SaaS en producción para memoriales digitales de personas y mascotas, construida para el mercado chileno, con pagos reales, base de datos segura en Postgres y app Android publicada.',
+    tagsEn: ['Real Payments (Flow/MP/PayPal)', 'Secure Postgres + RLS', 'Android App on Google Play'],
+    tagsEs: ['Pagos Reales (Flow/MP/PayPal)', 'Postgres Seguro con RLS', 'App Android en Google Play']
   },
   {
     id: 'saas',
@@ -146,6 +146,28 @@ export const servicesData: ServiceItem[] = [
       'Flyers, Banners y Gráficas para Redes Sociales',
       'Vectorización de Imágenes (Raster a Vector)',
       'Entrega en Múltiples Formatos Listos para Imprimir'
+    ]
+  },
+  {
+    id: 'mobile-apps',
+    iconName: 'Smartphone',
+    badgeEn: 'CROSS-PLATFORM',
+    badgeEs: 'MULTIPLATAFORMA',
+    titleEn: 'Mobile App Development',
+    titleEs: 'Creación de Aplicaciones Móviles',
+    descriptionEn: "Native and cross-platform mobile apps for iOS and Android, built to bring your AI agents and services directly into your customers' pockets.",
+    descriptionEs: 'Aplicaciones móviles nativas y multiplataforma para iOS y Android, diseñadas para llevar tus agentes de IA y servicios directamente al teléfono de tus clientes.',
+    bulletsEn: [
+      'iOS & Android apps from a single codebase',
+      'Push notifications & real-time updates',
+      'Secure API and CRM integrations',
+      'App Store & Google Play submission support'
+    ],
+    bulletsEs: [
+      'Apps para iOS y Android con una sola base de código',
+      'Notificaciones push y actualizaciones en tiempo real',
+      'Integraciones seguras con API y CRM',
+      'Soporte para publicación en App Store y Google Play'
     ]
   },
   {
@@ -412,6 +434,7 @@ export const siteUiText = {
     formOption4: 'All-in-One AI Agency Ecosystem',
     formOption5: 'Professional Landing Page Design',
     formOption6: 'Logos, Flyers & Graphic Design',
+    formOption7: 'Mobile App Development',
     formLabelBudget: 'Estimated Investment Budget',
     formLabelDate: 'Preferred Audit Date',
     formLabelNotes: 'Tell us about your business goals or current bottlenecks',
@@ -483,6 +506,7 @@ export const siteUiText = {
     formOption4: 'Ecosistema Integral de Agencia de IA',
     formOption5: 'Diseño de Landing Pages Profesionales',
     formOption6: 'Logos, Flyers y Diseño Gráfico',
+    formOption7: 'Creación de Aplicaciones Móviles',
     formLabelBudget: 'Presupuesto Estimado de Inversión',
     formLabelDate: 'Fecha Preferida de Auditoría',
     formLabelNotes: 'Cuéntanos sobre tus objetivos o cuellos de botella actuales',

@@ -3,10 +3,11 @@ import { Language, VideoPortfolioItem } from '../types';
 import { initialPortfolioVideos, landingPageExamplesData, siteUiText } from '../data/content';
 import {
   Play, Eye, Settings, Youtube, Check, RefreshCw,
-  LayoutTemplate, ShoppingBag, Star, ArrowUpRight,
+  LayoutTemplate, Star, ArrowUpRight,
   Rocket, ShieldCheck, BarChart3, Search
 } from 'lucide-react';
 import melsaLogo from '../../asset/Logo-MELSA.jpg';
+import memoraScreenshot from '../../asset/Memora-Screenshot.png';
 
 interface PortfolioProps {
   lang: Language;
@@ -59,36 +60,22 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
   // Miniature "browser window" mockups — each rendered with its own layout & palette
   // to visually demonstrate the range of landing page styles we build.
   const renderLandingMockup = (id: string) => {
-    if (id === 'ecommerce') {
+    if (id === 'memora') {
+      // Real screenshot of the live product at memora.lat (not a hand-built mockup).
       return (
-        <div className="rounded-t-xl overflow-hidden bg-white">
+        <div className="rounded-t-xl overflow-hidden bg-black">
           <div className="flex items-center gap-1.5 px-3 py-2 bg-stone-100 border-b border-stone-200">
             <span className="w-2 h-2 rounded-full bg-red-400" />
             <span className="w-2 h-2 rounded-full bg-amber-400" />
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="ml-2 text-[9px] text-stone-400 font-mono">aura-skincare.com</span>
+            <span className="ml-2 text-[9px] text-stone-500 font-mono">memora.lat</span>
           </div>
-          <div className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-serif font-bold text-stone-800 tracking-wide">AURA</span>
-              <div className="flex items-center gap-2 text-[8px] text-stone-400 font-medium">
-                <span>SHOP</span><span>ABOUT</span>
-                <ShoppingBag className="w-3 h-3 text-rose-500" />
-              </div>
-            </div>
-            <div className="rounded-lg bg-gradient-to-br from-rose-100 to-orange-50 p-4 text-center space-y-1.5">
-              <span className="text-[8px] font-bold tracking-widest text-rose-500">SUMMER SALE · -30%</span>
-              <p className="text-sm font-serif font-bold text-stone-800">Glow Naturally</p>
-              <span className="inline-block mt-1 px-3 py-1 rounded-full bg-rose-500 text-white text-[8px] font-bold">Shop Now</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {['$48', '$62', '$34'].map((price, i) => (
-                <div key={i} className="space-y-1">
-                  <div className={`aspect-square rounded-md bg-gradient-to-br ${['from-rose-200 to-rose-300', 'from-orange-200 to-amber-200', 'from-stone-200 to-stone-300'][i]}`} />
-                  <span className="text-[8px] font-bold text-stone-600">{price}</span>
-                </div>
-              ))}
-            </div>
+          <div className="h-44 overflow-hidden">
+            <img
+              src={memoraScreenshot}
+              alt="Captura real de memora.lat"
+              className="w-full h-auto object-cover object-top"
+            />
           </div>
         </div>
       );
