@@ -1,28 +1,18 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 800;
 
-// Best-effort per-IP rate limit. This is in-memory, so it only holds while this
-// particular function instance stays warm — not a hard guarantee across every
-// serverless replica — but it catches the common case of rapid repeated requests
-// from the same visitor/bot without needing an external store (Redis, etc.).
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 8;
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
-
-const isRateLimited = (key: string): boolean => {
-  const now = Date.now();
-  if (rateLimitStore.size > 500) rateLimitStore.clear();
-
-  const entry = rateLimitStore.get(key);
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > RATE_LIMIT_MAX_REQUESTS;
-};
+// Real, shared per-IP rate limit backed by Upstash Redis (REST-based, works fine
+// from serverless/edge). Unlike an in-memory counter, this is consistent across
+// every function instance/region, since they all check the same Redis store.
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(8, '60 s'),
+  prefix: 'uniVerso693ChatRatelimit',
+});
 
 const getClientKey = (req: Request): string =>
   req.headers.get('x-nf-client-connection-ip') ??
@@ -64,7 +54,8 @@ export const handleChatRequest = async (req: Request): Promise<Response> => {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
-  if (isRateLimited(getClientKey(req))) {
+  const { success } = await ratelimit.limit(getClientKey(req));
+  if (!success) {
     return jsonResponse(429, { error: 'Too many requests — please slow down and try again in a minute.' });
   }
 
