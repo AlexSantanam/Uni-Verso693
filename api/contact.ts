@@ -97,7 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from: 'Uni-Verso693 <onboarding@resend.dev>',
       to: notifyTo,
       replyTo: email,
-      subject: `Nueva solicitud de auditoría — ${fullName}`,
+      subject: `[Uni-Verso693] Nueva solicitud de auditoría — ${fullName}`,
       html: `<table style="font-family:sans-serif;font-size:14px;">${htmlRows}</table>`,
     });
 
