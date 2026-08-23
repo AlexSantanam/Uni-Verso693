@@ -371,8 +371,8 @@ export const faqData: FaqItem[] = [
     id: '5',
     questionEn: 'Can I see examples of your work before hiring you?',
     questionEs: '¿Puedo ver ejemplos de su trabajo antes de contratarlos?',
-    answerEn: 'Absolutely. Our Portfolio section features real AI agent and short video demos — fully customizable, just click "Edit YouTube Videos" to swap in your own — plus a showcase of landing page styles across e-commerce, SaaS, and real estate projects like MELSA.',
-    answerEs: 'Claro que sí. Nuestra sección de Portafolio incluye demostraciones reales de agentes de IA y videos cortos —totalmente personalizables, solo haz clic en "Editar Videos de YouTube" para reemplazarlos— además de una muestra de estilos de landing pages en proyectos de e-commerce, SaaS y bienes raíces como MELSA.'
+    answerEn: 'Absolutely. Our Portfolio section features real AI agent and short video demos, plus a showcase of landing page styles across e-commerce, SaaS, and real estate projects like MELSA.',
+    answerEs: 'Claro que sí. Nuestra sección de Portafolio incluye demostraciones reales de agentes de IA y videos cortos, además de una muestra de estilos de landing pages en proyectos de e-commerce, SaaS y bienes raíces como MELSA.'
   },
   {
     id: '6',
@@ -418,9 +418,6 @@ export const siteUiText = {
     servicesSubheading: 'Custom engineered solutions to scale your business operations and content production without increasing headcount.',
     portfolioHeading: 'AI Short Videos & Portfolio Showcase',
     portfolioSubheading: 'Explore our AI-generated short videos, automated avatars, and live agent demonstration showcases.',
-    portfolioEditBtn: 'Edit YouTube Videos',
-    portfolioModalTitle: 'Customize YouTube Portfolio Videos',
-    portfolioModalDesc: 'Enter YouTube video IDs or full URLs to replace the portfolio embeds:',
     landingExamplesBadge: 'LANDING PAGE EXAMPLES',
     landingExamplesHeading: 'Professional Landing Page Styles',
     landingExamplesSubheading: 'A glimpse of the design range we deliver — from e-commerce storefronts to SaaS launches and luxury real estate.',
@@ -489,9 +486,6 @@ export const siteUiText = {
     servicesSubheading: 'Soluciones de ingeniería a la medida para escalar tus operaciones y contenidos sin aumentar personal.',
     portfolioHeading: 'Portafolio de Videos Cortos e IA',
     portfolioSubheading: 'Explora nuestros videos cortos generados con IA, avatares automatizados y demostraciones de agentes.',
-    portfolioEditBtn: 'Editar Videos de YouTube',
-    portfolioModalTitle: 'Personalizar Videos de YouTube del Portafolio',
-    portfolioModalDesc: 'Ingresa los IDs o URLs completas de YouTube para reemplazar los embeds:',
     landingExamplesBadge: 'EJEMPLOS DE LANDING PAGES',
     landingExamplesHeading: 'Estilos Profesionales de Landing Pages',
     landingExamplesSubheading: 'Un vistazo a la variedad de diseños que entregamos: desde tiendas e-commerce hasta lanzamientos SaaS y bienes raíces de lujo.',

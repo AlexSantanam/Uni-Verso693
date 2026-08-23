@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Language, VideoPortfolioItem } from '../types';
+import React from 'react';
+import { Language } from '../types';
 import { initialPortfolioVideos, landingPageExamplesData, siteUiText } from '../data/content';
 import {
-  Play, Eye, Settings, Youtube, Check, RefreshCw,
+  Eye, Youtube,
   LayoutTemplate, Star, ArrowUpRight,
   Rocket, ShieldCheck, BarChart3, Search
 } from 'lucide-react';
@@ -15,39 +15,7 @@ interface PortfolioProps {
 
 export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
   const t = siteUiText[lang];
-  const [videos, setVideos] = useState<VideoPortfolioItem[]>(initialPortfolioVideos);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [inputIds, setInputIds] = useState<string[]>(initialPortfolioVideos.map(v => v.youtubeId));
-  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
-
-  // Helper to extract YouTube ID from standard URLs or raw ID string
-  const extractYoutubeId = (urlOrId: string): string => {
-    const trimmed = urlOrId.trim();
-    if (!trimmed) return 'dQw4w9WgXcQ';
-    if (trimmed.includes('youtube.com/watch?v=')) {
-      const match = trimmed.match(/v=([a-zA-Z0-9_-]{11})/);
-      if (match && match[1]) return match[1];
-    } else if (trimmed.includes('youtu.be/')) {
-      const match = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-      if (match && match[1]) return match[1];
-    } else if (trimmed.includes('youtube.com/embed/')) {
-      const match = trimmed.match(/embed\/([a-zA-Z0-9_-]{11})/);
-      if (match && match[1]) return match[1];
-    } else if (trimmed.length === 11) {
-      return trimmed;
-    }
-    return trimmed;
-  };
-
-  const handleSaveVideoIds = (e: React.FormEvent) => {
-    e.preventDefault();
-    const updated = videos.map((vid, idx) => ({
-      ...vid,
-      youtubeId: extractYoutubeId(inputIds[idx] || vid.youtubeId)
-    }));
-    setVideos(updated);
-    setEditModalOpen(false);
-  };
+  const videos = initialPortfolioVideos;
 
   const handleScrollToContact = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -156,28 +124,17 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-widest">
-              <Youtube className="w-3.5 h-3.5 text-red-500" />
-              <span>{lang === 'en' ? 'PORTFOLIO & DEMOS' : 'PORTAFOLIO Y DEMOS'}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              {t.portfolioHeading}
-            </h2>
-            <p className="text-zinc-400 text-base leading-relaxed">
-              {t.portfolioSubheading}
-            </p>
+        <div className="max-w-2xl space-y-3 mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-widest">
+            <Youtube className="w-3.5 h-3.5 text-red-500" />
+            <span>{lang === 'en' ? 'PORTFOLIO & DEMOS' : 'PORTAFOLIO Y DEMOS'}</span>
           </div>
-
-          {/* Button to let user customize YouTube video links easily */}
-          <button
-            onClick={() => setEditModalOpen(true)}
-            className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-950/60 border border-purple-700/60 text-purple-300 hover:text-white hover:bg-purple-900/60 text-xs font-semibold transition-colors cursor-pointer shadow-lg"
-          >
-            <Settings className="w-4 h-4 text-purple-400" />
-            <span>{t.portfolioEditBtn}</span>
-          </button>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            {t.portfolioHeading}
+          </h2>
+          <p className="text-zinc-400 text-base leading-relaxed">
+            {t.portfolioSubheading}
+          </p>
         </div>
 
         {/* 3 YouTube Video Cards Grid */}
@@ -311,72 +268,6 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
         </div>
 
       </div>
-
-      {/* Edit YouTube Videos Modal */}
-      {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-zinc-950 border border-purple-800/80 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
-              <div className="flex items-center gap-2">
-                <Youtube className="w-5 h-5 text-red-500" />
-                <h3 className="text-lg font-bold text-white">
-                  {t.portfolioModalTitle}
-                </h3>
-              </div>
-              <button
-                onClick={() => setEditModalOpen(false)}
-                className="text-zinc-400 hover:text-white text-sm font-bold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              {t.portfolioModalDesc}
-            </p>
-
-            <form onSubmit={handleSaveVideoIds} className="space-y-4">
-              {videos.map((vid, idx) => (
-                <div key={vid.id} className="space-y-1.5">
-                  <label className="text-xs font-semibold text-purple-300 flex items-center justify-between">
-                    <span>Video #{idx + 1}: {lang === 'en' ? vid.titleEn : vid.titleEs}</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={inputIds[idx]}
-                    onChange={(e) => {
-                      const copy = [...inputIds];
-                      copy[idx] = e.target.value;
-                      setInputIds(copy);
-                    }}
-                    placeholder="e.g. dQw4w9WgXcQ or https://youtube.com/watch?v=..."
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:border-purple-500 focus:outline-none"
-                  />
-                </div>
-              ))}
-
-              <div className="pt-4 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 text-xs font-semibold hover:bg-zinc-800"
-                >
-                  {lang === 'en' ? 'Cancel' : 'Cancelar'}
-                </button>
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg shadow-purple-600/30"
-                >
-                  <Check className="w-4 h-4" />
-                  <span>{lang === 'en' ? 'Update Videos' : 'Actualizar Videos'}</span>
-                </button>
-              </div>
-            </form>
-
-          </div>
-        </div>
-      )}
 
     </section>
   );
