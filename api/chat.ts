@@ -10,6 +10,31 @@ import Anthropic from '@anthropic-ai/sdk';
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 800;
 
+// Best-effort per-IP rate limit — see the matching comment in src/server/chatHandler.ts
+// for why this is in-memory (no external store) and what that trade-off means.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 8;
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+const isRateLimited = (key: string): boolean => {
+  const now = Date.now();
+  if (rateLimitStore.size > 500) rateLimitStore.clear();
+
+  const entry = rateLimitStore.get(key);
+  if (!entry || now > entry.resetAt) {
+    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+};
+
+const getClientKey = (req: VercelRequest): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const first = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  return first?.split(',')[0].trim() ?? req.socket.remoteAddress ?? 'unknown';
+};
+
 const SYSTEM_PROMPT = `You are the live AI agent demo embedded on the Uni-Verso693 AI agency homepage. Uni-Verso693 builds, end-to-end, all of the following as core services — not supporting pieces around someone else's build:
 - 24/7 AI agents (WhatsApp, web, CRM)
 - AI short videos & reels
@@ -32,6 +57,11 @@ interface ChatMessage {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed');
+    return;
+  }
+
+  if (isRateLimited(getClientKey(req))) {
+    res.status(429).json({ error: 'Too many requests — please slow down and try again in a minute.' });
     return;
   }
 
