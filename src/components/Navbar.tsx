@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle, onOpenEx
               </span>
             </div>
             <span className="text-[11px] text-zinc-400 font-medium tracking-wide">
-              AI Agents & Videos
+              {lang === 'en' ? 'AI, Apps & Design' : 'IA, Apps y Diseño'}
             </span>
           </div>
         </a>

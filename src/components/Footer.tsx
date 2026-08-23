@@ -81,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ lang, onLanguageToggle, onOpenEx
               {t.netlifyBannerText}
             </p>
             <div className="p-3 rounded-xl bg-zinc-950 border border-purple-900/30 flex items-center justify-between">
-              <span className="font-mono text-[11px] text-zinc-300">Ready for Netlify & Cloud Run</span>
+              <span className="font-mono text-[11px] text-zinc-300">Live on Vercel & Netlify</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </div>
           </div>
