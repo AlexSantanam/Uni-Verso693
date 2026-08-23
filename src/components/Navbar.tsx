@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Language } from '../types';
 import { siteUiText } from '../data/content';
-import { Globe, Menu, X, Sparkles, Code } from 'lucide-react';
+import { Globe, Menu, X, Sparkles } from 'lucide-react';
 import logo from '../../asset/Logo.png';
 
 interface NavbarProps {
   lang: Language;
   onLanguageToggle: (newLang: Language) => void;
-  onOpenExportModal: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle, onOpenExportModal }) => {
+export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = siteUiText[lang];
 
@@ -88,9 +87,9 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle, onOpenEx
           </a>
         </nav>
 
-        {/* Desktop Right Actions: Language Switcher + Netlify HTML Export + CTA */}
+        {/* Desktop Right Actions: Language Switcher + CTA */}
         <div className="hidden lg:flex items-center gap-4">
-          
+
           {/* Language Selector Toggle Button */}
           <button
             onClick={() => onLanguageToggle(lang === 'en' ? 'es' : 'en')}
@@ -102,16 +101,6 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle, onOpenEx
             <span className="text-[10px] text-purple-400 font-bold bg-purple-950 px-1.5 py-0.5 rounded">
               {lang === 'en' ? 'ES' : 'EN'}
             </span>
-          </button>
-
-          {/* Export Netlify HTML button */}
-          <button
-            onClick={onOpenExportModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-950/40 border border-purple-700/50 text-xs font-medium text-purple-300 hover:bg-purple-900/50 transition-colors cursor-pointer"
-            title="Get 1-file HTML for Netlify"
-          >
-            <Code className="w-3.5 h-3.5 text-purple-400" />
-            <span>Netlify HTML</span>
           </button>
 
           {/* Primary CTA */}
@@ -189,17 +178,6 @@ export const Navbar: React.FC<NavbarProps> = ({ lang, onLanguageToggle, onOpenEx
           </nav>
 
           <div className="pt-4 border-t border-zinc-800 flex flex-col gap-3">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenExportModal();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-purple-950/60 border border-purple-700/50 text-xs font-semibold text-purple-300"
-            >
-              <Code className="w-4 h-4" />
-              <span>Export HTML for Netlify</span>
-            </button>
-
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, '#contact')}

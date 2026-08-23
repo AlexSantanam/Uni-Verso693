@@ -452,8 +452,6 @@ export const siteUiText = {
     formSuccessDesc: 'Thank you for reaching out to Uni-Verso693. An AI specialist from our engineering team will review your application and send meeting details within 2 hours.',
     formBtnNewRequest: 'Book Another Audit Session',
     formErrorMessage: 'Something went wrong sending your request. Please try again, or email us directly at contact@uni-verso693.ai.',
-    exportHtmlBtn: 'Export Single HTML (Netlify)',
-    netlifyBannerText: 'Ready to deploy on Netlify? Copy the clean 1-file HTML bundle below!',
     footerTagline: 'Uni-Verso693 AI Agency — 24/7 AI agents, short-form video, landing pages, mobile apps, and brand design for fast-growing companies.',
     footerRights: 'All rights reserved. Uni-Verso693 AI Agency.'
   },
@@ -525,8 +523,6 @@ export const siteUiText = {
     formSuccessDesc: 'Gracias por contactar a Uni-Verso693. Un especialista en ingeniería de IA revisará tu información y te enviará los datos de la reunión en menos de 2 horas.',
     formBtnNewRequest: 'Agendar Otra Sesión de Auditoría',
     formErrorMessage: 'Algo salió mal al enviar tu solicitud. Intenta de nuevo o escríbenos directo a contact@uni-verso693.ai.',
-    exportHtmlBtn: 'Exportar HTML Único (Netlify)',
-    netlifyBannerText: '¿Listo para subir a Netlify? ¡Copia el paquete HTML de 1 archivo a continuación!',
     footerTagline: 'Uni-Verso693 AI Agency — Agentes de IA 24/7, video corto, landing pages, apps móviles y diseño de marca para empresas en crecimiento.',
     footerRights: 'Todos los derechos reservados. Uni-Verso693 AI Agency.'
   }

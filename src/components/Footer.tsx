@@ -1,16 +1,15 @@
 import React from 'react';
 import { Language } from '../types';
 import { siteUiText } from '../data/content';
-import { Globe, Code, ArrowUp } from 'lucide-react';
+import { Globe, ArrowUp } from 'lucide-react';
 import logo from '../../asset/Logo.png';
 
 interface FooterProps {
   lang: Language;
   onLanguageToggle: (lang: Language) => void;
-  onOpenExportModal: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ lang, onLanguageToggle, onOpenExportModal }) => {
+export const Footer: React.FC<FooterProps> = ({ lang, onLanguageToggle }) => {
   const t = siteUiText[lang];
 
   const scrollToTop = () => {
@@ -47,19 +46,11 @@ export const Footer: React.FC<FooterProps> = ({ lang, onLanguageToggle, onOpenEx
                 <Globe className="w-3.5 h-3.5 text-purple-400" />
                 <span>{lang === 'en' ? 'EN / ES (Switch)' : 'ES / EN (Cambiar)'}</span>
               </button>
-
-              <button
-                onClick={onOpenExportModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-950/60 border border-purple-700/50 text-xs font-semibold text-purple-300"
-              >
-                <Code className="w-3.5 h-3.5 text-purple-400" />
-                <span>Netlify Code</span>
-              </button>
             </div>
           </div>
 
           {/* Column 2: Navigation Links */}
-          <div className="md:col-span-3 space-y-3 text-xs">
+          <div className="md:col-span-7 space-y-3 text-xs">
             <h4 className="font-bold text-white uppercase tracking-wider text-[11px] text-purple-400">
               {lang === 'en' ? 'Navigation' : 'Navegación'}
             </h4>
@@ -70,20 +61,6 @@ export const Footer: React.FC<FooterProps> = ({ lang, onLanguageToggle, onOpenEx
               <li><a href="#faq" className="hover:text-purple-300">{t.navFaq}</a></li>
               <li><a href="#contact" className="hover:text-purple-300">{t.navContact}</a></li>
             </ul>
-          </div>
-
-          {/* Column 3: Tech Stack & Netlify status */}
-          <div className="md:col-span-4 space-y-3 text-xs">
-            <h4 className="font-bold text-white uppercase tracking-wider text-[11px] text-purple-400">
-              {lang === 'en' ? 'Deployment & Engine' : 'Despliegue y Motor'}
-            </h4>
-            <p className="text-zinc-400 leading-relaxed">
-              {t.netlifyBannerText}
-            </p>
-            <div className="p-3 rounded-xl bg-zinc-950 border border-purple-900/30 flex items-center justify-between">
-              <span className="font-mono text-[11px] text-zinc-300">Live on Vercel & Netlify</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
           </div>
 
         </div>

@@ -9,12 +9,10 @@ import { Pricing } from './components/Pricing';
 import { FAQ } from './components/FAQ';
 import { AuditForm } from './components/AuditForm';
 import { Footer } from './components/Footer';
-import { HtmlExportModal } from './components/HtmlExportModal';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('es');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const handleLanguageToggle = (newLang: Language) => {
     setLang(newLang);
@@ -34,7 +32,6 @@ export default function App() {
       <Navbar
         lang={lang}
         onLanguageToggle={handleLanguageToggle}
-        onOpenExportModal={() => setExportModalOpen(true)}
       />
 
       <main>
@@ -64,14 +61,6 @@ export default function App() {
       <Footer
         lang={lang}
         onLanguageToggle={handleLanguageToggle}
-        onOpenExportModal={() => setExportModalOpen(true)}
-      />
-
-      {/* Netlify Single HTML Export Drawer/Modal */}
-      <HtmlExportModal
-        isOpen={exportModalOpen}
-        onClose={() => setExportModalOpen(false)}
-        lang={lang}
       />
     </div>
   );
