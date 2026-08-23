@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Language } from './types';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -19,6 +19,10 @@ export default function App() {
   const handleLanguageToggle = (newLang: Language) => {
     setLang(newLang);
   };
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const handleSelectPlan = (planName: string) => {
     setSelectedPlan(planName);
