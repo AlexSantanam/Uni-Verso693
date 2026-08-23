@@ -70,11 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
     if (error instanceof Anthropic.AuthenticationError) {
-      const raw = process.env.ANTHROPIC_API_KEY ?? '';
       console.error('Anthropic auth error — check ANTHROPIC_API_KEY:', error.message);
-      console.error(
-        `ANTHROPIC_API_KEY diagnostic — length: ${raw.length}, starts: "${raw.slice(0, 14)}", ends: "${raw.slice(-6)}", hasWhitespace: ${/\s/.test(raw)}`
-      );
       res.status(500).json({ error: 'Server misconfiguration.' });
       return;
     }
