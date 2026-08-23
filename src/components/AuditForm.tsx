@@ -25,6 +25,7 @@ export const AuditForm: React.FC<AuditFormProps> = ({ lang, selectedPlan }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedPlan) {
@@ -40,19 +41,32 @@ export const AuditForm: React.FC<AuditFormProps> = ({ lang, selectedPlan }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate real submission network call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || 'Request failed');
+      }
       setIsSubmitted(true);
-    }, 1200);
+    } catch {
+      setSubmitError(t.formErrorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
     setIsSubmitted(false);
+    setSubmitError(null);
     setFormData({
       fullName: '',
       email: '',
@@ -310,6 +324,12 @@ export const AuditForm: React.FC<AuditFormProps> = ({ lang, selectedPlan }) => {
                       className="w-full px-4 py-3 rounded-xl bg-black border border-zinc-800 focus:border-purple-500 focus:outline-none text-white text-sm resize-none"
                     />
                   </div>
+
+                  {submitError && (
+                    <div className="p-3 rounded-xl bg-red-950/40 border border-red-800/50 text-red-300 text-xs">
+                      {submitError}
+                    </div>
+                  )}
 
                   {/* Submit button */}
                   <button
