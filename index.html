@@ -32,6 +32,38 @@
     <meta name="twitter:image" content="https://uni-verso693.vercel.app/og-image.jpg" />
   </head>
   <body style="background:#050b13">
+    <!-- Intro: neon logo lighting up. Inline so it shows before the app bundle loads. -->
+    <div id="intro" style="position:fixed;inset:0;z-index:9999;background:#02040a;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease;cursor:pointer">
+      <video id="intro-video" src="/asset/neon-logo.mp4" muted playsinline autoplay preload="auto" disablepictureinpicture
+        style="width:min(82vw,460px);aspect-ratio:1;object-fit:cover;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 71%);mask-image:radial-gradient(circle,#000 52%,transparent 71%)"></video>
+    </div>
+    <script>
+      (function () {
+        var INTRO_SECONDS = 3.5; // hide once the logo has lit up
+        var el = document.getElementById('intro');
+        var v = document.getElementById('intro-video');
+        var seen = null;
+        try { seen = sessionStorage.getItem('introSeen'); } catch (e) {}
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (seen || reduce) { el.parentNode.removeChild(el); return; }
+        try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
+        var done = false;
+        function hide() {
+          if (done) return;
+          done = true;
+          el.style.opacity = '0';
+          el.style.pointerEvents = 'none';
+          setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
+        }
+        v.addEventListener('timeupdate', function () { if (v.currentTime >= INTRO_SECONDS) hide(); });
+        v.addEventListener('ended', hide);
+        v.addEventListener('error', hide);
+        el.addEventListener('click', hide);
+        setTimeout(hide, 5500); // never block the site on slow connections
+        var p = v.play();
+        if (p && p.catch) p.catch(function () { setTimeout(hide, 800); });
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
