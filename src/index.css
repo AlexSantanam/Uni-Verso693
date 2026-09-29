@@ -134,3 +134,77 @@
 .plasma-video video::-webkit-media-controls-enclosure {
   display: none !important;
 }
+
+/* ---- Neon logo video (inner-page heroes) ----
+   Same treatment as the plasma sphere: square crop of the 16:9 source,
+   gentle float (.orb), screen blend and a soft circular fade. */
+.neon-video {
+  mix-blend-mode: screen; /* dark background disappears */
+}
+/* .orb sets position: relative outside Tailwind layers; the neon video is placed absolutely */
+.orb.neon-video {
+  position: absolute;
+}
+.neon-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 52%, transparent 71%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 52%, transparent 71%);
+  pointer-events: none;
+}
+.neon-video video::-webkit-media-controls,
+.neon-video video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+/* ---- "Don't see what you need?" card ---- */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes glow-spin { to { --glow-angle: 360deg; } }
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(18%, 12%) scale(1.2); }
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+.glow-card {
+  position: relative;
+  display: block;
+  padding: 1px; /* border thickness */
+  background: conic-gradient(from var(--glow-angle), rgba(34, 211, 238, 0.05), #22d3ee, #8b5cf6, rgba(139, 92, 246, 0.05) 40%, rgba(34, 211, 238, 0.05));
+  animation: glow-spin 6s linear infinite;
+  transition: box-shadow 0.3s;
+}
+.glow-card:hover {
+  box-shadow: 0 0 40px -6px rgba(34, 211, 238, 0.45), 0 0 80px -20px rgba(139, 92, 246, 0.5);
+}
+.aurora {
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.45;
+  pointer-events: none;
+  animation: aurora-drift 12s ease-in-out infinite;
+}
+.aurora.a { top: -30%; left: -20%; background: #7c3aed; }
+.aurora.b { bottom: -35%; right: -25%; background: #0891b2; animation-duration: 15s; animation-direction: reverse; }
+.typing-caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: #67e8f9;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-card, .aurora, .typing-caret { animation: none; }
+}

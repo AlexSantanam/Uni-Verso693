@@ -4,6 +4,7 @@ import { useLang } from '../lib/lang';
 import { CONTACT_EMAIL } from '../data/site';
 import { Container, Eyebrow } from '../components/ui';
 import { ContactForm } from '../components/ContactForm';
+import { ParticleField } from '../components/effects';
 
 export const Contact: React.FC = () => {
   const { lang } = useLang();
@@ -24,6 +25,7 @@ export const Contact: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-[#070f19] min-h-[70vh]">
       <div className="absolute inset-0 bg-grid" aria-hidden />
+      <ParticleField className="absolute inset-0 opacity-50 pointer-events-none" />
       <Container className="relative py-20 grid grid-cols-1 lg:grid-cols-12 gap-14 items-start">
         <div className="lg:col-span-5 space-y-8">
           <Eyebrow>{es ? 'Contacto' : 'Contact'}</Eyebrow>

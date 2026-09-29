@@ -8,6 +8,9 @@ import { ServiceIcon } from '../components/ServiceIcon';
 import { CaseCard } from '../components/CaseCard';
 import { ParticleField } from '../components/effects';
 import { PlasmaVideo } from '../components/PlasmaVideo';
+import { YndiPetSpotlight } from '../components/YndiPetSpotlight';
+import { CustomProjectCard } from '../components/CustomProjectCard';
+import { GlobalReach } from '../components/GlobalReach';
 
 export const Home: React.FC = () => {
   const { lang, tr, trList } = useLang();
@@ -98,21 +101,12 @@ export const Home: React.FC = () => {
                 </span>
               </Link>
             ))}
-            <Link
-              to="/contacto"
-              className="rounded-3xl bg-ink p-8 flex flex-col justify-between gap-6 hover:bg-brand-900 transition-colors"
-            >
-              <h3 className="text-xl font-extrabold text-white">
-                {es ? '¿No ves lo que buscas?' : "Don't see what you need?"}
-              </h3>
-              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-200">
-                {es ? 'Cuéntanos tu caso' : 'Tell us your case'}
-                <ArrowUpRight className="w-4 h-4" />
-              </span>
-            </Link>
+            <CustomProjectCard />
           </div>
         </Container>
       </section>
+
+      <YndiPetSpotlight />
 
       {/* Cases */}
       <section className="py-24 sm:py-32 bg-[#070f19] border-y border-white/10">
@@ -170,6 +164,8 @@ export const Home: React.FC = () => {
           ))}
         </div>
       </section>
+
+      <GlobalReach />
 
       {/* FAQ */}
       <section className="py-24 sm:py-32">

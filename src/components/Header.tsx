@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
                   <ChevronDown className="w-3.5 h-3.5" />
                 </NavLink>
                 <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all absolute left-1/2 -translate-x-1/2 top-full w-80">
-                  <div className="rounded-2xl bg-white/[0.04] border border-white/10 shadow-xl shadow-slate-900/10 p-2">
+                  <div className="rounded-2xl bg-[#0a1420]/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/60 p-2">
                     {services.map((s) => (
                       <Link
                         key={s.slug}
@@ -95,7 +95,7 @@ export const Header: React.FC = () => {
       </Container>
 
       {open && (
-        <div className="lg:hidden border-t border-white/10 bg-white/[0.04]">
+        <div className="lg:hidden border-t border-white/10 bg-[#050b13]">
           <Container className="py-6 space-y-1">
             {navItems.map((item) => (
               <NavLink

@@ -2,32 +2,84 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { useLang } from '../lib/lang';
-import type { CaseStudy } from '../data/site';
-import memoraScreenshot from '../../asset/Memora-Screenshot.png';
+import type { CaseImage, CaseStudy } from '../data/site';
 import melsaLogo from '../../asset/Logo-MELSA.jpg';
+import melsaHero from '../../asset/cases/melsa-hero.jpg';
+import melsaProjects from '../../asset/cases/melsa-projects.jpg';
+import melsaSimulator from '../../asset/cases/melsa-simulator.jpg';
+import memoraLogo from '../../asset/cases/memora-logo.png';
+import memoraHome from '../../asset/cases/memora-home.jpg';
+import memoraMockup from '../../asset/cases/memora-mockup.jpg';
+import memoraFamily from '../../asset/cases/memora-family.jpg';
+import yndiMascot from '../../asset/cases/yndi-mascot.png';
+import yndipetLogo from '../../asset/cases/yndipet-logo.png';
+import yndipetServices from '../../asset/cases/yndipet-services.jpg';
+import yndipetGames from '../../asset/cases/yndipet-games.jpg';
+import gameHome from '../../asset/cases/yndipet-game-home.jpg';
+import gameTrivia from '../../asset/cases/yndipet-game-trivia.jpg';
+
+export const caseImages: Record<CaseImage, string> = {
+  'memora-home': memoraHome,
+  'memora-mockup': memoraMockup,
+  'memora-family': memoraFamily,
+  'yndipet-services': yndipetServices,
+  'yndipet-games': yndipetGames,
+  'yndipet-game-home': gameHome,
+  'yndipet-game-trivia': gameTrivia,
+  'melsa-hero': melsaHero,
+  'melsa-projects': melsaProjects,
+  'melsa-simulator': melsaSimulator,
+};
 
 export const CaseVisual: React.FC<{ item: CaseStudy; tall?: boolean }> = ({ item, tall }) => {
-  const h = tall ? 'h-72 sm:h-96' : 'h-56';
-  if (item.image === 'memora') {
+  const h = tall ? 'h-80 sm:h-[28rem]' : 'h-56';
+
+  if (item.visual === 'yndipet') {
     return (
-      <div className={`${h} overflow-hidden bg-white/5`}>
-        <img src={memoraScreenshot} alt={`${item.client} — memora.lat`} className="w-full h-auto object-cover object-top" />
-      </div>
-    );
-  }
-  if (item.image === 'melsa') {
-    return (
-      <div className={`${h} flex items-center justify-center`} style={{ backgroundImage: 'linear-gradient(135deg, #0F2042 0%, #1A3462 100%)' }}>
-        <div className="text-center space-y-3">
-          <img src={melsaLogo} alt="MELSA" className="w-14 h-14 rounded-lg object-cover mx-auto" />
-          <p className="font-serif italic text-xl" style={{ color: '#DFC287' }}>Timeless Luxury Living</p>
+      <div className={`${h} relative overflow-hidden bg-gradient-to-br from-[#3a0a1c] via-[#1a0b1f] to-[#050b13]`}>
+        <div className="absolute -left-16 -top-16 w-72 h-72 rounded-full bg-[#ff2d55]/35 blur-[80px]" aria-hidden />
+        <div className="absolute right-0 bottom-0 w-72 h-72 rounded-full bg-[#ff8a3d]/25 blur-[90px]" aria-hidden />
+        <div className={`absolute inset-0 flex items-center ${tall ? 'px-10 sm:px-16' : 'px-6'}`}>
+          <img
+            src={yndipetLogo}
+            alt="YndiPet — Aquí nos cuidamos"
+            className={`relative z-10 ${tall ? 'w-48 sm:w-72' : 'w-32'} drop-shadow-[0_20px_40px_rgba(255,45,85,0.45)] transition-transform duration-500 group-hover:scale-105`}
+          />
         </div>
+        <img
+          src={yndiMascot}
+          alt="Yndi, la mascota de YndiPet"
+          className={`absolute right-0 bottom-0 ${tall ? 'h-[105%]' : 'h-[112%] -mb-4'} w-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-2`}
+          style={{ animation: 'orb-float 6s ease-in-out infinite' }}
+        />
       </div>
     );
   }
+
+  if (item.visual === 'memora') {
+    return (
+      <div className={`${h} relative overflow-hidden bg-[#f8f5f1] flex items-center justify-center`}>
+        {/* soft paper vignette, matching the brand's cream artwork */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(120,100,80,0.12)_100%)]" aria-hidden />
+        <img
+          src={memoraLogo}
+          alt="MEMORA — Recuerdos para siempre"
+          // the source logo is white on transparent; brightness(0.16) renders it in the brand's charcoal
+          style={{ filter: 'brightness(0.16)' }}
+          className={`relative ${tall ? 'w-96 sm:w-[36rem]' : 'w-80'} px-6 transition-transform duration-500 group-hover:scale-105`}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className={`${h} flex items-center justify-center bg-gradient-to-br from-brand-900 via-brand-700 to-cyan-500`}>
-      <span className="text-3xl font-black text-white tracking-tight">{item.client}</span>
+    <div className={`${h} relative overflow-hidden bg-white flex items-center justify-center`}>
+      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-[#1A2E5A] via-[#C5A059] to-[#1A2E5A]" aria-hidden />
+      <img
+        src={melsaLogo}
+        alt="MELSA Gestión Inmobiliaria"
+        className={`${tall ? 'w-80 sm:w-[28rem]' : 'w-60'} px-4 transition-transform duration-500 group-hover:scale-105`}
+      />
     </div>
   );
 };

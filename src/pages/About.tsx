@@ -1,7 +1,18 @@
 import React from 'react';
 import { useLang } from '../lib/lang';
-import { process, stats, values } from '../data/site';
-import { Container, CtaBand, PageHero, SectionHeading } from '../components/ui';
+import { BarChart3, Brain, Clapperboard, Code2, GraduationCap, PenTool, Target } from 'lucide-react';
+import { capabilities, credentials, process, stats, values, type Capability } from '../data/site';
+import { Container, CtaBand, Eyebrow, PageHero, SectionHeading } from '../components/ui';
+import { ParticleField } from '../components/effects';
+
+const capabilityIcons: Record<Capability['icon'], React.FC<{ className?: string }>> = {
+  Target,
+  Code2,
+  Brain,
+  BarChart3,
+  PenTool,
+  Clapperboard,
+};
 
 export const About: React.FC = () => {
   const { tr, lang } = useLang();
@@ -25,6 +36,67 @@ export const About: React.FC = () => {
               <div className="text-sm text-slate-400">{tr(s.label)}</div>
             </div>
           ))}
+        </Container>
+      </section>
+
+      <section className="py-20 relative overflow-hidden">
+        <ParticleField className="absolute inset-0 opacity-30 pointer-events-none" />
+        <Container className="relative space-y-12">
+          <SectionHeading
+            eyebrow={es ? 'Capacidades del equipo' : 'Team capabilities'}
+            title={es ? 'Un equipo que une producto, código e IA' : 'A team that brings product, code and AI together'}
+            subtitle={
+              es
+                ? 'Cubrimos el ciclo completo: entender el negocio, diseñar la solución, construirla, automatizarla y medir su impacto.'
+                : 'We cover the full cycle: understanding the business, designing the solution, building it, automating it and measuring its impact.'
+            }
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {capabilities.map((c) => {
+              const Icon = capabilityIcons[c.icon];
+              return (
+                <div key={c.icon} className="spotlight reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-cyan-300 flex items-center justify-center">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-extrabold text-white">{tr(c.title)}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{tr(c.text)}</p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {c.tools.map((t) => (
+                      <span key={t} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="reveal grid grid-cols-1 lg:grid-cols-12 gap-8 rounded-3xl border border-white/10 bg-gradient-to-br from-brand-900/40 via-[#070f19] to-[#070f19] p-8 sm:p-10">
+            <div className="lg:col-span-5 space-y-3">
+              <Eyebrow>{es ? 'Visión de negocio' : 'Business mindset'}</Eyebrow>
+              <h3 className="text-2xl font-extrabold text-white">
+                {es ? 'Un equipo multidisciplinario que entiende tu negocio' : 'A multidisciplinary team that understands your business'}
+              </h3>
+              <p className="text-slate-400 leading-relaxed">
+                {es
+                  ? 'Reunimos perfiles de producto, desarrollo, datos, diseño e inteligencia artificial con experiencia en gestión, operaciones y procesos comerciales. Por eso hablamos de ventas, márgenes y eficiencia, no solo de tecnología.'
+                  : 'We bring together product, engineering, data, design and AI profiles with experience in management, operations and commercial processes. That is why we talk sales, margins and efficiency, not just technology.'}
+              </p>
+            </div>
+            <div className="lg:col-span-7 space-y-4">
+              <Eyebrow>{es ? 'Formación del equipo' : 'Team credentials'}</Eyebrow>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {credentials.map((c) => (
+                  <li key={c.es} className="flex items-start gap-2.5 text-sm text-slate-300">
+                    <GraduationCap className="w-4 h-4 mt-0.5 shrink-0 text-cyan-300" />
+                    {tr(c)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </Container>
       </section>
 

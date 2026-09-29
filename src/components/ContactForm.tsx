@@ -74,7 +74,7 @@ export const ContactForm: React.FC = () => {
 
   if (sent) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-10 text-center space-y-5 shadow-xl shadow-slate-900/5">
+      <div className="rounded-3xl border border-white/10 bg-[#0a1420]/80 backdrop-blur-md p-10 text-center space-y-5 shadow-xl shadow-slate-900/5">
         <CheckCircle2 className="w-14 h-14 text-cyan-300 mx-auto" />
         <h3 className="text-2xl font-extrabold text-white">{es ? '¡Solicitud recibida!' : 'Request received!'}</h3>
         <p className="text-slate-400 max-w-md mx-auto">
@@ -98,7 +98,7 @@ export const ContactForm: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-10 space-y-5 shadow-xl shadow-slate-900/5"
+      className="rounded-3xl border border-white/10 bg-[#0a1420]/80 backdrop-blur-md p-6 sm:p-10 space-y-5 shadow-xl shadow-slate-900/5"
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <label className="space-y-1.5 block">

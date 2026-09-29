@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useLang, type L } from '../lib/lang';
+import { NeonLogoVideo } from './NeonLogoVideo';
 
 export const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -65,8 +66,11 @@ export const PageHero: React.FC<{ eyebrow: L; title: L; subtitle: L }> = ({ eyeb
   return (
     <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
       <div className="absolute inset-0 bg-grid" aria-hidden />
-      <Container className="relative py-20 sm:py-28">
-        <SectionHeading eyebrow={tr(eyebrow)} title={tr(title)} subtitle={tr(subtitle)} />
+      <NeonLogoVideo className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(32rem,30vw)] pointer-events-none" />
+      <Container className="relative py-20 sm:py-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="lg:col-span-7">
+          <SectionHeading eyebrow={tr(eyebrow)} title={tr(title)} subtitle={tr(subtitle)} />
+        </div>
       </Container>
     </section>
   );
