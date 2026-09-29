@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import neonSrc from '../../asset/neon-logo.mp4';
 
+// Keep some Android browsers (e.g. Xiaomi's) from swapping in their own player,
+// which shows a cached site icon as the thumbnail while the clip loads.
+const inlinePlayerAttrs = { 'webkit-playsinline': 'true', 'x5-playsinline': 'true', 'x5-video-player-type': 'h5-page' };
+
 /**
  * Looping neon-logo video for the empty right side of inner-page heroes.
  * Same technique as PlasmaVideo: mix-blend-mode: screen drops the dark
@@ -39,6 +43,8 @@ export const NeonLogoVideo: React.FC<{ className?: string }> = ({ className = ''
         muted
         loop
         playsInline
+        poster="/intro-poster.png"
+        {...inlinePlayerAttrs}
         preload="metadata"
         disablePictureInPicture
         disableRemotePlayback

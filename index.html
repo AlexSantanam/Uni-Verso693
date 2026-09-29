@@ -36,7 +36,10 @@
   <body style="background:#050b13">
     <!-- Intro: neon logo lighting up. Inline so it shows before the app bundle loads. -->
     <div id="intro" style="position:fixed;inset:0;z-index:9999;background:#02040a;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease;cursor:pointer">
-      <video id="intro-video" src="/asset/neon-logo.mp4" muted playsinline autoplay preload="auto" disablepictureinpicture
+      <!-- poster + inline-player attributes stop some Android browsers (e.g. Xiaomi's) from
+           swapping in their own player, which showed a cached site icon mid-intro -->
+      <video id="intro-video" src="/asset/neon-logo.mp4" poster="/intro-poster.png" muted playsinline autoplay preload="auto" disablepictureinpicture
+        webkit-playsinline x5-playsinline x5-video-player-type="h5-page" controlslist="nodownload nofullscreen noremoteplayback"
         style="width:min(82vw,460px);aspect-ratio:1;object-fit:cover;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 71%);mask-image:radial-gradient(circle,#000 52%,transparent 71%)"></video>
     </div>
     <script>

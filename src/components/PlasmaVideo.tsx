@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import plasmaSrc from '../../asset/plasma-sphere.mp4';
 import { PlasmaGlobe } from './PlasmaGlobe';
 
+// Keep some Android browsers (e.g. Xiaomi's) from swapping in their own player,
+// which shows a cached site icon as the thumbnail while the clip loads.
+const inlinePlayerAttrs = { 'webkit-playsinline': 'true', 'x5-playsinline': 'true', 'x5-video-player-type': 'h5-page' };
+
 /**
  * Looping plasma-sphere video. The black background is removed with
  * mix-blend-mode: screen and a soft circular mask hides any frame edge.
@@ -34,6 +38,8 @@ export const PlasmaVideo: React.FC<{ className?: string }> = ({ className = '' }
         muted
         loop
         playsInline
+        poster="/intro-poster.png"
+        {...inlinePlayerAttrs}
         preload="auto"
         disablePictureInPicture
         disableRemotePlayback
