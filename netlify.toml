@@ -8,6 +8,12 @@
   to = "/.netlify/functions/chat"
   status = 200
 
+# SPA fallback so direct visits to /servicios, /casos/... load the app
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [dev]
   command = "npm run dev"
   targetPort = 4890

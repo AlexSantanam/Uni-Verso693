@@ -1,60 +1,136 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-ink: #02050a;
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-900: #2e1065;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     color-scheme: dark;
   }
-  
+
   body {
-    background-color: #030008;
-    color: #f3f4f6;
+    background-color: #050b13;
+    color: #e2e8f0;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-brand-600);
+    color: #fff;
   }
 }
 
-/* Custom glowing effects and purple highlights */
-.glow-purple {
-  box-shadow: 0 0 35px -5px rgba(147, 51, 234, 0.35);
+/* Subtle grid used behind hero sections */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 30%, #000 25%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 25%, transparent 75%);
 }
 
-.glow-purple-lg {
-  box-shadow: 0 0 60px -10px rgba(168, 85, 247, 0.4);
-}
-
-.text-gradient-purple {
-  background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #9333ea 100%);
+.text-gradient-brand {
+  background: linear-gradient(110deg, #7dd3fc 0%, #a78bfa 45%, #7dd3fc 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
 }
 
-.bg-radial-purple {
-  background: radial-gradient(circle at 50% 20%, rgba(147, 51, 234, 0.18) 0%, rgba(3, 0, 8, 0) 70%);
+@keyframes shimmer {
+  to { background-position: 200% center; }
 }
 
-.border-purple-glow {
-  border-color: rgba(168, 85, 247, 0.3);
-  transition: all 0.3s ease;
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
 }
 
-.border-purple-glow:hover {
-  border-color: rgba(192, 132, 252, 0.8);
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+/* ---- Plasma sphere (video + WebGL fallback) ---- */
+@keyframes orb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.orb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  animation: orb-float 9s ease-in-out infinite;
 }
-::-webkit-scrollbar-track {
-  background: #090314;
+/* ---- Scroll reveal ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
 }
-::-webkit-scrollbar-thumb {
-  background: #3b0764;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #6b21a8;
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
+/* Glow that follows the cursor on cards */
+.spotlight {
+  position: relative;
+}
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(56, 189, 248, 0.14), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #050b13; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-marquee, .orb, .text-gradient-brand { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---- Plasma video ---- */
+/* blend on the container: .orb animates transform, which would isolate a blend set on the video */
+.plasma-video {
+  mix-blend-mode: screen; /* black background disappears */
+}
+.plasma-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 16:9 source cropped to the centred square */
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 58%, transparent 71%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 58%, transparent 71%);
+  pointer-events: none;
+}
+.plasma-video video::-webkit-media-controls,
+.plasma-video video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
