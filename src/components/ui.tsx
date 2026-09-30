@@ -64,12 +64,22 @@ export const ButtonLink: React.FC<ButtonProps> = ({ to, children, variant = 'pri
   );
 };
 
-export const PageHero: React.FC<{ eyebrow: L; title: L; subtitle: L }> = ({ eyebrow, title, subtitle }) => {
+/** Page hero; `video` swaps the neon logo for a page-specific clip (src, poster and box classes). */
+export const PageHero: React.FC<{ eyebrow: L; title: L; subtitle: L; video?: { src: string; poster: string; box: string } }> = ({
+  eyebrow,
+  title,
+  subtitle,
+  video,
+}) => {
   const { tr } = useLang();
   return (
     <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
       <div className="absolute inset-0 bg-grid" aria-hidden />
-      <NeonLogoVideo className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(32rem,30vw)] pointer-events-none" />
+      <NeonLogoVideo
+        src={video?.src}
+        poster={video?.poster}
+        className={`hidden lg:block absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none ${video?.box ?? 'left-[81.5%] w-[min(32rem,30vw)]'}`}
+      />
       <Container className="relative py-20 sm:py-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <div className="lg:col-span-7">
           <SectionHeading as="h1" eyebrow={tr(eyebrow)} title={tr(title)} subtitle={tr(subtitle)} />

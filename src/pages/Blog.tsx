@@ -5,6 +5,9 @@ import { useLang } from '../lib/lang';
 import { postCopy, posts, type Block, type Post } from '../data/blog';
 import { Container, CtaBand, Eyebrow, PageHero } from '../components/ui';
 import { CalendlyButton } from '../components/CalendlyButton';
+import blogPrism from '../../asset/blog-prism.mp4';
+
+const blogVideo = { src: blogPrism, poster: '/blog-prism-poster.jpg', box: 'left-[79%] w-[min(38rem,36vw)]' };
 
 const formatDate = (iso: string, lang: 'es' | 'en') =>
   new Date(`${iso}T12:00:00`).toLocaleDateString(lang === 'es' ? 'es-CL' : 'en-US', {
@@ -57,6 +60,7 @@ const PostCard: React.FC<{ post: Post }> = ({ post: base }) => {
 export const Blog: React.FC = () => (
   <>
     <PageHero
+      video={blogVideo}
       eyebrow={{ es: 'Blog', en: 'Blog' }}
       title={{ es: 'Software e IA explicados para tu empresa', en: 'Software and AI explained for your business' }}
       subtitle={{

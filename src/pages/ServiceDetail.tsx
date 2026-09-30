@@ -8,11 +8,20 @@ import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 import { CheckList } from './Home';
 import { NeonLogoVideo } from '../components/NeonLogoVideo';
 import softwareFlow from '../../asset/software-flow.mp4';
+import aiOrb from '../../asset/ai-orb.mp4';
+import mobileStreams from '../../asset/mobile-streams.mp4';
+import webStreams from '../../asset/web-streams.mp4';
+import consultingCore from '../../asset/consulting-core.mp4';
 
-/** Service-specific hero clips; the rest show the neon logo. */
-const heroVideos: Record<string, { src: string; poster: string }> = {
+/** Service-specific hero clips (any service without one shows the neon logo); `box` overrides position and size. */
+const heroVideos: Record<string, { src: string; poster: string; box?: string }> = {
   'software-a-medida': { src: softwareFlow, poster: '/software-flow-poster.jpg' },
+  'agentes-ia': { src: aiOrb, poster: '/ai-orb-poster.jpg', box: 'left-[78%] w-[min(52rem,46vw)]' },
+  'apps-moviles': { src: mobileStreams, poster: '/mobile-streams-poster.jpg', box: 'left-[78%] w-[min(52rem,46vw)]' },
+  'web-y-producto': { src: webStreams, poster: '/web-streams-poster.jpg', box: 'left-[78%] w-[min(52rem,46vw)]' },
+  consultoria: { src: consultingCore, poster: '/consulting-core-poster.jpg', box: 'left-[78%] w-[min(52rem,46vw)]' },
 };
+const DEFAULT_BOX = 'left-[81.5%] w-[min(39.5rem,34vw)]';
 
 export const ServiceDetail: React.FC = () => {
   const { slug } = useParams();
@@ -25,7 +34,11 @@ export const ServiceDetail: React.FC = () => {
     <>
       <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
         <div className="absolute inset-0 bg-grid" aria-hidden />
-      <NeonLogoVideo {...heroVideos[service.slug]} className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(39.5rem,34vw)] pointer-events-none" />
+      <NeonLogoVideo
+        src={heroVideos[service.slug]?.src}
+        poster={heroVideos[service.slug]?.poster}
+        className={`hidden lg:block absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none ${heroVideos[service.slug]?.box ?? DEFAULT_BOX}`}
+      />
         <Container className="relative py-20 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 space-y-6">
           <Link to="/servicios" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-cyan-300">
