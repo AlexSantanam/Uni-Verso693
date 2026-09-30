@@ -325,6 +325,7 @@ export const cases: CaseStudy[] = [
       en: ['Visual identity consistent with the brand', 'Interactive mortgage and capital-gain simulator', 'Clear path to advisory: booking, form and WhatsApp'],
     },
     tags: ['UX/UI', 'React', 'Simulador', 'Real estate'],
+    url: 'https://melsa-psi.vercel.app',
     visual: 'melsa',
     features: [
       {
