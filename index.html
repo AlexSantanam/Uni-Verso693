@@ -51,7 +51,7 @@
     </div>
     <script>
       (function () {
-        var INTRO_SECONDS = 3.5; // hide once the logo has lit up
+        var INTRO_SECONDS = 5.5; // hide once the logo has lit up
         var el = document.getElementById('intro');
         var v = document.getElementById('intro-video');
         var seen = null;
@@ -72,7 +72,7 @@
         v.addEventListener('ended', hide);
         v.addEventListener('error', hide);
         el.addEventListener('click', hide); // tapping anywhere else skips the intro
-        var cap = setTimeout(hide, 5500); // never block the site on slow connections
+        var cap = setTimeout(hide, 8000); // never block the site on slow connections
 
         // Browsers usually block autoplay with sound on a first visit: try with
         // sound, and if refused keep playing muted and offer a sound button.
@@ -90,7 +90,7 @@
           e.stopPropagation();
           btn.style.display = 'none';
           clearTimeout(cap);
-          cap = setTimeout(hide, 5500);
+          cap = setTimeout(hide, 8000);
           v.currentTime = 0; // replay the light-up with sound
           v.muted = false;
           var r = v.play();
