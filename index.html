@@ -66,19 +66,8 @@
         v.addEventListener('timeupdate', function () { if (v.currentTime >= INTRO_SECONDS) hide(); });
         v.addEventListener('ended', hide);
         v.addEventListener('error', hide);
+        el.addEventListener('click', hide); // tapping anywhere else skips the intro
         var cap = setTimeout(hide, 8000); // never block the site on slow connections
-        // A tap is the only thing browsers accept to allow sound. If autoplay came
-        // out muted, the first tap replays the light-up with audio (no visible UI);
-        // once sound is on, a tap skips the intro.
-        el.addEventListener('click', function () {
-          if (!v.muted) return hide();
-          clearTimeout(cap);
-          cap = setTimeout(hide, 8000);
-          v.currentTime = 0;
-          v.muted = false;
-          var r = v.play();
-          if (r && r.catch) r.catch(function () { v.muted = true; v.play(); });
-        });
 
         // Browsers usually block autoplay with sound on a first visit: try with
         // sound, and if refused keep playing muted.
