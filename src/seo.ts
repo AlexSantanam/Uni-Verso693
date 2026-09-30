@@ -46,10 +46,6 @@ const organization = {
   areaServed: [
     { '@type': 'Country', name: 'Chile' },
     { '@type': 'City', name: 'Santiago' },
-    { '@type': 'City', name: 'Viña del Mar' },
-    { '@type': 'City', name: 'Valparaíso' },
-    { '@type': 'AdministrativeArea', name: 'Región de Valparaíso' },
-    { '@type': 'AdministrativeArea', name: 'Región Metropolitana de Santiago' },
     'Latinoamérica',
     'Estados Unidos',
     'Europa',
