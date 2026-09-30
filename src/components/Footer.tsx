@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { CONTACT_EMAIL, navItems, services } from '../data/site';
 import { Container } from './ui';
-import logo from '../../asset/Logo.png';
+import logo from '../../asset/Logo.webp';
 
 export const Footer: React.FC = () => {
   const { lang, tr } = useLang();

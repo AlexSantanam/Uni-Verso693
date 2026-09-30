@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Bot, Gamepad2, HeartPulse, MapPin, QrCode, Siren } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { Container, Eyebrow } from './ui';
-import yndiMascot from '../../asset/cases/yndi-mascot.png';
-import yndipetLogo from '../../asset/cases/yndipet-logo.png';
+import yndiMascot from '../../asset/cases/yndi-mascot.webp';
+import yndipetLogo from '../../asset/cases/yndipet-logo.webp';
 
 /** Home-page feature block for our own product, YndiPet. */
 export const YndiPetSpotlight: React.FC = () => {
@@ -30,7 +30,7 @@ export const YndiPetSpotlight: React.FC = () => {
             <div className="lg:col-span-7 space-y-7">
               <Eyebrow>{es ? 'Producto propio' : 'Our own product'}</Eyebrow>
               <h2 className="sr-only">YndiPet</h2>
-              <img
+              <img loading="lazy" decoding="async"
                 src={yndipetLogo}
                 alt="YndiPet — Aquí nos cuidamos"
                 className="w-40 sm:w-48 drop-shadow-[0_20px_40px_rgba(255,45,85,0.45)]"
@@ -69,7 +69,7 @@ export const YndiPetSpotlight: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5 flex justify-center">
-              <img
+              <img loading="lazy" decoding="async"
                 src={yndiMascot}
                 alt={es ? 'Yndi, la mascota de YndiPet' : 'Yndi, the YndiPet mascot'}
                 className="w-72 sm:w-96 drop-shadow-[0_30px_60px_rgba(255,45,85,0.35)]"

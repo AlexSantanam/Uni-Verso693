@@ -4,7 +4,7 @@ import { Globe, Menu, X, ChevronDown } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { navItems, services } from '../data/site';
 import { Container } from './ui';
-import logo from '../../asset/Logo.png';
+import logo from '../../asset/Logo.webp';
 
 export const Header: React.FC = () => {
   const { lang, setLang, tr } = useLang();
