@@ -5,9 +5,9 @@
 ## Company facts
 - Legal name: Universo693 SpA
 - Founded: 2013
-- Country: Chile. Works remotely with clients in Chile, Latin America, the United States and Europe.
+- Country: Chile. Remote-first company (no public office) serving clients across Chile, including Santiago, and internationally in Latin America, the United States and Europe.
 - Languages: Spanish and English.
-- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis: a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. There are no other published fixed prices.
+- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis (https://universo693.com/diagnostico-ia): a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. There are no other published fixed prices.
 - Typical timelines: initial AI agents live in about 7 days; custom platforms and mobile apps are delivered in stages.
 - Contact: form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · contacto@universo693.com · book the EBS 693 diagnosis at https://calendly.com/conectadoaia/ebs693 · replies within 2 hours.
 
@@ -24,6 +24,8 @@
 - [MELSA](https://universo693.com/casos/melsa): real-estate website with project search and a mortgage/capital-gain simulator.
 
 ## More
+- [EBS 693 AI diagnosis](https://universo693.com/diagnostico-ia)
+- [Free Audit 693](https://universo693.com/audit-693): automatic AI analysis of a company website with 5 opportunities.
 - [About the company](https://universo693.com/nosotros)
 - [Blog](https://universo693.com/blog)
 - [Sitemap](https://universo693.com/sitemap.xml)

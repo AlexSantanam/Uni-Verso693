@@ -91,6 +91,9 @@ export const EbsOffer: React.FC = () => {
                     {es ? 'Agendar mi diagnóstico' : 'Book my diagnosis'}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </a>
+                  <Link to="/diagnostico-ia" className="block text-sm font-semibold text-white hover:text-cyan-200">
+                    {es ? 'Ver qué incluye el diagnóstico →' : 'See what the diagnosis includes →'}
+                  </Link>
                   <Link to="/audit-693" className="block text-sm font-semibold text-cyan-300 hover:text-cyan-200">
                     {es ? '¿Prefieres partir gratis? Haz el Audit 693 →' : 'Rather start free? Try the Audit 693 →'}
                   </Link>

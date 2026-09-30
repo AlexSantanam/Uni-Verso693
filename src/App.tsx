@@ -10,6 +10,7 @@ import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { Blog, BlogPost } from './pages/Blog';
 import { Audit } from './pages/Audit';
+import { Diagnostico } from './pages/Diagnostico';
 import { Container } from './components/ui';
 
 const NotFound: React.FC = () => (
@@ -33,6 +34,7 @@ export const AppRoutes: React.FC = () => (
             <Route path="nosotros" element={<About />} />
             <Route path="contacto" element={<Contact />} />
             <Route path="audit-693" element={<Audit />} />
+            <Route path="diagnostico-ia" element={<Diagnostico />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogPost />} />
             <Route path="*" element={<NotFound />} />

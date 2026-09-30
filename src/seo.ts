@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, cases, ebs, faqs, services } from './data/site';
 import { posts } from './data/blog';
 import { company, companyFaqs } from './data/company';
+import { ebsFaqs } from './data/ebs';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -42,7 +43,17 @@ const organization = {
   ...(CONTACT_EMAIL && { email: CONTACT_EMAIL }),
   ...(WHATSAPP_NUMBER && { telephone: `+${WHATSAPP_NUMBER}` }),
   address: { '@type': 'PostalAddress', addressCountry: 'CL' },
-  areaServed: [{ '@type': 'Country', name: 'Chile' }, 'Latinoamérica', 'Estados Unidos', 'Europa'],
+  areaServed: [
+    { '@type': 'Country', name: 'Chile' },
+    { '@type': 'City', name: 'Santiago' },
+    { '@type': 'City', name: 'Viña del Mar' },
+    { '@type': 'City', name: 'Valparaíso' },
+    { '@type': 'AdministrativeArea', name: 'Región de Valparaíso' },
+    { '@type': 'AdministrativeArea', name: 'Región Metropolitana de Santiago' },
+    'Latinoamérica',
+    'Estados Unidos',
+    'Europa',
+  ],
   knowsLanguage: ['es', 'en'],
   priceRange: '$$',
   contactPoint: {
@@ -58,7 +69,7 @@ const organization = {
     description: 'Sesión de 45 minutos que entrega una hoja de ruta priorizada con ROI estimado.',
     price: '197000',
     priceCurrency: 'CLP',
-    url: `${SITE_URL}/contacto`,
+    url: `${SITE_URL}/diagnostico-ia`,
   },
 };
 
@@ -240,6 +251,39 @@ const contact: PageSeo = {
   }),
 };
 
+const diagnosticoPage: PageSeo = {
+  path: '/diagnostico-ia',
+  title: 'Diagnóstico de IA para empresas en Chile | EBS 693',
+  description: clip(
+    'Sesión de 45 minutos que entrega una hoja de ruta priorizada para aplicar inteligencia artificial y automatización en tu empresa, con ROI estimado. $197.000 CLP.',
+  ),
+  priority: 0.9,
+  jsonLd: graph(
+    breadcrumb([{ name: 'Diagnóstico de IA', path: '/diagnostico-ia' }]),
+    {
+      '@type': 'Service',
+      name: 'EBS 693: diagnóstico de inteligencia artificial para empresas',
+      serviceType: 'Consultoría de inteligencia artificial',
+      description:
+        'Sesión remota de 45 minutos que revisa procesos y herramientas, prioriza oportunidades de IA y automatización por impacto y esfuerzo, y entrega una hoja de ruta con retorno estimado.',
+      url: url('/diagnostico-ia'),
+      provider: { '@id': `${SITE_URL}/#org` },
+      areaServed: [{ '@type': 'Country', name: 'Chile' }, 'Latinoamérica'],
+      offers: {
+        '@type': 'Offer',
+        price: '197000',
+        priceCurrency: 'CLP',
+        availability: 'https://schema.org/InStock',
+        url: url('/diagnostico-ia'),
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: ebsFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ),
+};
+
 const auditPage: PageSeo = {
   path: '/audit-693',
   title: 'Audit 693 gratis: 5 oportunidades de IA para tu empresa',
@@ -311,7 +355,7 @@ export const notFoundSeo: PageSeo = {
 };
 
 /** Every indexable page, in sitemap order. */
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, auditPage, blogPage, ...postPages, contact];
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, blogPage, ...postPages, contact];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
