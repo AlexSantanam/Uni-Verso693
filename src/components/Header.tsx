@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Uni-Verso693" className="w-10 h-10 rounded-xl object-cover" />
           <span className="font-extrabold text-xl tracking-tight text-white">
-            Uni-Verso<span className="text-cyan-300">693</span>
+            Uni-Verso<span className="text-brand-500">693</span>
           </span>
         </Link>
 
