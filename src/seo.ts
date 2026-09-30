@@ -91,7 +91,7 @@ const home: PageSeo = {
   path: '/',
   title: `Desarrollo de software a medida e IA en Chile | ${SITE_NAME}`,
   description:
-    'Empresa chilena de desarrollo de software: plataformas a medida, agentes de IA para WhatsApp y web, apps móviles y producto digital. Casos: YndiPet, MEMORA y MELSA.',
+    'Empresa chilena de desarrollo de software: plataformas a medida, agentes de IA para WhatsApp y web, apps móviles y producto digital. Casos reales en producción.',
   priority: 1,
   jsonLd: graph({
     '@type': 'FAQPage',
@@ -167,9 +167,16 @@ const casesPage: PageSeo = {
   ),
 };
 
+/** Short, search-oriented case titles (Bing flags titles over ~70 chars). */
+const caseTitles: Record<string, string> = {
+  yndipet: 'YndiPet: app de mascotas con inteligencia artificial',
+  memora: 'MEMORA: plataforma de memoriales digitales',
+  melsa: 'MELSA: sitio inmobiliario con simulador de inversión',
+};
+
 const casePages: PageSeo[] = cases.map((c) => ({
   path: `/casos/${c.slug}`,
-  title: `${c.title.es} | Casos ${SITE_NAME}`,
+  title: `${caseTitles[c.slug] ?? c.client} | ${SITE_NAME}`,
   description: clip(c.solution.es),
   priority: 0.7,
   jsonLd: graph(

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLang } from '../lib/lang';
 import { techStack, type Tech } from '../data/site';
 import { Container, SectionHeading } from './ui';
@@ -23,6 +23,10 @@ const Chip: React.FC<{ tech: Tech }> = ({ tech }) => (
 
 /** Infinite logo carousel; two rows scrolling in opposite directions. */
 export const TechMarquee: React.FC = () => {
+  // The prerendered HTML carries each logo once (keeps the page under Bing's
+  // ~125 KB HTML limit); the copy needed for the seamless loop is added after load.
+  const [looping, setLooping] = useState(false);
+  useEffect(() => setLooping(true), []);
   const { lang } = useLang();
   const es = lang === 'es';
   const half = Math.ceil(techStack.length / 2);
@@ -40,7 +44,7 @@ export const TechMarquee: React.FC = () => {
       <div className="space-y-4 [mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
         {rows.map((row, r) => (
           <div key={r} className={`flex w-max gap-4 ${r === 0 ? 'animate-marquee' : 'animate-marquee-reverse'}`}>
-            {[...row, ...row].map((t, i) => (
+            {(looping ? [...row, ...row] : row).map((t, i) => (
               <Chip key={`${t.name}-${i}`} tech={t} />
             ))}
           </div>
