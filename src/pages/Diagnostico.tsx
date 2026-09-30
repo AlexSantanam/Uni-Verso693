@@ -1,185 +1,202 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Receipt, Video } from 'lucide-react';
+import { useLang } from '../lib/lang';
 import { CALENDLY_URL, ebs, whatsappLink } from '../data/site';
 import { ebsFaqs, ebsForWho, ebsIncludes, ebsSteps, ebsVideo } from '../data/ebs';
 import { Container, Eyebrow, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
 import { SymptomChecklist, LossCalculator } from '../components/LossTools';
 
-const whatsappHref = whatsappLink('Hola, quiero consultar por el diagnóstico EBS 693.');
-
-const BookButton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <a
-    href={CALENDLY_URL}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`group inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-8 py-5 text-base font-extrabold text-white shadow-xl shadow-brand-600/40 transition-colors ${className}`}
-  >
-    <CalendarDays className="w-5 h-5" />
-    Agendar mi diagnóstico EBS 693
-    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-  </a>
-);
+const BookButton: React.FC<{ className?: string }> = ({ className = '' }) => {
+  const { lang } = useLang();
+  return (
+    <a
+      href={CALENDLY_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-8 py-5 text-base font-extrabold text-white shadow-xl shadow-brand-600/40 transition-colors ${className}`}
+    >
+      <CalendarDays className="w-5 h-5" />
+      {lang === 'es' ? 'Agendar mi diagnóstico EBS 693' : 'Book my EBS 693 diagnosis'}
+      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+    </a>
+  );
+};
 
 /** Dedicated landing for the paid EBS 693 diagnosis, so it can rank on its own. */
-export const Diagnostico: React.FC = () => (
-  <>
-    <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
-      <div className="absolute inset-0 bg-grid" aria-hidden />
-      <ParticleField className="absolute inset-0 opacity-40 pointer-events-none" />
-      <Container className="relative py-20 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-7 space-y-7">
-          <Eyebrow>{ebs.name} · la anti-consultoría</Eyebrow>
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.05]">
-            Descubre cuánto dinero estás <span className="text-gradient-brand">dejando de ganar sin IA</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
-            Diagnóstico de inteligencia artificial para empresas: en 45 minutos revisamos tu operación y te entregamos una hoja de ruta con retorno estimado. Qué automatizar primero, cuánto cuesta y en cuánto se recupera.
-          </p>
-          {/* the price card holds the single primary CTA; this side offers a different, lighter action */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a
-              href="#calculadora"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 px-6 py-3.5 text-sm font-bold text-white transition-colors"
-            >
-              <Calculator className="w-4 h-4 text-cyan-300" />
-              Calcula cuánto pierdes
-              <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
-            </a>
-            {whatsappHref && (
-              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-slate-400 hover:text-white">
-                ¿Dudas? Escríbenos por WhatsApp →
+export const Diagnostico: React.FC = () => {
+  const { lang, tr, trList } = useLang();
+  const es = lang === 'es';
+  const t = (esText: string, enText: string) => (es ? esText : enText);
+  const whatsappHref = whatsappLink(t('Hola, quiero consultar por el diagnóstico EBS 693.', 'Hi, I have a question about the EBS 693 diagnosis.'));
+
+  return (
+    <>
+      <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
+        <div className="absolute inset-0 bg-grid" aria-hidden />
+        <ParticleField className="absolute inset-0 opacity-40 pointer-events-none" />
+        <Container className="relative py-20 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-7">
+            <Eyebrow>
+              {ebs.name} · {t('la anti-consultoría', 'the anti-consultancy')}
+            </Eyebrow>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.05]">
+              {es ? (
+                <>
+                  Descubre cuánto dinero estás <span className="text-gradient-brand">dejando de ganar sin IA</span>
+                </>
+              ) : (
+                <>
+                  Find out how much money you’re <span className="text-gradient-brand">leaving on the table without AI</span>
+                </>
+              )}
+            </h1>
+            <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
+              {t(
+                'Diagnóstico de inteligencia artificial para empresas: en 45 minutos revisamos tu operación y te entregamos una hoja de ruta con retorno estimado. Qué automatizar primero, cuánto cuesta y en cuánto se recupera.',
+                'An AI diagnosis for businesses: in 45 minutes we review your operation and give you a roadmap with estimated return. What to automate first, what it costs and how fast it pays back.',
+              )}
+            </p>
+            {/* the price card holds the single primary CTA; this side offers a different, lighter action */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a
+                href="#calculadora"
+                className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 px-6 py-3.5 text-sm font-bold text-white transition-colors"
+              >
+                <Calculator className="w-4 h-4 text-cyan-300" />
+                {t('Calcula cuánto pierdes', 'Calculate what you’re losing')}
+                <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
               </a>
-            )}
-          </div>
-        </div>
-        <div className="lg:col-span-5">
-          <div className="glow-card rounded-[2rem]">
-            <div className="rounded-[calc(2rem-1px)] bg-[#060a14] p-8 space-y-5 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Diagnóstico estratégico</p>
-              <p className="text-4xl sm:text-5xl font-black text-white tracking-tight whitespace-nowrap">{ebs.price}</p>
-              <ul className="space-y-3 text-left text-sm text-slate-300">
-                <li className="flex items-center gap-3">
-                  <Clock3 className="w-4 h-4 text-cyan-300" /> Sesión de 45 minutos
-                </li>
-                <li className="flex items-center gap-3">
-                  <Video className="w-4 h-4 text-cyan-300" /> Remota, por Google Meet
-                </li>
-                <li className="flex items-center gap-3">
-                  <Receipt className="w-4 h-4 text-cyan-300" /> Se descuenta del proyecto si avanzas
-                </li>
-              </ul>
-              <BookButton className="w-full" />
+              {whatsappHref && (
+                <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-slate-400 hover:text-white">
+                  {t('¿Dudas? Escríbenos por WhatsApp →', 'Questions? Message us on WhatsApp →')}
+                </a>
+              )}
             </div>
           </div>
-        </div>
-      </Container>
-    </section>
-
-    <section className="py-20">
-      <Container className="space-y-10">
-        <SectionHeading center eyebrow="Autodiagnóstico" title="¿Cuántas de estas pasan en tu empresa?" />
-        <SymptomChecklist />
-      </Container>
-    </section>
-
-    <section id="calculadora" className="pb-20 scroll-mt-24">
-      <Container className="space-y-10">
-        <SectionHeading center eyebrow="Calculadora" title="Cuánto te cuesta hoy el trabajo manual" />
-        <LossCalculator />
-        <div className="text-center">
-          <BookButton />
-        </div>
-      </Container>
-    </section>
-
-    {ebsVideo && (
-      <section className="pb-20">
-        <Container className="max-w-3xl">
-          <video
-            src={ebsVideo.src}
-            poster={ebsVideo.poster}
-            controls
-            playsInline
-            preload="none"
-            className="w-full rounded-3xl border border-white/10"
-          />
+          <div className="lg:col-span-5">
+            <div className="glow-card rounded-[2rem]">
+              <div className="rounded-[calc(2rem-1px)] bg-[#060a14] p-8 space-y-5 text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{t('Diagnóstico estratégico', 'Strategic diagnosis')}</p>
+                <p className="text-4xl sm:text-5xl font-black text-white tracking-tight whitespace-nowrap">{es ? ebs.price : 'CLP 197,000'}</p>
+                <ul className="space-y-3 text-left text-sm text-slate-300">
+                  <li className="flex items-center gap-3">
+                    <Clock3 className="w-4 h-4 text-cyan-300" /> {t('Sesión de 45 minutos', '45-minute session')}
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Video className="w-4 h-4 text-cyan-300" /> {t('Remota, por Google Meet', 'Remote, on Google Meet')}
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Receipt className="w-4 h-4 text-cyan-300" /> {t('Se descuenta del proyecto si avanzas', 'Credited to the project if you move forward')}
+                  </li>
+                </ul>
+                <BookButton className="w-full" />
+              </div>
+            </div>
+          </div>
         </Container>
       </section>
-    )}
 
-    <section className="py-20 bg-[#070f19] border-y border-white/10">
-      <Container className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-6">
-          <h2 className="text-2xl font-extrabold text-white">Qué incluye</h2>
-          <ul className="space-y-3">
-            {ebsIncludes.map((t) => (
-              <li key={t} className="flex items-start gap-3 text-slate-300 leading-relaxed">
-                <Check className="w-5 h-5 shrink-0 text-cyan-300" /> {t}
+      <section className="py-20">
+        <Container className="space-y-10">
+          <SectionHeading center eyebrow={t('Autodiagnóstico', 'Self-check')} title={t('¿Cuántas de estas pasan en tu empresa?', 'How many of these happen in your company?')} />
+          <SymptomChecklist />
+        </Container>
+      </section>
+
+      <section id="calculadora" className="pb-20 scroll-mt-24">
+        <Container className="space-y-10">
+          <SectionHeading center eyebrow={t('Calculadora', 'Calculator')} title={t('Cuánto te cuesta hoy el trabajo manual', 'What manual work costs you today')} />
+          <LossCalculator />
+          <div className="text-center">
+            <BookButton />
+          </div>
+        </Container>
+      </section>
+
+      {ebsVideo && (
+        <section className="pb-20">
+          <Container className="max-w-3xl">
+            <video src={ebsVideo.src} poster={ebsVideo.poster} controls playsInline preload="none" className="w-full rounded-3xl border border-white/10" />
+          </Container>
+        </section>
+      )}
+
+      <section className="py-20 bg-[#070f19] border-y border-white/10">
+        <Container className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-6">
+            <h2 className="text-2xl font-extrabold text-white">{t('Qué incluye', 'What’s included')}</h2>
+            <ul className="space-y-3">
+              {trList(ebsIncludes).map((item) => (
+                <li key={item} className="flex items-start gap-3 text-slate-300 leading-relaxed">
+                  <Check className="w-5 h-5 shrink-0 text-cyan-300" /> {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-6">
+            <h2 className="text-2xl font-extrabold text-white">{t('Para quién es', 'Who it’s for')}</h2>
+            <ul className="space-y-3">
+              {trList(ebsForWho).map((item) => (
+                <li key={item} className="flex items-start gap-3 text-slate-300 leading-relaxed">
+                  <Check className="w-5 h-5 shrink-0 text-cyan-300" /> {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container className="space-y-12">
+          <SectionHeading eyebrow={t('Cómo funciona', 'How it works')} title={t('De la conversación a un plan que puedes ejecutar', 'From a conversation to a plan you can execute')} />
+          <ol className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {ebsSteps.map((s, i) => (
+              <li key={s.title.es} className="reveal space-y-3 border-t-2 border-cyan-400/60 pt-5">
+                <div className="text-sm font-bold text-cyan-300">{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="text-lg font-extrabold text-white">{tr(s.title)}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{tr(s.text)}</p>
               </li>
             ))}
-          </ul>
-        </div>
-        <div className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-6">
-          <h2 className="text-2xl font-extrabold text-white">Para quién es</h2>
-          <ul className="space-y-3">
-            {ebsForWho.map((t) => (
-              <li key={t} className="flex items-start gap-3 text-slate-300 leading-relaxed">
-                <Check className="w-5 h-5 shrink-0 text-cyan-300" /> {t}
-              </li>
+          </ol>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container className="grid grid-cols-1 lg:grid-cols-12 gap-14">
+          <div className="lg:col-span-4 space-y-5">
+            <SectionHeading eyebrow="FAQ" title={t('Preguntas sobre el diagnóstico', 'Questions about the diagnosis')} />
+            <p className="text-slate-400">
+              {t('¿Prefieres ver ideas antes?', 'Want to see ideas first?')}{' '}
+              <Link to="/audit-693" className="font-semibold text-cyan-300 hover:text-cyan-200">
+                {t('Prueba el Audit 693 gratis →', 'Try the free Audit 693 →')}
+              </Link>
+            </p>
+          </div>
+          <div className="lg:col-span-8 divide-y divide-white/10 border-y border-white/10">
+            {ebsFaqs.map((f) => (
+              <details key={f.q.es} className="group py-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-bold text-white">
+                  {tr(f.q)}
+                  <span className="text-2xl text-cyan-300 transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-4 text-slate-400 leading-relaxed max-w-2xl">{tr(f.a)}</p>
+              </details>
             ))}
-          </ul>
-        </div>
-      </Container>
-    </section>
+          </div>
+        </Container>
+      </section>
 
-    <section className="py-20">
-      <Container className="space-y-12">
-        <SectionHeading eyebrow="Cómo funciona" title="De la conversación a un plan que puedes ejecutar" />
-        <ol className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {ebsSteps.map((s, i) => (
-            <li key={s.title} className="reveal space-y-3 border-t-2 border-cyan-400/60 pt-5">
-              <div className="text-sm font-bold text-cyan-300">{String(i + 1).padStart(2, '0')}</div>
-              <h3 className="text-lg font-extrabold text-white">{s.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{s.text}</p>
-            </li>
-          ))}
-        </ol>
-      </Container>
-    </section>
-
-    <section className="py-20">
-      <Container className="grid grid-cols-1 lg:grid-cols-12 gap-14">
-        <div className="lg:col-span-4 space-y-5">
-          <SectionHeading eyebrow="FAQ" title="Preguntas sobre el diagnóstico" />
-          <p className="text-slate-400">
-            ¿Prefieres ver ideas antes?{' '}
-            <Link to="/audit-693" className="font-semibold text-cyan-300 hover:text-cyan-200">
-              Prueba el Audit 693 gratis →
-            </Link>
+      <section className="bg-ink py-20">
+        <Container className="text-center space-y-6">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">{t('Decide con un plan, no con intuición', 'Decide with a plan, not a hunch')}</h2>
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+            {t('45 minutos para saber exactamente dónde invertir en tecnología y con qué retorno.', '45 minutes to know exactly where to invest in technology, and with what return.')}
           </p>
-        </div>
-        <div className="lg:col-span-8 divide-y divide-white/10 border-y border-white/10">
-          {ebsFaqs.map((f) => (
-            <details key={f.q} className="group py-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-bold text-white">
-                {f.q}
-                <span className="text-2xl text-cyan-300 transition-transform group-open:rotate-45">+</span>
-              </summary>
-              <p className="mt-4 text-slate-400 leading-relaxed max-w-2xl">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </Container>
-    </section>
-
-    <section className="bg-ink py-20">
-      <Container className="text-center space-y-6">
-        <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Decide con un plan, no con intuición</h2>
-        <p className="text-slate-300 text-lg max-w-2xl mx-auto">45 minutos para saber exactamente dónde invertir en tecnología y con qué retorno.</p>
-        <BookButton />
-      </Container>
-    </section>
-  </>
-);
+          <BookButton />
+        </Container>
+      </section>
+    </>
+  );
+};

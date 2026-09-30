@@ -277,7 +277,7 @@ const diagnosticoPage: PageSeo = {
     },
     {
       '@type': 'FAQPage',
-      mainEntity: ebsFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      mainEntity: ebsFaqs.map((f) => ({ '@type': 'Question', name: f.q.es, acceptedAnswer: { '@type': 'Answer', text: f.a.es } })),
     },
     // only once the 45-second explainer video exists (src/data/ebs.ts)
     ...(ebsVideo
@@ -322,7 +322,7 @@ const auditPage: PageSeo = {
     },
     {
       '@type': 'FAQPage',
-      mainEntity: auditFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      mainEntity: auditFaqs.map((f) => ({ '@type': 'Question', name: f.q.es, acceptedAnswer: { '@type': 'Answer', text: f.a.es } })),
     },
     {
     '@type': 'WebApplication',

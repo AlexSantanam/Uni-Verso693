@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Clock3 } from 'lucide-react';
 import { useLang } from '../lib/lang';
-import { posts, type Block, type Post } from '../data/blog';
+import { postCopy, posts, type Block, type Post } from '../data/blog';
 import { Container, CtaBand, Eyebrow, PageHero } from '../components/ui';
 import { CalendlyButton } from '../components/CalendlyButton';
 
@@ -26,8 +26,9 @@ const PostMeta: React.FC<{ post: Post }> = ({ post }) => {
   );
 };
 
-const PostCard: React.FC<{ post: Post }> = ({ post }) => {
+const PostCard: React.FC<{ post: Post }> = ({ post: base }) => {
   const { lang } = useLang();
+  const post = postCopy(base, lang);
   return (
     <Link
       to={`/blog/${post.slug}`}
@@ -74,7 +75,7 @@ export const Blog: React.FC = () => (
   </>
 );
 
-const renderBlock = (b: Block, i: number) => {
+const renderBlock = (lang: 'es' | 'en') => (b: Block, i: number) => {
   switch (b.type) {
     case 'h2':
       return (
@@ -109,7 +110,7 @@ const renderBlock = (b: Block, i: number) => {
               to="/contacto"
               className="group inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-6 py-3.5 text-sm font-bold text-white transition-colors"
             >
-              Escríbenos
+              {lang === 'es' ? 'Escríbenos' : 'Contact us'}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
@@ -127,8 +128,9 @@ const renderBlock = (b: Block, i: number) => {
 export const BlogPost: React.FC = () => {
   const { slug } = useParams();
   const { lang } = useLang();
-  const post = posts.find((p) => p.slug === slug);
-  if (!post) return <Navigate to="/blog" replace />;
+  const found = posts.find((p) => p.slug === slug);
+  if (!found) return <Navigate to="/blog" replace />;
+  const post = postCopy(found, lang);
   const more = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
 
   return (
@@ -150,7 +152,7 @@ export const BlogPost: React.FC = () => {
           </Container>
         </header>
         <Container className="py-14">
-          <div className="max-w-3xl mx-auto space-y-6">{post.body.map(renderBlock)}</div>
+          <div className="max-w-3xl mx-auto space-y-6">{post.body.map(renderBlock(lang))}</div>
         </Container>
       </article>
 

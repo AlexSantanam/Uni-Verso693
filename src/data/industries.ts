@@ -1,8 +1,10 @@
 /**
  * Industry landing pages (/ia-para/:slug). Not in the main menu: reached from the sitemap,
- * a footer link and search. Spanish only. No invented statistics: describe problems and
+ * a footer link and search. English copy lives in industries.en.ts. No invented statistics: describe problems and
  * use cases qualitatively; numbers come from the visitor (calculator, Audit PRO).
  */
+import { industriesEn } from './industries.en';
+
 export interface Industry {
   slug: string;
   /** Short name used in lists: "Transporte y flotas". */
@@ -209,3 +211,6 @@ export const industries: Industry[] = [
 ];
 
 export const industryBySlug = (slug: string) => industries.find((i) => i.slug === slug);
+
+/** The page copy in the visitor's language (SEO and JSON-LD always use the Spanish). */
+export const industryCopy = (i: Industry, lang: 'es' | 'en'): Industry => (lang === 'en' && industriesEn[i.slug] ? { ...i, ...industriesEn[i.slug] } : i);

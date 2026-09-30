@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { CONTACT_EMAIL, navItems, services } from '../data/site';
-import { industries } from '../data/industries';
+import { industries, industryCopy } from '../data/industries';
 import { Container } from './ui';
 import logo from '../../asset/Logo.webp';
 
@@ -73,7 +73,7 @@ export const Footer: React.FC = () => {
             <React.Fragment key={i.slug}>
               {n > 0 && ' · '}
               <Link to={`/ia-para/${i.slug}`} className="hover:text-white transition-colors">
-                {i.name}
+                {industryCopy(i, lang).name}
               </Link>
             </React.Fragment>
           ))}

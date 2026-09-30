@@ -1,5 +1,7 @@
+import { postsEn } from './blog.en';
+
 /**
- * Blog articles (Spanish only). Blocks keep the content structured so the same
+ * Blog articles (Spanish; English copy in blog.en.ts). Blocks keep the content structured so the same
  * data renders the page, the prerendered HTML and the JSON-LD.
  */
 export type Block =
@@ -333,3 +335,6 @@ export const posts: Post[] = [
     ],
   },
 ];
+
+/** The post in the visitor's language (SEO and JSON-LD always use the Spanish). */
+export const postCopy = (p: Post, lang: 'es' | 'en'): Post => (lang === 'en' && postsEn[p.slug] ? { ...p, ...postsEn[p.slug] } : p);
