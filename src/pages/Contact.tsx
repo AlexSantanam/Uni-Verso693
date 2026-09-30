@@ -6,6 +6,7 @@ import { Container, Eyebrow } from '../components/ui';
 import { ContactForm } from '../components/ContactForm';
 import { ParticleField } from '../components/effects';
 import { WhatsAppButton } from '../components/WhatsAppButton';
+import { CalendlyButton } from '../components/CalendlyButton';
 
 export const Contact: React.FC = () => {
   const { lang } = useLang();
@@ -50,13 +51,18 @@ export const Contact: React.FC = () => {
                 </div>
               </div>
             ))}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-4 font-bold text-white hover:text-cyan-300">
-              <div className="w-11 h-11 shrink-0 rounded-xl bg-brand-500/10 text-cyan-300 flex items-center justify-center">
-                <Mail className="w-5 h-5" />
-              </div>
-              {CONTACT_EMAIL}
-            </a>
-            <WhatsAppButton message={es ? 'Hola, quiero conversar sobre un proyecto.' : "Hi, I'd like to talk about a project."} />
+            {CONTACT_EMAIL && (
+              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-4 font-bold text-white hover:text-cyan-300">
+                <div className="w-11 h-11 shrink-0 rounded-xl bg-brand-500/10 text-cyan-300 flex items-center justify-center">
+                  <Mail className="w-5 h-5" />
+                </div>
+                {CONTACT_EMAIL}
+              </a>
+            )}
+            <div className="flex flex-wrap gap-3">
+              <CalendlyButton />
+              <WhatsAppButton message={es ? 'Hola, quiero conversar sobre un proyecto.' : "Hi, I'd like to talk about a project."} />
+            </div>
           </div>
         </div>
         <div className="lg:col-span-7">

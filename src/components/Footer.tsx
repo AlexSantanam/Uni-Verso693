@@ -25,10 +25,12 @@ export const Footer: React.FC = () => {
                 ? 'Empresa de desarrollo de software: plataformas a medida, agentes de IA, apps móviles y producto digital para empresas que quieren dominar el mañana.'
                 : 'A software development company: custom platforms, AI agents, mobile apps and digital product for companies that want to own tomorrow.'}
             </p>
-            <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-brand-200">
-              <Mail className="w-4 h-4" />
-              {CONTACT_EMAIL}
-            </a>
+            {CONTACT_EMAIL && (
+              <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-brand-200">
+                <Mail className="w-4 h-4" />
+                {CONTACT_EMAIL}
+              </a>
+            )}
           </div>
 
           <div className="md:col-span-4 space-y-4">

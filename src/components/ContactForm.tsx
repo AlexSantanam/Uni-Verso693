@@ -68,8 +68,8 @@ export const ContactForm: React.FC = () => {
     } catch {
       setError(
         es
-          ? 'No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos a contact@uni-verso693.ai.'
-          : 'We could not send your request. Please try again or email contact@uni-verso693.ai.',
+          ? 'No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp al +56 9 9038 7414.'
+          : 'We could not send your request. Please try again or message us on WhatsApp at +56 9 9038 7414.',
       );
     } finally {
       setSubmitting(false);

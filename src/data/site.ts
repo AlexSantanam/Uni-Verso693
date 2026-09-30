@@ -6,7 +6,11 @@ import {
   siClaude, siGooglegemini, siLangchain, siN8n, siStripe, siMercadopago, siFigma,
 } from 'simple-icons';
 
-export const CONTACT_EMAIL = 'contact@uni-verso693.ai';
+/** Public contact inbox. Empty hides it everywhere (set it once the mailbox exists). */
+export const CONTACT_EMAIL = '';
+
+/** 30-minute intro call. */
+export const CALENDLY_URL = 'https://calendly.com/conectadoaia/30min';
 
 /** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
 export const WHATSAPP_NUMBER = '56990387414';

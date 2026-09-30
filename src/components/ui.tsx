@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useLang, type L } from '../lib/lang';
 import { NeonLogoVideo } from './NeonLogoVideo';
+import { CalendlyButton } from './CalendlyButton';
 
 export const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -91,9 +92,12 @@ export const CtaBand: React.FC = () => {
               ? 'Cuéntanos tu caso. Te respondemos en menos de 2 horas con los siguientes pasos.'
               : 'Tell us about your case. We reply within 2 hours with next steps.'}
           </p>
-          <ButtonLink to="/contacto" variant="primary">
-            {lang === 'es' ? 'Hablemos de tu proyecto' : "Let's talk about your project"}
-          </ButtonLink>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink to="/contacto" variant="primary">
+              {lang === 'es' ? 'Hablemos de tu proyecto' : "Let's talk about your project"}
+            </ButtonLink>
+            <CalendlyButton />
+          </div>
         </div>
       </Container>
     </section>

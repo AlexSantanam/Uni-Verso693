@@ -5,6 +5,7 @@ import { useLang } from '../lib/lang';
 import { ebs } from '../data/site';
 import { Container, Eyebrow } from './ui';
 import { WhatsAppButton } from './WhatsAppButton';
+import { CalendlyButton } from './CalendlyButton';
 
 /** Paid entry product: 90-minute strategic diagnosis with an ROI roadmap. */
 export const EbsOffer: React.FC = () => {
@@ -89,6 +90,7 @@ export const EbsOffer: React.FC = () => {
                     {es ? 'Agendar mi diagnóstico' : 'Book my diagnosis'}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
+                  <CalendlyButton className="w-full" />
                   <WhatsAppButton
                     message={es ? 'Hola, quiero agendar el diagnóstico EBS 693.' : "Hi, I'd like to book the EBS 693 diagnosis."}
                     className="w-full"
