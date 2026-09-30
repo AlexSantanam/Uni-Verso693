@@ -4,6 +4,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { ChatWidget } from './ChatWidget';
 import { useSiteEffects } from './effects';
+import { SeoHead } from './SeoHead';
 
 export const Layout: React.FC = () => {
   const { pathname } = useLocation();
@@ -16,6 +17,7 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#050b13] text-white">
+      <SeoHead />
       <Header />
       <main className="flex-1">
         <Outlet />

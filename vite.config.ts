@@ -6,6 +6,8 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    // The prerender (vite build --ssr) must inline this JSON; Node can't import it bare.
+    ssr: { noExternal: ['world-atlas'] },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

@@ -12,17 +12,15 @@ import { Container } from './components/ui';
 
 const NotFound: React.FC = () => (
   <Container className="py-32 text-center space-y-4">
-    <h1 className="text-6xl font-black text-ink">404</h1>
-    <Link to="/" className="font-bold text-brand-600 hover:text-brand-700">
+    <h1 className="text-6xl font-black text-white">404</h1>
+    <Link to="/" className="font-bold text-cyan-300 hover:text-cyan-200">
       ← Uni-Verso693
     </Link>
   </Container>
 );
 
-export default function App() {
-  return (
-    <LangProvider>
-      <BrowserRouter>
+/** Route table shared by the browser app and the build-time prerender (src/entry-server.tsx). */
+export const AppRoutes: React.FC = () => (
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
@@ -35,6 +33,13 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+);
+
+export default function App() {
+  return (
+    <LangProvider>
+      <BrowserRouter>
+        <AppRoutes />
       </BrowserRouter>
     </LangProvider>
   );

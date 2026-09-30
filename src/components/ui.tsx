@@ -26,12 +26,14 @@ export const SectionHeading: React.FC<{
   subtitle?: React.ReactNode;
   center?: boolean;
   light?: boolean;
-}> = ({ eyebrow, title, subtitle, center, light }) => (
+  /** Use 'h1' when this is the page's main heading. */
+  as?: 'h1' | 'h2';
+}> = ({ eyebrow, title, subtitle, center, light, as: Tag = 'h2' }) => (
   <div className={`max-w-3xl space-y-4 reveal ${center ? 'mx-auto text-center' : ''}`}>
     {eyebrow && <Eyebrow light={light}>{eyebrow}</Eyebrow>}
-    <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.1] text-white`}>
+    <Tag className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.1] text-white`}>
       {title}
-    </h2>
+    </Tag>
     {subtitle && (
       <p className={`text-base sm:text-lg leading-relaxed ${light ? 'text-slate-300' : 'text-slate-400'}`}>{subtitle}</p>
     )}
@@ -70,7 +72,7 @@ export const PageHero: React.FC<{ eyebrow: L; title: L; subtitle: L }> = ({ eyeb
       <NeonLogoVideo className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(32rem,30vw)] pointer-events-none" />
       <Container className="relative py-20 sm:py-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <div className="lg:col-span-7">
-          <SectionHeading eyebrow={tr(eyebrow)} title={tr(title)} subtitle={tr(subtitle)} />
+          <SectionHeading as="h1" eyebrow={tr(eyebrow)} title={tr(title)} subtitle={tr(subtitle)} />
         </div>
       </Container>
     </section>
