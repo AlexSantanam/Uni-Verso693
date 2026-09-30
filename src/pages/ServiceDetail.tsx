@@ -7,6 +7,12 @@ import { ButtonLink, Container, CtaBand, Eyebrow } from '../components/ui';
 import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 import { CheckList } from './Home';
 import { NeonLogoVideo } from '../components/NeonLogoVideo';
+import softwareFlow from '../../asset/software-flow.mp4';
+
+/** Service-specific hero clips; the rest show the neon logo. */
+const heroVideos: Record<string, { src: string; poster: string }> = {
+  'software-a-medida': { src: softwareFlow, poster: '/software-flow-poster.jpg' },
+};
 
 export const ServiceDetail: React.FC = () => {
   const { slug } = useParams();
@@ -19,7 +25,7 @@ export const ServiceDetail: React.FC = () => {
     <>
       <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
         <div className="absolute inset-0 bg-grid" aria-hidden />
-      <NeonLogoVideo className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(39.5rem,34vw)] pointer-events-none" />
+      <NeonLogoVideo {...heroVideos[service.slug]} className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(39.5rem,34vw)] pointer-events-none" />
         <Container className="relative py-20 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 space-y-6">
           <Link to="/servicios" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-cyan-300">

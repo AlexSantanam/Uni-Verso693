@@ -6,11 +6,16 @@ import neonSrc from '../../asset/neon-logo.mp4';
 const inlinePlayerAttrs = { 'webkit-playsinline': 'true', 'x5-playsinline': 'true', 'x5-video-player-type': 'h5-page' };
 
 /**
- * Looping neon-logo video for the empty right side of inner-page heroes.
+ * Looping neon-logo video for the empty right side of inner-page heroes (or another
+ * dark-background clip passed as `src`, e.g. a service-specific one).
  * Same technique as PlasmaVideo: mix-blend-mode: screen drops the dark
  * background and a soft elliptical mask hides the frame edges.
  */
-export const NeonLogoVideo: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const NeonLogoVideo: React.FC<{ className?: string; src?: string; poster?: string }> = ({
+  className = '',
+  src = neonSrc,
+  poster = '/intro-poster.png',
+}) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -38,12 +43,12 @@ export const NeonLogoVideo: React.FC<{ className?: string }> = ({ className = ''
     <div className={`orb neon-video ${className}`} aria-hidden>
       <video
         ref={ref}
-        src={neonSrc}
+        src={src}
         autoPlay
         muted
         loop
         playsInline
-        poster="/intro-poster.png"
+        poster={poster}
         {...inlinePlayerAttrs}
         preload="metadata"
         disablePictureInPicture
