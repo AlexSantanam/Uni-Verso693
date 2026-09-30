@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { services } from '../data/site';
 import { Container, CtaBand, PageHero } from '../components/ui';
-import { ServiceIcon } from '../components/ServiceIcon';
+import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 
 export const Services: React.FC = () => {
   const { tr, lang } = useLang();
@@ -32,6 +32,7 @@ export const Services: React.FC = () => {
                 </div>
               </div>
               <div className="md:col-span-5 space-y-2">
+                {s.badge && <ServiceBadge label={tr(s.badge)} />}
                 <h2 className="text-2xl font-extrabold text-white">{tr(s.title)}</h2>
                 <p className="text-sm font-semibold text-cyan-300">{tr(s.tagline)}</p>
               </div>

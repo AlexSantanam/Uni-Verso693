@@ -2,15 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Check } from 'lucide-react';
 import { useLang } from '../lib/lang';
-import { cases, process, services, stats, techStack, faqs } from '../data/site';
+import { cases, process, services, stats, faqs } from '../data/site';
 import { ButtonLink, Container, CtaBand, SectionHeading } from '../components/ui';
-import { ServiceIcon } from '../components/ServiceIcon';
+import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 import { CaseCard } from '../components/CaseCard';
 import { ParticleField } from '../components/effects';
 import { PlasmaVideo } from '../components/PlasmaVideo';
 import { YndiPetSpotlight } from '../components/YndiPetSpotlight';
 import { CustomProjectCard } from '../components/CustomProjectCard';
 import { GlobalReach } from '../components/GlobalReach';
+import { TechMarquee } from '../components/TechMarquee';
+import { EbsOffer } from '../components/EbsOffer';
 
 export const Home: React.FC = () => {
   const { lang, tr, trList } = useLang();
@@ -93,6 +95,7 @@ export const Home: React.FC = () => {
                 <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-cyan-300 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-colors">
                   <ServiceIcon name={s.icon} />
                 </div>
+                {s.badge && <ServiceBadge label={tr(s.badge)} />}
                 <h3 className="text-xl font-extrabold text-white">{tr(s.title)}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{tr(s.tagline)}</p>
                 <span className="inline-flex items-center gap-1.5 text-sm font-bold text-cyan-300">
@@ -105,6 +108,8 @@ export const Home: React.FC = () => {
           </div>
         </Container>
       </section>
+
+      <EbsOffer />
 
       <YndiPetSpotlight />
 
@@ -147,23 +152,7 @@ export const Home: React.FC = () => {
         </Container>
       </section>
 
-      {/* Tech marquee */}
-      <section className="bg-ink py-16 overflow-hidden">
-        <Container className="mb-10">
-          <SectionHeading
-            light
-            eyebrow={es ? 'Tecnología' : 'Technology'}
-            title={es ? 'Herramientas modernas y probadas' : 'Modern, proven tools'}
-          />
-        </Container>
-        <div className="flex w-max animate-marquee gap-4">
-          {[...techStack, ...techStack].map((t, i) => (
-            <span key={i} className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white whitespace-nowrap">
-              {t}
-            </span>
-          ))}
-        </div>
-      </section>
+      <TechMarquee />
 
       <GlobalReach />
 

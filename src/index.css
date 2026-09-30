@@ -208,3 +208,14 @@
 @media (prefers-reduced-motion: reduce) {
   .glow-card, .aurora, .typing-caret { animation: none; }
 }
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.animate-marquee-reverse {
+  animation: marquee-reverse 45s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-reverse { animation: none; }
+}

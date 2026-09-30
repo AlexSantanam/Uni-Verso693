@@ -5,6 +5,7 @@ import { CONTACT_EMAIL } from '../data/site';
 import { Container, Eyebrow } from '../components/ui';
 import { ContactForm } from '../components/ContactForm';
 import { ParticleField } from '../components/effects';
+import { WhatsAppButton } from '../components/WhatsAppButton';
 
 export const Contact: React.FC = () => {
   const { lang } = useLang();
@@ -55,6 +56,7 @@ export const Contact: React.FC = () => {
               </div>
               {CONTACT_EMAIL}
             </a>
+            <WhatsAppButton message={es ? 'Hola, quiero conversar sobre un proyecto.' : "Hi, I'd like to talk about a project."} />
           </div>
         </div>
         <div className="lg:col-span-7">

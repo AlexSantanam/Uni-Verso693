@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { services } from '../data/site';
 import { ButtonLink, Container, CtaBand, Eyebrow } from '../components/ui';
-import { ServiceIcon } from '../components/ServiceIcon';
+import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 import { CheckList } from './Home';
 import { NeonLogoVideo } from '../components/NeonLogoVideo';
 
@@ -29,9 +29,10 @@ export const ServiceDetail: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center">
             <ServiceIcon name={service.icon} className="w-7 h-7" />
           </div>
+          {service.badge && <ServiceBadge label={tr(service.badge)} />}
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-4xl leading-[1.05]">{tr(service.title)}</h1>
           <p className="text-lg sm:text-xl text-slate-400 max-w-2xl leading-relaxed">{tr(service.description)}</p>
-          <ButtonLink to="/contacto">{es ? 'Cotizar este servicio' : 'Get a quote'}</ButtonLink>
+          <ButtonLink to="/contacto">{service.cta ? tr(service.cta) : es ? 'Cotizar este servicio' : 'Get a quote'}</ButtonLink>
           </div>
         </Container>
       </section>

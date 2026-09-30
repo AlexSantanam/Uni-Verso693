@@ -1,6 +1,24 @@
 import type { L } from '../lib/lang';
+import {
+  type SimpleIcon,
+  siReact, siNextdotjs, siTypescript, siTailwindcss, siFlutter, siNodedotjs, siPython, siFastapi,
+  siPostgresql, siSupabase, siFirebase, siRedis, siGooglecloud, siVercel, siDocker, siGithubactions,
+  siClaude, siGooglegemini, siLangchain, siN8n, siStripe, siMercadopago, siFigma,
+} from 'simple-icons';
 
 export const CONTACT_EMAIL = 'contact@uni-verso693.ai';
+
+/** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
+export const WHATSAPP_NUMBER = '';
+
+export const whatsappLink = (text: string) =>
+  WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}` : '';
+
+/** Paid entry product: strategic diagnosis. */
+export const ebs = {
+  name: 'EBS 693',
+  price: '$197.000 CLP',
+};
 
 export const navItems: { to: string; label: L }[] = [
   { to: '/servicios', label: { es: 'Servicios', en: 'Services' } },
@@ -24,6 +42,10 @@ export interface Service {
   description: L;
   bullets: { es: string[]; en: string[] };
   deliverables: { es: string[]; en: string[] };
+  /** Short promise shown as a badge on cards and the detail page. */
+  badge?: L;
+  /** Overrides the default "Get a quote" CTA on the detail page. */
+  cta?: L;
 }
 
 export const services: Service[] = [
@@ -48,6 +70,8 @@ export const services: Service[] = [
   {
     slug: 'agentes-ia',
     icon: 'Bot',
+    badge: { es: 'Deploy en 7 días', en: 'Live in 7 days' },
+    cta: { es: 'Quiero mi empleado de IA en 7 días', en: 'I want my AI employee in 7 days' },
     title: { es: 'Agentes de IA y automatización', en: 'AI agents and automation' },
     tagline: { es: 'Empleados digitales que no descansan', en: 'Digital employees that never clock out' },
     description: {
@@ -328,11 +352,39 @@ export const cases: CaseStudy[] = [
   },
 ];
 
-export const techStack = [
-  'React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'React Native', 'Flutter', 'Node.js',
-  'Python', 'FastAPI', 'PostgreSQL', 'Supabase', 'Firebase', 'Redis', 'AWS', 'Google Cloud',
-  'Vercel', 'Docker', 'GitHub Actions', 'Claude', 'OpenAI', 'Gemini', 'LangChain', 'n8n',
-  'Stripe', 'Mercado Pago', 'Figma', 'Power BI',
+export interface Tech {
+  name: string;
+  /** Brand logo from Simple Icons; some brands (AWS, OpenAI, Power BI) aren't available and show as text. */
+  icon?: SimpleIcon;
+}
+
+export const techStack: Tech[] = [
+  { name: 'React', icon: siReact },
+  { name: 'Next.js', icon: siNextdotjs },
+  { name: 'TypeScript', icon: siTypescript },
+  { name: 'Tailwind CSS', icon: siTailwindcss },
+  { name: 'Flutter', icon: siFlutter },
+  { name: 'Node.js', icon: siNodedotjs },
+  { name: 'Python', icon: siPython },
+  { name: 'FastAPI', icon: siFastapi },
+  { name: 'PostgreSQL', icon: siPostgresql },
+  { name: 'Supabase', icon: siSupabase },
+  { name: 'Firebase', icon: siFirebase },
+  { name: 'Redis', icon: siRedis },
+  { name: 'AWS' },
+  { name: 'Google Cloud', icon: siGooglecloud },
+  { name: 'Vercel', icon: siVercel },
+  { name: 'Docker', icon: siDocker },
+  { name: 'GitHub Actions', icon: siGithubactions },
+  { name: 'Claude', icon: siClaude },
+  { name: 'OpenAI' },
+  { name: 'Gemini', icon: siGooglegemini },
+  { name: 'LangChain', icon: siLangchain },
+  { name: 'n8n', icon: siN8n },
+  { name: 'Stripe', icon: siStripe },
+  { name: 'Mercado Pago', icon: siMercadopago },
+  { name: 'Figma', icon: siFigma },
+  { name: 'Power BI' },
 ];
 
 export interface Capability {
@@ -452,15 +504,15 @@ export const faqs: { q: L; a: L }[] = [
   {
     q: { es: '¿Cuánto tarda un proyecto?', en: 'How long does a project take?' },
     a: {
-      es: 'Depende del alcance. Un agente de IA inicial suele desplegarse en 5 a 10 días hábiles; una plataforma o app a medida se planifica por etapas tras el descubrimiento.',
-      en: 'It depends on scope. An initial AI agent usually deploys in 5 to 10 business days; a custom platform or app is planned in stages after discovery.',
+      es: 'Depende del alcance. Un agente de IA inicial queda funcionando en alrededor de 7 días; una plataforma o app a medida se planifica por etapas tras el descubrimiento.',
+      en: 'It depends on scope. An initial AI agent is up and running in about 7 days; a custom platform or app is planned in stages after discovery.',
     },
   },
   {
     q: { es: '¿Cómo se define el costo?', en: 'How is cost determined?' },
     a: {
-      es: 'Cotizamos a medida después de una sesión de descubrimiento, con alcance, plazos y estimación de inversión por escrito.',
-      en: 'We quote per project after a discovery session, with scope, timeline and investment estimate in writing.',
+      es: 'Los proyectos se cotizan a medida. Si quieres partir con claridad, el diagnóstico EBS 693 ($197.000 CLP) te entrega una hoja de ruta con ROI en 90 minutos, y ese monto se descuenta del proyecto si decides avanzar.',
+      en: 'Projects are quoted individually. To start with clarity, the EBS 693 diagnosis ($197,000 CLP) gives you an ROI roadmap in 90 minutes, and that amount is credited to the project if you move forward.',
     },
   },
   {
@@ -493,4 +545,5 @@ export const interestOptions: L[] = [
   { es: 'Web, e-commerce o producto digital', en: 'Web, e-commerce or digital product' },
   { es: 'Consultoría y arquitectura', en: 'Consulting and architecture' },
   { es: 'Otro / no estoy seguro', en: 'Other / not sure yet' },
+  { es: 'Diagnóstico EBS 693 ($197.000 CLP)', en: 'EBS 693 diagnosis ($197,000 CLP)' },
 ];

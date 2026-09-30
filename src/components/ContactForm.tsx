@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { interestOptions } from '../data/site';
@@ -36,7 +37,10 @@ const inputClass =
 
 export const ContactForm: React.FC = () => {
   const { lang, tr } = useLang();
-  const [form, setForm] = useState<FormData>(emptyForm(tr(interestOptions[0])));
+  const [params] = useSearchParams();
+  // Arriving from the EBS 693 button preselects the diagnosis (last option).
+  const initialInterest = params.get('interes') === 'ebs' ? interestOptions[interestOptions.length - 1] : interestOptions[0];
+  const [form, setForm] = useState<FormData>(emptyForm(tr(initialInterest)));
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
