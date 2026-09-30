@@ -7,7 +7,7 @@
 - Founded: 2013
 - Country: Chile. Remote-first company (no public office) serving clients across Chile, including Santiago, and internationally in Latin America, the United States and Europe.
 - Languages: Spanish and English.
-- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis (https://universo693.com/diagnostico-ia): a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. There are no other published fixed prices.
+- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis (https://universo693.com/diagnostico-ia): a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. The other published price is the AUDIT 693 PRO report (19,990 CLP or USD 21, see below).
 - Typical timelines: initial AI agents live in about 7 days; custom platforms and mobile apps are delivered in stages.
 - Contact: form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · contacto@universo693.com · book the EBS 693 diagnosis at https://calendly.com/conectadoaia/ebs693 · replies within 2 hours.
 
@@ -17,6 +17,13 @@
 - [Mobile apps](https://universo693.com/servicios/apps-moviles): iOS and Android from one codebase, push notifications, store publishing.
 - [Web, e-commerce and digital product](https://universo693.com/servicios/web-y-producto): corporate sites, stores, customer portals, UX/UI and brand identity.
 - [Consulting and architecture](https://universo693.com/servicios/consultoria): process audits, technology roadmaps with ROI, security and AI adoption.
+
+## Audit 693 (https://universo693.com/audit-693)
+- Free version: in about 20 seconds shows on screen a summary of the business and 3 AI opportunities, one sentence each, based on the home page of the company's website. No PDF, no email.
+- AUDIT 693 PRO - Informe de Fugas de Dinero ("money-leak report"): 19,990 CLP paid with Mercado Pago in Chile, or USD 21 with PayPal outside Chile. Delivered 2-4 minutes after payment as a PDF (on the page, by email, downloadable for 90 days).
+- The PRO report reads up to 7 pages of the site; evaluates the site as a sales channel (value proposition, calls to action, lead capture, customer service, trust, basic SEO); researches direct competitors on the web in the same industry and area, plus any the client names, using only public information and never inventing competitors; calculates the monthly and yearly cost of manual work from the client's own numbers (weekly hours x hourly cost x 4.33, no invented savings percentages); and prioritises 8-10 AI and automation opportunities by impact and effort, with quick wins and key questions to answer before implementing.
+- It explains WHAT and WHY, not HOW: implementation order, approach and estimated ROI are defined in the EBS 693 diagnosis. AUDIT 693 PRO and EBS 693 are separate services; the PRO price is not credited to EBS 693.
+- Works for any industry and company size. Card data is processed by Mercado Pago or PayPal; Uni-Verso693 never sees it. Site content and form answers are confidential.
 
 ## Case studies
 - [YndiPet](https://universo693.com/casos/yndipet): AI-powered pet app for Chile (health records, SOS alerts, QR tags, AI assistant, payments).

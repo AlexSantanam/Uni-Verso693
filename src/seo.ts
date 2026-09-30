@@ -2,6 +2,7 @@ import { CONTACT_EMAIL, WHATSAPP_NUMBER, cases, ebs, faqs, services } from './da
 import { posts } from './data/blog';
 import { company, companyFaqs } from './data/company';
 import { ebsFaqs, ebsVideo } from './data/ebs';
+import { auditFaqs } from './data/audit';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -301,7 +302,28 @@ const auditPage: PageSeo = {
     'Gratis: 3 oportunidades de IA para tu empresa en menos de un minuto. AUDIT 693 PRO: informe PDF de fugas de dinero con análisis de competencia por $19.990 CLP.',
   ),
   priority: 0.8,
-  jsonLd: graph(breadcrumb([{ name: 'Audit 693', path: '/audit-693' }]), {
+  jsonLd: graph(
+    breadcrumb([{ name: 'Audit 693', path: '/audit-693' }]),
+    {
+      '@type': 'Service',
+      '@id': `${SITE_URL}/audit-693#pro`,
+      name: 'AUDIT 693 PRO - Informe de Fugas de Dinero',
+      serviceType: 'Auditoría de IA y automatización para empresas',
+      description:
+        'Informe PDF generado con IA: revisa hasta 7 páginas del sitio web, evalúa el sitio como canal de venta, analiza a los competidores directos, calcula el costo del trabajo manual con los datos del cliente y prioriza 8 a 10 oportunidades de IA y automatización. Se entrega entre 2 y 4 minutos después del pago.',
+      url: url('/audit-693'),
+      provider: { '@id': `${SITE_URL}/#org` },
+      areaServed: [{ '@type': 'Country', name: 'Chile' }, 'Latinoamérica', 'Estados Unidos', 'Europa'],
+      offers: [
+        { '@type': 'Offer', price: '19990', priceCurrency: 'CLP', url: url('/audit-693'), availability: 'https://schema.org/InStock' },
+        { '@type': 'Offer', price: '21.00', priceCurrency: 'USD', url: url('/audit-693'), availability: 'https://schema.org/InStock' },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: auditFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+    {
     '@type': 'WebApplication',
     name: 'Audit 693',
     url: url('/audit-693'),
@@ -314,7 +336,8 @@ const auditPage: PageSeo = {
       { '@type': 'Offer', name: 'AUDIT 693 PRO - Informe de Fugas de Dinero', price: '19990', priceCurrency: 'CLP', availability: 'https://schema.org/InStock' },
     ],
     provider: { '@id': `${SITE_URL}/#org` },
-  }),
+    },
+  ),
 };
 
 const blogPage: PageSeo = {

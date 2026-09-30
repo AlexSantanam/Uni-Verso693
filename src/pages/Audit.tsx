@@ -4,6 +4,7 @@ import { ArrowRight, Check, CheckCircle2, Download, Loader2, Lock, RotateCcw, Sp
 import { useLang } from '../lib/lang';
 import { Container, Eyebrow } from '../components/ui';
 import { ParticleField } from '../components/effects';
+import { auditFaqs } from '../data/audit';
 
 // ---------- free (Express) ----------
 interface FreeReport {
@@ -524,7 +525,7 @@ export const Audit: React.FC = () => {
                   Pagar {priceClp} CLP
                 </span>
                 <span className="text-xs text-white/80">
-                  {providers && !providers.mercadopago ? 'Muy pronto' : 'Mercado Pago · tarjetas, débito y transferencia · Chile'}
+                  {providers && !providers.mercadopago ? 'Muy pronto' : 'Mercado Pago · tarjetas y débito · Chile'}
                 </span>
               </button>
               <button
@@ -554,6 +555,25 @@ export const Audit: React.FC = () => {
               Diagnóstico EBS 693 →
             </Link>
           </p>
+        </Container>
+      </section>
+
+      <section className="border-t border-white/5 py-20">
+        <Container>
+          <div className="max-w-3xl mx-auto space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Preguntas frecuentes sobre el Audit 693</h2>
+            <div className="divide-y divide-white/10">
+              {auditFaqs.map((f) => (
+                <details key={f.q} className="group py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base sm:text-lg font-bold text-white">
+                    {f.q}
+                    <span className="text-2xl text-cyan-300 transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 text-slate-400 leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
         </Container>
       </section>
     </>
