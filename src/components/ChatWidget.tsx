@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Loader2, X, Sparkles } from 'lucide-react';
 import { useLang } from '../lib/lang';
+import { WhatsAppButton } from './WhatsAppButton';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -16,6 +17,10 @@ const text = {
     error: 'Algo salió mal. Intenta de nuevo o usa el formulario de contacto.',
     powered: 'Agente real, impulsado por Claude',
     open: 'Abrir chat',
+    handoff: '¿Prefieres seguir con una persona del equipo?',
+    handoffButton: 'Continuar por WhatsApp',
+    handoffMessage: (q: string) =>
+      q ? `Hola, vengo del chat de Uni-Verso693. Mi consulta: "${q}"` : 'Hola, vengo del chat de Uni-Verso693.',
   },
   en: {
     title: 'Live AI agent',
@@ -25,7 +30,17 @@ const text = {
     error: 'Something went wrong. Please try again or use the contact form.',
     powered: 'Real agent, powered by Claude',
     open: 'Open chat',
+    handoff: 'Would you rather continue with someone from the team?',
+    handoffButton: 'Continue on WhatsApp',
+    handoffMessage: (q: string) =>
+      q ? `Hi, I'm coming from the Uni-Verso693 chat. My question: "${q}"` : "Hi, I'm coming from the Uni-Verso693 chat.",
   },
+};
+
+/** Most recent visitor question, trimmed so the WhatsApp prefill stays short. */
+const lastUserQuestion = (messages: ChatMessage[]) => {
+  const q = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+  return q.length > 200 ? `${q.slice(0, 200)}…` : q;
 };
 
 export const ChatWidget: React.FC = () => {
@@ -105,7 +120,18 @@ export const ChatWidget: React.FC = () => {
                 {t.thinking}
               </div>
             )}
-            {error && <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700">{error}</div>}
+            {/* after the agent answers, offer to continue with a person on WhatsApp */}
+            {!isLoading && messages[messages.length - 1]?.role === 'assistant' && (
+              <div className="pt-1">
+                <p className="mb-2 text-xs text-slate-400">{t.handoff}</p>
+                <WhatsAppButton
+                  message={t.handoffMessage(lastUserQuestion(messages))}
+                  label={t.handoffButton}
+                  className="w-full py-2.5!"
+                />
+              </div>
+            )}
+            {error && <div className="rounded-xl bg-red-950/40 border border-red-800/50 p-3 text-xs text-red-300">{error}</div>}
           </div>
 
           <form onSubmit={handleSubmit} className="flex items-center gap-2 p-3 border-t border-white/10">

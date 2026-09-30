@@ -9,7 +9,7 @@ import {
 export const CONTACT_EMAIL = 'contact@uni-verso693.ai';
 
 /** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
-export const WHATSAPP_NUMBER = '';
+export const WHATSAPP_NUMBER = '56990387414';
 
 export const whatsappLink = (text: string) =>
   WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}` : '';
