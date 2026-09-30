@@ -243,8 +243,7 @@ const blogPage: PageSeo = {
 
 const postPages: PageSeo[] = posts.map((p) => ({
   path: `/blog/${p.slug}`,
-  // article titles are long by nature; keep the brand out so the topic fits in results
-  title: p.title.length > 70 ? p.title.slice(0, p.title.lastIndexOf(' ', 67)) + '…' : p.title,
+  title: p.seoTitle,
   description: clip(p.description),
   priority: 0.6,
   jsonLd: graph(

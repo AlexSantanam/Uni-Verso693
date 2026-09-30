@@ -12,6 +12,8 @@ export type Block =
 export interface Post {
   slug: string;
   title: string;
+  /** Shorter title for search results (<= ~65 chars). */
+  seoTitle: string;
   /** Meta description / card summary (<= ~155 chars). */
   description: string;
   /** ISO date. */
@@ -24,6 +26,7 @@ export interface Post {
 export const posts: Post[] = [
   {
     slug: 'chatbot-whatsapp-empresas-chile',
+    seoTitle: 'Chatbot de WhatsApp para empresas en Chile: requisitos y costos',
     title: 'Chatbot de WhatsApp para empresas en Chile: qué necesitas, cuánto tarda y de qué depende el costo',
     description:
       'Guía práctica para implementar un agente de IA en WhatsApp: requisitos de Meta, plazos reales, qué lo hace confiable y los factores que definen el costo.',
@@ -97,6 +100,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'software-a-medida-vs-suscripcion',
+    seoTitle: 'Software a medida vs. suscripción: cuándo conviene cada uno',
     title: 'Software a medida vs. software de suscripción: cuándo conviene cada uno',
     description:
       'Cómo decidir entre contratar un software SaaS o construir uno a medida: costos a largo plazo, control, integraciones y una alternativa intermedia.',
@@ -162,6 +166,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'inteligencia-artificial-en-tu-empresa-casos-practicos',
+    seoTitle: 'IA en tu empresa: 5 casos prácticos sin perder el control',
     title: 'Cómo usar inteligencia artificial en tu empresa sin perder el control: 5 casos prácticos',
     description:
       'Cinco usos concretos de inteligencia artificial en empresas y las reglas para que ayude sin generar riesgos ni perder el control.',
@@ -217,6 +222,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'inteligencia-artificial-por-industria-chile',
+    seoTitle: 'IA y software por industria en Chile: finanzas, minería y más',
     title: 'Inteligencia artificial y software por industria en Chile: finanzas, minería, retail y más',
     description:
       'Casos de uso de IA y software a medida por sector en Chile: banca y finanzas, minería, retail, salud, inmobiliario, logística y educación.',
