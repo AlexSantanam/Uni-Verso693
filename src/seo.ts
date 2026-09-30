@@ -1,5 +1,6 @@
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, cases, ebs, faqs, services } from './data/site';
 import { posts } from './data/blog';
+import { company, companyFaqs } from './data/company';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -30,6 +31,9 @@ const organization = {
   '@type': ['Organization', 'ProfessionalService'],
   '@id': `${SITE_URL}/#org`,
   name: SITE_NAME,
+  legalName: company.legalName,
+  alternateName: company.alternateNames,
+  foundingDate: company.foundingYear,
   url: `${SITE_URL}/`,
   logo: LOGO,
   image: OG_IMAGE,
@@ -201,14 +205,25 @@ const about: PageSeo = {
   path: '/nosotros',
   title: `Nosotros: equipo de software, producto e IA | ${SITE_NAME}`,
   description: clip(
-    'Equipo multidisciplinario de producto, desarrollo full-stack, datos, diseño e inteligencia artificial. Trabajamos de forma remota para empresas de Chile y el mundo.',
+    'Universo693 SpA, empresa chilena de software fundada en 2013: equipo de producto, desarrollo, datos, diseño e IA que trabaja remoto para Chile y el mundo.',
   ),
   priority: 0.6,
-  jsonLd: graph(breadcrumb([{ name: 'Nosotros', path: '/nosotros' }]), {
-    '@type': 'AboutPage',
-    url: url('/nosotros'),
-    about: { '@id': `${SITE_URL}/#org` },
-  }),
+  jsonLd: graph(
+    breadcrumb([{ name: 'Nosotros', path: '/nosotros' }]),
+    {
+      '@type': 'AboutPage',
+      url: url('/nosotros'),
+      about: { '@id': `${SITE_URL}/#org` },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: companyFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q.es,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.es },
+      })),
+    },
+  ),
 };
 
 const contact: PageSeo = {

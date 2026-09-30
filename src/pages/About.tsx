@@ -5,6 +5,7 @@ import { capabilities, credentials, process, stats, values, type Capability } fr
 import { Container, CtaBand, Eyebrow, PageHero, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
 import { EbsOffer } from '../components/EbsOffer';
+import { companyFacts, companyFaqs } from '../data/company';
 
 const capabilityIcons: Record<Capability['icon'], React.FC<{ className?: string }>> = {
   Target,
@@ -98,6 +99,41 @@ export const About: React.FC = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-20 bg-[#070f19] border-y border-white/10">
+        <Container className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5 space-y-6">
+            <SectionHeading
+              eyebrow={es ? 'La empresa' : 'The company'}
+              title={es ? 'Datos de Uni-Verso693' : 'Uni-Verso693 at a glance'}
+            />
+            <dl className="reveal divide-y divide-white/10 rounded-3xl border border-white/10 bg-white/[0.03]">
+              {companyFacts.map((f) => (
+                <div key={f.label.es} className="grid grid-cols-5 gap-4 px-6 py-4">
+                  <dt className="col-span-2 text-sm font-semibold text-slate-400">{tr(f.label)}</dt>
+                  <dd className="col-span-3 text-sm text-white">{tr(f.value)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="lg:col-span-7 space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              {es ? 'Preguntas frecuentes sobre la empresa' : 'Questions about the company'}
+            </h2>
+            <div className="divide-y divide-white/10 border-y border-white/10">
+              {companyFaqs.map((f) => (
+                <details key={f.q.es} className="group py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base sm:text-lg font-bold text-white">
+                    {tr(f.q)}
+                    <span className="text-2xl text-cyan-300 transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 text-slate-400 leading-relaxed">{tr(f.a)}</p>
+                </details>
+              ))}
             </div>
           </div>
         </Container>

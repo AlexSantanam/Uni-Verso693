@@ -1,0 +1,29 @@
+# Uni-Verso693 (Universo693 SpA)
+
+> Uni-Verso693 is the brand of Universo693 SpA, a Chilean software development company founded in 2013. It designs and builds custom software, AI agents (WhatsApp, web, CRM), mobile apps (iOS and Android), websites and e-commerce, and offers technology consulting. Also known as Universo693, UniVerso693 and Estudio UniVerso693 — all the same company. Official website: https://universo693.com
+
+## Company facts
+- Legal name: Universo693 SpA
+- Founded: 2013
+- Country: Chile. Works remotely with clients in Chile, Latin America, the United States and Europe.
+- Languages: Spanish and English.
+- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis: a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. There are no other published fixed prices.
+- Typical timelines: initial AI agents live in about 7 days; custom platforms and mobile apps are delivered in stages.
+- Contact: form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · contacto@universo693.com · book the EBS 693 diagnosis at https://calendly.com/conectadoaia/ebs693 · replies within 2 hours.
+
+## Services
+- [Custom software development](https://universo693.com/servicios/software-a-medida): SaaS platforms, internal systems, backends, APIs, ERP/CRM integrations, payments.
+- [AI agents and automation](https://universo693.com/servicios/agentes-ia): WhatsApp and web agents grounded in the client's own documents (RAG), human hand-off, CRM and calendar integration, n8n/Make workflows.
+- [Mobile apps](https://universo693.com/servicios/apps-moviles): iOS and Android from one codebase, push notifications, store publishing.
+- [Web, e-commerce and digital product](https://universo693.com/servicios/web-y-producto): corporate sites, stores, customer portals, UX/UI and brand identity.
+- [Consulting and architecture](https://universo693.com/servicios/consultoria): process audits, technology roadmaps with ROI, security and AI adoption.
+
+## Case studies
+- [YndiPet](https://universo693.com/casos/yndipet): AI-powered pet app for Chile (health records, SOS alerts, QR tags, AI assistant, payments).
+- [MEMORA](https://universo693.com/casos/memora): SaaS for digital memorials with AI-assisted life stories, payments and an Android app.
+- [MELSA](https://universo693.com/casos/melsa): real-estate website with project search and a mortgage/capital-gain simulator.
+
+## More
+- [About the company](https://universo693.com/nosotros)
+- [Blog](https://universo693.com/blog)
+- [Sitemap](https://universo693.com/sitemap.xml)

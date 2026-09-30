@@ -67,7 +67,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="mt-14 pt-8 border-t border-white/10 text-xs text-slate-400">
-          © 2026 Uni-Verso693. {lang === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+          © 2026 Universo693 SpA. {lang === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
         </div>
       </Container>
     </footer>
