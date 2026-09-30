@@ -9,8 +9,8 @@ import {
 /** Public contact inbox. Empty hides it everywhere (set it once the mailbox exists). */
 export const CONTACT_EMAIL = '';
 
-/** EBS 693 diagnosis event (45 min). The "30min" slug is just Calendly's default name. */
-export const CALENDLY_URL = 'https://calendly.com/conectadoaia/30min';
+/** EBS 693 diagnosis event (45 min, Google Meet). */
+export const CALENDLY_URL = 'https://calendly.com/conectadoaia/ebs693';
 
 /** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
 export const WHATSAPP_NUMBER = '56990387414';
