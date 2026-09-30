@@ -9,7 +9,7 @@ import {
 /** Public contact inbox. Empty hides it everywhere (set it once the mailbox exists). */
 export const CONTACT_EMAIL = '';
 
-/** 30-minute intro call. */
+/** EBS 693 diagnosis event (45 min). The "30min" slug is just Calendly's default name. */
 export const CALENDLY_URL = 'https://calendly.com/conectadoaia/30min';
 
 /** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
@@ -515,8 +515,8 @@ export const faqs: { q: L; a: L }[] = [
   {
     q: { es: '¿Cómo se define el costo?', en: 'How is cost determined?' },
     a: {
-      es: 'Los proyectos se cotizan a medida. Si quieres partir con claridad, el diagnóstico EBS 693 ($197.000 CLP) te entrega una hoja de ruta con ROI en 90 minutos, y ese monto se descuenta del proyecto si decides avanzar.',
-      en: 'Projects are quoted individually. To start with clarity, the EBS 693 diagnosis ($197,000 CLP) gives you an ROI roadmap in 90 minutes, and that amount is credited to the project if you move forward.',
+      es: 'Los proyectos se cotizan a medida. Si quieres partir con claridad, el diagnóstico EBS 693 ($197.000 CLP) te entrega una hoja de ruta con ROI en una sesión de 45 minutos, y ese monto se descuenta del proyecto si decides avanzar.',
+      en: 'Projects are quoted individually. To start with clarity, the EBS 693 diagnosis ($197,000 CLP) gives you an ROI roadmap in a 45-minute session, and that amount is credited to the project if you move forward.',
     },
   },
   {

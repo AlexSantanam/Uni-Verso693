@@ -1,13 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, Clock3, MessagesSquare, Receipt } from 'lucide-react';
 import { useLang } from '../lib/lang';
-import { ebs } from '../data/site';
+import { CALENDLY_URL, ebs } from '../data/site';
 import { Container, Eyebrow } from './ui';
 import { WhatsAppButton } from './WhatsAppButton';
-import { CalendlyButton } from './CalendlyButton';
 
-/** Paid entry product: 90-minute strategic diagnosis with an ROI roadmap. */
+/** Paid entry product: 45-minute strategic diagnosis with an ROI roadmap. */
 export const EbsOffer: React.FC = () => {
   const { lang } = useLang();
   const es = lang === 'es';
@@ -15,7 +13,7 @@ export const EbsOffer: React.FC = () => {
   const points = [
     {
       icon: Clock3,
-      title: es ? '90 minutos, hoja de ruta con ROI' : '90 minutes, an ROI roadmap',
+      title: es ? '45 minutos, hoja de ruta con ROI' : '45 minutes, an ROI roadmap',
       text: es ? 'Te entregamos un plan concreto y priorizado, no un PowerPoint.' : 'You get a concrete, prioritized plan, not a slide deck.',
     },
     {
@@ -81,16 +79,17 @@ export const EbsOffer: React.FC = () => {
                   </p>
                   <p className="text-5xl font-black text-white tracking-tight">{ebs.price}</p>
                   <p className="text-sm text-slate-400">
-                    {es ? 'Pago único · se descuenta del proyecto' : 'One-off fee · credited to the project'}
+                    {es ? 'Sesión de 45 min por Google Meet · se descuenta del proyecto' : '45-min Google Meet session · credited to the project'}
                   </p>
-                  <Link
-                    to="/contacto?interes=ebs"
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-colors"
                   >
                     {es ? 'Agendar mi diagnóstico' : 'Book my diagnosis'}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                  <CalendlyButton className="w-full" />
+                  </a>
                   <WhatsAppButton
                     message={es ? 'Hola, quiero agendar el diagnóstico EBS 693.' : "Hi, I'd like to book the EBS 693 diagnosis."}
                     className="w-full"
