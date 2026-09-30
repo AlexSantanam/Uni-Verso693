@@ -72,7 +72,7 @@ export const ChatWidget: React.FC = () => {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, lang }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Request failed');

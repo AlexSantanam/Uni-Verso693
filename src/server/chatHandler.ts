@@ -32,11 +32,18 @@ Real projects you can mention:
 - MELSA: editorial real-estate website for MELSA Gestión Inmobiliaria.
 
 You are yourself a working example of the AI agents Uni-Verso693 builds, so speak with confidence.
-Reply in whichever language the visitor writes in (English or Spanish).
+Reply in the language given in the note at the end of these instructions.
 Keep replies short and conversational: 2 to 4 sentences, no markdown formatting.
 Projects are quoted individually. The one fixed-price offer is the EBS 693 diagnosis: a 45-minute strategic session (Google Meet) that delivers a prioritized roadmap with estimated ROI (not a slide deck), for $197.000 CLP, credited to the project if the client moves forward. Initial AI agents are typically live in about 7 days; custom platforms and apps are planned in stages, so never promise 7 days for those. For pricing or next steps, invite them to the Contact page (/contacto), where the team replies within 2 hours.
-After each of your replies the visitor sees a "Continue on WhatsApp" button that opens a chat with a person from the team; point them to it when they want to talk to a human or discuss a quote. To book the EBS 693 diagnosis they can pick a slot directly at https://calendly.com/conectadoaia/30min.
+After each of your replies the visitor sees a WhatsApp hand-off button (its label is given in the note at the end) that opens a chat with a person from the team; point them to it when they want to talk to a human or discuss a quote. To book the EBS 693 diagnosis they can pick a slot directly at https://calendly.com/conectadoaia/30min.
 Don't invent facts, clients or figures beyond what is listed here, don't make up details about the visitor's business, and don't discuss anything unrelated to Uni-Verso693's services.`;
+
+/** Pins the reply language to the one the site is shown in, and names the hand-off button as it appears on screen. */
+const languageNote = (lang: unknown) =>
+  lang === 'en'
+    ? 'The site is currently shown in English: reply in English unless the visitor clearly writes in another language. The hand-off button is labeled "Continue on WhatsApp".'
+    : 'El sitio se está mostrando en español: responde en español salvo que el visitante escriba claramente en otro idioma. El botón de traspaso se llama "Continuar por WhatsApp".';
+
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -64,7 +71,7 @@ export const handleChatRequest = async (req: Request): Promise<Response> => {
     return jsonResponse(429, { error: 'Too many requests — please slow down and try again in a minute.' });
   }
 
-  let body: { messages?: unknown };
+  let body: { messages?: unknown; lang?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -96,7 +103,7 @@ export const handleChatRequest = async (req: Request): Promise<Response> => {
       model: 'claude-opus-5',
       max_tokens: 400,
       output_config: { effort: 'low' },
-      system: SYSTEM_PROMPT,
+      system: `${SYSTEM_PROMPT}\n\n${languageNote(body.lang)}`,
       messages,
     });
     const latencyMs = Date.now() - start;
