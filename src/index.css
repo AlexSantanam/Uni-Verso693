@@ -221,3 +221,17 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee-reverse { animation: none; }
 }
+
+/* ---- Audit 693 report: "Descargar PDF" prints the page ---- */
+@media print {
+  header, footer, .no-print, .chat-widget, #intro { display: none !important; }
+  html, body { background: #fff !important; }
+  .print-report, .print-report * {
+    color: #0f172a !important;
+    background: transparent !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+    -webkit-text-fill-color: #0f172a !important;
+  }
+  .break-inside-avoid { break-inside: avoid; }
+}

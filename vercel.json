@@ -12,5 +12,10 @@
       "destination": "https://universo693.com/$1",
       "permanent": true
     }
-  ]
+  ],
+  "functions": {
+    "api/audit.ts": {
+      "maxDuration": 60
+    }
+  }
 }

@@ -29,6 +29,7 @@ export const navItems: { to: string; label: L }[] = [
   { to: '/casos', label: { es: 'Casos de éxito', en: 'Case studies' } },
   { to: '/nosotros', label: { es: 'Nosotros', en: 'About' } },
   { to: '/blog', label: { es: 'Blog', en: 'Blog' } },
+  { to: '/audit-693', label: { es: 'Audit gratis', en: 'Free audit' } },
   { to: '/contacto', label: { es: 'Contacto', en: 'Contact' } },
 ];
 

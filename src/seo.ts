@@ -240,6 +240,25 @@ const contact: PageSeo = {
   }),
 };
 
+const auditPage: PageSeo = {
+  path: '/audit-693',
+  title: 'Audit 693 gratis: 5 oportunidades de IA para tu empresa',
+  description: clip(
+    'Ingresa tu sitio web y recibe en menos de un minuto un análisis con 5 oportunidades de IA y automatización para tu negocio, con impacto, esfuerzo y primeros pasos.',
+  ),
+  priority: 0.8,
+  jsonLd: graph(breadcrumb([{ name: 'Audit 693', path: '/audit-693' }]), {
+    '@type': 'WebApplication',
+    name: 'Audit 693',
+    url: url('/audit-693'),
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description: 'Análisis gratuito con IA que propone 5 oportunidades de automatización a partir del sitio web de una empresa.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'CLP' },
+    provider: { '@id': `${SITE_URL}/#org` },
+  }),
+};
+
 const blogPage: PageSeo = {
   path: '/blog',
   title: `Blog: software e inteligencia artificial para empresas | ${SITE_NAME}`,
@@ -292,7 +311,7 @@ export const notFoundSeo: PageSeo = {
 };
 
 /** Every indexable page, in sitemap order. */
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, blogPage, ...postPages, contact];
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, auditPage, blogPage, ...postPages, contact];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

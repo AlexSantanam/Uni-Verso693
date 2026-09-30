@@ -85,7 +85,7 @@ export const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="chat-widget fixed bottom-5 right-5 z-50">
       {open ? (
         <div className="w-[calc(100vw-2.5rem)] sm:w-96 rounded-3xl bg-[#0a1420] border border-white/10 shadow-2xl shadow-slate-900/20 overflow-hidden flex flex-col">
           <div className="flex items-center justify-between bg-ink px-5 py-4">

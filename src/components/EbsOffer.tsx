@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Clock3, MessagesSquare, Receipt } from 'lucide-react';
 import { useLang } from '../lib/lang';
+import { Link } from 'react-router-dom';
 import { CALENDLY_URL, ebs } from '../data/site';
 import { Container, Eyebrow } from './ui';
 import { WhatsAppButton } from './WhatsAppButton';
@@ -90,6 +91,9 @@ export const EbsOffer: React.FC = () => {
                     {es ? 'Agendar mi diagnóstico' : 'Book my diagnosis'}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </a>
+                  <Link to="/audit-693" className="block text-sm font-semibold text-cyan-300 hover:text-cyan-200">
+                    {es ? '¿Prefieres partir gratis? Haz el Audit 693 →' : 'Rather start free? Try the Audit 693 →'}
+                  </Link>
                   <WhatsAppButton
                     message={es ? 'Hola, quiero agendar el diagnóstico EBS 693.' : "Hi, I'd like to book the EBS 693 diagnosis."}
                     className="w-full"
