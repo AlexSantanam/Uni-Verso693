@@ -43,11 +43,6 @@
       <video id="intro-video" src="/asset/neon-logo.mp4" poster="/intro-poster.png" muted playsinline preload="auto" disablepictureinpicture
         webkit-playsinline x5-playsinline x5-video-player-type="h5-page" controlslist="nodownload nofullscreen noremoteplayback"
         style="width:min(82vw,460px);aspect-ratio:1;object-fit:cover;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 52%,transparent 71%);mask-image:radial-gradient(circle,#000 52%,transparent 71%)"></video>
-      <!-- shown only when the browser blocks autoplay with sound -->
-      <button id="intro-sound" type="button"
-        style="display:none;position:absolute;bottom:12%;left:50%;transform:translateX(-50%);align-items:center;gap:8px;padding:12px 22px;border-radius:9999px;border:1px solid rgba(196,181,253,.45);background:rgba(124,58,237,.18);color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer">
-        🔊 Activar sonido
-      </button>
     </div>
     <script>
       (function () {
@@ -67,7 +62,6 @@
           el.style.pointerEvents = 'none';
           setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
         }
-        var btn = document.getElementById('intro-sound');
         v.addEventListener('timeupdate', function () { if (v.currentTime >= INTRO_SECONDS) hide(); });
         v.addEventListener('ended', hide);
         v.addEventListener('error', hide);
@@ -75,27 +69,16 @@
         var cap = setTimeout(hide, 8000); // never block the site on slow connections
 
         // Browsers usually block autoplay with sound on a first visit: try with
-        // sound, and if refused keep playing muted and offer a sound button.
+        // sound, and if refused keep playing muted.
         v.muted = false;
         var p = v.play();
         if (p && p.catch) {
           p.catch(function () {
             v.muted = true;
-            btn.style.display = 'inline-flex';
             var q = v.play();
             if (q && q.catch) q.catch(function () { setTimeout(hide, 800); });
           });
         }
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          btn.style.display = 'none';
-          clearTimeout(cap);
-          cap = setTimeout(hide, 8000);
-          v.currentTime = 0; // replay the light-up with sound
-          v.muted = false;
-          var r = v.play();
-          if (r && r.catch) r.catch(function () { v.muted = true; v.play(); });
-        });
       })();
     </script>
     <div id="root"></div>
