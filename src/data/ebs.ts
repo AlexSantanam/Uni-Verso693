@@ -48,3 +48,40 @@ export const ebsFaqs = [
     a: 'Para pymes y empresas medianas o grandes que quieran decidir con claridad dónde invertir en tecnología. Lo que cambia es el alcance de la hoja de ruta, no la sesión.',
   },
 ];
+
+/** Symptom checklist on /diagnostico-ia: the visitor ticks what happens in their company. */
+export const ebsSymptoms: { area: string; items: string[] }[] = [
+  {
+    area: 'Operaciones',
+    items: [
+      'Copiamos datos a mano entre planillas y sistemas',
+      'Los reportes se arman a mano cada semana o cada mes',
+      'Hay tareas que dependen de que una sola persona se acuerde',
+      'Revisamos documentos, facturas o formularios uno por uno',
+    ],
+  },
+  {
+    area: 'Ventas',
+    items: [
+      'Los prospectos se pierden porque nadie les hace seguimiento a tiempo',
+      'No sabemos con claridad de dónde vienen nuestros clientes',
+      'Las cotizaciones o propuestas se hacen desde cero cada vez',
+      'Los datos de clientes están repartidos en correos, WhatsApp y planillas',
+    ],
+  },
+  {
+    area: 'Atención al cliente',
+    items: [
+      'Respondemos las mismas preguntas todos los días',
+      'Las consultas fuera de horario quedan sin respuesta hasta el día siguiente',
+      'Los clientes tienen que preguntar por el estado de su pedido o solicitud',
+      'El equipo se satura en las horas punta',
+    ],
+  },
+];
+
+/**
+ * Optional 45-second video explaining the diagnosis. Set it once recorded and the
+ * page shows it (with VideoObject JSON-LD). Leave null to hide the block.
+ */
+export const ebsVideo: null | { src: string; poster: string; uploadDate: string; duration: string } = null;

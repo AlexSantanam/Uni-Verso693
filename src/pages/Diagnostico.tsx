@@ -1,21 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CalendarDays, Check, Clock3, Receipt, Video } from 'lucide-react';
-import { CALENDLY_URL, ebs } from '../data/site';
-import { ebsFaqs, ebsForWho, ebsIncludes, ebsSteps } from '../data/ebs';
+import { CALENDLY_URL, ebs, whatsappLink } from '../data/site';
+import { ebsFaqs, ebsForWho, ebsIncludes, ebsSteps, ebsVideo } from '../data/ebs';
 import { Container, Eyebrow, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
-import { WhatsAppButton } from '../components/WhatsAppButton';
+import { SymptomChecklist, LossCalculator } from '../components/LossTools';
+
+const whatsappHref = whatsappLink('Hola, quiero consultar por el diagnóstico EBS 693.');
 
 const BookButton: React.FC<{ className?: string }> = ({ className = '' }) => (
   <a
     href={CALENDLY_URL}
     target="_blank"
     rel="noopener noreferrer"
-    className={`group inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-colors ${className}`}
+    className={`group inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-8 py-5 text-base font-extrabold text-white shadow-xl shadow-brand-600/40 transition-colors ${className}`}
   >
-    <CalendarDays className="w-4 h-4" />
-    Agendar mi diagnóstico
+    <CalendarDays className="w-5 h-5" />
+    Agendar mi diagnóstico EBS 693
     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
   </a>
 );
@@ -30,14 +32,18 @@ export const Diagnostico: React.FC = () => (
         <div className="lg:col-span-7 space-y-7">
           <Eyebrow>{ebs.name} · la anti-consultoría</Eyebrow>
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.05]">
-            Diagnóstico de <span className="text-gradient-brand">inteligencia artificial</span> para tu empresa
+            Descubre cuánto dinero estás <span className="text-gradient-brand">dejando de ganar sin IA</span>
           </h1>
           <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
-            En 45 minutos revisamos tu operación y te entregamos una hoja de ruta priorizada: qué automatizar o construir primero, cuánto cuesta y qué retorno esperar.
+            Diagnóstico de inteligencia artificial para empresas: en 45 minutos revisamos tu operación y te entregamos una hoja de ruta con retorno estimado. Qué automatizar primero, cuánto cuesta y en cuánto se recupera.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="space-y-3">
             <BookButton />
-            <WhatsAppButton message="Hola, quiero consultar por el diagnóstico EBS 693." />
+            {whatsappHref && (
+              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="block text-sm font-semibold text-slate-400 hover:text-white">
+                ¿Dudas antes de agendar? Escríbenos por WhatsApp →
+              </a>
+            )}
           </div>
         </div>
         <div className="lg:col-span-5">
@@ -64,6 +70,38 @@ export const Diagnostico: React.FC = () => (
     </section>
 
     <section className="py-20">
+      <Container className="space-y-10">
+        <SectionHeading center eyebrow="Autodiagnóstico" title="¿Cuántas de estas pasan en tu empresa?" />
+        <SymptomChecklist />
+      </Container>
+    </section>
+
+    <section className="pb-20">
+      <Container className="space-y-10">
+        <SectionHeading center eyebrow="Calculadora" title="Cuánto te cuesta hoy el trabajo manual" />
+        <LossCalculator />
+        <div className="text-center">
+          <BookButton />
+        </div>
+      </Container>
+    </section>
+
+    {ebsVideo && (
+      <section className="pb-20">
+        <Container className="max-w-3xl">
+          <video
+            src={ebsVideo.src}
+            poster={ebsVideo.poster}
+            controls
+            playsInline
+            preload="none"
+            className="w-full rounded-3xl border border-white/10"
+          />
+        </Container>
+      </section>
+    )}
+
+    <section className="py-20 bg-[#070f19] border-y border-white/10">
       <Container className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-6">
           <h2 className="text-2xl font-extrabold text-white">Qué incluye</h2>
@@ -88,7 +126,7 @@ export const Diagnostico: React.FC = () => (
       </Container>
     </section>
 
-    <section className="py-20 bg-[#070f19] border-y border-white/10">
+    <section className="py-20">
       <Container className="space-y-12">
         <SectionHeading eyebrow="Cómo funciona" title="De la conversación a un plan que puedes ejecutar" />
         <ol className="grid grid-cols-1 md:grid-cols-4 gap-6">

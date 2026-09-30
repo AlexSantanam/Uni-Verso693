@@ -1,7 +1,7 @@
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, cases, ebs, faqs, services } from './data/site';
 import { posts } from './data/blog';
 import { company, companyFaqs } from './data/company';
-import { ebsFaqs } from './data/ebs';
+import { ebsFaqs, ebsVideo } from './data/ebs';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -277,6 +277,20 @@ const diagnosticoPage: PageSeo = {
       '@type': 'FAQPage',
       mainEntity: ebsFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
     },
+    // only once the 45-second explainer video exists (src/data/ebs.ts)
+    ...(ebsVideo
+      ? [
+          {
+            '@type': 'VideoObject',
+            name: 'Qué es el diagnóstico EBS 693',
+            description: 'Explicación en 45 segundos del diagnóstico de inteligencia artificial EBS 693 de Uni-Verso693.',
+            thumbnailUrl: new URL(ebsVideo.poster, SITE_URL).toString(),
+            contentUrl: new URL(ebsVideo.src, SITE_URL).toString(),
+            uploadDate: ebsVideo.uploadDate,
+            duration: ebsVideo.duration,
+          },
+        ]
+      : []),
   ),
 };
 
