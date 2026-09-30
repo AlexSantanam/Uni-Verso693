@@ -6,7 +6,7 @@ import { Container, Eyebrow } from './ui';
 import yndiMascot from '../../asset/cases/yndi-mascot.webp';
 import yndipetLogo from '../../asset/cases/yndipet-logo.webp';
 
-/** Home-page feature block for our own product, YndiPet. */
+/** Home-page feature block for the YndiPet project. */
 export const YndiPetSpotlight: React.FC = () => {
   const { lang } = useLang();
   const es = lang === 'es';
@@ -28,7 +28,7 @@ export const YndiPetSpotlight: React.FC = () => {
 
           <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-8 sm:p-12 lg:p-16">
             <div className="lg:col-span-7 space-y-7">
-              <Eyebrow>{es ? 'Producto propio' : 'Our own product'}</Eyebrow>
+              <Eyebrow>{es ? 'Proyecto destacado' : 'Featured project'}</Eyebrow>
               <h2 className="sr-only">YndiPet</h2>
               <img loading="lazy" decoding="async"
                 src={yndipetLogo}
@@ -37,8 +37,8 @@ export const YndiPetSpotlight: React.FC = () => {
               />
               <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-xl">
                 {es
-                  ? 'La app de mascotas con inteligencia artificial que diseñamos, construimos y operamos: un hogar digital para tutores, refugios y negocios en Chile.'
-                  : 'The AI-powered pet app we design, build and run: a digital home for pet owners, shelters and businesses in Chile.'}
+                  ? 'La app de mascotas con inteligencia artificial que diseñamos y desarrollamos: un hogar digital para tutores, refugios y negocios en Chile.'
+                  : 'The AI-powered pet app we designed and built: a digital home for pet owners, shelters and businesses in Chile.'}
               </p>
               <div className="flex flex-wrap gap-2.5">
                 {chips.map((c) => (

@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, cases, ebs, faqs, services } from './data/site';
+import { posts } from './data/blog';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -224,6 +225,50 @@ const contact: PageSeo = {
   }),
 };
 
+const blogPage: PageSeo = {
+  path: '/blog',
+  title: `Blog: software e inteligencia artificial para empresas | ${SITE_NAME}`,
+  description: clip(
+    'Guías prácticas sobre software a medida, agentes de IA, chatbots de WhatsApp y automatización para empresas en Chile y Latinoamérica.',
+  ),
+  priority: 0.7,
+  jsonLd: graph(breadcrumb([{ name: 'Blog', path: '/blog' }]), {
+    '@type': 'Blog',
+    url: url('/blog'),
+    name: `Blog ${SITE_NAME}`,
+    publisher: { '@id': `${SITE_URL}/#org` },
+    blogPost: posts.map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: url(`/blog/${p.slug}`), datePublished: p.date })),
+  }),
+};
+
+const postPages: PageSeo[] = posts.map((p) => ({
+  path: `/blog/${p.slug}`,
+  // article titles are long by nature; keep the brand out so the topic fits in results
+  title: p.title.length > 70 ? p.title.slice(0, p.title.lastIndexOf(' ', 67)) + '…' : p.title,
+  description: clip(p.description),
+  priority: 0.6,
+  jsonLd: graph(
+    breadcrumb([
+      { name: 'Blog', path: '/blog' },
+      { name: p.title, path: `/blog/${p.slug}` },
+    ]),
+    {
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.description,
+      url: url(`/blog/${p.slug}`),
+      mainEntityOfPage: url(`/blog/${p.slug}`),
+      datePublished: p.date,
+      dateModified: p.date,
+      inLanguage: 'es-CL',
+      keywords: p.tags.join(', '),
+      image: OG_IMAGE,
+      author: { '@id': `${SITE_URL}/#org` },
+      publisher: { '@id': `${SITE_URL}/#org` },
+    },
+  ),
+}));
+
 export const notFoundSeo: PageSeo = {
   path: '/404',
   title: `Página no encontrada | ${SITE_NAME}`,
@@ -233,7 +278,7 @@ export const notFoundSeo: PageSeo = {
 };
 
 /** Every indexable page, in sitemap order. */
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, contact];
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, blogPage, ...postPages, contact];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

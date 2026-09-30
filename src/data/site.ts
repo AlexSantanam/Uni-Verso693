@@ -28,6 +28,7 @@ export const navItems: { to: string; label: L }[] = [
   { to: '/servicios', label: { es: 'Servicios', en: 'Services' } },
   { to: '/casos', label: { es: 'Casos de éxito', en: 'Case studies' } },
   { to: '/nosotros', label: { es: 'Nosotros', en: 'About' } },
+  { to: '/blog', label: { es: 'Blog', en: 'Blog' } },
   { to: '/contacto', label: { es: 'Contacto', en: 'Contact' } },
 ];
 
@@ -182,7 +183,7 @@ export const cases: CaseStudy[] = [
   {
     slug: 'yndipet',
     client: 'YndiPet',
-    sector: { es: 'Producto propio · App de mascotas con IA', en: 'In-house product · AI pet app' },
+    sector: { es: 'App de mascotas con IA', en: 'AI pet app' },
     title: {
       es: 'YndiPet: la app de mascotas con inteligencia artificial',
       en: 'YndiPet: the pet app with artificial intelligence',
@@ -192,18 +193,18 @@ export const cases: CaseStudy[] = [
       en: 'Dog and cat owners in Chile had their pets’ health, identification and community scattered across paper, chats and social apps. We wanted a single digital home for owners, shelters and pet businesses.',
     },
     solution: {
-      es: 'Diseñamos, construimos y operamos YndiPet de punta a punta: red social de mascotas, ficha clínica con alertas, QR de emergencia, alertas SOS geolocalizadas, adopción para refugios, mapa de servicios, asistentes de IA, planes pagados y una colección de juegos protagonizados por Yndi, nuestra mascota.',
-      en: 'We designed, built and run YndiPet end to end: a pet social network, a clinical record with alerts, emergency QR tags, geolocated SOS alerts, adoption tools for shelters, a services map, AI assistants, paid plans and a collection of games starring Yndi, our mascot.',
+      es: 'Diseñamos y desarrollamos YndiPet de punta a punta: red social de mascotas, ficha clínica con alertas, QR de emergencia, alertas SOS geolocalizadas, adopción para refugios, mapa de servicios, asistentes de IA, planes pagados y una colección de juegos protagonizados por Yndi, la mascota de la app.',
+      en: 'We designed and built YndiPet end to end: a pet social network, a clinical record with alerts, emergency QR tags, geolocated SOS alerts, adoption tools for shelters, a services map, AI assistants, paid plans and a collection of games starring Yndi, the app mascot.',
     },
     results: {
       es: [
-        'Producto propio de Estudio UniVerso693, en producción',
+        'App en producción con usuarios reales',
         'App Android con push nativo y web en yndipet.com',
         'Pagos con PayPal y Mercado Pago con activación automática',
         '6 juegos web gratuitos en yndipet.com/juegos',
       ],
       en: [
-        'In-house product by Estudio UniVerso693, in production',
+        'App in production with real users',
         'Android app with native push, plus the web at yndipet.com',
         'PayPal and Mercado Pago payments with automatic activation',
         '6 free web games at yndipet.com/juegos',

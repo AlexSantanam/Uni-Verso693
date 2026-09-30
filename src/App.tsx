@@ -8,6 +8,7 @@ import { ServiceDetail } from './pages/ServiceDetail';
 import { Cases, CaseDetail } from './pages/Cases';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
+import { Blog, BlogPost } from './pages/Blog';
 import { Container } from './components/ui';
 
 const NotFound: React.FC = () => (
@@ -30,6 +31,8 @@ export const AppRoutes: React.FC = () => (
             <Route path="casos/:slug" element={<CaseDetail />} />
             <Route path="nosotros" element={<About />} />
             <Route path="contacto" element={<Contact />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
