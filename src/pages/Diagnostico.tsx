@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarDays, Check, Clock3, Receipt, Video } from 'lucide-react';
+import { ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Receipt, Video } from 'lucide-react';
 import { CALENDLY_URL, ebs, whatsappLink } from '../data/site';
 import { ebsFaqs, ebsForWho, ebsIncludes, ebsSteps, ebsVideo } from '../data/ebs';
 import { Container, Eyebrow, SectionHeading } from '../components/ui';
@@ -37,11 +37,19 @@ export const Diagnostico: React.FC = () => (
           <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
             Diagnóstico de inteligencia artificial para empresas: en 45 minutos revisamos tu operación y te entregamos una hoja de ruta con retorno estimado. Qué automatizar primero, cuánto cuesta y en cuánto se recupera.
           </p>
-          <div className="space-y-3">
-            <BookButton />
+          {/* the price card holds the single primary CTA; this side offers a different, lighter action */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a
+              href="#calculadora"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 px-6 py-3.5 text-sm font-bold text-white transition-colors"
+            >
+              <Calculator className="w-4 h-4 text-cyan-300" />
+              Calcula cuánto pierdes
+              <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
+            </a>
             {whatsappHref && (
-              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="block text-sm font-semibold text-slate-400 hover:text-white">
-                ¿Dudas antes de agendar? Escríbenos por WhatsApp →
+              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-slate-400 hover:text-white">
+                ¿Dudas? Escríbenos por WhatsApp →
               </a>
             )}
           </div>
@@ -50,7 +58,7 @@ export const Diagnostico: React.FC = () => (
           <div className="glow-card rounded-[2rem]">
             <div className="rounded-[calc(2rem-1px)] bg-[#060a14] p-8 space-y-5 text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Diagnóstico estratégico</p>
-              <p className="text-5xl font-black text-white tracking-tight">{ebs.price}</p>
+              <p className="text-4xl sm:text-5xl font-black text-white tracking-tight whitespace-nowrap">{ebs.price}</p>
               <ul className="space-y-3 text-left text-sm text-slate-300">
                 <li className="flex items-center gap-3">
                   <Clock3 className="w-4 h-4 text-cyan-300" /> Sesión de 45 minutos
@@ -76,7 +84,7 @@ export const Diagnostico: React.FC = () => (
       </Container>
     </section>
 
-    <section className="pb-20">
+    <section id="calculadora" className="pb-20 scroll-mt-24">
       <Container className="space-y-10">
         <SectionHeading center eyebrow="Calculadora" title="Cuánto te cuesta hoy el trabajo manual" />
         <LossCalculator />
