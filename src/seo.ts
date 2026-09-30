@@ -296,9 +296,9 @@ const diagnosticoPage: PageSeo = {
 
 const auditPage: PageSeo = {
   path: '/audit-693',
-  title: 'Audit 693 gratis: 5 oportunidades de IA para tu empresa',
+  title: 'Audit 693: oportunidades de IA gratis e informe PRO',
   description: clip(
-    'Ingresa tu sitio web y recibe en menos de un minuto un análisis con 5 oportunidades de IA y automatización para tu negocio, con impacto, esfuerzo y primeros pasos.',
+    'Gratis: 3 oportunidades de IA para tu empresa en menos de un minuto. AUDIT 693 PRO: informe PDF de fugas de dinero con análisis de competencia por $19.990 CLP.',
   ),
   priority: 0.8,
   jsonLd: graph(breadcrumb([{ name: 'Audit 693', path: '/audit-693' }]), {
@@ -307,8 +307,12 @@ const auditPage: PageSeo = {
     url: url('/audit-693'),
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    description: 'Análisis gratuito con IA que propone 5 oportunidades de automatización a partir del sitio web de una empresa.',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'CLP' },
+    description:
+      'Análisis con IA del sitio web de una empresa. Versión gratuita con 3 oportunidades de automatización; AUDIT 693 PRO con informe PDF, análisis de competencia y costo del trabajo manual.',
+    offers: [
+      { '@type': 'Offer', name: 'Audit 693 gratis', price: '0', priceCurrency: 'CLP' },
+      { '@type': 'Offer', name: 'AUDIT 693 PRO - Informe de Fugas de Dinero', price: '19990', priceCurrency: 'CLP', availability: 'https://schema.org/InStock' },
+    ],
     provider: { '@id': `${SITE_URL}/#org` },
   }),
 };

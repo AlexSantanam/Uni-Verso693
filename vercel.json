@@ -16,6 +16,9 @@
   "functions": {
     "api/audit.ts": {
       "maxDuration": 60
+    },
+    "api/pro.ts": {
+      "maxDuration": 300
     }
   }
 }

@@ -25,7 +25,7 @@
 
 ## More
 - [EBS 693 AI diagnosis](https://universo693.com/diagnostico-ia)
-- [Free Audit 693](https://universo693.com/audit-693): automatic AI analysis of a company website with 5 opportunities.
+- [Audit 693](https://universo693.com/audit-693): free automatic AI analysis of a company website (3 opportunities, on screen). Paid version "AUDIT 693 PRO - Informe de Fugas de Dinero" (19,990 CLP or USD 21): PDF report with up to 7 pages analysed, competitor analysis, cost of manual work and 8-10 prioritised opportunities. It is a separate service from the EBS 693 diagnosis.
 - [About the company](https://universo693.com/nosotros)
 - [Blog](https://universo693.com/blog)
 - [Sitemap](https://universo693.com/sitemap.xml)
