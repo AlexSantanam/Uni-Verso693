@@ -94,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { error } = await resend.emails.send({
-      from: 'Uni-Verso693 <onboarding@resend.dev>',
+      from: 'Uni-Verso693 <contacto@universo693.com>',
       to: notifyTo,
       replyTo: email,
       subject: `[Uni-Verso693] Nueva solicitud de auditoría — ${fullName}`,
@@ -111,7 +111,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // the business-facing notification above already went through.
     try {
       await resend.emails.send({
-        from: 'Uni-Verso693 <onboarding@resend.dev>',
+        from: 'Uni-Verso693 <contacto@universo693.com>',
         to: email,
         subject: 'Recibimos tu solicitud — Uni-Verso693',
         html: `<p>Hola ${escapeHtml(fullName)},</p><p>Gracias por contactar a Uni-Verso693. Un especialista revisará tu solicitud y se pondrá en contacto contigo dentro de las próximas 2 horas.</p>`,

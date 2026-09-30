@@ -7,7 +7,7 @@ import {
 } from 'simple-icons';
 
 /** Public contact inbox. Empty hides it everywhere (set it once the mailbox exists). */
-export const CONTACT_EMAIL = '';
+export const CONTACT_EMAIL = 'contacto@universo693.com';
 
 /** EBS 693 diagnosis event (45 min, Google Meet). */
 export const CALENDLY_URL = 'https://calendly.com/conectadoaia/ebs693';
