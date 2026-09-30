@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { CONTACT_EMAIL, navItems, services } from '../data/site';
+import { industries } from '../data/industries';
 import { Container } from './ui';
 import logo from '../../asset/Logo.webp';
 
@@ -66,7 +67,19 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/10 text-xs text-slate-400">
+        <p className="mt-12 text-xs leading-relaxed text-slate-500">
+          {lang === 'es' ? 'IA por industria: ' : 'AI by industry: '}
+          {industries.map((i, n) => (
+            <React.Fragment key={i.slug}>
+              {n > 0 && ' · '}
+              <Link to={`/ia-para/${i.slug}`} className="hover:text-white transition-colors">
+                {i.name}
+              </Link>
+            </React.Fragment>
+          ))}
+        </p>
+
+        <div className="mt-6 pt-8 border-t border-white/10 text-xs text-slate-400">
           © 2026 Universo693 SpA. {lang === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
         </div>
       </Container>

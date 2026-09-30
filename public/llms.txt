@@ -25,6 +25,14 @@
 - It explains WHAT and WHY, not HOW: implementation order, approach and estimated ROI are defined in the EBS 693 diagnosis. AUDIT 693 PRO and EBS 693 are separate services; the PRO price is not credited to EBS 693.
 - Works for any industry and company size. Card data is processed by Mercado Pago or PayPal; Uni-Verso693 never sees it. Site content and form answers are confidential.
 
+## AI by industry
+- [Transport and fleets](https://universo693.com/ia-para/transporte-y-flotas)
+- [Clinics and healthcare](https://universo693.com/ia-para/clinicas-y-salud)
+- [Real estate](https://universo693.com/ia-para/inmobiliarias)
+- [Retail and e-commerce](https://universo693.com/ia-para/retail-y-ecommerce)
+- [Accounting and law firms](https://universo693.com/ia-para/estudios-profesionales)
+- [Education](https://universo693.com/ia-para/educacion)
+
 ## Case studies
 - [YndiPet](https://universo693.com/casos/yndipet): AI-powered pet app for Chile (health records, SOS alerts, QR tags, AI assistant, payments).
 - [MEMORA](https://universo693.com/casos/memora): SaaS for digital memorials with AI-assisted life stories, payments and an Android app.

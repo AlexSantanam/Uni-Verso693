@@ -3,6 +3,7 @@ import { posts } from './data/blog';
 import { company, companyFaqs } from './data/company';
 import { ebsFaqs, ebsVideo } from './data/ebs';
 import { auditFaqs } from './data/audit';
+import { industries } from './data/industries';
 
 export const SITE_URL = 'https://universo693.com';
 const SITE_NAME = 'Uni-Verso693';
@@ -392,7 +393,31 @@ export const notFoundSeo: PageSeo = {
 };
 
 /** Every indexable page, in sitemap order. */
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, blogPage, ...postPages, contact];
+const industryPages: PageSeo[] = industries.map((i) => ({
+  path: `/ia-para/${i.slug}`,
+  title: i.seoTitle,
+  description: clip(i.description),
+  priority: 0.7,
+  jsonLd: graph(
+    breadcrumb([{ name: `IA para ${i.name.toLowerCase()}`, path: `/ia-para/${i.slug}` }]),
+    {
+      '@type': 'Service',
+      name: i.h1,
+      serviceType: 'Inteligencia artificial y automatización',
+      description: `${i.intro} ${i.useCases.map((u) => u.title).join('; ')}.`,
+      url: url(`/ia-para/${i.slug}`),
+      provider: { '@id': `${SITE_URL}/#org` },
+      audience: { '@type': 'BusinessAudience', audienceType: i.audience },
+      areaServed: [{ '@type': 'Country', name: 'Chile' }, 'Latinoamérica'],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: i.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ),
+}));
+
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
