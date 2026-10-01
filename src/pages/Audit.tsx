@@ -13,6 +13,90 @@ interface FreeReport {
   opportunities: { title: string; why: string }[];
 }
 
+/**
+ * Blurred preview of the PRO PDF after the free result: the section titles are real (they match
+ * api/pro.ts), the contents are placeholder bars. Shows the depth of the paid report without
+ * generating anything extra.
+ */
+const ReportPreview = ({ host, es, price, onUnlock }: { host: string; es: boolean; price: string; onUnlock: () => void }) => {
+  const t = (a: string, b: string) => (es ? a : b);
+  const bars = (widths: string[]) => (
+    <div className="space-y-1.5">{widths.map((w, i) => <div key={i} className="h-2 rounded bg-slate-300" style={{ width: w }} />)}</div>
+  );
+  const sections: { title: string; body: React.ReactNode }[] = [
+    {
+      title: t('Costo del trabajo manual, según tus datos', 'Cost of manual work, from your numbers'),
+      body: (
+        <div className="rounded-lg bg-violet-50 p-3">
+          <p className="text-xl font-black text-slate-900">$ ▇▇▇.▇▇▇ {t('al mes', 'per month')} · $ ▇.▇▇▇.▇▇▇ {t('al año', 'per year')}</p>
+        </div>
+      ),
+    },
+    { title: t('Tu sitio como canal de venta', 'Your site as a sales channel'), body: bars(['92%', '78%', '85%', '60%']) },
+    {
+      title: t('Tu competencia', 'Your competitors'),
+      body: (
+        <div className="space-y-2">
+          {['70%', '55%', '64%'].map((w, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="h-6 w-6 shrink-0 rounded bg-slate-300" />
+              <div className="flex-1">{bars([w, '40%'])}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: t('8 a 10 oportunidades de IA, priorizadas', '8 to 10 AI opportunities, prioritised'),
+      body: (
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-xs font-black text-violet-600">{String(i + 1).padStart(2, '0')}</span>
+              <div className="flex-1">{bars([`${80 - i * 8}%`])}</div>
+              <span className="rounded-full bg-emerald-100 px-2 text-[10px] font-bold text-emerald-700">{t('Impacto', 'Impact')}</span>
+              <span className="rounded-full bg-amber-100 px-2 text-[10px] font-bold text-amber-700">{t('Esfuerzo', 'Effort')}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    { title: t('Victorias rápidas para partir', 'Quick wins to start with'), body: bars(['88%', '72%']) },
+  ];
+  return (
+    <div className="relative overflow-hidden rounded-3xl border border-white/10">
+      <div aria-hidden className="pointer-events-none select-none bg-white">
+        <div className="bg-[#070b16] px-6 py-5">
+          <p className="text-lg font-black text-white">AUDIT 693 PRO</p>
+          <p className="text-sm text-indigo-300">{t('Informe de Fugas de Dinero', 'Money Leak Report')} · {host}</p>
+        </div>
+        <div className="space-y-5 p-6">
+          {sections.map((s) => (
+            <div key={s.title} className="space-y-2">
+              <p className="text-sm font-extrabold text-violet-700">{s.title}</p>
+              <div className="blur-[3px]">{s.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 bg-gradient-to-t from-[#060a14] via-[#060a14]/95 to-transparent px-6 pb-8 pt-28 text-center">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-600/30 text-cyan-300"><Lock className="h-5 w-5" /></span>
+        <p className="max-w-lg text-xl font-extrabold text-white">{t(`Así se ve tu informe completo para ${host}`, `This is what your full report for ${host} looks like`)}</p>
+        <p className="max-w-lg text-sm text-slate-300">
+          {t(
+            'Un PDF con cuánto te cuesta el trabajo manual, cómo vende tu sitio, qué hace tu competencia, 8 a 10 oportunidades priorizadas y por dónde partir.',
+            'A PDF with what manual work costs you, how your site sells, what your competitors do, 8 to 10 prioritised opportunities and where to start.',
+          )}
+        </p>
+        <button onClick={onUnlock} className="group inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-6 py-3 font-extrabold text-white cursor-pointer">
+          {t('Desbloquear mi informe', 'Unlock my report')} · {price}
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // ---------- paid (AUDIT 693 PRO) ----------
 interface ProReport {
   executive_summary: string;
@@ -373,6 +457,8 @@ export const Audit: React.FC = () => {
                 </li>
               ))}
             </ol>
+
+            <ReportPreview host={host} es={es} price={mainPrice} onUnlock={goPro} />
 
             <div className="glow-card rounded-[2rem]">
               <div className="rounded-[calc(2rem-1px)] bg-[#060a14] p-8 space-y-5">

@@ -35,11 +35,11 @@ export const Home: React.FC = () => {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.02] text-white">
               {es ? (
                 <>
-                  Software e IA para que <span className="text-gradient-brand">domines el mañana</span>
+                  Software e IA que eliminan el <span className="text-gradient-brand">trabajo manual</span> de tu empresa
                 </>
               ) : (
                 <>
-                  Software and AI so you can <span className="text-gradient-brand">own tomorrow</span>
+                  Software and AI that remove <span className="text-gradient-brand">manual work</span> from your business
                 </>
               )}
             </h1>

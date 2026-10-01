@@ -11,6 +11,16 @@
       ],
       "destination": "https://universo693.com/$1",
       "permanent": true
+    },
+    {
+      "source": "/audit",
+      "destination": "/audit-693",
+      "permanent": true
+    },
+    {
+      "source": "/ebs",
+      "destination": "/diagnostico-ia",
+      "permanent": true
     }
   ],
   "functions": {
