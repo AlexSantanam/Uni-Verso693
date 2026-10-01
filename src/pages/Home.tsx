@@ -54,6 +54,10 @@ export const Home: React.FC = () => {
                 {es ? "Ver casos de éxito" : "See case studies"}
               </ButtonLink>
             </div>
+            <Link to="/diagnostico-ia" className="group inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
+              {es ? "¿No sabes por dónde partir? Diagnóstico EBS 693: 45 minutos y una hoja de ruta con ROI" : "Not sure where to start? EBS 693 diagnosis: 45 minutes and an ROI roadmap"}
+              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
           </div>
           <div className="lg:col-span-5 flex justify-center">
             <PlasmaVideo className="w-[min(92vw,30rem)] lg:w-[120%] max-w-[38rem]" />

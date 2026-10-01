@@ -23,12 +23,12 @@ export const Header: React.FC = () => {
       <Container className="h-20 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Uni-Verso693" className="w-10 h-10 rounded-xl object-cover" />
-          <span className="font-extrabold text-xl tracking-tight text-white">
+          <span className="font-extrabold text-xl tracking-tight text-white whitespace-nowrap">
             Uni-Verso<span className="text-brand-500">693</span>
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden xl:flex items-center gap-7 whitespace-nowrap">
           {navItems.map((item) =>
             item.to === '/servicios' ? (
               <div key={item.to} className="relative group">
@@ -59,7 +59,7 @@ export const Header: React.FC = () => {
           )}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3 whitespace-nowrap">
           <button
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-2 text-xs font-bold text-slate-300 hover:border-ink cursor-pointer"
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <button
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
             className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-slate-300 cursor-pointer"
@@ -95,7 +95,7 @@ export const Header: React.FC = () => {
       </Container>
 
       {open && (
-        <div className="lg:hidden border-t border-white/10 bg-[#050b13]">
+        <div className="xl:hidden border-t border-white/10 bg-[#050b13]">
           <Container className="py-6 space-y-1">
             {navItems.map((item) => (
               <NavLink

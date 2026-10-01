@@ -7,6 +7,7 @@ import { ButtonLink, Container, CtaBand, Eyebrow } from '../components/ui';
 import { ServiceBadge, ServiceIcon } from '../components/ServiceIcon';
 import { CheckList } from './Home';
 import { NeonLogoVideo } from '../components/NeonLogoVideo';
+import { EbsOffer } from '../components/EbsOffer';
 import softwareFlow from '../../asset/software-flow.mp4';
 import aiOrb from '../../asset/ai-orb.mp4';
 import mobileStreams from '../../asset/mobile-streams.mp4';
@@ -68,6 +69,8 @@ export const ServiceDetail: React.FC = () => {
           </div>
         </Container>
       </section>
+
+      <EbsOffer />
 
       <CtaBand />
     </>

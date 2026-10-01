@@ -2342,8 +2342,27 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
 // ---------------------------------------------------------------- shell
 type Tab = 'solicitudes' | 'ebs' | 'cotizaciones' | 'facturacion' | 'audit' | 'catalogo' | 'ajustes';
 
+// EBS first: it's the main working tool, the rest supports it
+const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
+  { id: 'ebs', label: 'EBS 693', Icon: Target },
+  { id: 'solicitudes', label: 'Solicitudes', Icon: Inbox },
+  { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
+  { id: 'facturacion', label: 'Facturación', Icon: Receipt },
+  { id: 'audit', label: 'Audit PRO', Icon: Sparkles },
+  { id: 'catalogo', label: 'Catálogo', Icon: Package },
+  { id: 'ajustes', label: 'Ajustes', Icon: SettingsIcon },
+];
+
 const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void }) => {
-  const [tab, setTab] = useState<Tab>('solicitudes');
+  // the tab lives in the URL hash (/interno#ebs), so it can be bookmarked and survives a reload
+  const [tab, setTabState] = useState<Tab>(() => {
+    const h = (typeof window === 'undefined' ? '' : window.location.hash.slice(1)) as Tab;
+    return TABS.some((t) => t.id === h) ? h : 'ebs';
+  });
+  const setTab = (t: Tab) => {
+    setTabState(t);
+    history.replaceState(null, '', `#${t}`);
+  };
   const [catalog, setCatalog] = useState<Module[] | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [editing, setEditing] = useState<Quote | null>(null);
@@ -2378,22 +2397,12 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
     setEditing(quote);
   };
 
-  const tabs: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
-    { id: 'solicitudes', label: 'Solicitudes', Icon: Inbox },
-    { id: 'ebs', label: 'EBS 693', Icon: Target },
-    { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
-    { id: 'facturacion', label: 'Facturación', Icon: Receipt },
-    { id: 'audit', label: 'Audit PRO', Icon: Sparkles },
-    { id: 'catalogo', label: 'Catálogo', Icon: Package },
-    { id: 'ajustes', label: 'Ajustes', Icon: SettingsIcon },
-  ];
-
   return (
     <div className="min-h-screen">
       <header className="border-b border-white/10 bg-[#050912]/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center gap-2 py-3">
           <span className="mr-4 font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-500">interno</span></span>
-          {tabs.map(({ id, label, Icon }) => (
+          {TABS.map(({ id, label, Icon }) => (
             <button
               key={id}
               onClick={() => {
@@ -2401,7 +2410,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
                 setEditing(null);
                 setEbsEditing(null);
               }}
-              className={`${btn} ${tab === id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'}`}
+              className={`${btn} ${tab === id ? 'bg-white/10 text-white' : id === 'ebs' ? 'text-brand-100 hover:text-white' : 'text-slate-400 hover:text-white'} ${id === 'ebs' ? 'border border-brand-500/50' : ''}`}
             >
               <Icon className="w-4 h-4" /> {label}
             </button>
