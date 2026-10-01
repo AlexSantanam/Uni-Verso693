@@ -9,10 +9,12 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <!-- search engine ownership verification -->
     <meta name="msvalidate.01" content="C31E06A7767E019BEF68273E9BEACA5D" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/asset/favicon-32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/asset/favicon-48.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/asset/favicon-192.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/asset/favicon-180.png" />
+    <!-- favicons live in public/ with fixed URLs: search engines need a stable address (and /favicon.ico) -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>Uni-Verso693 | Desarrollo de software e IA</title>
     <meta name="description" content="Uni-Verso693 es una empresa de desarrollo de software: plataformas a medida, agentes de IA, aplicaciones móviles y producto digital para empresas en crecimiento." />
 
@@ -55,7 +57,8 @@
         var seen = null;
         try { seen = sessionStorage.getItem('introSeen'); } catch (e) {}
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (seen || reduce) { el.parentNode.removeChild(el); return; }
+        var internal = location.pathname.indexOf('/interno') === 0;
+        if (seen || reduce || internal) { el.parentNode.removeChild(el); return; }
         try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
         var done = false;
         function hide() {

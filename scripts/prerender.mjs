@@ -56,6 +56,7 @@ const today = new Date().toISOString().slice(0, 10);
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allPages
+  .filter((p) => !p.noindex)
   .map(
     (p) => `  <url>
     <loc>${canonicalUrl(p.path)}</loc>
@@ -69,4 +70,4 @@ ${allPages
 fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
 fs.rmSync(path.resolve('dist-ssr'), { recursive: true, force: true });
 
-console.log(`prerendered ${allPages.length} pages + 404.html, sitemap.xml for ${SITE_URL}`);
+console.log(`prerendered ${allPages.length} pages (${allPages.filter((p) => !p.noindex).length} in sitemap) + 404.html, sitemap.xml for ${SITE_URL}`);

@@ -164,7 +164,7 @@ const casesPage: PageSeo = {
   path: '/casos',
   title: `Casos de éxito: YndiPet, MEMORA y MELSA | ${SITE_NAME}`,
   description: clip(
-    'Productos y sitios que diseñamos, construimos y pusimos en producción: una app de mascotas con IA, una plataforma SaaS de memoriales y un sitio inmobiliario premium.',
+    'Casos reales en producción (YndiPet, MEMORA y MELSA) y soluciones de software e IA por industria: salud, retail, minería, seguros, banca, construcción y más.',
   ),
   priority: 0.8,
   jsonLd: graph(
@@ -392,7 +392,16 @@ export const notFoundSeo: PageSeo = {
   jsonLd: [],
 };
 
-/** Every indexable page, in sitemap order. */
+/** Internal workspace: prerendered (so the route exists) but never indexed or listed. */
+const internoPage: PageSeo = {
+  path: '/interno',
+  title: `Interno | ${SITE_NAME}`,
+  description: 'Espacio interno.',
+  noindex: true,
+  jsonLd: [],
+};
+
+/** Every page to prerender, in sitemap order (noindex pages are left out of the sitemap). */
 const industryPages: PageSeo[] = industries.map((i) => ({
   path: `/ia-para/${i.slug}`,
   title: i.seoTitle,
@@ -417,7 +426,7 @@ const industryPages: PageSeo[] = industries.map((i) => ({
   ),
 }));
 
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact];
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

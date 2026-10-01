@@ -22,6 +22,19 @@ const clientKey = (req: VercelRequest) => {
   return first?.split(',')[0].trim() ?? req.socket.remoteAddress ?? 'unknown';
 };
 
+
+// ---------- leads inbox for the internal workspace (/interno, api/admin.ts) ----------
+/** Best-effort: a failure here never blocks the visitor's request. */
+const recordLead = async (lead: Record<string, unknown> & { id: string }) => {
+  try {
+    const r = redis;
+    await r.set(`u693:lead:${lead.id}`, { status: 'nuevo', createdAt: new Date().toISOString(), ...lead });
+    await r.zadd('u693:leads', { score: Date.now(), member: lead.id });
+  } catch (err) {
+    console.error('Lead record failed', err);
+  }
+};
+
 // ---------- safe fetch of the visitor's site (SSRF guards) ----------
 const MAX_BYTES = 1_500_000;
 const FETCH_TIMEOUT_MS = 8000;
@@ -278,6 +291,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(502).json({ error: localize('No pudimos completar la auditoría. Intenta de nuevo en unos minutos.', lang) });
     return;
   }
+
+  await recordLead({
+    id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    source: 'audit',
+    name: fullName,
+    email,
+    company,
+    url: result.url,
+    notes: `${result.report.industry}. ${result.report.business_summary}\nOportunidades: ${result.report.opportunities.map((o) => o.title).join('; ')}`,
+  });
 
   // Best-effort lead notification; the visitor already sees the result on screen.
   const notifyTo = process.env.CONTACT_NOTIFICATION_EMAIL;

@@ -32,6 +32,15 @@
 - [Retail and e-commerce](https://universo693.com/ia-para/retail-y-ecommerce)
 - [Accounting and law firms](https://universo693.com/ia-para/estudios-profesionales)
 - [Education](https://universo693.com/ia-para/educacion)
+- [Mining](https://universo693.com/ia-para/mineria)
+- [Insurance](https://universo693.com/ia-para/seguros)
+- [Banking and finance](https://universo693.com/ia-para/banca-y-finanzas)
+- [Food and restaurants](https://universo693.com/ia-para/alimentacion-y-restaurantes)
+- [Tourism and hospitality](https://universo693.com/ia-para/turismo-y-hoteleria)
+- [Manufacturing](https://universo693.com/ia-para/manufactura)
+- [Agriculture](https://universo693.com/ia-para/agro)
+- [Construction](https://universo693.com/ia-para/construccion)
+- These industry pages describe typical problems and the solutions Uni-Verso693 designs for each sector; the case studies with named clients are listed below.
 
 ## Case studies
 - [YndiPet](https://universo693.com/casos/yndipet): AI-powered pet app for Chile (health records, SOS alerts, QR tags, AI assistant, payments).

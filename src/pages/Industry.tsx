@@ -6,6 +6,40 @@ import { industries, industryBySlug, industryCopy } from '../data/industries';
 import { Container, Eyebrow, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
 import { NeonLogoVideo } from '../components/NeonLogoVideo';
+import construccionClip from '../../asset/ind-construccion.mp4';
+import agroClip from '../../asset/ind-agro.mp4';
+import manufacturaClip from '../../asset/ind-manufactura.mp4';
+import turismoClip from '../../asset/ind-turismo.mp4';
+import alimentacionClip from '../../asset/ind-alimentacion.mp4';
+import finanzasClip from '../../asset/ind-finanzas.mp4';
+import segurosClip from '../../asset/ind-seguros.mp4';
+import mineriaClip from '../../asset/ind-mineria.mp4';
+import educacionClip from '../../asset/ind-educacion.mp4';
+import estudiosClip from '../../asset/ind-estudios.mp4';
+import retailClip from '../../asset/ind-retail.mp4';
+import inmobiliariasClip from '../../asset/ind-inmobiliarias.mp4';
+import saludClip from '../../asset/ind-salud.mp4';
+import transporteClip from '../../asset/ind-transporte.mp4';
+
+/** Industry-specific hero clips (any industry without one shows the neon logo). */
+const heroVideos: Record<string, { src: string; poster: string }> = {
+  construccion: { src: construccionClip, poster: '/ind-construccion-poster.jpg' },
+  agro: { src: agroClip, poster: '/ind-agro-poster.jpg' },
+  manufactura: { src: manufacturaClip, poster: '/ind-manufactura-poster.jpg' },
+  'turismo-y-hoteleria': { src: turismoClip, poster: '/ind-turismo-poster.jpg' },
+  'alimentacion-y-restaurantes': { src: alimentacionClip, poster: '/ind-alimentacion-poster.jpg' },
+  'banca-y-finanzas': { src: finanzasClip, poster: '/ind-finanzas-poster.jpg' },
+  seguros: { src: segurosClip, poster: '/ind-seguros-poster.jpg' },
+  mineria: { src: mineriaClip, poster: '/ind-mineria-poster.jpg' },
+  educacion: { src: educacionClip, poster: '/ind-educacion-poster.jpg' },
+  'estudios-profesionales': { src: estudiosClip, poster: '/ind-estudios-poster.jpg' },
+  'retail-y-ecommerce': { src: retailClip, poster: '/ind-retail-poster.jpg' },
+  inmobiliarias: { src: inmobiliariasClip, poster: '/ind-inmobiliarias-poster.jpg' },
+  'clinicas-y-salud': { src: saludClip, poster: '/ind-salud-poster.jpg' },
+  'transporte-y-flotas': { src: transporteClip, poster: '/ind-transporte-poster.jpg' },
+};
+const VIDEO_BOX = 'left-[78%] w-[min(52rem,46vw)]';
+const DEFAULT_BOX = 'left-[81.5%] w-[min(39.5rem,34vw)]';
 
 /** Industry landing (/ia-para/:slug). Not linked from the main menu; see src/data/industries.ts. */
 export const Industry: React.FC = () => {
@@ -23,9 +57,13 @@ export const Industry: React.FC = () => {
       <section className="relative overflow-hidden bg-[#070f19] border-b border-white/10">
         <div className="absolute inset-0 bg-grid" aria-hidden />
         <ParticleField className="absolute inset-0 opacity-40 pointer-events-none" />
-        <NeonLogoVideo className="hidden lg:block absolute left-[81.5%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(39.5rem,34vw)] pointer-events-none" />
+        <NeonLogoVideo
+          src={heroVideos[ind.slug]?.src}
+          poster={heroVideos[ind.slug]?.poster}
+          className={`hidden lg:block absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none ${heroVideos[ind.slug] ? VIDEO_BOX : DEFAULT_BOX}`}
+        />
         <Container className="relative py-20 sm:py-24">
-          <div className="max-w-3xl space-y-7">
+          <div className="max-w-3xl lg:max-w-[40rem] space-y-7">
             <Eyebrow>
               {t('IA para', 'AI for')} {ind.name.toLowerCase()}
             </Eyebrow>

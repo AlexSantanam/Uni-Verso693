@@ -88,7 +88,7 @@ export const industriesEn: Record<string, IndustryCopy> = {
   'retail-y-ecommerce': {
     name: 'Retail and e-commerce',
     audience: 'shops, retail and e-commerce',
-    h1: 'Artificial intelligence for retail and e-commerce',
+    h1: 'Artificial intelligence for retail and e‑commerce',
     intro:
       'In retail the questions never stop: stock, sizes, shipping, exchanges and returns. Every question without a quick answer is a sale that can go to a competitor. AI serves, recommends and tracks orders at any hour, and custom software connects your store, inventory and shipping.',
     pains: [
@@ -164,6 +164,222 @@ export const industriesEn: Record<string, IndustryCopy> = {
       { q: 'Is it useful for small academies or online courses?', a: 'Yes. For small teams, automating enquiries, sign-ups and payments frees a lot of time from the first month.' },
       { q: 'Does it integrate with our learning platform?', a: 'It depends on the platform and whether it offers an API or exports. We review it in the diagnosis and, if it isn’t possible, propose alternatives.' },
       { q: 'How is student data protected?', a: 'With role-based access, compliant providers and clear rules about which data each automation uses.' },
+    ],
+  },
+  mineria: {
+    name: 'Mining',
+    audience: 'mining companies and mining suppliers',
+    h1: 'Artificial intelligence and software for mining',
+    intro:
+      'In mining, every hour of equipment downtime is expensive, and information is spread across sensors, shift spreadsheets and technical manuals. AI and custom software help anticipate failures, organise operational data and put technical knowledge within reach of the people on site, always as support for safety protocols.',
+    pains: [
+      'Equipment failures are detected after they happen',
+      'Shift, production and safety reports are put together by hand',
+      'Manuals and procedures are hard to look up on site',
+      'Sensor, maintenance and production data live in separate systems',
+    ],
+    useCases: [
+      { title: 'Predictive maintenance', text: 'Models that analyse sensor data and maintenance history to anticipate failures and schedule work.' },
+      { title: 'Automatic shift reports', text: 'Production, stoppages and safety indicators consolidated at the end of each shift, with no typing.' },
+      { title: 'Procedures assistant', text: 'Natural-language search of technical manuals and procedures, with a reference to the official document.' },
+      { title: 'Operations dashboard', text: 'Equipment, production and maintenance indicators in one place, for on-site or remote operations.' },
+      { title: 'Contractor document control', text: 'Automatic reading and tracking of certificates, accreditations and expiry dates for suppliers and workers.' },
+    ],
+    care:
+      'People’s safety comes first: AI supports decisions, it doesn’t replace protocols. Many sites have limited connectivity, so solutions must work with intermittent connections.',
+    faqs: [
+      { q: 'Is it useful for mining suppliers, not just the mine?', a: 'Yes. Maintenance, transport, service and contractor companies usually have a lot of admin and document work that can be automated.' },
+      { q: 'Does it work without a permanent connection?', a: 'It can be designed to work with intermittent connectivity, storing data locally and syncing when there’s signal.' },
+      { q: 'Do we need new sensors for predictive maintenance?', a: 'Not always. You can often start with the data equipment already produces and the maintenance history; the diagnosis assesses what’s available.' },
+    ],
+  },
+  seguros: {
+    name: 'Insurance',
+    audience: 'insurers, brokers and claims adjusters',
+    h1: 'Artificial intelligence for insurers and brokers',
+    intro:
+      'In insurance, much of the work is repetitive paperwork: quoting, requesting documents, reviewing claims, remembering renewals. AI can take over that load so the team spends its time advising clients and resolving complex cases.',
+    pains: [
+      'Quotes take long because data has to be requested and checked by hand',
+      'Claim documents reviewed one by one',
+      'Clients asking about the status of their claim or policy',
+      'Renewals lost for lack of follow-up',
+    ],
+    useCases: [
+      { title: 'Guided quoting', text: 'An agent that collects the required data, validates it and leaves the quote ready for review.' },
+      { title: 'Claim document reading', text: 'Data extracted from claim forms, invoices, reports and photos, with alerts when something is missing or inconsistent.' },
+      { title: 'Claim status without calls', text: 'Automatic answers about each case’s progress, using the information the team already records.' },
+      { title: 'Renewals that never slip', text: 'Automatic reminders and follow-up before each policy expires.' },
+      { title: 'Assistant for account managers', text: 'Quick lookup of each product’s terms, coverage and exclusions, with a reference to the document.' },
+    ],
+    care:
+      'It’s a regulated sector (in Chile, supervised by the CMF). Client and claim information is sensitive: traceability, access control and human review of decisions are requirements, not options.',
+    faqs: [
+      { q: 'Can AI approve or reject a claim?', a: 'It shouldn’t decide on its own. It’s used to organise, validate and summarise information; a person makes the decision.' },
+      { q: 'Is it useful for small brokers?', a: 'Yes. For small brokers, automating quotes, renewals and enquiries frees a lot of the sales team’s time.' },
+      { q: 'Does it integrate with our policy system?', a: 'It depends on the system and whether it offers an API or exports. We review it in the diagnosis.' },
+    ],
+  },
+  'banca-y-finanzas': {
+    name: 'Banking and finance',
+    audience: 'banks, lenders, credit unions and fintechs',
+    h1: 'Artificial intelligence and software for financial services',
+    intro:
+      'In financial services, response speed competes with the demand for control. Assessing a loan, onboarding a customer or answering a question means reviewing a lot of information. AI speeds up that review and custom software keeps it traceable, without losing the control regulators require.',
+    pains: [
+      'Slow credit assessments and onboarding due to manual document review',
+      'Repeated questions about products, requirements and application status',
+      'Customer information spread across different systems',
+      'Management reports put together by hand',
+    ],
+    useCases: [
+      { title: 'Automatic document review', text: 'Reading and validating payslips, IDs, financial statements and certificates in onboarding and credit processes.' },
+      { title: '24/7 support', text: 'An agent that answers questions about products, requirements and application status with official information, and hands sensitive matters to a person.' },
+      { title: 'Unusual-pattern alerts', text: 'Detection of out-of-pattern transactions or behaviour to support fraud prevention.' },
+      { title: 'Management dashboard', text: 'Lending, arrears and portfolio in a dashboard that updates itself from existing systems.' },
+      { title: 'Organised collections', text: 'Payment reminders and follow-up by channel and stage, with hand-off to an account manager when needed.' },
+    ],
+    care:
+      'It’s a regulated sector (in Chile, supervised by the CMF, with initiatives such as the Fintech Law). Traceability, access control, information security and human oversight of automated decisions are requirements from the design stage.',
+    faqs: [
+      { q: 'Can AI decide whether a loan is approved?', a: 'It can support with analysis and alerts, but the decision and its justification must remain with a person and the institution’s risk model.' },
+      { q: 'Is it useful for credit unions or small lenders?', a: 'Yes. For small teams, automating documents and customer service has a fast impact.' },
+      { q: 'Where is the data processed?', a: 'That’s defined in the design: compliant providers, encryption and role-based access. The diagnosis reviews each institution’s requirements.' },
+    ],
+  },
+  'alimentacion-y-restaurantes': {
+    name: 'Food and restaurants',
+    audience: 'restaurants, food chains and food companies',
+    h1: 'Artificial intelligence for restaurants and food companies',
+    intro:
+      'In food, margins are tight and everything moves fast: bookings, orders, stock about to expire, suppliers to call. AI and automation put that operation in order so the team can focus on cooking and serving.',
+    pains: [
+      'Bookings and orders arriving by phone, WhatsApp and social media at once',
+      'Waste from products expiring before anyone notices',
+      'Supplier orders made from memory or in spreadsheets',
+      'Sales and costs per location reviewed at month end',
+    ],
+    useCases: [
+      { title: 'Bookings and orders on WhatsApp', text: 'An agent that takes bookings and orders, confirms availability and sends the summary to the kitchen or location.' },
+      { title: 'Stock and waste control', text: 'Alerts for low stock and products close to expiry, based on recorded sales and purchases.' },
+      { title: 'Supplier orders', text: 'Purchase suggestions based on sales and stock, ready to approve and send.' },
+      { title: 'Dashboard per location', text: 'Sales, costs and best-sellers per location, updated every day.' },
+      { title: 'Loyalty', text: 'Segmented messages and promotions for regular customers, respecting their consent.' },
+    ],
+    care:
+      'Allergen, ingredient and price information must always be up to date: the agent answers only with official data and hands any allergy or health question to a person.',
+    faqs: [
+      { q: 'Does it integrate with my POS or delivery platform?', a: 'Many POS systems and platforms support integrations or exports. We review it case by case in the diagnosis.' },
+      { q: 'Is it useful for a single restaurant?', a: 'Yes. For an independent restaurant, automating bookings, orders and purchasing frees time from the first month.' },
+      { q: 'Can the agent answer questions about allergens?', a: 'It can share what’s on each dish’s official sheet, but for any health concern it must hand off to a staff member.' },
+    ],
+  },
+  'turismo-y-hoteleria': {
+    name: 'Tourism and hospitality',
+    audience: 'hotels, travel agencies and tour operators',
+    h1: 'Artificial intelligence for hotels and tourism',
+    intro:
+      'In tourism, guests ask at any hour and in different languages, and a slow reply is a booking that goes elsewhere. AI answers, informs and books around the clock, and custom software connects bookings, payments and operations.',
+    pains: [
+      'Enquiries in several languages arriving at night or at weekends',
+      'The same questions every time: availability, prices, transfers, schedules',
+      'Guest communication before and after the stay done by hand',
+      'Booking information spread across channels and spreadsheets',
+    ],
+    useCases: [
+      { title: '24/7 multilingual support', text: 'An agent that answers in Spanish, English and Portuguese with the hotel’s or operator’s official information.' },
+      { title: 'Direct bookings', text: 'Availability checks and bookings from WhatsApp or the website, connected to the booking system.' },
+      { title: 'Guest communication', text: 'Automatic messages before arrival, during the stay and afterwards, with a satisfaction survey.' },
+      { title: 'Occupancy dashboard', text: 'Occupancy, rates and sales channels in an up-to-date dashboard.' },
+      { title: 'Itineraries and documents', text: 'Confirmations, vouchers and itineraries generated automatically for each guest.' },
+    ],
+    care:
+      'Guests’ passport and payment data is sensitive: the solution must define what is stored, where and for how long, and the agent must answer only with current prices and terms.',
+    faqs: [
+      { q: 'Does it integrate with my booking system or channel manager?', a: 'Most systems support integrations. We review the one you use and what it offers in the diagnosis.' },
+      { q: 'Does it answer in other languages?', a: 'Yes. The agent can serve guests in several languages with the same official information.' },
+      { q: 'Is it useful for a boutique hotel or small agency?', a: 'Yes. That’s where it shows most, because you can answer after hours without adding staff.' },
+    ],
+  },
+  manufactura: {
+    name: 'Manufacturing',
+    audience: 'factories, production plants and industry',
+    h1: 'Artificial intelligence and software for manufacturing',
+    intro:
+      'In a production plant, problems cost time and material: an unplanned stoppage, a defective batch, a supply that ran out. AI and custom software help you see production in real time and catch problems before they escalate.',
+    pains: [
+      'Production and stoppages recorded on paper or spreadsheets',
+      'Manual quality control that’s hard to trace',
+      'Supply stock-outs that stop the line',
+      'Plant reports reaching management late',
+    ],
+    useCases: [
+      { title: 'Digital production records', text: 'Simple capture of output, stoppages and causes from a tablet or phone, with automatic reports.' },
+      { title: 'Vision-based quality control', text: 'Product checks with cameras and AI to detect defects and record each batch.' },
+      { title: 'Scheduled maintenance', text: 'Alerts by hours of use or dates, with history per machine.' },
+      { title: 'Supplies inventory', text: 'Stock alerts and purchase suggestions based on the production plan.' },
+      { title: 'Plant dashboard', text: 'Efficiency, stoppages and output per line in real time.' },
+    ],
+    care:
+      'AI supports the plant team; it doesn’t replace established safety or quality controls. It’s best to start with a pilot line or process before scaling.',
+    faqs: [
+      { q: 'Do we need to replace our machines?', a: 'No. You usually start by recording what already happens better and connecting the data that’s available.' },
+      { q: 'Is it useful for a small plant?', a: 'Yes. Digitising production and quality records has an impact from day one, whatever the size.' },
+      { q: 'Does it integrate with our ERP?', a: 'Generally yes, through an API or exports. We assess it in the diagnosis.' },
+    ],
+  },
+  agro: {
+    name: 'Agriculture',
+    audience: 'farms, exporters and agribusiness',
+    h1: 'Artificial intelligence and software for agriculture',
+    intro:
+      'In agriculture, information starts in the field and often stays in a notebook: tasks, applications, harvest, seasonal staff. Custom software and AI bring it into an organised system that helps you decide, comply and export.',
+    pains: [
+      'Field tasks and applications recorded on paper',
+      'Export traceability put together by hand before each shipment',
+      'Seasonal staff and harvest tracked in spreadsheets',
+      'Field, warehouse and sales information that never meets',
+    ],
+    useCases: [
+      { title: 'Field task records', text: 'A simple app to log tasks, applications and harvest, even without signal, that syncs when back online.' },
+      { title: 'Traceability by lot', text: 'Complete history of each lot, from field to shipment, ready for audits and export requirements.' },
+      { title: 'Staff and harvest control', text: 'Attendance, yield and payments per season.' },
+      { title: 'Document reading', text: 'Automatic data extraction from delivery notes, invoices and certificates.' },
+      { title: 'Dashboard per field', text: 'Task progress, harvest and costs per field or block.' },
+    ],
+    care:
+      'Many fields have poor connectivity: solutions must work offline. Seasonal staff data must be handled according to data-protection law.',
+    faqs: [
+      { q: 'Does it work without signal in the field?', a: 'Yes, it’s designed to record offline and sync when there’s signal.' },
+      { q: 'Is it useful for mid-sized growers?', a: 'Yes. Organising task records and traceability has an impact at any size.' },
+      { q: 'Can it connect to the accounting system?', a: 'Generally yes, through exports or an API. We review it in the diagnosis.' },
+    ],
+  },
+  construccion: {
+    name: 'Construction',
+    audience: 'construction companies, contractors and engineering firms',
+    h1: 'Artificial intelligence and software for construction',
+    intro:
+      'Every construction project generates a mountain of information: progress, photos, subcontracts, purchases, worker documents. When it lives in spreadsheets and chats, deviations are found late. Custom software and AI organise that information per project and raise alerts in time.',
+    pains: [
+      'Site progress reported through chats, loose photos and spreadsheets',
+      'Subcontract and worker documents that are hard to control',
+      'Purchasing and warehouse with no visibility per project',
+      'Schedule and cost deviations detected late',
+    ],
+    useCases: [
+      { title: 'Digital site progress', text: 'Progress logged with photos and location from a phone, with automatic reports per project.' },
+      { title: 'Document control', text: 'Automatic reading and tracking of subcontractor and worker documents, with expiry alerts.' },
+      { title: 'Purchasing and warehouse', text: 'Requests, purchase orders and stock per project in a single system.' },
+      { title: 'Dashboard per project', text: 'Schedule, cost and progress of each project compared with the plan.' },
+      { title: 'Specifications assistant', text: 'Natural-language search of technical specifications and tender documents, with a reference to the source.' },
+    ],
+    care:
+      'Site safety isn’t delegated to a tool: AI supports document control and management, but protocols and decisions stay with the people responsible.',
+    faqs: [
+      { q: 'Is it useful for a mid-sized construction company?', a: 'Yes. Progress and document control per project has a quick impact for companies of any size.' },
+      { q: 'Does it work on sites with poor signal?', a: 'It can be designed to record offline and sync later.' },
+      { q: 'Does it integrate with our management system?', a: 'It depends on the system; we review it in the diagnosis and, if it isn’t possible, propose alternatives.' },
     ],
   },
 };

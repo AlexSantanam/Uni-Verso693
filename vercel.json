@@ -19,6 +19,20 @@
     },
     "api/pro.ts": {
       "maxDuration": 300
+    },
+    "api/admin.ts": {
+      "maxDuration": 300
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/interno",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ]
 }

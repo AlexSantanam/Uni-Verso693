@@ -12,6 +12,19 @@ const ratelimit = new Ratelimit({
   prefix: 'uniVerso693ContactRatelimit',
 });
 
+
+// ---------- leads inbox for the internal workspace (/interno, api/admin.ts) ----------
+/** Best-effort: a failure here never blocks the visitor's request. */
+const recordLead = async (lead: Record<string, unknown> & { id: string }) => {
+  try {
+    const r = Redis.fromEnv();
+    await r.set(`u693:lead:${lead.id}`, { status: 'nuevo', createdAt: new Date().toISOString(), ...lead });
+    await r.zadd('u693:leads', { score: Date.now(), member: lead.id });
+  } catch (err) {
+    console.error('Lead record failed', err);
+  }
+};
+
 const getClientKey = (req: VercelRequest): string => {
   const forwarded = req.headers['x-forwarded-for'];
   const first = Array.isArray(forwarded) ? forwarded[0] : forwarded;
@@ -89,6 +102,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `<tr><td style="padding:4px 16px 4px 0;color:#9333ea;font-weight:bold;white-space:nowrap;">${label}</td><td style="padding:4px 0;">${escapeHtml(value!).replace(/\n/g, '<br>')}</td></tr>`
     )
     .join('');
+
+  await recordLead({
+    id: `contacto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    source: 'contacto',
+    name: fullName,
+    email,
+    phone,
+    company: body.companyName?.slice(0, 300),
+    interest: body.serviceInterest?.slice(0, 200),
+    budget: body.budget?.slice(0, 100),
+    notes: [body.notes?.slice(0, 2000), body.preferredDate ? `Fecha preferida: ${body.preferredDate.slice(0, 40)}` : ''].filter(Boolean).join('\n'),
+  });
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 

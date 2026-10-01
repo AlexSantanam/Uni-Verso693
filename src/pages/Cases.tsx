@@ -3,30 +3,80 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { cases } from '../data/site';
-import { ButtonLink, Container, CtaBand, Eyebrow, PageHero } from '../components/ui';
+import { ButtonLink, Container, CtaBand, Eyebrow, PageHero, SectionHeading } from '../components/ui';
 import { CaseCard, CaseVisual, caseImages } from '../components/CaseCard';
+import { IndustryGrid } from '../components/IndustryGrid';
+import { industries } from '../data/industries';
 import { CheckList } from './Home';
 
-export const Cases: React.FC = () => (
-  <>
-    <PageHero
-      eyebrow={{ es: 'Casos de éxito', en: 'Case studies' }}
-      title={{ es: 'Resultados que se pueden visitar', en: 'Results you can actually visit' }}
-      subtitle={{
-        es: 'Una selección de productos y sitios que diseñamos, construimos y ponemos en producción.',
-        en: 'A selection of products and sites we design, build and take to production.',
-      }}
-    />
-    <section className="py-20">
-      <Container className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cases.map((c) => (
-          <CaseCard key={c.slug} item={c} />
-        ))}
-      </Container>
-    </section>
-    <CtaBand />
-  </>
-);
+export const Cases: React.FC = () => {
+  const { lang } = useLang();
+  const es = lang === 'es';
+  // only facts we can back up: founding year, live featured cases, industry pages, where we work
+  const stats = [
+    { value: '2013', label: es ? 'Construyendo software desde' : 'Building software since' },
+    { value: String(cases.length), label: es ? 'Casos destacados en producción' : 'Featured cases in production' },
+    { value: String(industries.length), label: es ? 'Industrias con soluciones' : 'Industries with solutions' },
+    { value: es ? 'Chile + mundo' : 'Chile + world', label: es ? 'Trabajo remoto, en español e inglés' : 'Remote work, in Spanish and English' },
+  ];
+
+  return (
+    <>
+      <PageHero
+        eyebrow={{ es: 'Casos de éxito', en: 'Case studies' }}
+        title={{ es: 'Convertimos desafíos en productos que funcionan', en: 'We turn challenges into products that work' }}
+        subtitle={{
+          es: 'Casos reales que puedes visitar, y las soluciones que diseñamos para cada industria.',
+          en: 'Real cases you can visit, and the solutions we design for each industry.',
+        }}
+      />
+
+      <section className="border-b border-white/5 bg-white/[0.02]">
+        <Container className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-10">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center space-y-1">
+              <p className="text-3xl sm:text-4xl font-black tracking-tight text-gradient-brand">{s.value}</p>
+              <p className="text-xs sm:text-sm font-semibold text-slate-400">{s.label}</p>
+            </div>
+          ))}
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container className="space-y-10">
+          <SectionHeading
+            eyebrow={es ? 'Casos destacados' : 'Featured cases'}
+            title={es ? 'Productos reales, en producción' : 'Real products, live in production'}
+            subtitle={es ? 'Proyectos que diseñamos, construimos y hoy están funcionando.' : 'Projects we designed and built, running today.'}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cases.map((c) => (
+              <CaseCard key={c.slug} item={c} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section className="border-t border-white/5 bg-[#070f19] py-20">
+        <Container className="space-y-12">
+          <SectionHeading
+            center
+            eyebrow={es ? 'Soluciones por industria' : 'Solutions by industry'}
+            title={es ? 'Lo que construimos por industria' : 'What we build by industry'}
+            subtitle={
+              es
+                ? 'Cada sector tiene sus propios cuellos de botella. Conoce los problemas típicos de tu industria y cómo los resolvemos con software a medida e IA.'
+                : 'Every sector has its own bottlenecks. See the typical problems in your industry and how we solve them with custom software and AI.'
+            }
+          />
+          <IndustryGrid />
+        </Container>
+      </section>
+
+      <CtaBand />
+    </>
+  );
+};
 
 export const CaseDetail: React.FC = () => {
   const { slug } = useParams();

@@ -5,7 +5,7 @@ import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { z } from 'zod/v4';
 import { lookup } from 'node:dns/promises';
 import net from 'node:net';
-import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import PDFDocument from 'pdfkit';
 import { Resend } from 'resend';
 import { Ratelimit } from '@upstash/ratelimit';
@@ -173,10 +173,13 @@ const extractPage = (html: string) => {
     whatsapp: /wa\.me|api\.whatsapp\.com|whatsapp/i.test(html),
     phone: /href=["']tel:/i.test(html),
     email: /href=["']mailto:/i.test(html),
-    chat: /intercom|crisp\.chat|tawk\.to|zendesk|hubspot|drift|livechat|tidio|manychat/i.test(html),
+    // third-party widgets, plus custom-built chats (their button/label text is in the HTML)
+    chat:
+      /intercom|crisp\.chat|tawk\.to|zendesk|hubspot|drift|livechat|tidio|manychat|jivosite|chatwoot|botpress|landbot|voiceflow/i.test(html) ||
+      /(abrir|iniciar|open|start)[\s-]+(el\s+)?chat|chat\s+(en\s+vivo|con\s+ia|with\s+ai)|live\s+chat|chatbot|asistente\s+virtual|virtual\s+assistant|aria-label=["'][^"']*chat/i.test(html),
     booking: /calendly|agendapro|reservo|booking|reserva/i.test(html),
     ecommerce: /add[-_ ]to[-_ ]cart|carrito|woocommerce|shopify|jumpseller|checkout/i.test(html),
-    analytics: /googletagmanager|gtag\(|google-analytics|fbq\(|meta pixel/i.test(html),
+    analytics: /googletagmanager|gtag\(|google-analytics|fbq\(|meta pixel|plausible\.io|_vercel\/insights|matomo|clarity\.ms|hotjar|posthog|umami/i.test(html),
     social: [...new Set([...html.matchAll(/https?:\/\/(?:www\.)?(instagram|facebook|linkedin|tiktok|youtube|x|twitter)\.com\/[^"'\s<>]+/gi)].map((m) => m[0]))].slice(0, 8),
   };
   return { title, description, headings, text, structuredData, signals };
@@ -186,7 +189,7 @@ const extractPage = (html: string) => {
 const internalLinks = (html: string, base: string) => {
   const origin = new URL(base);
   const seen = new Set<string>([origin.pathname.replace(/\/$/, '') || '/']);
-  const scored: { href: string; score: number }[] = [];
+  const candidates: { href: string; kind: string; depth: number }[] = [];
   for (const m of html.matchAll(/<a\b[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     let u: URL;
     try {
@@ -200,16 +203,50 @@ const internalLinks = (html: string, base: string) => {
     if (seen.has(key)) continue;
     seen.add(key);
     const hay = `${u.pathname} ${m[2].replace(/<[^>]+>/g, ' ')}`.toLowerCase();
-    let score = 0;
-    if (/servicio|service|producto|product|soluci|solution/.test(hay)) score += 5;
-    if (/precio|plan|tarifa|pricing|cotiza/.test(hay)) score += 4;
-    if (/nosotros|about|empresa|quienes|quiénes/.test(hay)) score += 3;
-    if (/contacto|contact|agenda|reserva/.test(hay)) score += 3;
-    if (/cliente|caso|proyecto|portafolio|faq|pregunta|tienda|shop|catalog/.test(hay)) score += 2;
-    if (/blog|noticia|news|login|cuenta|account|carrito|cart|privacidad|privacy|t[eé]rminos|terms|cookie/.test(hay)) score -= 4;
-    scored.push({ href: u.toString(), score });
+    if (/blog|noticia|news|login|cuenta|account|carrito|cart|privacidad|privacy|t[eé]rminos|terms|cookie/.test(hay)) continue;
+    const kind = /contacto|contact|cont[aá]ctanos|escr[ií]benos|cotiza|quote/.test(hay)
+      ? 'contact'
+      : /precio|plan|tarifa|pricing/.test(hay)
+        ? 'pricing'
+        : /nosotros|about|empresa|quienes|quiénes|equipo|team/.test(hay)
+          ? 'about'
+          : /servicio|service|producto|product|soluci|solution/.test(hay)
+            ? 'service'
+            : /cliente|caso|proyecto|portafolio|faq|pregunta|tienda|shop|catalog|agenda|reserva/.test(hay)
+              ? 'other'
+              : 'rest';
+    candidates.push({ href: u.toString(), kind, depth: u.pathname.split('/').filter(Boolean).length });
   }
-  return scored.sort((a, b) => b.score - a.score).slice(0, 6).map((s) => s.href);
+  // a mix, not six service pages: contact and pricing first (where forms and prices live),
+  // then about, up to three services, cases/FAQ, and whatever is left
+  const pick: string[] = [];
+  const take = (kind: string, max: number) => {
+    for (const c of candidates.filter((x) => x.kind === kind).sort((x, y) => x.depth - y.depth)) {
+      if (pick.length >= 6 || max-- <= 0) return;
+      if (!pick.includes(c.href)) pick.push(c.href);
+    }
+  };
+  take('contact', 1);
+  take('pricing', 1);
+  take('about', 1);
+  take('service', 3);
+  take('other', 2);
+  take('service', 6);
+  take('rest', 6);
+  return pick;
+};
+
+
+// ---------- leads inbox for the internal workspace (/interno, api/admin.ts) ----------
+/** Best-effort: a failure here never blocks the visitor's request. */
+const recordLead = async (lead: Record<string, unknown> & { id: string }) => {
+  try {
+    const r = redis;
+    await r.set(`u693:lead:${lead.id}`, { status: 'nuevo', createdAt: new Date().toISOString(), ...lead });
+    await r.zadd('u693:leads', { score: Date.now(), member: lead.id });
+  } catch (err) {
+    console.error('Lead record failed', err);
+  }
 };
 
 // ---------- order model ----------
@@ -229,7 +266,8 @@ export interface ProInput {
   lang?: 'es' | 'en';
 }
 
-type Provider = 'mercadopago' | 'paypal';
+/** 'interno' = issued for free from /interno (no payment), e.g. as part of a service. */
+type Provider = 'mercadopago' | 'paypal' | 'interno';
 type Status = 'pending' | 'paid' | 'generating' | 'ready' | 'failed';
 
 interface Order {
@@ -247,9 +285,13 @@ interface Order {
   report?: ProReport;
   siteUrl?: string;
   error?: string;
+  /** Internal issues only: false keeps the report away from the client's inbox. */
+  sendToClient?: boolean;
+  /** Internal issues only: why it was given for free (shows in /interno). */
+  reason?: string;
 }
 
-const orderKey = (id: string) => `uniVerso693Pro:order:${id}`;
+const orderKey =(id: string) => `uniVerso693Pro:order:${id}`;
 const loadOrder = (id: string) => redis.get<Order>(orderKey(id));
 const saveOrder = (o: Order) => redis.set(orderKey(o.id), o, { ex: ORDER_TTL });
 
@@ -257,6 +299,18 @@ const keyMatches = (a: string, b: string) => {
   const x = Buffer.from(a);
   const y = Buffer.from(b);
   return x.length === y.length && timingSafeEqual(x, y);
+};
+
+/** Orders issued from /interno, newest first. */
+const INTERNAL_ORDERS = 'uniVerso693Pro:internal';
+
+/** Same session token as api/admin.ts (expiry.HMAC with ADMIN_PASSWORD); duplicated to keep this file self-contained. */
+const adminAuthorized = (req: VercelRequest) => {
+  const token = String(req.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
+  const [exp, sig] = token.split('.');
+  if (!process.env.ADMIN_PASSWORD || !exp || !sig || Number(exp) <= Date.now()) return false;
+  const expected = createHmac('sha256', process.env.ADMIN_PASSWORD).update(`u693-admin:${exp}`).digest('base64url');
+  return keyMatches(sig, expected);
 };
 
 const returnUrl = (o: Order) => `${SITE_URL}/audit-693?pedido=${o.id}&k=${o.key}`;
@@ -444,7 +498,27 @@ Reglas:
 
 const clampText = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
 
-const readSite = async (siteUrl: string) => {
+/** Sales-channel signals across every page read (a contact form usually lives on /contacto, not the home page). */
+export const describeSignals = (pages: { url: string; page: ReturnType<typeof extractPage> }[]) => {
+  const path = (u: string) => new URL(u).pathname || '/';
+  const where = (hit: (s: ReturnType<typeof extractPage>['signals']) => boolean) =>
+    pages.filter(({ page }) => hit(page.signals)).map(({ url }) => path(url));
+  const found = (label: string, pages: string[]) => `${label}=${pages.length ? `sí (${pages.slice(0, 4).join(', ')})` : 'no detectado'}`;
+  const social = [...new Set(pages.flatMap(({ page }) => page.signals.social))].slice(0, 8);
+  return [
+    found('formularios', where((s) => s.forms > 0)),
+    found('chat', where((s) => s.chat)),
+    found('WhatsApp', where((s) => s.whatsapp)),
+    found('teléfono', where((s) => s.phone)),
+    found('correo', where((s) => s.email)),
+    found('reservas', where((s) => s.booking)),
+    found('tienda', where((s) => s.ecommerce)),
+    found('analítica', where((s) => s.analytics)),
+    `redes=${social.join(' ') || 'no detectadas'}`,
+  ].join(', ');
+};
+
+export const readSite = async (siteUrl: string) => {
   const home = await fetchHtml(siteUrl);
   const links = internalLinks(home.html, home.url);
   const extra = await Promise.allSettled(links.map((l) => fetchHtml(l)));
@@ -490,23 +564,23 @@ export const runProAudit = async (input: ProInput): Promise<{ url: string; repor
   });
 
   const perPage = Math.floor(40_000 / site.pages.length);
-  const siteBlock = site.pages
-    .map(({ url, page }, i) =>
+  const signalsLine = describeSignals(site.pages);
+  const siteBlock = [
+    `Señales en las ${site.pages.length} páginas leídas: ${signalsLine}.`,
+    'Estas señales salen del HTML: elementos que se cargan solo con JavaScript pueden no aparecer. Si algo no se detectó, descríbelo como "no se detectó" y recomiéndale al cliente confirmarlo; no lo afirmes como un hecho.',
+    ...site.pages.map(({ url, page }, i) =>
       [
         `## Página ${i + 1}: ${url}`,
         `Título: ${page.title || '(sin título)'}`,
         `Descripción: ${page.description || '(sin descripción)'}`,
         `Encabezados: ${page.headings.join(' | ') || '(ninguno)'}`,
         i === 0 ? `Datos estructurados: ${page.structuredData || '(ninguno)'}` : '',
-        i === 0
-          ? `Señales: formularios=${page.signals.forms}, WhatsApp=${page.signals.whatsapp ? 'sí' : 'no'}, teléfono=${page.signals.phone ? 'sí' : 'no'}, correo=${page.signals.email ? 'sí' : 'no'}, chat=${page.signals.chat ? 'sí' : 'no'}, reservas=${page.signals.booking ? 'sí' : 'no'}, tienda=${page.signals.ecommerce ? 'sí' : 'no'}, analítica=${page.signals.analytics ? 'sí' : 'no'}, redes=${page.signals.social.join(' ') || 'ninguna'}`
-          : '',
         `Texto: ${clampText(page.text, perPage) || '(vacío)'}`,
       ]
         .filter(Boolean)
         .join('\n'),
-    )
-    .join('\n\n');
+    ),
+  ].join('\n\n');
 
   const clientBlock = [
     `Nombre: ${input.fullName}`,
@@ -739,8 +813,11 @@ const fulfil = async (id: string) => {
     const host = new URL(url).hostname;
     const link = `${SITE_URL}/api/pro?action=pdf&order=${o.id}&k=${o.key}`;
     const attachments = [{ filename: `audit-693-pro-${host}.pdf`, content: pdf }];
+    const internal = o.provider === 'interno';
     await Promise.allSettled([
-      resend.emails.send({
+      internal && o.sendToClient === false
+        ? Promise.resolve()
+        : resend.emails.send({
         from: FROM,
         to: o.input.email,
         replyTo: 'contacto@universo693.com',
@@ -759,7 +836,7 @@ const fulfil = async (id: string) => {
             from: FROM,
             to: notifyTo,
             replyTo: o.input.email,
-            subject: `[Uni-Verso693] Audit 693 Pro pagado — ${o.input.fullName}${o.input.company ? ` (${o.input.company})` : ''}`,
+            subject: `[Uni-Verso693] Audit 693 Pro ${internal ? 'emitido sin costo' : 'pagado'} — ${o.input.fullName}${o.input.company ? ` (${o.input.company})` : ''}`,
             html: `<p><b>${esc(o.input.fullName)}</b> · ${esc(o.input.email)}${o.input.company ? ` · ${esc(o.input.company)}` : ''}</p><p>Sitio: ${esc(url)} · Pago: ${o.provider} (${esc(o.paymentRef ?? '')})</p><p>Dónde vende: ${esc(o.input.location)} · Equipo: ${esc(o.input.teamSize)} · Horas manuales/semana: ${o.input.manualHours}</p><p>Problema principal: ${esc(o.input.mainPain)}</p><p>Herramientas: ${esc(o.input.tools)}</p>`,
             attachments,
           })
@@ -790,6 +867,12 @@ const markPaid = async (o: Order, ref: string) => {
     o.paidAt = new Date().toISOString();
     o.paymentRef = ref;
     await saveOrder(o);
+    try {
+      const lead = await redis.get<Record<string, unknown>>(`u693:lead:pro-${o.id}`);
+      if (lead) await redis.set(`u693:lead:pro-${o.id}`, { ...lead, paid: true, notes: String(lead.notes ?? '').replace('(pendiente)', `(pagado, ${ref})`) });
+    } catch (err) {
+      console.error('Lead paid update failed', err);
+    }
   }
   waitUntil(fulfil(o.id));
 };
@@ -870,7 +953,121 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
       const redirect = provider === 'mercadopago' ? await mpCheckout(o) : await paypalCheckout(o);
       await saveOrder(o);
+      await recordLead({
+        id: `pro-${o.id}`,
+        source: 'audit-pro',
+        name: input.fullName,
+        email: input.email,
+        company: input.company,
+        url: input.url,
+        paid: false,
+        notes: [
+          `Pago: ${provider} (pendiente)`,
+          input.location && `Dónde vende: ${input.location}`,
+          input.teamSize && `Equipo: ${input.teamSize}`,
+          input.manualHours ? `Horas manuales/semana: ${input.manualHours}` : '',
+          input.mainPain && `Problema principal: ${input.mainPain}`,
+          input.tools && `Herramientas: ${input.tools}`,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      });
       res.status(200).json({ redirect });
+      return;
+    }
+
+    // ---------- issued from /interno: no payment, same report ----------
+    if (action === 'admin-create' && req.method === 'POST') {
+      if (!adminAuthorized(req)) {
+        res.status(401).json({ error: 'Sesión vencida. Vuelve a ingresar.' });
+        return;
+      }
+      const b = (req.body ?? {}) as Record<string, unknown>;
+      const input: ProInput = {
+        url: str(b.url, 300),
+        fullName: str(b.fullName, 120),
+        email: str(b.email, 200),
+        company: str(b.company, 200),
+        location: str(b.location, 200),
+        teamSize: str(b.teamSize, 40),
+        manualHours: num(b.manualHours, 2000),
+        hourlyCost: num(b.hourlyCost, 10_000_000),
+        mainPain: str(b.mainPain, 1200),
+        tools: str(b.tools, 600),
+        competitors: str(b.competitors, 600),
+        lang,
+      };
+      const sendToClient = b.sendToClient !== false;
+      if (!input.url || !input.fullName || !input.location || (sendToClient && !EMAIL_RE.test(input.email))) {
+        res.status(400).json({ error: `Completa sitio, nombre, dónde vende${sendToClient ? ' y un correo válido' : ''}.` });
+        return;
+      }
+      await fetchHtml(input.url);
+      const now = new Date().toISOString();
+      const o: Order = {
+        id: randomUUID(),
+        key: randomBytes(18).toString('base64url'),
+        provider: 'interno',
+        status: 'paid',
+        input,
+        currency: b.currency === 'USD' ? 'USD' : 'CLP',
+        createdAt: now,
+        paidAt: now,
+        paymentRef: 'sin costo',
+        sendToClient,
+        reason: str(b.reason, 200),
+      };
+      await saveOrder(o);
+      await redis.zadd(INTERNAL_ORDERS, { score: Date.now(), member: o.id });
+      waitUntil(fulfil(o.id));
+      res.status(200).json({ id: o.id, key: o.key });
+      return;
+    }
+
+    if (action === 'admin-list' && req.method === 'GET') {
+      if (!adminAuthorized(req)) {
+        res.status(401).json({ error: 'Sesión vencida. Vuelve a ingresar.' });
+        return;
+      }
+      res.setHeader('cache-control', 'no-store');
+      const ids = await redis.zrange<string[]>(INTERNAL_ORDERS, 0, 99, { rev: true });
+      const orders = ids.length ? ((await redis.mget<(Order | null)[]>(...ids.map(orderKey))).filter(Boolean) as Order[]) : [];
+      res.status(200).json({
+        orders: orders.map((o) => ({
+          id: o.id,
+          key: o.key,
+          status: o.status,
+          createdAt: o.createdAt,
+          site: o.siteUrl ?? o.input.url,
+          name: o.input.fullName,
+          company: o.input.company,
+          email: o.input.email,
+          sendToClient: o.sendToClient !== false,
+          reason: o.reason,
+          lang: o.input.lang ?? 'es',
+          error: o.error,
+          attempts: o.attempts ?? 0,
+        })),
+      });
+      return;
+    }
+
+    if (action === 'admin-retry' && req.method === 'POST') {
+      if (!adminAuthorized(req)) {
+        res.status(401).json({ error: 'Sesión vencida. Vuelve a ingresar.' });
+        return;
+      }
+      const o = await loadOrder(str((req.body as any)?.id, 64));
+      if (!o || o.provider !== 'interno') {
+        res.status(404).json({ error: 'No encontrado.' });
+        return;
+      }
+      if (o.status === 'failed') {
+        o.status = 'paid';
+        await saveOrder(o);
+        waitUntil(fulfil(o.id));
+      }
+      res.status(200).json({ ok: true });
       return;
     }
 
