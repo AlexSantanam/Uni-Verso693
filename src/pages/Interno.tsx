@@ -66,6 +66,8 @@ interface Settings {
   notes: string;
   ivaRate: number;
   devHourRate: number;
+  maintenancePct: number;
+  kickoffUrl: string;
 }
 interface QuoteItem {
   name: string;
@@ -2414,7 +2416,7 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                     </label>
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
                     <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { investment: n, investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
-                    <label className="text-xs text-slate-500">Costo mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n })} /></label>
+                    <label className="text-xs text-slate-500" title="Hosting, APIs, soporte: el gasto que sigue todos los meses">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -2631,6 +2633,8 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         {field('phone', 'Teléfono')}
         {field('validDays', 'Validez por defecto (días)', 'number')}
         {field('devHourRate', 'Tarifa por hora de desarrollo (CLP), para el EBS', 'number')}
+        {field('maintenancePct', 'Mantención mensual (% de la inversión), para el EBS', 'number')}
+        {field('kickoffUrl', 'Link de Calendly para la reunión de inicio (el botón tras Quiero avanzar)')}
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
       </div>
       <label className="block text-xs text-slate-500">Condiciones de pago por defecto<textarea rows={2} value={s.paymentTerms} onChange={(e) => setS({ ...s, paymentTerms: e.target.value })} className={input} /></label>

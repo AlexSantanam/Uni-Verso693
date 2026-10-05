@@ -112,6 +112,10 @@ export interface Settings {
   ivaRate: number;
   /** CLP per development hour; used to price EBS opportunities that have no catalog price. 0 = not set. */
   devHourRate: number;
+  /** Monthly maintenance (hosting, APIs, support) as a % of the investment of each EBS solution that has no monthly catalog price. 0 = not set. */
+  maintenancePct: number;
+  /** Booking link (Calendly) for the free kickoff meeting offered after the client presses "Quiero avanzar". Empty = WhatsApp. */
+  kickoffUrl: string;
 }
 
 export type QuoteStatus = 'borrador' | 'enviada' | 'aceptada' | 'rechazada';
@@ -179,6 +183,8 @@ const DEFAULT_SETTINGS: Settings = {
     'Los valores no incluyen costos de terceros (dominio, hosting, licencias, tarifas de Meta/WhatsApp o de plataformas de pago), salvo que se indique en el detalle.',
   ivaRate: 0.19,
   devHourRate: 0,
+  maintenancePct: 0,
+  kickoffUrl: '',
 };
 
 /** Starting catalog: only the two published prices are filled in; the rest are set by the owner. */
@@ -1131,7 +1137,8 @@ Tarifa por hora de desarrollo: ${settings.devHourRate > 0 ? `${settings.devHourR
       ...((s.computedLeaks ?? []).some((l) => l.key === o.leakKey && l.kind === 'perdida') ? { leakKey: o.leakKey } : {}),
       investment: fromCatalog ? mod!.price : hours * settings.devHourRate,
       investmentSource: fromCatalog ? 'catálogo' : 'horas × tarifa',
-      monthlyCost: monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : 0,
+      // recurring cost: a monthly catalog module, or the maintenance % set in Ajustes applied to the investment
+      monthlyCost: monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : Math.round(((fromCatalog ? mod!.price : hours * settings.devHourRate) * (settings.maintenancePct ?? 0)) / 100),
       impact: o.impact,
       effort: o.effort,
       stage: ([1, 2, 3].includes(Math.round(o.stage)) ? Math.round(o.stage) : 2) as 1 | 2 | 3,
@@ -1852,7 +1859,7 @@ export const renderEbsPdf = async (e: EbsSession, s: Settings, audit?: SiteAudit
     const cols: [string, string][] = [
       ['Ahorro/mes', clpFmt(c.savingMonth)],
       ['Inversión', o.investment > 0 ? clpFmt(o.investment) : 'por definir'],
-      ['Costo/mes', o.monthlyCost > 0 ? clpFmt(o.monthlyCost) : '—'],
+      ['Mantención/mes', o.monthlyCost > 0 ? clpFmt(o.monthlyCost) : '—'],
       ['Recuperación', fmtMonths(c.paybackMonths)],
       ['ROI 12 m', fmtPct(c.roi12)],
     ];
@@ -2072,7 +2079,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (action === 'ebs-view') {
         const now = new Date().toISOString();
         await redis.set(K.ebsShareOf(e.id), { ...share, views: (share.views ?? 0) + 1, viewedAt: share.viewedAt ?? now, lastViewedAt: now }, { ex: (SHARE_DAYS + 2) * 86_400 });
-        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAdj: share.choice?.adj ?? null } });
+        // booking link with the contact's name and email already filled in (Calendly reads ?name= and ?email=)
+        const kickoffBase = (await getSettings()).kickoffUrl;
+        let kickoff: string | null = null;
+        if (kickoffBase) {
+          try {
+            const u = new URL(kickoffBase);
+            if (e.client.name) u.searchParams.set('name', e.client.name);
+            if (EMAIL_RE.test(e.client.email)) u.searchParams.set('email', e.client.email);
+            kickoff = u.toString();
+          } catch {
+            kickoff = null;
+          }
+        }
+        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAdj: share.choice?.adj ?? null, kickoff } });
         return;
       }
       if (action === 'ebs-view-pdf') {
@@ -2179,6 +2199,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           notes: str(body.notes, 2000),
           ivaRate: num(body.ivaRate, 0, 1),
           devHourRate: num(body.devHourRate, 0, 10_000_000),
+          maintenancePct: num(body.maintenancePct, 0, 100),
+          kickoffUrl: /^https:\/\/\S+$/i.test(str(body.kickoffUrl, 300)) ? str(body.kickoffUrl, 300) : '',
         };
         await redis.set(K.settings, s);
         res.status(200).json({ settings: s });

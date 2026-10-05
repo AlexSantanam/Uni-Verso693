@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { AlertTriangle, ArrowRight, CalendarCheck, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, X, Zap } from 'lucide-react';
-import { KICKOFF_URL, whatsappLink } from '../data/site';
+import { whatsappLink } from '../data/site';
 
 const EBS_FEE = 197000;
 
@@ -52,6 +52,8 @@ interface View {
   opportunities: ViewOpp[];
   choice: string[] | null;
   choiceAdj: Adj | null;
+  /** Booking link of the kickoff meeting with name and email prefilled; null until it is set in Ajustes. */
+  kickoff: string | null;
 }
 
 /** The client's tweaks to the assumptions of a solution (percentages, 0 to 100). */
@@ -225,7 +227,7 @@ const OppNode = ({ data }: { data: { opp: ViewOpp; on: boolean; selected: boolea
   const { opp, on, selected } = data;
   return (
     <div
-      className={`h-[224px] w-[290px] cursor-pointer overflow-hidden rounded-2xl border-2 p-4 transition-all duration-300 ${
+      className={`h-[248px] w-[290px] cursor-pointer overflow-hidden rounded-2xl border-2 p-4 transition-all duration-300 ${
         on ? 'border-emerald-400 bg-[#062018] shadow-lg shadow-emerald-900/40' : 'border-red-400/70 bg-[#0f172a]'
       }`}
       style={selected ? { boxShadow: '0 0 0 3px #050912, 0 0 0 6px var(--c2)' } : undefined}
@@ -249,6 +251,7 @@ const OppNode = ({ data }: { data: { opp: ViewOpp; on: boolean; selected: boolea
           {on ? 'Recupera' : 'Podrías recuperar'} <span className="font-bold">{opp.savingMonth > 0 ? `${clp(opp.savingMonth)}/mes` : 'visibilidad y control'}</span>
         </p>
         <p className="text-slate-500">Inversión: {opp.investment > 0 ? clp(opp.investment) : 'por definir'}</p>
+        <p className="text-slate-500">Mantención: {opp.monthlyCost > 0 ? `${clp(opp.monthlyCost)}/mes` : 'por definir'}</p>
       </div>
       <button
         onClick={(e) => {
@@ -358,12 +361,12 @@ const Inner = ({ token }: { token: string }) => {
       const x = i * (CARD_W + GAP);
       const list = opps.filter((o) => o.stage === st);
       const hub = `stage-${st}`;
-      nodes.push({ id: hub, type: 'stage', position: { x, y: 190 }, data: { stage: st, total: list.length, on: list.filter((o) => on.has(o.id)).length }, draggable: false, selectable: false });
+      nodes.push({ id: hub, type: 'stage', position: { x, y: 220 }, data: { stage: st, total: list.length, on: list.filter((o) => on.has(o.id)).length }, draggable: false, selectable: false });
       edges.push({ id: `e-${prev}-${hub}`, source: prev, sourceHandle: prev === 'root' ? undefined : 'r', target: hub, targetHandle: prev === 'root' ? 't' : undefined, type: 'smoothstep', style: { stroke: chain, strokeWidth: 3, opacity: 0.8 } });
       prev = hub;
       list.forEach((o, k) => {
         const active = on.has(o.id);
-        nodes.push({ id: o.id, type: 'opp', position: { x, y: 310 + k * 246 }, data: { opp: o, on: active, selected: sel === o.id, onToggle: toggle }, draggable: false });
+        nodes.push({ id: o.id, type: 'opp', position: { x, y: 340 + k * 270 }, data: { opp: o, on: active, selected: sel === o.id, onToggle: toggle }, draggable: false });
         edges.push({
           // a chain down the column (stage → card 1 → card 2 …), so each segment has its own color and none overlap
           id: `e-${k === 0 ? hub : list[k - 1].id}-${o.id}`,
@@ -418,6 +421,20 @@ const Inner = ({ token }: { token: string }) => {
   const onIds = [...on];
   const adjParam = onIds.map((id) => `${id}:${adj[id]?.rec ?? ''}:${adj[id]?.auto ?? ''}`).join(';');
   const pdfHref = `/api/admin?action=ebs-view-pdf&token=${encodeURIComponent(token)}&ids=${encodeURIComponent(onIds.join(','))}&adj=${encodeURIComponent(adjParam)}`;
+  // the booking page opens with name and email filled in and the chosen solutions in the first custom question
+  const chosenTitles = opps.filter((o) => on.has(o.id)).map((o) => o.title);
+  const kickoffHref = (() => {
+    if (view.kickoff) {
+      try {
+        const u = new URL(view.kickoff);
+        u.searchParams.set('a1', ('EBS ' + view.number + ': ' + chosenTitles.join('; ')).slice(0, 400));
+        return u.toString();
+      } catch {
+        /* falls back to WhatsApp */
+      }
+    }
+    return whatsappLink('Hola, soy de ' + view.company + '. Elegimos ' + totals.count + ' solución(es) del EBS ' + view.number + ' y quiero agendar la reunión de inicio y validación de supuestos.');
+  })();
   const tweaked = (id: string) => adj[id]?.rec !== undefined || adj[id]?.auto !== undefined;
   const c1 = '#8b5cf6';
   const c2 = onDark(view.site?.primary, '#22d3ee');
@@ -439,7 +456,7 @@ const Inner = ({ token }: { token: string }) => {
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between text-slate-400"><dt>Se escapan hoy</dt><dd className="font-bold text-red-300">{clp(view.leakMonth)}/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300">{clp(totals.saving)}/mes</dd></div>
-          {totals.toolCost > 0 && <div className="flex justify-between text-slate-400"><dt>Herramientas</dt><dd>−{clp(totals.toolCost)}/mes</dd></div>}
+          <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
           <div className="flex justify-between border-t border-white/10 pt-1.5 text-base font-black text-white"><dt>Ahorro neto</dt><dd>{clp(totals.net)}/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{totals.hours} h/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}{totals.pendingPrice && totals.investment > 0 ? ' + por definir' : ''}</dd></div>
@@ -447,7 +464,7 @@ const Inner = ({ token }: { token: string }) => {
           <div className="flex justify-between text-lg font-black text-emerald-300"><dt>Retorno a 12 meses</dt><dd>{totals.roi12 === null ? '—' : `${Math.round(totals.roi12 * 100)}%`}</dd></div>
         </dl>
         <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-          Cifras estimadas con lo conversado en la sesión. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
+          Cifras estimadas con lo conversado en la sesión. El ahorro neto ya descuenta la mantención mensual (hosting, APIs y soporte), que se paga todos los meses. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
         </p>
         {sent ? (
           <div className="mt-3 space-y-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3.5 text-sm">
@@ -457,6 +474,7 @@ const Inner = ({ token }: { token: string }) => {
             <dl className="space-y-1 text-slate-200">
               <div className="flex justify-between"><dt>Ahorro neto estimado</dt><dd className="font-bold text-emerald-300">{clp(totals.net)}/mes</dd></div>
               <div className="flex justify-between"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}</dd></div>
+              <div className="flex justify-between"><dt>Mantención mensual</dt><dd>{totals.toolCost > 0 ? `${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
               {totals.investment > 0 && (
                 <>
                   <div className="flex justify-between text-slate-300"><dt>Diagnóstico EBS 693 (se descuenta)</dt><dd>−{clp(Math.min(EBS_FEE, totals.investment))}</dd></div>
@@ -469,13 +487,13 @@ const Inner = ({ token }: { token: string }) => {
               <p className="font-bold text-white">Siguiente paso: reunión de inicio y validación de supuestos</p>
               <p className="mt-1 text-xs text-slate-300">30 minutos para confirmar el alcance y revisar contigo cada supuesto antes de la cotización formal. El valor del diagnóstico se descuenta del proyecto.</p>
               <a
-                href={KICKOFF_URL || whatsappLink('Hola, soy de ' + view.company + '. Elegimos ' + totals.count + ' solución(es) del EBS ' + view.number + ' y quiero agendar la reunión de inicio y validación de supuestos.')}
+                href={kickoffHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-white hover:brightness-110"
                 style={{ background: brandGradient }}
               >
-                <CalendarCheck className="h-4 w-4" /> {KICKOFF_URL ? 'Agendar la reunión de inicio' : 'Coordinar la reunión por WhatsApp'}
+                <CalendarCheck className="h-4 w-4" /> {view.kickoff ? 'Agendar la reunión de inicio' : 'Coordinar la reunión por WhatsApp'}
               </a>
             </div>
           </div>
@@ -521,7 +539,7 @@ const Inner = ({ token }: { token: string }) => {
             )}
             <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300">{selected.savingMonth > 0 ? `${clp(selected.savingMonth)}/mes` : 'visibilidad para decidir'}</dd></div>
             {selected.hoursSavedMonth > 0 && <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{selected.hoursSavedMonth} h/mes</dd></div>}
-            {selected.monthlyCost > 0 && <div className="flex justify-between text-slate-400"><dt>Herramientas</dt><dd>{clp(selected.monthlyCost)}/mes</dd></div>}
+            <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{selected.monthlyCost > 0 ? `${clp(selected.monthlyCost)}/mes` : 'por definir'}</dd></div>
             <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{selected.investment > 0 ? clp(selected.investment) : 'por definir'}</dd></div>
           </dl>
           {(selected.leakBase > 0 || selected.hoursWeek > 0) && (

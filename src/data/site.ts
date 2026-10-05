@@ -11,12 +11,6 @@ export const CONTACT_EMAIL = 'contacto@universo693.com';
 
 /** EBS 693 diagnosis event (45 min, Google Meet). */
 export const CALENDLY_URL = 'https://calendly.com/conectadoaia/ebs693';
-/**
- * Calendly event for the free "Reunión de inicio y validación de supuestos" (30 min) offered after a client
- * presses "Quiero avanzar" in the interactive EBS. Empty until that event exists: the page falls back to WhatsApp.
- * (Not the EBS 693 event above: that one is the paid diagnosis.)
- */
-export const KICKOFF_URL = '';
 
 /** WhatsApp number in international format without "+" or spaces. Empty hides every WhatsApp button. */
 export const WHATSAPP_NUMBER = '56990387414';
