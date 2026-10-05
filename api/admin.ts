@@ -41,6 +41,7 @@ const K = {
 const redis = Redis.fromEnv();
 const loginLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '15 m'), prefix: 'u693AdminLogin' });
 const ebsViewLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, '10 m'), prefix: 'u693EbsView' });
+const ebsPdfLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '10 m'), prefix: 'u693EbsPdf' });
 const ebsAdvanceLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 h'), prefix: 'u693EbsAdvance' });
 
 // ---------- auth: stateless signed token (expiry.signature), 30 days ----------
@@ -1233,11 +1234,14 @@ const brandish = (hex: string) => {
   return sat > 0.3 && l > 0.2 && l < 0.78;
 };
 
+// framework / CMS presets that show up in almost every stylesheet and say nothing about the brand
+const PRESET_COLORS = new Set(['#0d6efd', '#007bff', '#6610f2', '#6f42c1', '#dc3545', '#198754', '#ffc107', '#0dcaf0', '#fd7e14', '#ff6900', '#fcb900', '#7bdcb5', '#00d084', '#8ed1fc', '#0693e3', '#abb8c3', '#eb144c', '#f78da7', '#9b51e0', '#cf2e2e', '#da532c', '#2b5797', '#2d89ef', '#00aba9', '#3b82f6', '#ef4444', '#22c55e', '#f59e0b']);
+
 const extractBrandColors = async (html: string, base: string): Promise<SiteAudit['colors']> => {
   const counts = new Map<string, number>();
   const bump = (raw: string, w = 1) => {
     const h = toHex(raw);
-    if (h && brandish(h)) counts.set(h, (counts.get(h) ?? 0) + w);
+    if (h && brandish(h) && !PRESET_COLORS.has(h)) counts.set(h, (counts.get(h) ?? 0) + w);
   };
   const meta = /<meta[^>]+name=["']theme-color["'][^>]*content=["']([^"']+)["']/i.exec(html)?.[1] ?? /<meta[^>]+content=["']([^"']+)["'][^>]*name=["']theme-color["']/i.exec(html)?.[1];
   const themeHex = meta ? toHex(meta) : null;
@@ -1251,6 +1255,8 @@ const extractBrandColors = async (html: string, base: string): Promise<SiteAudit
   for (const r of sheets) if (r.status === 'fulfilled') css += '\n' + r.value.body;
   for (const m of css.matchAll(/--[\w-]*(?:primary|brand|accent|main|theme)[\w-]*\s*:\s*([^;}]+)/gi)) bump(m[1], 8);
   for (const m of css.matchAll(/#[0-9a-f]{3,8}\b|rgba?\([^)]*\)/gi)) bump(m[0]);
+  // colors written straight into the page (SVG fills, utility classes, inline attributes)
+  for (const m of html.matchAll(/#[0-9a-f]{6}\b/gi)) bump(m[0]);
   const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([h]) => h);
   const themeOk = themeHex && hslOf(themeHex)[1] > 0.25 && hslOf(themeHex)[2] > 0.15 && hslOf(themeHex)[2] < 0.85;
   const primary = themeOk ? themeHex : ranked[0] ?? null;
@@ -1339,7 +1345,12 @@ export interface ShareInfo {
   viewedAt?: string;
   lastViewedAt?: string;
   /** What the client left switched on when they pressed "Quiero avanzar". */
-  choice?: { ids: string[]; message: string; name: string; at: string };
+  choice?: { ids: string[]; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }> };
+  /** Copy of the session and audit at publish time: the client's PDF is built from this, never from the live session. */
+  frozen?: { session: EbsSession; audit: SiteAudit | null };
+  /** Draft quote created when the client pressed "Quiero avanzar". */
+  quoteId?: string;
+  quoteNumber?: string;
 }
 
 /** Only what the client may see: no notes, answers, contact data or internal assumptions. */
@@ -1383,12 +1394,84 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
           savingMonth: c.savingMonth,
           monthlyCost: o.monthlyCost,
           investment: o.investment,
+          hoursWeek: o.hoursWeek,
+          hourlyCost: o.hourlyCost,
+          automationPct: o.automationPct,
+          recoveryPct: o.salesRecoveryPct,
+          leakBase: Math.round(targetLeak(e, o.leakKey)),
           leakLabel: leak?.label ?? '',
           leakMonthly: leak?.monthly ?? 0,
           confidence: leak?.confidence ?? null,
         };
       }),
   };
+};
+
+type Adj = Record<string, { rec?: number; auto?: number }>;
+/** Same formula as oppCalc, fed with the raw numbers the client view carries and the client's tweaks. */
+const savingOf = (o: { hoursWeek: number; hourlyCost: number; automationPct: number; recoveryPct: number; leakBase: number }, a?: { rec?: number; auto?: number }) =>
+  Math.round(((o.hoursWeek * 4.33 * (a?.auto ?? o.automationPct)) / 100) * o.hourlyCost + (o.leakBase * (a?.rec ?? o.recoveryPct)) / 100);
+const cleanAdj = (v: unknown, ids: string[]): Adj => {
+  const out: Adj = {};
+  if (v && typeof v === 'object') {
+    for (const id of ids) {
+      const a = (v as Record<string, any>)[id];
+      if (!a || typeof a !== 'object') continue;
+      const rec = a.rec === undefined || a.rec === null || a.rec === '' ? undefined : num(a.rec, 0, 100);
+      const auto = a.auto === undefined || a.auto === null || a.auto === '' ? undefined : num(a.auto, 0, 100);
+      if (rec !== undefined || auto !== undefined) out[id] = { ...(rec !== undefined ? { rec } : {}), ...(auto !== undefined ? { auto } : {}) };
+    }
+  }
+  return out;
+};
+/** "id:rec:auto;id:rec:auto" (query string form of the tweaks; empty parts mean "original"). */
+const parseAdjParam = (raw: string, ids: string[]): Adj => {
+  const obj: Record<string, { rec?: string; auto?: string }> = {};
+  for (const part of raw.split(';')) {
+    const [id, rec, auto] = part.split(':');
+    if (id) obj[id] = { rec: rec || undefined, auto: auto || undefined };
+  }
+  return cleanAdj(obj, ids);
+};
+const applyChoice = (e: EbsSession, ids: string[], adj?: Adj): EbsSession => ({
+  ...e,
+  opportunities: e.opportunities.map((o) => ({
+    ...o,
+    selected: ids.includes(o.id),
+    salesRecoveryPct: adj?.[o.id]?.rec ?? o.salesRecoveryPct,
+    automationPct: adj?.[o.id]?.auto ?? o.automationPct,
+  })),
+});
+
+/** Draft quote with the given opportunities as lines; the EBS fee is credited in the notes. */
+const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNote = ''): Promise<Quote> => {
+  const s = await getSettings();
+  const now = new Date().toISOString();
+  const seq = await redis.incr(K.quoteSeq);
+  const items: QuoteItem[] = [
+    ...sel.map((o) => ({ name: o.title, description: o.description, qty: 1, unitPrice: Math.round(o.investment), unit: 'proyecto' as Unit })),
+    ...sel.filter((o) => o.monthlyCost > 0).map((o) => ({ name: `Operación: ${o.title}`, description: 'Costo mensual de operación y soporte.', qty: 1, unitPrice: Math.round(o.monthlyCost), unit: 'mes' as Unit })),
+  ];
+  const q: Quote = {
+    id: randomUUID(),
+    number: `COT-${new Date().getFullYear()}-${String(seq).padStart(4, '0')}`,
+    status: 'borrador',
+    createdAt: now,
+    updatedAt: now,
+    leadId: e.leadId,
+    client: { name: e.client.name, company: e.client.company, email: e.client.email, rut: '', phone: e.client.phone },
+    title: `Implementación hoja de ruta ${e.number}`,
+    currency: 'CLP',
+    applyIva: true,
+    discountPct: 0,
+    items,
+    validDays: s.validDays,
+    paymentTerms: s.paymentTerms,
+    notes: [s.notes, `Se descuentan ${EBS_PRICE.toLocaleString('es-CL')} del diagnóstico EBS 693 (${e.number}) ya pagado.`, extraNote].filter(Boolean).join('\n').trim(),
+  };
+  await redis.set(K.quote(q.id), q);
+  await redis.zadd(K.quotes, { score: Date.parse(now), member: q.id });
+  return q;
 };
 
 const shareToken = (company: string) => {
@@ -1779,10 +1862,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ---------- public: interactive EBS (private link, 30 days) ----------
-    if (action === 'ebs-view' || action === 'ebs-advance') {
-      const token = str(action === 'ebs-view' ? req.query.token : body.token, 64);
+    if (action === 'ebs-view' || action === 'ebs-advance' || action === 'ebs-view-pdf') {
+      const token = str(action === 'ebs-advance' ? body.token : req.query.token, 64);
       const ip = clientKey(req);
-      if (!(await ebsViewLimit.limit(ip)).success || (action === 'ebs-advance' && !(await ebsAdvanceLimit.limit(ip)).success)) {
+      if (!(await ebsViewLimit.limit(ip)).success || (action === 'ebs-advance' && !(await ebsAdvanceLimit.limit(ip)).success) || (action === 'ebs-view-pdf' && !(await ebsPdfLimit.limit(ip)).success)) {
         res.status(429).json({ error: 'Demasiados intentos seguidos. Prueba en un momento.' });
         return;
       }
@@ -1801,7 +1884,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (action === 'ebs-view') {
         const now = new Date().toISOString();
         await redis.set(K.ebsShareOf(e.id), { ...share, views: (share.views ?? 0) + 1, viewedAt: share.viewedAt ?? now, lastViewedAt: now }, { ex: (SHARE_DAYS + 2) * 86_400 });
-        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null } });
+        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAdj: share.choice?.adj ?? null } });
+        return;
+      }
+      if (action === 'ebs-view-pdf') {
+        // the proposal with exactly what the client left switched on (and their tweaks), built from the published copy
+        const offeredIds = new Set(snap.opportunities.map((o) => o.id));
+        const wanted = str(req.query.ids, 2000).split(',').filter((x) => offeredIds.has(x));
+        if (!wanted.length) {
+          res.status(400).json({ error: 'Activa al menos una oportunidad antes de descargar.' });
+          return;
+        }
+        const base = share.frozen?.session ?? e;
+        const frozenAudit = share.frozen ? share.frozen.audit : await redis.get<SiteAudit>(K.ebsAudit(e.id));
+        const pdf = await renderEbsPdf(applyChoice(base, wanted, parseAdjParam(str(req.query.adj, 4000), wanted)), await getSettings(), frozenAudit);
+        res.setHeader('content-type', 'application/pdf');
+        res.setHeader('content-disposition', `attachment; filename="Propuesta-${e.number}.pdf"`);
+        res.status(200).send(pdf);
         return;
       }
       // "Quiero avanzar": remember what was left on and tell the consultant
@@ -1811,9 +1910,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(400).json({ error: 'Activa al menos una oportunidad antes de continuar.' });
         return;
       }
-      const choice = { ids, message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString() };
-      await redis.set(K.ebsShareOf(e.id), { ...share, choice }, { ex: (SHARE_DAYS + 2) * 86_400 });
-      const chosen = snap.opportunities.filter((o) => ids.includes(o.id));
+      const adj = cleanAdj(body.adj, ids);
+      const choice = { ids, message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj };
+      const chosen = snap.opportunities.filter((o) => ids.includes(o.id)).map((o) => ({ ...o, savingMonth: savingOf(o, adj[o.id]) }));
+      // a draft quote with exactly this scope, so nothing has to be typed by hand
+      const base = share.frozen?.session ?? e;
+      const quote = await createQuoteFromEbs(base, applyChoice(base, ids, adj).opportunities.filter((o) => o.selected), 'Alcance elegido por el cliente en la versión interactiva del EBS.');
+      await redis.set(K.ebsShareOf(e.id), { ...share, choice, quoteId: quote.id, quoteNumber: quote.number }, { ex: (SHARE_DAYS + 2) * 86_400 });
       const saving = chosen.reduce((a, o) => a + o.savingMonth, 0);
       const invest = chosen.reduce((a, o) => a + o.investment, 0);
       const company = e.client.company || e.client.name;
@@ -1826,7 +1929,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             subject: `${company} quiere avanzar con ${ids.length} oportunidad${ids.length > 1 ? 'es' : ''} (${e.number})`,
             html: `<p><b>${esc(company)}</b>${choice.name ? ` · ${esc(choice.name)}` : ''} activó esto en la versión interactiva del EBS:</p><ul>${chosen
               .map((o) => `<li>${esc(o.title)} · ahorro ${clp(o.savingMonth)}/mes · inversión ${o.investment > 0 ? clp(o.investment) : 'por definir'}</li>`)
-              .join('')}</ul><p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p>${
+              .join('')}</ul><p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p><p>Dejé creada la cotización <b>${quote.number}</b> en borrador con ese alcance.</p>${
               choice.message ? `<p>Mensaje: ${esc(choice.message).replace(/\n/g, '<br>')}</p>` : ''
             }<p><a href="${SITE_URL}/interno#ebs">Abrir en /interno</a></p>`,
           })
@@ -2167,8 +2270,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const audit = await redis.get<SiteAudit>(K.ebsAudit(e.id));
         const snapshot = ebsClientView(e, expiresAt, audit);
         const share: ShareInfo = current
-          ? { ...current, expiresAt, ...(body.refresh || !current.snapshot ? { snapshot, publishedAt: now.toISOString() } : {}) }
-          : { token: shareToken(e.client.company || e.client.name), createdAt: now.toISOString(), expiresAt, views: 0, snapshot, publishedAt: now.toISOString() };
+          ? { ...current, expiresAt, ...(body.refresh || !current.snapshot ? { snapshot, publishedAt: now.toISOString(), frozen: { session: e, audit: audit ?? null } } : {}) }
+          : { token: shareToken(e.client.company || e.client.name), createdAt: now.toISOString(), expiresAt, views: 0, snapshot, publishedAt: now.toISOString(), frozen: { session: e, audit: audit ?? null } };
         await redis.set(K.ebsShareOf(e.id), share, { ex: (SHARE_DAYS + 2) * 86_400 });
         await redis.set(K.ebsShare(share.token), e.id, { ex: (SHARE_DAYS + 2) * 86_400 });
         res.status(200).json({ share, url: shareUrl(share.token) });
@@ -2304,32 +2407,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           res.status(400).json({ error: 'No hay oportunidades seleccionadas.' });
           return;
         }
-        const s = await getSettings();
-        const now = new Date().toISOString();
-        const seq = await redis.incr(K.quoteSeq);
-        const items: QuoteItem[] = [
-          ...sel.map((o) => ({ name: o.title, description: o.description, qty: 1, unitPrice: Math.round(o.investment), unit: 'proyecto' as Unit })),
-          ...sel.filter((o) => o.monthlyCost > 0).map((o) => ({ name: `Operación: ${o.title}`, description: 'Costo mensual de operación y soporte.', qty: 1, unitPrice: Math.round(o.monthlyCost), unit: 'mes' as Unit })),
-        ];
-        const q: Quote = {
-          id: randomUUID(),
-          number: `COT-${new Date().getFullYear()}-${String(seq).padStart(4, '0')}`,
-          status: 'borrador',
-          createdAt: now,
-          updatedAt: now,
-          leadId: e.leadId,
-          client: { name: e.client.name, company: e.client.company, email: e.client.email, rut: '', phone: e.client.phone },
-          title: `Implementación hoja de ruta ${e.number}`,
-          currency: 'CLP',
-          applyIva: true,
-          discountPct: 0,
-          items,
-          validDays: s.validDays,
-          paymentTerms: s.paymentTerms,
-          notes: `${s.notes}\nSe descuentan ${EBS_PRICE.toLocaleString('es-CL')} del diagnóstico EBS 693 (${e.number}) ya pagado.`.trim(),
-        };
-        await redis.set(K.quote(q.id), q);
-        await redis.zadd(K.quotes, { score: Date.parse(now), member: q.id });
+        const q = await createQuoteFromEbs(e, sel);
         e.quoteId = q.id;
         await redis.set(K.ebs(e.id), e);
         res.status(200).json({ quote: q, session: e });

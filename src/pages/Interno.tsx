@@ -1615,7 +1615,9 @@ interface EbsShare {
   views: number;
   viewedAt?: string;
   lastViewedAt?: string;
-  choice?: { ids: string[]; message: string; name: string; at: string };
+  choice?: { ids: string[]; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }> };
+  quoteId?: string;
+  quoteNumber?: string;
 }
 type EbsMetric = { v: number; c: Confidence; label: string; unit: string };
 interface EbsSession {
@@ -2049,7 +2051,10 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
               <p className="font-bold text-emerald-200">{share.choice.name || 'El cliente'} quiere avanzar ({when(share.choice.at)})</p>
               <ul className="list-disc pl-5 text-sm text-slate-200">{e.opportunities.filter((o) => share.choice!.ids.includes(o.id)).map((o) => <li key={o.id}>{o.title}</li>)}</ul>
               {share.choice.message && <p className="text-sm text-slate-300">“{share.choice.message}”</p>}
-              <button onClick={applyChoice} className={btnGhost}><Check className="w-4 h-4" /> Dejar marcadas solo estas y crear la cotización</button>
+              <div className="flex flex-wrap gap-2">
+                {share.quoteId && <button onClick={() => onOpenQuote(share.quoteId!)} className={btnGhost}><FileText className="w-4 h-4" /> Ver cotización {share.quoteNumber} (borrador)</button>}
+                <button onClick={applyChoice} className={btnGhost}><Check className="w-4 h-4" /> Dejar marcadas solo estas en el EBS</button>
+              </div>
             </div>
           )}
         </div>

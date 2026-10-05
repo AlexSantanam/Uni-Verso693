@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, Loader2, Monitor, PlayCircle, RotateCcw, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, Zap } from 'lucide-react';
 
 // Interactive EBS 693: the page a client opens from a private link (/ebs/<token>, 30 days).
 // Every opportunity is a node: red = the leak stays open, green = solved with the proposal.
@@ -21,6 +21,11 @@ interface ViewOpp {
   savingMonth: number;
   monthlyCost: number;
   investment: number;
+  hoursWeek: number;
+  hourlyCost: number;
+  automationPct: number;
+  recoveryPct: number;
+  leakBase: number;
   leakLabel: string;
   leakMonthly: number;
   confidence: Confidence | null;
@@ -41,7 +46,16 @@ interface View {
   site: { host: string; summary: string; findings: string[]; primary: string | null; secondary: string | null } | null;
   opportunities: ViewOpp[];
   choice: string[] | null;
+  choiceAdj: Adj | null;
 }
+
+/** The client's tweaks to the assumptions of a solution (percentages, 0 to 100). */
+type Adj = Record<string, { rec?: number; auto?: number }>;
+/** Same formula as the server (savingOf in api/admin.ts): hours freed + share of the leak recovered. */
+const withAdj = (o: ViewOpp, a?: { rec?: number; auto?: number }): ViewOpp => {
+  const hoursSaved = (o.hoursWeek * 4.33 * (a?.auto ?? o.automationPct)) / 100;
+  return { ...o, hoursSavedMonth: Math.round(hoursSaved), savingMonth: Math.round(hoursSaved * o.hourlyCost + (o.leakBase * (a?.rec ?? o.recoveryPct)) / 100) };
+};
 
 const clp = (n: number) => `$${Math.round(n).toLocaleString('es-CL')}`;
 const months = (m: number | null) => (m === null ? '—' : m < 1 ? 'menos de 1 mes' : `${m.toFixed(1).replace('.', ',')} meses`);
@@ -75,11 +89,32 @@ const onDark = (hex: string | null | undefined, fallback: string) => {
   return l >= 0.55 ? hex : hslToHex(hue, Math.max(sat, 0.5), 0.62);
 };
 
+const SliderRow = ({ label, value, original, accent, onChange }: { label: string; value: number; original: number; accent: string; onChange: (v: number | undefined) => void }) => (
+  <label className="block text-xs text-slate-400">
+    <span className="flex items-baseline justify-between gap-3">
+      <span>{label}</span>
+      <span className="text-base font-black text-white">{value}%</span>
+    </span>
+    <input type="range" min={0} max={100} step={1} value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-1.5 w-full cursor-pointer" style={{ accentColor: accent }} />
+    <span className="flex items-center justify-between text-[11px] text-slate-500">
+      <span>Supuesto original: {original}%</span>
+      {value !== original && (
+        <button type="button" onClick={() => onChange(undefined)} className="font-bold hover:text-white cursor-pointer" style={{ color: accent }}>
+          Volver al original
+        </button>
+      )}
+    </span>
+  </label>
+);
+
 // ---------- nodes ----------
 const hidden = { opacity: 0, width: 1, height: 1, border: 0 } as const;
 
 const RootNode = ({ data }: { data: { company: string; leakMonth: number } }) => (
-  <div className="w-[290px] rounded-2xl border border-red-400/50 bg-[#0f172a] p-4 shadow-lg shadow-red-950/30">
+  <div
+    className="w-[290px] rounded-2xl border-2 bg-[#0f172a] p-4"
+    style={{ borderColor: 'var(--c2)', boxShadow: '0 0 28px color-mix(in srgb, var(--c2) 30%, transparent)' }}
+  >
     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Hoy</p>
     <p className="mt-1 text-xl font-black leading-tight text-white">{data.company}</p>
     <p className="mt-2 text-[13px] text-slate-400">Se escapan cada mes</p>
@@ -89,7 +124,10 @@ const RootNode = ({ data }: { data: { company: string; leakMonth: number } }) =>
 );
 
 const StageNode = ({ data }: { data: { stage: number; total: number; on: number } }) => (
-  <div className="w-[290px] rounded-2xl border border-white/15 bg-[#0b1220] px-4 py-3.5">
+  <div
+    className="w-[290px] rounded-2xl border bg-[#0b1220] px-4 py-3.5"
+    style={{ borderColor: 'color-mix(in srgb, var(--c2) 55%, transparent)', borderLeftWidth: 6, borderLeftColor: 'var(--c2)' }}
+  >
     <p className="text-base font-extrabold text-white">{STAGES[data.stage].label}</p>
     <p className="text-[13px] text-slate-400">
       {STAGES[data.stage].when} · <span className={data.on ? 'font-bold text-emerald-300' : ''}>{data.on} de {data.total} activadas</span>
@@ -107,9 +145,11 @@ const OppNode = ({ data }: { data: { opp: ViewOpp; on: boolean; selected: boolea
     <div
       className={`h-[224px] w-[290px] cursor-pointer overflow-hidden rounded-2xl border-2 p-4 transition-all duration-300 ${
         on ? 'border-emerald-400 bg-[#062018] shadow-lg shadow-emerald-900/40' : 'border-red-400/70 bg-[#0f172a]'
-      } ${selected ? 'ring-2 ring-cyan-300/70 ring-offset-2 ring-offset-[#050912]' : ''}`}
+      }`}
+      style={selected ? { boxShadow: '0 0 0 3px #050912, 0 0 0 6px var(--c2)' } : undefined}
     >
       <Handle type="target" position={Position.Top} style={hidden} />
+      <Handle type="source" position={Position.Bottom} style={hidden} />
       <div className="flex items-center justify-between gap-2">
         <span
           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide ${
@@ -159,6 +199,7 @@ const Inner = ({ token }: { token: string }) => {
   const [form, setForm] = useState({ name: '', message: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [adj, setAdj] = useState<Adj>({});
 
   useEffect(() => {
     document.title = 'Tu hoja de ruta EBS 693 interactiva | Uni-Verso693';
@@ -172,6 +213,7 @@ const Inner = ({ token }: { token: string }) => {
         setView(v);
         if (v.choice?.length) {
           setOn(new Set(v.choice));
+          setAdj(v.choiceAdj ?? {});
           setSent(true);
         }
       })
@@ -195,8 +237,15 @@ const Inner = ({ token }: { token: string }) => {
     });
   }, []);
 
+  // every solution with the client's tweaks applied (the original assumptions when untouched)
+  const opps = useMemo(() => (view?.opportunities ?? []).map((o) => withAdj(o, adj[o.id])), [view, adj]);
+  const setTweak = (id: string, k: 'rec' | 'auto', v: number | undefined) => {
+    setSent(false);
+    setAdj((cur) => ({ ...cur, [id]: { ...cur[id], [k]: v } }));
+  };
+
   const totals = useMemo(() => {
-    const act = (view?.opportunities ?? []).filter((o) => on.has(o.id));
+    const act = opps.filter((o) => on.has(o.id));
     const saving = act.reduce((a, o) => a + o.savingMonth, 0);
     const toolCost = act.reduce((a, o) => a + o.monthlyCost, 0);
     const investment = act.reduce((a, o) => a + o.investment, 0);
@@ -212,31 +261,33 @@ const Inner = ({ token }: { token: string }) => {
       payback: investment > 0 && net > 0 ? investment / net : null,
       roi12: investment > 0 ? (net * 12 - investment) / investment : null,
     };
-  }, [view, on]);
+  }, [opps, on]);
 
   // diagram: Hoy → stage hubs in a row, their opportunities in a column under each hub
   const { nodes, edges } = useMemo(() => {
     if (!view) return { nodes: [], edges: [] };
+    const chain = onDark(view.site?.primary, '#22d3ee');
     const CARD_W = 290;
     const GAP = 44;
     const nodes: any[] = [{ id: 'root', type: 'root', position: { x: 0, y: 0 }, data: { company: view.company, leakMonth: view.leakMonth }, draggable: false, selectable: false }];
     const edges: any[] = [];
-    const stages = ([1, 2, 3] as const).filter((s) => view.opportunities.some((o) => o.stage === s));
+    const stages = ([1, 2, 3] as const).filter((s) => opps.some((o) => o.stage === s));
     let prev = 'root';
     stages.forEach((st, i) => {
       const x = i * (CARD_W + GAP);
-      const list = view.opportunities.filter((o) => o.stage === st);
+      const list = opps.filter((o) => o.stage === st);
       const hub = `stage-${st}`;
       nodes.push({ id: hub, type: 'stage', position: { x, y: 190 }, data: { stage: st, total: list.length, on: list.filter((o) => on.has(o.id)).length }, draggable: false, selectable: false });
-      edges.push({ id: `e-${prev}-${hub}`, source: prev, sourceHandle: prev === 'root' ? undefined : 'r', target: hub, targetHandle: prev === 'root' ? 't' : undefined, type: 'smoothstep', style: { stroke: '#64748b', strokeWidth: 2 } });
+      edges.push({ id: `e-${prev}-${hub}`, source: prev, sourceHandle: prev === 'root' ? undefined : 'r', target: hub, targetHandle: prev === 'root' ? 't' : undefined, type: 'smoothstep', style: { stroke: chain, strokeWidth: 3, opacity: 0.8 } });
       prev = hub;
       list.forEach((o, k) => {
         const active = on.has(o.id);
         nodes.push({ id: o.id, type: 'opp', position: { x, y: 310 + k * 246 }, data: { opp: o, on: active, selected: sel === o.id, onToggle: toggle }, draggable: false });
         edges.push({
-          id: `e-${hub}-${o.id}`,
-          source: hub,
-          sourceHandle: 'b',
+          // a chain down the column (stage → card 1 → card 2 …), so each segment has its own color and none overlap
+          id: `e-${k === 0 ? hub : list[k - 1].id}-${o.id}`,
+          source: k === 0 ? hub : list[k - 1].id,
+          sourceHandle: k === 0 ? 'b' : undefined,
           target: o.id,
           type: 'smoothstep',
           animated: active,
@@ -245,7 +296,7 @@ const Inner = ({ token }: { token: string }) => {
       });
     });
     return { nodes, edges };
-  }, [view, on, sel, toggle]);
+  }, [view, opps, on, sel, toggle]);
 
   const advance = async () => {
     setSending(true);
@@ -253,7 +304,7 @@ const Inner = ({ token }: { token: string }) => {
       const res = await fetch('/api/admin?action=ebs-advance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ids: [...on], name: form.name, message: form.message }),
+        body: JSON.stringify({ token, ids: [...on], name: form.name, message: form.message, adj }),
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || 'No pudimos enviar tu elección.');
@@ -283,7 +334,11 @@ const Inner = ({ token }: { token: string }) => {
       </div>
     );
 
-  const selected = view.opportunities.find((o) => o.id === sel) ?? null;
+  const selected = opps.find((o) => o.id === sel) ?? null;
+  const onIds = [...on];
+  const adjParam = onIds.map((id) => `${id}:${adj[id]?.rec ?? ''}:${adj[id]?.auto ?? ''}`).join(';');
+  const pdfHref = `/api/admin?action=ebs-view-pdf&token=${encodeURIComponent(token)}&ids=${encodeURIComponent(onIds.join(','))}&adj=${encodeURIComponent(adjParam)}`;
+  const tweaked = (id: string) => adj[id]?.rec !== undefined || adj[id]?.auto !== undefined;
   const c1 = '#8b5cf6';
   const c2 = onDark(view.site?.primary, '#22d3ee');
   const brandStyle = { ['--c1' as string]: c1, ['--c2' as string]: c2 } as React.CSSProperties;
@@ -295,8 +350,9 @@ const Inner = ({ token }: { token: string }) => {
   const panel = (
     <aside className={`flex flex-col gap-4 overflow-y-auto bg-[#070b16] p-5 ${narrow ? '' : 'h-full w-[400px] shrink-0 border-l border-white/10'}`}>
       {/* live financial impact */}
-      <section className="rounded-2xl border border-cyan-300/30 bg-[#0a1424] p-4">
-        <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Impacto con lo que activaste</h2>
+      <section className="shrink-0 overflow-hidden rounded-2xl border bg-[#0a1424] p-4" style={{ borderColor: 'color-mix(in srgb, var(--c2) 55%, transparent)', boxShadow: '0 0 30px color-mix(in srgb, var(--c2) 14%, transparent)' }}>
+        <div className="-mx-4 -mt-4 mb-3 h-1.5" style={{ background: brandGradient }} />
+        <h2 className="text-xs font-bold uppercase tracking-[0.16em]" style={{ color: c2 }}>Impacto con lo que activaste</h2>
         <p className="mt-1 text-sm text-slate-300">
           <span className="text-2xl font-black text-white">{totals.count}</span> de {view.opportunities.length} soluciones activadas
         </p>
@@ -340,14 +396,19 @@ const Inner = ({ token }: { token: string }) => {
         )}
         {error && <p className="mt-2 text-xs text-red-300">{error.text}</p>}
         {totals.count > 0 && (
-          <button onClick={() => { setOn(new Set()); setSent(false); }} className="mt-2 inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 cursor-pointer">
-            <RotateCcw className="h-3 w-3" /> Empezar de nuevo
-          </button>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <a href={pdfHref} download className="inline-flex items-center gap-1.5 font-bold hover:brightness-125" style={{ color: c2 }}>
+              <Download className="h-3.5 w-3.5" /> Descargar propuesta en PDF
+            </a>
+            <button onClick={() => { setOn(new Set()); setAdj({}); setSent(false); }} className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-300 cursor-pointer">
+              <RotateCcw className="h-3 w-3" /> Empezar de nuevo
+            </button>
+          </div>
         )}
       </section>
 
       {selected ? (
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section className="shrink-0 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: c2 }}>{STAGES[selected.stage].label}</p>
           <h3 className="text-lg font-extrabold leading-snug text-white">{selected.title}</h3>
           <p className="text-sm leading-relaxed text-slate-300">{selected.description}</p>
@@ -368,7 +429,31 @@ const Inner = ({ token }: { token: string }) => {
             {selected.monthlyCost > 0 && <div className="flex justify-between text-slate-400"><dt>Herramientas</dt><dd>{clp(selected.monthlyCost)}/mes</dd></div>}
             <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{selected.investment > 0 ? clp(selected.investment) : 'por definir'}</dd></div>
           </dl>
+          {(selected.leakBase > 0 || selected.hoursWeek > 0) && (
+            <div className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-3">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Ajusta los supuestos y mira cómo cambia el retorno</p>
+              {selected.leakBase > 0 && (
+                <SliderRow
+                  label={`% de la fuga que se recupera${selected.leakLabel ? ` (${selected.leakLabel.toLowerCase()})` : ''}`}
+                  value={adj[selected.id]?.rec ?? selected.recoveryPct}
+                  original={selected.recoveryPct}
+                  accent={c2}
+                  onChange={(v) => setTweak(selected.id, 'rec', v)}
+                />
+              )}
+              {selected.hoursWeek > 0 && (
+                <SliderRow
+                  label={`% de las ${selected.hoursWeek} h/semana que se automatiza`}
+                  value={adj[selected.id]?.auto ?? selected.automationPct}
+                  original={selected.automationPct}
+                  accent={c2}
+                  onChange={(v) => setTweak(selected.id, 'auto', v)}
+                />
+              )}
+            </div>
+          )}
           {selected.assumptions && <p className="text-xs leading-relaxed text-slate-500"><span className="font-bold text-slate-400">Supuestos:</span> {selected.assumptions}</p>}
+          {tweaked(selected.id) && <p className="text-[11px] text-cyan-200">Ajustaste los supuestos de esta solución; el PDF y tu elección usan tus valores.</p>}
           <button
             onClick={() => toggle(selected.id)}
             className={`w-full rounded-full py-2.5 text-sm font-extrabold cursor-pointer ${on.has(selected.id) ? 'bg-emerald-400 text-emerald-950' : 'bg-red-400/90 text-red-950'}`}
@@ -377,7 +462,7 @@ const Inner = ({ token }: { token: string }) => {
           </button>
         </section>
       ) : (
-        <section className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <section className="shrink-0 space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           {view.summary && (
             <div>
               <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Lo que vimos</h3>
@@ -417,11 +502,25 @@ const Inner = ({ token }: { token: string }) => {
   );
 
   return (
-    <div className="flex h-screen min-h-[600px] flex-col bg-[#050912] text-slate-200" style={brandStyle}>
-      <div className="h-1 w-full shrink-0" style={{ background: brandGradient }} />
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-white/10 bg-[#050912] px-5 py-3">
-        <p className="font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-500">EBS 693 interactivo</span></p>
-        <p className="text-sm text-slate-400">Hoja de ruta de <span className="font-bold" style={{ color: c2 }}>{view.company}</span></p>
+    <div
+      className="flex h-screen min-h-[600px] flex-col text-slate-200"
+      style={{
+        ...brandStyle,
+        background:
+          'radial-gradient(900px 420px at 0% 0%, color-mix(in srgb, var(--c1) 22%, transparent), transparent), radial-gradient(900px 420px at 100% 0%, color-mix(in srgb, var(--c2) 24%, transparent), transparent), #050912',
+      }}
+    >
+      <div className="h-1.5 w-full shrink-0" style={{ background: brandGradient }} />
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-white/10 px-5 py-3" style={{ background: 'linear-gradient(90deg, color-mix(in srgb, var(--c1) 26%, #050912), color-mix(in srgb, var(--c2) 26%, #050912))' }}>
+        <p className="font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-400">EBS 693 interactivo</span></p>
+        <p className="text-sm text-slate-300">Hoja de ruta de <span className="font-extrabold" style={{ color: c2 }}>{view.company}</span></p>
+        {view.site?.primary && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-300">
+            <span className="h-3 w-3 rounded-full border border-white/30" style={{ background: c1 }} />
+            <span className="h-3 w-3 rounded-full border border-white/30" style={{ background: c2 }} />
+            hecho con los colores de {view.site.host}
+          </span>
+        )}
         <div className="ml-auto flex items-center gap-4 text-xs text-slate-500">
           {view.loomUrl && (
             <a href={view.loomUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-bold text-cyan-300 hover:text-cyan-200">
@@ -457,6 +556,7 @@ const Inner = ({ token }: { token: string }) => {
             nodesConnectable={false}
             proOptions={{ hideAttribution: true }}
             colorMode="dark"
+            style={{ background: 'transparent' }}
           >
             <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="#1e293b" />
             <Controls showInteractive={false} position="bottom-left" />
