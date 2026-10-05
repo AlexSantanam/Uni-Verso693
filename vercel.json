@@ -43,6 +43,25 @@
           "value": "noindex, nofollow"
         }
       ]
+    },
+    {
+      "source": "/ebs/:token",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/ebs/:token",
+      "destination": "/ebs/_"
     }
   ]
 }

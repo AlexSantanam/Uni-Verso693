@@ -401,6 +401,15 @@ const internoPage: PageSeo = {
   jsonLd: [],
 };
 
+/** Shell for the private interactive EBS (/ebs/<token>): Vercel rewrites every token to this prerendered page. */
+const ebsViewPage: PageSeo = {
+  path: '/ebs/_',
+  title: `Tu hoja de ruta EBS 693 interactiva | ${SITE_NAME}`,
+  description: 'Hoja de ruta interactiva de tu diagnóstico EBS 693.',
+  noindex: true,
+  jsonLd: [],
+};
+
 /** Every page to prerender, in sitemap order (noindex pages are left out of the sitemap). */
 const industryPages: PageSeo[] = industries.map((i) => ({
   path: `/ia-para/${i.slug}`,
@@ -426,7 +435,7 @@ const industryPages: PageSeo[] = industries.map((i) => ({
   ),
 }));
 
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage];
+export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

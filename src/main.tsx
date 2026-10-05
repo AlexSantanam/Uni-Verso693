@@ -12,6 +12,8 @@ inject({
     const url = new URL(event.url);
     // the internal workspace is not traffic
     if (url.pathname.startsWith('/interno')) return null;
+    // the private EBS link carries its secret in the path: never report it
+    if (url.pathname.startsWith('/ebs/')) return null;
     // Audit PRO order links carry a secret key (?pedido=…&k=…): never send query strings
     url.search = '';
     return {...event, url: url.toString()};

@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
+  Check,
   Copy,
   Download,
   FileText,
   Inbox,
+  Link2,
   Loader2,
   LogOut,
   Mail,
@@ -19,7 +21,7 @@ import {
   Receipt,
   RefreshCw,
 } from 'lucide-react';
-import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
+import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
 
 // Internal workspace (/interno). Spanish only, not indexed, not linked from the site.
 // Everything goes through api/admin.ts with a bearer token saved in this browser.
@@ -1598,6 +1600,23 @@ interface EbsOpportunity {
   selected: boolean;
   investmentSource?: string;
 }
+interface EbsSiteAudit {
+  url: string;
+  summary: string;
+  findings: string[];
+  signals: string;
+  colors: { primary: string | null; secondary: string | null; source: string };
+  at: string;
+}
+interface EbsShare {
+  token: string;
+  publishedAt?: string;
+  expiresAt: string;
+  views: number;
+  viewedAt?: string;
+  lastViewedAt?: string;
+  choice?: { ids: string[]; message: string; name: string; at: string };
+}
 type EbsMetric = { v: number; c: Confidence; label: string; unit: string };
 interface EbsSession {
   id?: string;
@@ -1624,6 +1643,8 @@ interface EbsSession {
   playbookName?: string;
   playbookFocus?: string;
   metrics?: Record<string, EbsMetric>;
+  /** Answers written during the live session, keyed by the question text. */
+  answers?: Record<string, string>;
   computedLeaks?: ComputedLeak[];
   toMeasure?: string[];
 }
@@ -1646,6 +1667,7 @@ const emptyEbs = (lead?: Lead): EbsSession => ({
   pendingQuestions: [],
   playbook: 'general',
   metrics: {},
+  answers: {},
   computedLeaks: [],
   toMeasure: [],
 });
@@ -1712,12 +1734,19 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [newProc, setNewProc] = useState({ name: '', hoursWeek: 0, hourlyCost: 0 });
+  const [newProc, setNewProc] = useState({ name: '', hoursWeek: 0, hourlyCost: 0, pain: '' });
+  const procRow = useRef<HTMLDivElement>(null);
   const [openProc, setOpenProc] = useState<string | null>(null);
   const [sendOpen, setSendOpen] = useState(false);
   const [sendTo, setSendTo] = useState(initial.client.email);
   const [sendMsg, setSendMsg] = useState('');
   const [copied, setCopied] = useState(false);
+  const [share, setShare] = useState<EbsShare | null>(null);
+  const [shareUrl, setShareUrl] = useState('');
+  const [shareOpen, setShareOpen] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [audit, setAudit] = useState<EbsSiteAudit | null>(null);
+  const [auditDirty, setAuditDirty] = useState(false);
   const pb = playbookById(e.playbook);
   const computedLeaks = useMemo(() => computeLeaks(pb, e.metrics ?? {}), [pb, e.metrics]);
   const latest = useRef(e);
@@ -1737,6 +1766,13 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
       const cur = c.metrics?.[m.key] ?? { v: 0, c: m.assumption ? 'supuesto' : 'estimado', label: m.label, unit: m.unit };
       return { ...c, metrics: { ...c.metrics, [m.key]: { ...cur, ...p, label: m.label, unit: m.unit } } };
     });
+  const sugg = suggestionsFor(pb.id);
+  // an example only fills the name (and the pain, for the PDF); hours and cost stay open for the consultant
+  const pickSuggestedProc = (sp: { name: string; pain: string }) => {
+    setNewProc((n) => ({ ...n, name: sp.name, hoursWeek: 0, pain: sp.pain }));
+    window.setTimeout(() => procRow.current?.querySelectorAll('input')[1]?.focus(), 0);
+  };
+  const setAnswer = (q: string, a: string) => patch((c) => ({ ...c, answers: { ...c.answers, [q]: a } }));
   const metricDef = (k: string) => pb.metrics.find((m) => m.key === k);
   const copyDocs = async () => {
     await navigator.clipboard.writeText(documentsEmail(pb, e.client.name, e.client.company, 'Uni-Verso693 · universo693.com'));
@@ -1781,8 +1817,8 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
 
   const addProc = () => {
     if (!newProc.name.trim()) return;
-    patch((c) => ({ ...c, processes: [...c.processes, { id: uid(), name: newProc.name.trim(), area: '', hoursWeek: newProc.hoursWeek, people: 0, hourlyCost: newProc.hourlyCost, tools: '', pain: '' }] }));
-    setNewProc({ name: '', hoursWeek: 0, hourlyCost: newProc.hourlyCost });
+    patch((c) => ({ ...c, processes: [...c.processes, { id: uid(), name: newProc.name.trim(), area: '', hoursWeek: newProc.hoursWeek, people: 0, hourlyCost: newProc.hourlyCost, tools: '', pain: newProc.pain }] }));
+    setNewProc({ name: '', hoursWeek: 0, hourlyCost: newProc.hourlyCost, pain: '' });
   };
 
   const generate = async () => {
@@ -1854,6 +1890,87 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
     }
   };
 
+  const loadShare = useCallback(async () => {
+    if (!e.id) return;
+    try {
+      const d = await api<{ share: EbsShare | null; url: string | null }>('ebs-share-status', { body: { id: e.id } });
+      setShare(d.share);
+      setShareUrl(d.url ?? '');
+    } catch {
+      /* the panel just stays empty */
+    }
+  }, [api, e.id]);
+  useEffect(() => {
+    loadShare();
+  }, [loadShare]);
+
+  useEffect(() => {
+    if (!e.id) return;
+    api<{ audit: EbsSiteAudit | null }>('ebs-audit-get', { body: { id: e.id } })
+      .then((d) => setAudit(d.audit))
+      .catch(() => undefined);
+  }, [api, e.id]);
+
+  const runAudit = async () => {
+    const saved = await ensureSaved();
+    if (!saved?.id) return;
+    setBusy('audit');
+    setMsg(null);
+    try {
+      const d = await api<{ audit: EbsSiteAudit }>('ebs-audit', { body: { id: saved.id } });
+      setAudit(d.audit);
+      setAuditDirty(false);
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+  const saveAudit = async () => {
+    if (!audit || !e.id) return;
+    setBusy('audit');
+    try {
+      const d = await api<{ audit: EbsSiteAudit }>('ebs-audit-save', {
+        body: { id: e.id, summary: audit.summary, findings: audit.findings, primary: audit.colors.primary, secondary: audit.colors.secondary },
+      });
+      setAudit(d.audit);
+      setAuditDirty(false);
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+  const patchAudit = (fn: (a: EbsSiteAudit) => EbsSiteAudit) => {
+    setAudit((a) => (a ? fn(a) : a));
+    setAuditDirty(true);
+  };
+
+  const shareAction = async (extra: Record<string, unknown> = {}) => {
+    const saved = await ensureSaved();
+    if (!saved?.id) return;
+    setBusy('share');
+    setMsg(null);
+    try {
+      const d = await api<{ share: EbsShare | null; url?: string }>('ebs-share', { body: { id: saved.id, ...extra } });
+      setShare(d.share);
+      setShareUrl(d.url ?? '');
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(shareUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+  const applyChoice = () => {
+    const ids = share?.choice?.ids ?? [];
+    patch((c) => ({ ...c, opportunities: c.opportunities.map((o) => ({ ...o, selected: ids.includes(o.id) })) }));
+  };
+
   const t = ebsTotals(latest.current);
   const sel = e.opportunities.filter((o) => o.selected);
   // metrics no question asks for: assumptions the consultant sets (e.g. value of a return load)
@@ -1887,6 +2004,7 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
         </span>
         <div className="ml-auto flex flex-wrap gap-2">
           <button onClick={() => save()} disabled={!!busy} className={btnGhost}><Save className="w-4 h-4" /> Guardar</button>
+          <button onClick={() => setShareOpen(!shareOpen)} disabled={!!busy || !sel.length} className={btnGhost}><Link2 className="w-4 h-4" /> Link interactivo{share?.choice ? ' •' : ''}</button>
           <button onClick={downloadPdf} disabled={!!busy || !sel.length} className={btnGhost}>{busy === 'pdf' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF</button>
           {e.quoteId ? (
             <button onClick={() => onOpenQuote(e.quoteId!)} className={btnGhost}><FileText className="w-4 h-4" /> Ver cotización</button>
@@ -1897,6 +2015,45 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
         </div>
       </div>
       {msg && <p className={`text-sm ${msg.ok ? 'text-emerald-300' : 'text-red-300'}`}>{msg.text}</p>}
+
+      {(shareOpen || share?.choice) && (
+        <div className="rounded-xl border border-cyan-300/30 bg-cyan-300/5 p-5 space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="font-bold text-white">Versión interactiva para el cliente</p>
+            {share?.publishedAt && <span className="text-xs text-cyan-200">Versión publicada {when(share.publishedAt)}</span>}
+            {share && <span className="text-xs text-slate-400">Vence {when(share.expiresAt)} · {share.views} {share.views === 1 ? 'visita' : 'visitas'}{share.lastViewedAt ? ` · última ${when(share.lastViewedAt)}` : ''}</span>}
+            <button onClick={loadShare} className={`${btn} ml-auto text-slate-400 hover:text-white px-2`}><RefreshCw className="w-4 h-4" /> Actualizar</button>
+          </div>
+          {!share ? (
+            <>
+              <p className="text-sm text-slate-400">Crea un enlace privado (30 días) con el diagrama donde el cliente activa cada oportunidad y ve cambiar el ahorro y el retorno. Muestra solo las oportunidades marcadas. El cliente ve la versión que publicas: si después cambias algo, usa "Publicar cambios". Recomiéndale abrirlo en un computador.</p>
+              <button onClick={() => shareAction()} disabled={!!busy} className={btnPrimary}>{busy === 'share' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />} Crear enlace</button>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2">
+                <input readOnly value={shareUrl} onFocus={(ev) => ev.currentTarget.select()} className={`${input} flex-1 min-w-[260px] font-mono text-xs`} />
+                <button onClick={copyLink} className={btnGhost}><Copy className="w-4 h-4" /> {linkCopied ? 'Copiado' : 'Copiar'}</button>
+                <a href={shareUrl} target="_blank" rel="noopener noreferrer" className={btnGhost}><FileText className="w-4 h-4" /> Verlo como cliente</a>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <button onClick={() => shareAction({ refresh: true })} disabled={!!busy} className={`${btn} text-cyan-200 hover:text-white px-2`}>Publicar cambios (el cliente ve la versión nueva)</button>
+                <button onClick={() => shareAction()} disabled={!!busy} className={`${btn} text-slate-400 hover:text-white px-2`}>Renovar 30 días</button>
+                <button onClick={() => window.confirm('El enlace actual dejará de funcionar. ¿Revocar?') && shareAction({ revoke: true })} disabled={!!busy} className={`${btn} text-slate-400 hover:text-red-300 px-2`}>Revocar enlace</button>
+                <span className="px-2 py-2 text-slate-500">El correo con "Enviar al cliente" incluye este enlace automáticamente.</span>
+              </div>
+            </>
+          )}
+          {share?.choice && (
+            <div className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 p-4 space-y-2">
+              <p className="font-bold text-emerald-200">{share.choice.name || 'El cliente'} quiere avanzar ({when(share.choice.at)})</p>
+              <ul className="list-disc pl-5 text-sm text-slate-200">{e.opportunities.filter((o) => share.choice!.ids.includes(o.id)).map((o) => <li key={o.id}>{o.title}</li>)}</ul>
+              {share.choice.message && <p className="text-sm text-slate-300">“{share.choice.message}”</p>}
+              <button onClick={applyChoice} className={btnGhost}><Check className="w-4 h-4" /> Dejar marcadas solo estas y crear la cotización</button>
+            </div>
+          )}
+        </div>
+      )}
 
       {sendOpen && (
         <div className="rounded-xl border border-brand-500/40 bg-brand-600/10 p-5 space-y-3">
@@ -1949,6 +2106,50 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
           </section>
 
           <section className={section}>
+            <div className="flex flex-wrap items-center gap-3">
+              <h3 className={h}>Audit del sitio del cliente</h3>
+              <button onClick={runAudit} disabled={!!busy || !e.client.url.trim()} className={`${btnGhost} ml-auto`}>
+                {busy === 'audit' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} {audit ? 'Volver a analizar' : 'Analizar su sitio'}
+              </button>
+            </div>
+            {!audit ? (
+              <p className="text-sm text-slate-500">
+                {e.client.url.trim()
+                  ? 'Lee el sitio del cliente (unos 10 segundos) y saca hallazgos de cómo capta y atiende clientes, más los colores de su marca. Entra al PDF, a la versión interactiva y a la propuesta con IA.'
+                  : 'Escribe el sitio web del cliente (sección Cliente) para poder analizarlo.'}
+              </p>
+            ) : (
+              <>
+                <p className="text-xs text-slate-500">Analizado: {audit.url} · {audit.signals}</p>
+                <label className="block text-xs text-slate-500">
+                  Resumen
+                  <textarea rows={2} value={audit.summary} onChange={(ev) => patchAudit((a) => ({ ...a, summary: ev.target.value }))} className={input} />
+                </label>
+                <label className="block text-xs text-slate-500">
+                  Hallazgos (uno por línea; revísalos antes de mostrarlos al cliente)
+                  <textarea rows={5} value={audit.findings.join('\n')} onChange={(ev) => patchAudit((a) => ({ ...a, findings: ev.target.value.split('\n') }))} className={input} />
+                </label>
+                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                  <span>Colores de su marca (se funden con los nuestros):</span>
+                  {(['primary', 'secondary'] as const).map((k) => (
+                    <label key={k} className="inline-flex items-center gap-2">
+                      {k === 'primary' ? 'principal' : 'secundario'}
+                      <input
+                        type="color"
+                        value={audit.colors[k] ?? '#7c3aed'}
+                        onChange={(ev) => patchAudit((a) => ({ ...a, colors: { ...a.colors, [k]: ev.target.value } }))}
+                        className="h-8 w-10 cursor-pointer rounded border border-white/15 bg-transparent"
+                      />
+                      {!audit.colors[k] && <span className="text-slate-600">no detectado</span>}
+                    </label>
+                  ))}
+                  {auditDirty && <button onClick={saveAudit} disabled={!!busy} className={btnPrimary}><Save className="w-4 h-4" /> Guardar cambios</button>}
+                </div>
+              </>
+            )}
+          </section>
+
+          <section className={section}>
             <div className="flex flex-wrap items-baseline gap-3">
               <h3 className={h}>Sesión en vivo · {pb.name}</h3>
               <span className="text-xs text-slate-500">{pb.blocks.reduce((a, b) => a + b.minutes, 0)} min · si no sabe, usa la pregunta de respaldo o déjalo vacío: queda como "por medir"</span>
@@ -1960,6 +2161,13 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                   <div key={q.q} className="space-y-1.5">
                     <p className="text-sm text-white">{q.q}</p>
                     {q.fallback && <p className="text-xs text-slate-500">Si no sabe: {q.fallback}</p>}
+                    <textarea
+                      rows={2}
+                      value={e.answers?.[q.q] ?? ''}
+                      onChange={(ev) => setAnswer(q.q, ev.target.value)}
+                      placeholder="Respuesta del cliente (con sus palabras)…"
+                      className={`${input} text-[13px] leading-relaxed`}
+                    />
                     {q.metrics?.map((k) => {
                       const m = metricDef(k);
                       return m ? metricRow(m) : null;
@@ -1990,13 +2198,23 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
 
           <section className={section}>
             <h3 className={h}>Procesos <span className="normal-case font-normal tracking-normal text-slate-500">· detalle opcional, para tareas que no cubre el enfoque</span></h3>
-            <div className="grid grid-cols-12 gap-2">
+            <div ref={procRow} className="grid grid-cols-12 gap-2">
               <input value={newProc.name} onChange={(ev) => setNewProc({ ...newProc, name: ev.target.value })} onKeyDown={(ev) => ev.key === 'Enter' && addProc()} placeholder="Proceso (ej. Confirmar citas)" className={`${input} col-span-12 sm:col-span-6`} />
               <NumIn value={newProc.hoursWeek} onChange={(n) => setNewProc({ ...newProc, hoursWeek: n })} placeholder="h/semana" className="col-span-4 sm:col-span-2" />
               <NumIn value={newProc.hourlyCost} onChange={(n) => setNewProc({ ...newProc, hourlyCost: n })} placeholder="$/hora" step={500} className="col-span-4 sm:col-span-2" />
               <button onClick={addProc} className={`${btnGhost} col-span-4 sm:col-span-2`}><Plus className="w-4 h-4" /> Agregar</button>
             </div>
             {e.processes.length === 0 && <p className="text-sm text-slate-500">Agrega cada tarea repetitiva que mencione el cliente. Enter para agregar rápido; los detalles se completan después.</p>}
+            {sugg.processes.some((sp) => !e.processes.some((p) => p.name === sp.name)) && (
+              <div className="space-y-1.5">
+                <p className="text-xs text-slate-500">Procesos típicos de {pb.name.toLowerCase()} (un clic rellena el nombre arriba; tú completas las horas y el valor hora y das Agregar):</p>
+                <div className="flex flex-wrap gap-2">
+                  {sugg.processes.filter((sp) => !e.processes.some((p) => p.name === sp.name)).map((sp) => (
+                    <button key={sp.name} onClick={() => pickSuggestedProc(sp)} className="rounded-full border border-white/15 px-3 py-1 text-xs text-slate-300 hover:border-cyan-300/50 hover:text-white cursor-pointer">+ {sp.name}</button>
+                  ))}
+                </div>
+              </div>
+            )}
             {e.processes.map((p) => (
               <div key={p.id} className="rounded-lg border border-white/10">
                 <div className="flex flex-wrap items-center gap-3 p-3">
@@ -2035,6 +2253,16 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
               <button onClick={() => patch((c) => ({ ...c, leaks: [...c.leaks, { title: '', detail: '' }] }))} className={`${btnGhost} ml-auto`}><Plus className="w-4 h-4" /> Fuga</button>
             </div>
             {e.leaks.length === 0 && <p className="text-sm text-slate-500">Las 3 fugas principales, en palabras del cliente. Si las dejas vacías, la IA las propone al generar.</p>}
+            {sugg.leaks.some((sl) => !e.leaks.some((l) => l.title === sl.title)) && (
+              <div className="space-y-1.5">
+                <p className="text-xs text-slate-500">Fugas típicas de {pb.name.toLowerCase()} (un clic las agrega; edita el texto con las palabras del cliente):</p>
+                <div className="flex flex-wrap gap-2">
+                  {sugg.leaks.filter((sl) => !e.leaks.some((l) => l.title === sl.title)).map((sl) => (
+                    <button key={sl.title} onClick={() => patch((c) => ({ ...c, leaks: [...c.leaks, sl] }))} className="rounded-full border border-white/15 px-3 py-1 text-xs text-slate-300 hover:border-cyan-300/50 hover:text-white cursor-pointer">+ {sl.title}</button>
+                  ))}
+                </div>
+              </div>
+            )}
             {e.leaks.map((l, i) => (
               <div key={i} className="grid grid-cols-12 gap-2">
                 <input value={l.title} onChange={(ev) => patch((c) => ({ ...c, leaks: c.leaks.map((x, j) => (j === i ? { ...x, title: ev.target.value } : x)) }))} placeholder="Fuga" className={`${input} col-span-12 sm:col-span-4 font-bold`} />
@@ -2049,7 +2277,7 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
               <p className="font-bold text-white">Propuesta con IA</p>
               <p className="text-sm text-slate-400">Redacta oportunidades, enfoque, supuestos, inversión y etapas a partir de tus notas, los números del rubro y las fugas calculadas. Después lo ajustas todo.</p>
             </div>
-            <button onClick={generate} disabled={!!busy || (!e.context.notes.trim() && !e.processes.length && !Object.keys(e.metrics ?? {}).length)} className={`${btnPrimary} ml-auto`}>
+            <button onClick={generate} disabled={!!busy || (!e.context.notes.trim() && !e.processes.length && !Object.keys(e.metrics ?? {}).length && !Object.values(e.answers ?? {}).some(Boolean))} className={`${btnPrimary} ml-auto`}>
               {busy === 'draft' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} {busy === 'draft' ? 'Generando (1-2 min)…' : e.opportunities.length ? 'Regenerar' : 'Generar con IA'}
             </button>
           </section>
@@ -2057,14 +2285,22 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
           {e.pendingQuestions.length > 0 && (
             <section className="rounded-xl border border-amber-300/30 bg-amber-300/5 p-5 space-y-2">
               <h3 className="text-sm font-bold uppercase tracking-wider text-amber-200">Datos por confirmar con el cliente</h3>
-              <ul className="list-disc pl-5 text-sm text-slate-300 space-y-1">{e.pendingQuestions.map((q) => <li key={q}>{q}</li>)}</ul>
+              <p className="text-xs text-slate-400">
+                Son dudas que la IA detectó. Cuando el cliente responda, anota el dato donde corresponde (Sesión en vivo para números y respuestas, Procesos para horas y costos) y quita la pregunta con la papelera. No salen en el PDF: son solo para ti. Regenera la propuesta después para que use los datos nuevos.
+              </p>
+              {e.pendingQuestions.map((q, i) => (
+                <div key={i} className="flex gap-2">
+                  <input value={q} onChange={(ev) => patch((c) => ({ ...c, pendingQuestions: c.pendingQuestions.map((x, j) => (j === i ? ev.target.value : x)) }))} className={`${input} text-sm`} />
+                  <button onClick={() => patch((c) => ({ ...c, pendingQuestions: c.pendingQuestions.filter((_, j) => j !== i) }))} className={`${btnGhost} px-3`} aria-label="Quitar"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              ))}
             </section>
           )}
 
           {(e.toMeasure?.length || e.opportunities.length > 0) && (
             <section className={section}>
               <h3 className={h}>Lo que hoy no sabemos y vamos a medir</h3>
-              <p className="text-xs text-slate-500">Sale en el PDF antes de las oportunidades. Uno por línea; vacío = no se muestra.</p>
+              <p className="text-xs text-slate-500">Son datos que el cliente hoy no tiene y que conviene empezar a medir (por ejemplo: cuánto deja cada camión). Es una sección honesta del PDF: le dice qué cosas desconoce y que ver esos números es parte del plan. La IA la propone según lo que falte; la editas aquí, uno por línea. Si la dejas vacía, no se muestra.</p>
               <textarea rows={4} value={(e.toMeasure ?? []).join('\n')} onChange={(ev) => patch((c) => ({ ...c, toMeasure: ev.target.value.split('\n') }))} className={input} />
             </section>
           )}
@@ -2079,6 +2315,9 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                 <Plus className="w-4 h-4" /> Oportunidad
               </button>
             </div>
+            <p className="text-xs leading-relaxed text-slate-500">
+              Cada oportunidad es algo concreto a construir. Su ahorro mensual suma dos cosas: (1) las horas que libera = horas por semana del proceso × % automatizable × costo de la hora, y (2) la plata que recupera = el monto mensual de la fuga que ataca × el % que recupera. Los porcentajes son supuestos tuyos, no datos del cliente. A eso se le resta el costo mensual de herramientas, y con la inversión sale la recuperación en meses y el ROI a 12 meses. Solo cuentan las marcadas con el visto; las demás quedan fuera del PDF.
+            </p>
             {e.opportunities.length === 0 && <p className="text-sm text-slate-500">Genera la propuesta con IA o agrégalas a mano.</p>}
             {e.opportunities.map((o) => {
               const c = oppCalc(o, latest.current);

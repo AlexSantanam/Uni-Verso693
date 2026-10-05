@@ -928,3 +928,216 @@ Con esto te entrego el PDF y el video con la explicación. Si algo no existe, no
 
 Saludos,
 ${brand}`;
+
+// ---------- suggestions: one click adds an example process or leak the consultant then adjusts ----------
+export interface SuggestedProcess {
+  name: string;
+  hoursWeek: number;
+  pain: string;
+}
+export interface SuggestedLeak {
+  title: string;
+  detail: string;
+}
+
+const GENERAL_SUGGESTIONS: { processes: SuggestedProcess[]; leaks: SuggestedLeak[] } = {
+  processes: [
+    { name: 'Responder consultas de clientes (WhatsApp, correo, llamadas)', hoursWeek: 8, pain: 'Siempre las mismas preguntas y se responde tarde' },
+    { name: 'Emitir facturas y cobrar', hoursWeek: 6, pain: 'Se hace a mano y se atrasa la cobranza' },
+    { name: 'Pasar datos entre planillas o sistemas', hoursWeek: 5, pain: 'Se digita dos veces y hay errores' },
+    { name: 'Armar reportes para la gerencia', hoursWeek: 4, pain: 'Llegan tarde y nadie confía en las cifras' },
+  ],
+  leaks: [
+    { title: 'Clientes que se van', detail: 'Dejan de comprar y nadie los contacta para saber por qué' },
+    { title: 'Consultas sin respuesta a tiempo', detail: 'Escriben fuera de horario o en hora punta y se enfrían' },
+    { title: 'Facturas que se cobran tarde', detail: 'La plata queda en manos de los clientes semanas o meses' },
+  ],
+};
+
+const SUGGESTIONS: Record<string, { processes: SuggestedProcess[]; leaks: SuggestedLeak[] }> = {
+  'transporte-y-flotas': {
+    processes: [
+      { name: 'Anotar viajes y guías de despacho', hoursWeek: 10, pain: 'Cuaderno y papel; después hay que pasarlo a Excel' },
+      { name: 'Facturar viajes a fin de mes', hoursWeek: 12, pain: 'Una semana digitando guías para poder facturar' },
+      { name: 'Coordinar choferes por WhatsApp', hoursWeek: 8, pain: 'Todo pasa por mensajes; se pierde información' },
+      { name: 'Cobranza de facturas', hoursWeek: 5, pain: 'No hay recordatorios y se paga a 60 o 90 días' },
+    ],
+    leaks: [
+      { title: 'Camiones parados', detail: 'Mantención, falta de chofer o falta de carga: no facturan' },
+      { title: 'Retornos vacíos', detail: 'El camión vuelve sin carga y el viaje de vuelta se pierde' },
+      { title: 'Esperas en carga y descarga', detail: 'Horas de camión y chofer detenidos que nadie cobra' },
+      { title: 'No se sabe qué camión deja plata', detail: 'Sin números por camión, las decisiones se toman a ojo' },
+    ],
+  },
+  'clinicas-y-salud': {
+    processes: [
+      { name: 'Agendar y confirmar citas', hoursWeek: 12, pain: 'Llamadas y mensajes uno por uno' },
+      { name: 'Responder consultas de precios y horarios', hoursWeek: 8, pain: 'Siempre las mismas preguntas' },
+      { name: 'Seguimiento de presupuestos de tratamiento', hoursWeek: 4, pain: 'Se entregan y no se vuelve a llamar' },
+      { name: 'Registrar fichas y cobros', hoursWeek: 6, pain: 'Se digita en varios lugares' },
+    ],
+    leaks: [
+      { title: 'Horas de agenda vacías', detail: 'Profesionales disponibles sin pacientes' },
+      { title: 'Pacientes que no llegan', detail: 'Faltan sin avisar y la hora se pierde' },
+      { title: 'Presupuestos que no se concretan', detail: 'El paciente se enfría porque nadie le hace seguimiento' },
+    ],
+  },
+  inmobiliarias: {
+    processes: [
+      { name: 'Responder interesados de portales y redes', hoursWeek: 10, pain: 'Llegan por varios canales y se responde tarde' },
+      { name: 'Seguimiento de interesados', hoursWeek: 6, pain: 'Se olvida volver a escribir' },
+      { name: 'Coordinar visitas', hoursWeek: 5, pain: 'Muchos mensajes para cuadrar un horario' },
+      { name: 'Publicar y actualizar propiedades', hoursWeek: 5, pain: 'Se repite en cada portal' },
+    ],
+    leaks: [
+      { title: 'Interesados sin respuesta', detail: 'El que responde primero se queda con el cliente' },
+      { title: 'Sin seguimiento', detail: 'Interesados tibios que nunca se retoman' },
+      { title: 'Visitas que no se concretan', detail: 'Se agendan y no llegan, o llegan sin ser el cliente adecuado' },
+    ],
+  },
+  'retail-y-ecommerce': {
+    processes: [
+      { name: 'Responder mensajes de clientes (stock, tallas, despacho)', hoursWeek: 12, pain: 'Preguntas repetidas todo el día' },
+      { name: 'Actualizar stock entre tienda, web y marketplaces', hoursWeek: 6, pain: 'Se desalinea y se vende lo que no hay' },
+      { name: 'Gestionar pedidos y despachos', hoursWeek: 8, pain: 'Planillas y copiar datos a mano' },
+      { name: 'Recuperar compras abandonadas', hoursWeek: 2, pain: 'No se hace, o se hace de forma manual' },
+    ],
+    leaks: [
+      { title: 'Compras a medias', detail: 'Clientes que dejan el carrito y no vuelven' },
+      { title: 'Ventas perdidas por falta de stock', detail: 'Se vende en un canal lo que ya no hay' },
+      { title: 'Mensajes sin respuesta rápida', detail: 'El cliente compra en otro lado mientras espera' },
+    ],
+  },
+  'estudios-profesionales': {
+    processes: [
+      { name: 'Pedir y recibir documentos de clientes', hoursWeek: 8, pain: 'Se persigue cliente por cliente' },
+      { name: 'Digitar información en sistemas', hoursWeek: 10, pain: 'Trabajo repetitivo de bajo valor' },
+      { name: 'Controlar plazos y vencimientos', hoursWeek: 4, pain: 'En planillas o de memoria' },
+      { name: 'Emitir informes y cobrar honorarios', hoursWeek: 5, pain: 'Se hace a mano y se atrasa' },
+    ],
+    leaks: [
+      { title: 'Horas que no se cobran', detail: 'Trabajo administrativo que nadie factura' },
+      { title: 'Multas por plazos vencidos', detail: 'Un vencimiento olvidado cuesta caro' },
+      { title: 'Clientes que pagan tarde', detail: 'Honorarios impagos por meses' },
+    ],
+  },
+  educacion: {
+    processes: [
+      { name: 'Responder consultas de postulantes', hoursWeek: 10, pain: 'Siempre las mismas preguntas sobre aranceles y requisitos' },
+      { name: 'Seguimiento de admisión', hoursWeek: 6, pain: 'Postulantes que no reciben respuesta a tiempo' },
+      { name: 'Cobranza de mensualidades', hoursWeek: 6, pain: 'Se llama o escribe uno por uno' },
+      { name: 'Comunicados a apoderados', hoursWeek: 4, pain: 'Se arman a mano por varios canales' },
+    ],
+    leaks: [
+      { title: 'Postulantes que no se matriculan', detail: 'Se enfrían por falta de respuesta o seguimiento' },
+      { title: 'Mensualidades atrasadas', detail: 'Plata que el establecimiento financia' },
+      { title: 'Equipo administrativo saturado', detail: 'Admisión y cobranza compiten por el mismo tiempo' },
+    ],
+  },
+  mineria: {
+    processes: [
+      { name: 'Armar reportes de turno', hoursWeek: 10, pain: 'Se arman a mano y llegan tarde' },
+      { name: 'Control documental de contratistas', hoursWeek: 8, pain: 'Documentos vencidos que frenan el ingreso' },
+      { name: 'Registrar fallas y detenciones', hoursWeek: 5, pain: 'Sin historial confiable para anticipar' },
+      { name: 'Solicitudes de compra y repuestos', hoursWeek: 5, pain: 'Largas cadenas de correos y firmas' },
+    ],
+    leaks: [
+      { title: 'Detenciones no planificadas', detail: 'Cada hora detenida es producción perdida' },
+      { title: 'Reportes a mano', detail: 'Tiempo de gente calificada en papeleo' },
+      { title: 'Contratistas sin documentos al día', detail: 'Retrasos y riesgos por falta de control' },
+    ],
+  },
+  seguros: {
+    processes: [
+      { name: 'Gestionar renovaciones de pólizas', hoursWeek: 8, pain: 'Se avisa tarde o no se avisa' },
+      { name: 'Cotizar con varias compañías', hoursWeek: 10, pain: 'Se repite el mismo ingreso en cada portal' },
+      { name: 'Revisar y registrar siniestros', hoursWeek: 8, pain: 'Mucho papeleo y seguimiento manual' },
+      { name: 'Responder consultas de asegurados', hoursWeek: 6, pain: 'Estado de pólizas y coberturas, una y otra vez' },
+    ],
+    leaks: [
+      { title: 'Renovaciones que se pierden', detail: 'El cliente se va con otro corredor al vencer la póliza' },
+      { title: 'Cotizaciones lentas', detail: 'Quien cotiza primero cierra la venta' },
+      { title: 'Siniestros revisados a mano', detail: 'Horas de personal en revisión repetitiva' },
+    ],
+  },
+  'banca-y-finanzas': {
+    processes: [
+      { name: 'Revisar documentos de solicitudes', hoursWeek: 12, pain: 'Revisión manual y repetitiva' },
+      { name: 'Seguimiento de solicitudes en curso', hoursWeek: 6, pain: 'El cliente no sabe en qué etapa está' },
+      { name: 'Cobranza de cartera atrasada', hoursWeek: 8, pain: 'Llamadas y correos sin priorización' },
+      { name: 'Reportes regulatorios y de gestión', hoursWeek: 6, pain: 'Armados a mano cada mes' },
+    ],
+    leaks: [
+      { title: 'Solicitudes abandonadas', detail: 'El cliente desiste por lentitud o falta de información' },
+      { title: 'Revisión documental manual', detail: 'Mucho tiempo por solicitud' },
+      { title: 'Cartera morosa', detail: 'Se actúa tarde sobre los atrasos' },
+    ],
+  },
+  'alimentacion-y-restaurantes': {
+    processes: [
+      { name: 'Tomar pedidos por WhatsApp y teléfono', hoursWeek: 12, pain: 'En hora punta no se alcanza a contestar' },
+      { name: 'Gestionar reservas', hoursWeek: 5, pain: 'Se anotan a mano y no se confirman' },
+      { name: 'Hacer compras a proveedores', hoursWeek: 5, pain: 'Se pide de memoria y se compra de más o de menos' },
+      { name: 'Cuadrar caja e inventario', hoursWeek: 6, pain: 'Planillas y conteos manuales' },
+    ],
+    leaks: [
+      { title: 'Mermas', detail: 'Insumos que se botan por mala estimación' },
+      { title: 'Reservas que no llegan', detail: 'Mesas vacías en horario de mayor venta' },
+      { title: 'Pedidos que no se alcanzan a tomar', detail: 'Clientes que compran en otro lado' },
+    ],
+  },
+  'turismo-y-hoteleria': {
+    processes: [
+      { name: 'Responder consultas de reserva', hoursWeek: 10, pain: 'Llegan a toda hora y en varios idiomas' },
+      { name: 'Actualizar disponibilidad en cada canal', hoursWeek: 5, pain: 'Riesgo de sobreventa' },
+      { name: 'Enviar confirmaciones e indicaciones de llegada', hoursWeek: 4, pain: 'Se hace uno por uno' },
+      { name: 'Gestionar opiniones y reseñas', hoursWeek: 3, pain: 'Se responden tarde o no se responden' },
+    ],
+    leaks: [
+      { title: 'Comisiones de agencias en línea', detail: 'Se pagan por reservas que podrían ser directas' },
+      { title: 'Consultas sin respuesta a tiempo', detail: 'El turista reserva en otro lugar' },
+      { title: 'Habitaciones o cupos vacíos', detail: 'Temporada baja sin acciones para llenarlos' },
+    ],
+  },
+  manufactura: {
+    processes: [
+      { name: 'Registrar producción y detenciones', hoursWeek: 10, pain: 'En papel; llega tarde a gerencia' },
+      { name: 'Controlar calidad y defectos', hoursWeek: 6, pain: 'Se anota pero no se analiza' },
+      { name: 'Pedir y controlar insumos', hoursWeek: 5, pain: 'Quiebres que paran la línea' },
+      { name: 'Planificar la producción', hoursWeek: 6, pain: 'En planillas que no se actualizan' },
+    ],
+    leaks: [
+      { title: 'Detenciones no planificadas', detail: 'Línea parada sin saber la causa real' },
+      { title: 'Productos defectuosos', detail: 'Reprocesos y mermas que cuestan' },
+      { title: 'Quiebres de insumos', detail: 'Falta de material que paraliza la producción' },
+    ],
+  },
+  agro: {
+    processes: [
+      { name: 'Registrar labores y cosecha', hoursWeek: 8, pain: 'En cuaderno; se pasa a mano después' },
+      { name: 'Control de personal y asistencia', hoursWeek: 6, pain: 'Planillas semanales a mano' },
+      { name: 'Documentos de trazabilidad para exportación', hoursWeek: 6, pain: 'Se arman a último minuto' },
+      { name: 'Coordinar fletes y entregas', hoursWeek: 5, pain: 'Llamadas y mensajes sueltos' },
+    ],
+    leaks: [
+      { title: 'Merma de cosecha', detail: 'Fruta o producto que no llega a venderse' },
+      { title: 'Rechazos por trazabilidad', detail: 'Descuentos o rechazos por documentación incompleta' },
+      { title: 'Registro en papel', detail: 'Horas en papeleo en vez de en el campo' },
+    ],
+  },
+  construccion: {
+    processes: [
+      { name: 'Control documental de subcontratos y trabajadores', hoursWeek: 10, pain: 'Documentos vencidos que frenan la obra' },
+      { name: 'Seguimiento de avance y costos por obra', hoursWeek: 8, pain: 'Se detectan los sobrecostos tarde' },
+      { name: 'Solicitudes de compra a obra', hoursWeek: 5, pain: 'Pedidos por WhatsApp y correo sin trazabilidad' },
+      { name: 'Reportes semanales a la gerencia', hoursWeek: 5, pain: 'Se arman a mano con datos de varias obras' },
+    ],
+    leaks: [
+      { title: 'Atrasos de obra', detail: 'Cada día de atraso corren los gastos generales' },
+      { title: 'Sobrecostos detectados tarde', detail: 'Se ve el desvío cuando ya no hay cómo corregirlo' },
+      { title: 'Control documental a mano', detail: 'Horas de oficina y riesgo de multas' },
+    ],
+  },
+};
+
+export const suggestionsFor = (id: string | undefined) => SUGGESTIONS[id ?? ''] ?? GENERAL_SUGGESTIONS;

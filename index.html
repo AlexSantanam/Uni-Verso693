@@ -57,7 +57,7 @@
         var seen = null;
         try { seen = sessionStorage.getItem('introSeen'); } catch (e) {}
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var internal = location.pathname.indexOf('/interno') === 0;
+        var internal = location.pathname.indexOf('/interno') === 0 || location.pathname.indexOf('/ebs/') === 0;
         if (seen || reduce || internal) { el.parentNode.removeChild(el); return; }
         try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
         var done = false;
