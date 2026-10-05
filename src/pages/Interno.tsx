@@ -80,8 +80,14 @@ interface Settings {
   notes: string;
   ivaRate: number;
   devHourRate: number;
-  maintenancePct: number;
+  /** Services paid every month; each EBS solution says which ones it needs. */
+  services: RecurringService[];
   kickoffUrl: string;
+}
+interface RecurringService {
+  id: string;
+  name: string;
+  monthly: number;
 }
 interface QuoteItem {
   name: string;
@@ -1626,6 +1632,8 @@ interface EbsOpportunity {
   flowAfter?: string[];
   /** Estimated weeks until it is live (feeds the timeline of the interactive EBS). */
   weeks?: number;
+  /** Monthly services it needs (copied with their price when chosen); its maintenance is their sum. */
+  services?: RecurringService[];
 }
 interface EbsSiteAudit {
   url: string;
@@ -1757,7 +1765,14 @@ const ebsTotals = (e: EbsSession) => {
   const sel = e.opportunities.filter((o) => o.selected);
   const investment = sel.reduce((a, o) => a + o.investment, 0);
   const savingMonth = sel.reduce((a, o) => a + oppCalc(o, e).savingMonth, 0);
-  const monthlyCost = sel.reduce((a, o) => a + o.monthlyCost, 0);
+  // a service shared by several solutions is paid once
+  const once = new Map<string, number>();
+  let fixedMonthly = 0;
+  for (const o of sel) {
+    if (o.services?.length) for (const sv of o.services) once.set(sv.id, sv.monthly);
+    else fixedMonthly += o.monthlyCost;
+  }
+  const monthlyCost = [...once.values()].reduce((a, n) => a + n, 0) + fixedMonthly;
   const netMonth = savingMonth - monthlyCost;
   const manualCostMonth = e.processes.reduce((a, p) => a + p.hoursWeek * 4.33 * p.hourlyCost, 0);
   return {
@@ -1787,7 +1802,7 @@ const NumIn = ({ value, onChange, placeholder, step, className = '' }: { value: 
   <input type="number" min={0} step={step ?? 1} value={value || ''} onChange={(e) => onChange(Number(e.target.value))} placeholder={placeholder} className={`${input} ${className}`} />
 );
 
-const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; token: string; initial: EbsSession; onBack: () => void; onOpenQuote: (id: string) => void }) => {
+const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api: Api; token: string; initial: EbsSession; services: RecurringService[]; onBack: () => void; onOpenQuote: (id: string) => void }) => {
   const [e, setE] = useState<EbsSession>(initial);
   const [dirty, setDirty] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>(initial.id ? 'saved' : 'idle');
@@ -2468,10 +2483,34 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                     </label>
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
                     <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { investment: n, investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
-                    <label className="text-xs text-slate-500" title="Hosting, APIs, soporte: el gasto que sigue todos los meses">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n })} /></label>
+                    <label className="text-xs text-slate-500" title="Suma de los servicios que usa. Si no eliges servicios, puedes escribir un monto fijo.">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n, services: [] })} /></label>
                     <label className="text-xs text-slate-500" title="Semanas hasta tenerla en producción, con un equipo trabajando una solución tras otra">Semanas hasta producción<NumIn value={o.weeks ?? 0} onChange={(n) => setOpp(o.id, { weeks: Math.min(104, Math.round(n)) })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-slate-500">
+                      Servicios mensuales que necesita (su mantención es la suma; un servicio compartido se cobra una sola vez en el total)
+                      {services.length === 0 && <span className="text-amber-200/80"> · primero carga la lista en Ajustes</span>}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {services.map((sv) => {
+                        const on = (o.services ?? []).some((x) => x.id === sv.id);
+                        return (
+                          <button
+                            key={sv.id}
+                            onClick={() => {
+                              const next = on ? (o.services ?? []).filter((x) => x.id !== sv.id) : [...(o.services ?? []), sv];
+                              setOpp(o.id, { services: next, monthlyCost: next.reduce((a, x) => a + x.monthly, 0) });
+                            }}
+                            className={`rounded-full border px-3 py-1 text-xs cursor-pointer ${on ? 'border-cyan-300/60 bg-cyan-300/10 text-cyan-100' : 'border-white/15 text-slate-400 hover:text-white'}`}
+                          >
+                            {on ? '✓ ' : '+ '}
+                            {sv.name} · {sv.monthly > 0 ? `${clp(sv.monthly)}/mes` : 'sin precio'}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <label className="text-xs text-red-200/80">Cómo funciona hoy (un paso por línea)
                       <textarea rows={4} value={(o.flowBefore ?? []).join('\n')} onChange={(ev) => setOpp(o.id, { flowBefore: ev.target.value.split('\n') })} className={`${input} text-xs`} />
@@ -2701,9 +2740,22 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         {field('phone', 'Teléfono')}
         {field('validDays', 'Validez por defecto (días)', 'number')}
         {field('devHourRate', 'Tarifa por hora de desarrollo (CLP), para el EBS', 'number')}
-        {field('maintenancePct', 'Mantención mensual (% de la inversión), para el EBS', 'number')}
         {field('kickoffUrl', 'Link de Calendly para la reunión de inicio (el botón tras Quiero avanzar)')}
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
+      </div>
+      <div className="space-y-2 rounded-lg border border-white/10 p-3">
+        <div className="flex items-center gap-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Servicios mensuales (mantención del EBS)</p>
+          <button onClick={() => setS({ ...s, services: [...(s.services ?? []), { id: uid(), name: '', monthly: 0 }] })} className={`${btnGhost} ml-auto`}><Plus className="w-4 h-4" /> Servicio</button>
+        </div>
+        <p className="text-xs text-slate-500">Lo que se paga cada mes a terceros para que las soluciones sigan funcionando (WhatsApp, nube, dominio, APIs de IA…). Cada solución del EBS marca los que usa y su mantención es la suma; un servicio compartido se cuenta una sola vez. Mientras un servicio esté en $0 la mantención sale "por definir".</p>
+        {(s.services ?? []).map((sv, i) => (
+          <div key={sv.id} className="grid grid-cols-12 gap-2">
+            <input value={sv.name} onChange={(e) => setS({ ...s, services: s.services.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} placeholder="Servicio" className={`${input} col-span-7`} />
+            <input type="number" min={0} step={1000} value={sv.monthly || ''} onChange={(e) => setS({ ...s, services: s.services.map((x, j) => (j === i ? { ...x, monthly: Number(e.target.value) } : x)) })} placeholder="CLP al mes" className={`${input} col-span-4`} />
+            <button onClick={() => setS({ ...s, services: s.services.filter((_, j) => j !== i) })} className={`${btnGhost} col-span-1 px-2`} aria-label="Quitar"><Trash2 className="w-4 h-4" /></button>
+          </div>
+        ))}
       </div>
       <label className="block text-xs text-slate-500">Condiciones de pago por defecto<textarea rows={2} value={s.paymentTerms} onChange={(e) => setS({ ...s, paymentTerms: e.target.value })} className={input} /></label>
       <label className="block text-xs text-slate-500">Notas por defecto<textarea rows={3} value={s.notes} onChange={(e) => setS({ ...s, notes: e.target.value })} className={input} /></label>
@@ -2819,7 +2871,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
         ) : tab === 'ebs' ? (
           ebsEditing ? (
             <React.Fragment key={ebsEditing.id ?? 'new'}>
-              <EbsEditor api={api} token={token} initial={ebsEditing} onBack={() => setEbsEditing(null)} onOpenQuote={openQuote} />
+              <EbsEditor api={api} token={token} initial={ebsEditing} services={settings.services ?? []} onBack={() => setEbsEditing(null)} onOpenQuote={openQuote} />
             </React.Fragment>
           ) : (
             <EbsList api={api} onOpen={setEbsEditing} onNew={() => setEbsEditing(emptyEbs())} />

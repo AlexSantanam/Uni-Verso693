@@ -29,6 +29,8 @@ interface ViewOpp {
   investment: number;
   flowBefore: string[];
   flowAfter: string[];
+  /** Monthly services this solution needs; its maintenance is their sum. */
+  services: { id: string; name: string; monthly: number }[];
   hoursWeek: number;
   hourlyCost: number;
   automationPct: number;
@@ -373,7 +375,14 @@ const Inner = ({ token }: { token: string }) => {
   const totals = useMemo(() => {
     const act = opps.filter((o) => on.has(o.id));
     const saving = act.reduce((a, o) => a + o.savingMonth, 0);
-    const toolCost = act.reduce((a, o) => a + o.monthlyCost, 0);
+    // a service shared by several solutions is paid once
+    const once = new Map<string, number>();
+    let fixed = 0;
+    for (const o of act) {
+      if (o.services?.length) for (const sv of o.services) once.set(sv.id, sv.monthly);
+      else fixed += o.monthlyCost;
+    }
+    const toolCost = [...once.values()].reduce((a, n) => a + n, 0) + fixed;
     const investment = act.reduce((a, o) => a + o.investment, 0);
     const net = saving - toolCost;
     return {
@@ -509,7 +518,7 @@ const Inner = ({ token }: { token: string }) => {
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between text-slate-400"><dt>Se escapan hoy</dt><dd className="font-bold text-red-300"><AnimNum value={leakNow} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300"><AnimNum value={totals.saving} format={clp} />/mes</dd></div>
-          <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
+          <div className="flex justify-between text-slate-400"><dt title="Servicios de terceros que se pagan cada mes (WhatsApp, nube, dominio…). Un servicio que usan varias soluciones se cuenta una sola vez.">Mantención mensual</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
           <div className={`flex justify-between border-t border-white/10 pt-1.5 text-base font-black ${totals.net < 0 ? "text-red-300" : "text-white"}`}><dt>Ahorro neto</dt><dd><AnimNum value={totals.net} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{totals.hours} h/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}{totals.pendingPrice && totals.investment > 0 ? ' + por definir' : ''}</dd></div>
@@ -522,7 +531,7 @@ const Inner = ({ token }: { token: string }) => {
           </p>
         )}
         <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-          Cifras estimadas con lo conversado en la sesión. El ahorro neto ya descuenta la mantención mensual (hosting, APIs y soporte), que se paga todos los meses. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
+          Cifras estimadas con lo conversado en la sesión. El ahorro neto ya descuenta la mantención mensual: los servicios de terceros (WhatsApp, nube, dominio, APIs de IA) que se pagan todos los meses, contando una sola vez los que comparten varias soluciones. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
         </p>
         {sent ? (
           <div className="mt-3 space-y-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3.5 text-sm">
@@ -621,6 +630,13 @@ const Inner = ({ token }: { token: string }) => {
             <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300">{selected.savingMonth > 0 ? `${clp(selected.savingMonth)}/mes` : 'visibilidad para decidir'}</dd></div>
             {selected.hoursSavedMonth > 0 && <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{selected.hoursSavedMonth} h/mes</dd></div>}
             <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{selected.monthlyCost > 0 ? `${clp(selected.monthlyCost)}/mes` : 'por definir'}</dd></div>
+            {selected.services.length > 0 && (
+              <ul className="space-y-0.5 pl-3 text-xs text-slate-500">
+                {selected.services.map((sv) => (
+                  <li key={sv.id} className="flex justify-between gap-3"><span>{sv.name}</span><span>{sv.monthly > 0 ? `${clp(sv.monthly)}/mes` : 'por definir'}</span></li>
+                ))}
+              </ul>
+            )}
             <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{selected.investment > 0 ? clp(selected.investment) : 'por definir'}</dd></div>
           </dl>
           {(selected.leakBase > 0 || selected.hoursWeek > 0) && (
