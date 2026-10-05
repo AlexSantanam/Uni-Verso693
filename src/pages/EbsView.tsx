@@ -3,6 +3,9 @@ import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, Rea
 import '@xyflow/react/dist/style.css';
 import { AlertTriangle, ArrowRight, CalendarCheck, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, X, Zap } from 'lucide-react';
 import { whatsappLink } from '../data/site';
+import { playbookById, computeLeaks, type MetricValue } from '../data/ebsPlaybooks';
+import { AnimNum, TimelineModal, WhatIfPanel, type Driver, type TimelineItem } from './ebsParts';
+import { CalendarRange } from 'lucide-react';
 
 const EBS_FEE = 197000;
 
@@ -31,6 +34,8 @@ interface ViewOpp {
   automationPct: number;
   recoveryPct: number;
   leakBase: number;
+  leakKey: string;
+  weeks: number;
   leakLabel: string;
   leakMonthly: number;
   confidence: Confidence | null;
@@ -52,6 +57,8 @@ interface View {
   opportunities: ViewOpp[];
   choice: string[] | null;
   choiceAdj: Adj | null;
+  choiceScenario: { key: string; value: number }[] | null;
+  whatIf: { playbook: string; metrics: Record<string, { v: number; c: 'real' | 'estimado' | 'supuesto'; label: string; unit: string }> } | null;
   /** Booking link of the kickoff meeting with name and email prefilled; null until it is set in Ajustes. */
   kickoff: string | null;
 }
@@ -284,6 +291,8 @@ const Inner = ({ token }: { token: string }) => {
   const [sent, setSent] = useState(false);
   const [adj, setAdj] = useState<Adj>({});
   const [flowFor, setFlowFor] = useState<string | null>(null);
+  const [scn, setScn] = useState<Record<string, number>>({});
+  const [showTimeline, setShowTimeline] = useState(false);
 
   useEffect(() => {
     document.title = 'Tu hoja de ruta EBS 693 interactiva | Uni-Verso693';
@@ -298,6 +307,7 @@ const Inner = ({ token }: { token: string }) => {
         if (v.choice?.length) {
           setOn(new Set(v.choice));
           setAdj(v.choiceAdj ?? {});
+          setScn(Object.fromEntries((v.choiceScenario ?? []).map((x) => [x.key, x.value])));
           setSent(true);
         }
       })
@@ -322,7 +332,32 @@ const Inner = ({ token }: { token: string }) => {
   }, []);
 
   // every solution with the client's tweaks applied (the original assumptions when untouched)
-  const opps = useMemo(() => (view?.opportunities ?? []).map((o) => withAdj(o, adj[o.id])), [view, adj]);
+  // numbers of the business the client can move (the ones behind the leaks): a few drivers from the approach's own formulas
+  const sim = useMemo(() => {
+    if (!view?.whatIf) return null;
+    const pb = playbookById(view.whatIf.playbook);
+    const common = new Set(['horasOficina', 'costoHoraOficina', 'ingresosAhora', 'ingresosAntes', 'sueldosMes']);
+    const keys: string[] = [];
+    for (const l of pb.leaks.filter((x) => x.kind === 'perdida')) {
+      for (const k of l.uses) if (!common.has(k) && view.whatIf.metrics[k] && !keys.includes(k)) keys.push(k);
+    }
+    const base: Record<string, MetricValue> = Object.fromEntries(Object.entries(view.whatIf.metrics).map(([k, m]: [string, { v: number; c: 'real' | 'estimado' | 'supuesto' }]) => [k, { v: m.v, c: m.c }]));
+    const moved: Record<string, MetricValue> = { ...base };
+    for (const k of keys) if (scn[k] !== undefined) moved[k] = { ...base[k], v: scn[k] };
+    const active = keys.some((k) => scn[k] !== undefined && scn[k] !== base[k].v);
+    const leaks = computeLeaks(pb, moved).filter((l) => l.kind === 'perdida' && !l.missing.length);
+    const drivers: Driver[] = keys.slice(0, 4).map((k) => ({ key: k, label: view.whatIf!.metrics[k].label, unit: view.whatIf!.metrics[k].unit, original: base[k].v, value: moved[k].v, confidence: base[k].c }));
+    return { active, drivers, leakByKey: Object.fromEntries(leaks.map((l) => [l.key, l.monthly])), leakTotal: leaks.reduce((a, l) => a + l.monthly, 0) };
+  }, [view, scn]);
+  const opps = useMemo(
+    () =>
+      (view?.opportunities ?? []).map((o) => {
+        const base = sim?.active && o.leakKey && sim.leakByKey[o.leakKey] !== undefined ? { ...o, leakBase: sim.leakByKey[o.leakKey] } : o;
+        return withAdj(base, adj[o.id]);
+      }),
+    [view, adj, sim],
+  );
+  const leakNow = sim?.active && sim.leakTotal > 0 ? sim.leakTotal : (view?.leakMonth ?? 0);
   const setTweak = (id: string, k: 'rec' | 'auto', v: number | undefined) => {
     setSent(false);
     setAdj((cur) => ({ ...cur, [id]: { ...cur[id], [k]: v } }));
@@ -343,7 +378,7 @@ const Inner = ({ token }: { token: string }) => {
       investment,
       pendingPrice: act.some((o) => o.investment <= 0),
       payback: investment > 0 && net > 0 ? investment / net : null,
-      roi12: investment > 0 ? (net * 12 - investment) / investment : null,
+      roi12: investment > 0 && saving > 0 ? (net * 12 - investment) / investment : null,
     };
   }, [opps, on]);
 
@@ -353,7 +388,7 @@ const Inner = ({ token }: { token: string }) => {
     const chain = onDark(view.site?.primary, '#22d3ee');
     const CARD_W = 290;
     const GAP = 44;
-    const nodes: any[] = [{ id: 'root', type: 'root', position: { x: 0, y: 0 }, data: { company: view.company, leakMonth: view.leakMonth, logo: view.site?.logo ?? null }, draggable: false, selectable: false }];
+    const nodes: any[] = [{ id: 'root', type: 'root', position: { x: 0, y: 0 }, data: { company: view.company, leakMonth: leakNow, logo: view.site?.logo ?? null }, draggable: false, selectable: false }];
     const edges: any[] = [];
     const stages = ([1, 2, 3] as const).filter((s) => opps.some((o) => o.stage === s));
     let prev = 'root';
@@ -380,7 +415,7 @@ const Inner = ({ token }: { token: string }) => {
       });
     });
     return { nodes, edges };
-  }, [view, opps, on, sel, toggle]);
+  }, [view, opps, on, sel, toggle, leakNow]);
 
   const advance = async () => {
     setSending(true);
@@ -388,7 +423,12 @@ const Inner = ({ token }: { token: string }) => {
       const res = await fetch('/api/admin?action=ebs-advance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ids: [...on], adj }),
+        body: JSON.stringify({
+          token,
+          ids: [...on],
+          adj,
+          scenario: (sim?.drivers ?? []).filter((d) => d.value !== d.original).map((d) => ({ key: d.key, label: d.label, original: d.original, value: d.value, unit: d.unit })),
+        }),
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || 'No pudimos enviar tu elección.');
@@ -435,6 +475,12 @@ const Inner = ({ token }: { token: string }) => {
     }
     return whatsappLink('Hola, soy de ' + view.company + '. Elegimos ' + totals.count + ' solución(es) del EBS ' + view.number + ' y quiero agendar la reunión de inicio y validación de supuestos.');
   })();
+  // estimated go-live of what is switched on: weeks per solution (a typical value for its stage when none was set)
+  const stageWeeks: Record<number, number> = { 1: 3, 2: 6, 3: 10 };
+  const timelineItems: TimelineItem[] = opps
+    .filter((o) => on.has(o.id))
+    .sort((a, b) => a.stage - b.stage)
+    .map((o) => ({ id: o.id, title: o.title, stage: o.stage, weeks: o.weeks > 0 ? o.weeks : stageWeeks[o.stage] ?? 6, estimated: !(o.weeks > 0) }));
   const tweaked = (id: string) => adj[id]?.rec !== undefined || adj[id]?.auto !== undefined;
   const c1 = '#8b5cf6';
   const c2 = onDark(view.site?.primary, '#22d3ee');
@@ -454,15 +500,20 @@ const Inner = ({ token }: { token: string }) => {
           <span className="text-2xl font-black text-white">{totals.count}</span> de {view.opportunities.length} soluciones activadas
         </p>
         <dl className="mt-3 space-y-1.5 text-sm">
-          <div className="flex justify-between text-slate-400"><dt>Se escapan hoy</dt><dd className="font-bold text-red-300">{clp(view.leakMonth)}/mes</dd></div>
-          <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300">{clp(totals.saving)}/mes</dd></div>
+          <div className="flex justify-between text-slate-400"><dt>Se escapan hoy</dt><dd className="font-bold text-red-300"><AnimNum value={leakNow} format={clp} />/mes</dd></div>
+          <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300"><AnimNum value={totals.saving} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
-          <div className="flex justify-between border-t border-white/10 pt-1.5 text-base font-black text-white"><dt>Ahorro neto</dt><dd>{clp(totals.net)}/mes</dd></div>
+          <div className={`flex justify-between border-t border-white/10 pt-1.5 text-base font-black ${totals.net < 0 ? "text-red-300" : "text-white"}`}><dt>Ahorro neto</dt><dd><AnimNum value={totals.net} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{totals.hours} h/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}{totals.pendingPrice && totals.investment > 0 ? ' + por definir' : ''}</dd></div>
           <div className="flex justify-between text-lg font-black text-emerald-300"><dt>Se recupera en</dt><dd>{months(totals.payback)}</dd></div>
-          <div className="flex justify-between text-lg font-black text-emerald-300"><dt>Retorno a 12 meses</dt><dd>{totals.roi12 === null ? '—' : `${Math.round(totals.roi12 * 100)}%`}</dd></div>
+          <div className={`flex justify-between text-lg font-black ${totals.roi12 !== null && totals.roi12 < 0 ? "text-red-300" : "text-emerald-300"}`}><dt>Retorno a 12 meses</dt><dd>{totals.roi12 === null ? '—' : <AnimNum value={totals.roi12 * 100} format={(n) => `${Math.round(n)}%`} />}</dd></div>
         </dl>
+        {totals.count > 0 && totals.saving <= 0 && (
+          <p className="mt-3 rounded-lg bg-cyan-400/10 p-2.5 text-xs leading-relaxed text-cyan-100">
+            Lo que activaste hasta ahora sirve para medir y preparar el terreno: no recupera plata por sí solo, pero permite ver los números y habilita a las demás. Activa también las que recuperan dinero para ver el retorno.
+          </p>
+        )}
         <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
           Cifras estimadas con lo conversado en la sesión. El ahorro neto ya descuenta la mantención mensual (hosting, APIs y soporte), que se paga todos los meses. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
         </p>
@@ -513,12 +564,35 @@ const Inner = ({ token }: { token: string }) => {
             <a href={pdfHref} download className="inline-flex items-center gap-1.5 font-bold hover:brightness-125" style={{ color: c2 }}>
               <Download className="h-3.5 w-3.5" /> Descargar propuesta en PDF
             </a>
-            <button onClick={() => { setOn(new Set()); setAdj({}); setSent(false); }} className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-300 cursor-pointer">
+            <button onClick={() => setShowTimeline(true)} className="inline-flex items-center gap-1.5 font-bold hover:brightness-125 cursor-pointer" style={{ color: c2 }}>
+              <CalendarRange className="h-3.5 w-3.5" /> Ver cronograma estimado
+            </button>
+            <button onClick={() => { setOn(new Set()); setAdj({}); setScn({}); setSent(false); }} className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-300 cursor-pointer">
               <RotateCcw className="h-3 w-3" /> Empezar de nuevo
             </button>
           </div>
         )}
       </section>
+
+      {sim && sim.drivers.length > 0 && (
+        <WhatIfPanel
+          drivers={sim.drivers}
+          accent={c2}
+          onChange={(k, v) => {
+            setSent(false);
+            setScn((cur) => {
+              const n = { ...cur };
+              if (v === undefined) delete n[k];
+              else n[k] = v;
+              return n;
+            });
+          }}
+          onReset={() => {
+            setSent(false);
+            setScn({});
+          }}
+        />
+      )}
 
       {selected ? (
         <section className="shrink-0 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -686,6 +760,7 @@ const Inner = ({ token }: { token: string }) => {
         </div>
         {panel}
         {flowFor && opps.find((o) => o.id === flowFor) && <FlowModal opp={opps.find((o) => o.id === flowFor)!} accent={c2} onClose={() => setFlowFor(null)} />}
+        {showTimeline && <TimelineModal items={timelineItems} accent={c2} onClose={() => setShowTimeline(false)} />}
       </div>
     </div>
   );

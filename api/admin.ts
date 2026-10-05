@@ -803,6 +803,8 @@ export interface EbsOpportunity {
   /** How the process works today and with the solution, as short steps ("Antes y después" in the interactive EBS). */
   flowBefore?: string[];
   flowAfter?: string[];
+  /** Estimated weeks until it is live (one team, working through the solutions in order). 0 = not estimated. */
+  weeks?: number;
   investment: number;
   monthlyCost: number;
   impact: Level3;
@@ -881,7 +883,7 @@ export const oppCalc = (o: EbsOpportunity, s: Pick<EbsSession, 'sales' | 'comput
   const savingMonth = Math.round(hoursSavedMonth * o.hourlyCost + recoveredSales);
   const netMonth = savingMonth - o.monthlyCost;
   const paybackMonths = o.investment > 0 && netMonth > 0 ? o.investment / netMonth : null;
-  const roi12 = o.investment > 0 ? (netMonth * 12 - o.investment) / o.investment : null;
+  const roi12 = o.investment > 0 && savingMonth > 0 ? (netMonth * 12 - o.investment) / o.investment : null;
   return { hoursSavedMonth, recoveredSales, savingMonth, netMonth, paybackMonths, roi12 };
 };
 
@@ -909,7 +911,7 @@ export const ebsTotals = (s: Pick<EbsSession, 'opportunities' | 'processes' | 's
     // with an industry approach the playbook's leaks are the measure; older sessions add processes + sales
     leakMonth: lossComputed > 0 ? lossComputed : manualCostMonth + leak,
     paybackMonths: investment > 0 && netMonth > 0 ? investment / netMonth : null,
-    roi12: investment > 0 ? (netMonth * 12 - investment) / investment : null,
+    roi12: investment > 0 && savingMonth > 0 ? (netMonth * 12 - investment) / investment : null,
   };
 };
 
@@ -936,6 +938,7 @@ const cleanEbs = (b: any, existing: EbsSession | null): EbsSession => {
     hourlyCost: num(o?.hourlyCost, 0, 10_000_000),
     automationPct: num(o?.automationPct, 0, 100),
     salesRecoveryPct: num(o?.salesRecoveryPct, 0, 100),
+    weeks: Math.round(num(o?.weeks, 0, 104)),
     flowBefore: (Array.isArray(o?.flowBefore) ? o.flowBefore : []).map((t: unknown) => str(t, 160)).filter(Boolean).slice(0, 7),
     flowAfter: (Array.isArray(o?.flowAfter) ? o.flowAfter : []).map((t: unknown) => str(t, 160)).filter(Boolean).slice(0, 7),
     investment: num(o?.investment, 0, 1e11),
@@ -1037,6 +1040,7 @@ const EbsDraft = z.object({
         impact: z.enum(['Alto', 'Medio', 'Bajo']),
         effort: z.enum(['Alto', 'Medio', 'Bajo']),
         stage: z.number().describe('1 = victoria rápida (0-30 días), 2 = 1-3 meses, 3 = 3-6 meses'),
+        weeks: z.number().describe('Semanas realistas hasta tenerla funcionando en producción, con un equipo pequeño (entero de 1 a 26)'),
         flowBefore: z.array(z.string()).describe('Cómo funciona hoy el proceso, 3 a 6 pasos cortos (máx. 12 palabras), según lo conversado'),
         flowAfter: z.array(z.string()).describe('Cómo funcionaría con la solución, 3 a 6 pasos cortos (máx. 12 palabras)'),
       }),
@@ -1057,6 +1061,7 @@ Reglas:
 - Para la inversión, usa un módulo del catálogo si corresponde; si no, estima horas de desarrollo razonables. No inventes precios.
 - Prioriza victorias rápidas (etapa 1) que den confianza, y deja lo complejo para etapas 2 y 3.
 - Usa el lenguaje del rubro y del cliente (pyme, muchas veces sin datos): nada de jerga de consultoría.
+- weeks: plazo realista y conservador (una persona o equipo chico, una solución tras otra); las victorias rápidas (etapa 1) suelen ser de 1 a 4 semanas.
 - flowBefore y flowAfter: pasos concretos de ESE negocio (sus canales y herramientas según las notas). No inventes tiempos ni cifras que no estén en la sesión (nada de "12 segundos" ni "4 horas" si nadie lo dijo); describe qué ocurre, no cuánto tarda.
 - Cada oportunidad que recupere plata debe apuntar a una fuga de tipo "perdida" de <fugas> con leakKey; el % que recupera es un supuesto conservador.
 - Las fugas de tipo "caja" (plata atrapada, p. ej. clientes que pagan tarde) NO son ahorro mensual: si una oportunidad las ataca, deja leakKey vacío y salesRecoveryPct en 0, y explica en la descripción cuánta plata se libera una sola vez. Las de tipo "contexto" tampoco se usan como leakKey.
@@ -1132,6 +1137,7 @@ Tarifa por hora de desarrollo: ${settings.devHourRate > 0 ? `${settings.devHourR
       hourlyCost: p?.hourlyCost ?? 0,
       automationPct: Math.min(100, Math.max(0, Math.round(o.automationPct))),
       salesRecoveryPct: Math.min(100, Math.max(0, Math.round(o.salesRecoveryPct))),
+      weeks: Math.min(52, Math.max(1, Math.round(o.weeks))),
       flowBefore: o.flowBefore.map((t) => t.slice(0, 160)).slice(0, 7),
       flowAfter: o.flowAfter.map((t) => t.slice(0, 160)).slice(0, 7),
       ...((s.computedLeaks ?? []).some((l) => l.key === o.leakKey && l.kind === 'perdida') ? { leakKey: o.leakKey } : {}),
@@ -1516,7 +1522,7 @@ export interface ShareInfo {
   viewedAt?: string;
   lastViewedAt?: string;
   /** What the client left switched on when they pressed "Quiero avanzar". */
-  choice?: { ids: string[]; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }> };
+  choice?: { ids: string[]; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }>; scenario?: { key: string; label: string; original: number; value: number; unit: string }[] };
   /** Copy of the session and audit at publish time: the client's PDF is built from this, never from the live session. */
   frozen?: { session: EbsSession; audit: SiteAudit | null };
   /** Draft quote created when the client pressed "Quiero avanzar". */
@@ -1541,6 +1547,15 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
     site: audit
       ? { host: new URL(audit.url).hostname.replace(/^www\./, ''), summary: audit.summary, findings: audit.findings, primary: audit.colors.primary, secondary: audit.colors.secondary, logo: audit.logo?.data ?? null }
       : null,
+    // numbers of the session the page lets the client move ("what if"); payroll and sales stay private
+    whatIf: {
+      playbook: e.playbook,
+      metrics: Object.fromEntries(
+        Object.entries(e.metrics ?? {})
+          .filter(([k, m]) => m.v > 0 && !['sueldosMes', 'ingresosAhora', 'ingresosAntes'].includes(k))
+          .map(([k, m]) => [k, { v: m.v, c: m.c, label: m.label, unit: m.unit }]),
+      ),
+    },
     leakMonth: t.leakMonth,
     cashTrapped: t.cashTrapped,
     leaks: (e.computedLeaks ?? [])
@@ -1565,6 +1580,8 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
           savingMonth: c.savingMonth,
           monthlyCost: o.monthlyCost,
           investment: o.investment,
+          weeks: o.weeks ?? 0,
+          leakKey: o.leakKey ?? '',
           flowBefore: o.flowBefore ?? [],
           flowAfter: o.flowAfter ?? [],
           hoursWeek: o.hoursWeek,
@@ -2092,7 +2109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             kickoff = null;
           }
         }
-        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAdj: share.choice?.adj ?? null, kickoff } });
+        res.status(200).json({ view: { ...snap, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAdj: share.choice?.adj ?? null, choiceScenario: share.choice?.scenario ?? null, kickoff } });
         return;
       }
       if (action === 'ebs-view-pdf') {
@@ -2119,7 +2136,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
       const adj = clampAdj(cleanAdj(body.adj, ids), snap.opportunities);
-      const choice = { ids, message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj };
+      const metricKeys = new Set(Object.keys(snap.whatIf?.metrics ?? {}));
+      const scenario = (Array.isArray(body.scenario) ? body.scenario : [])
+        .slice(0, 6)
+        .map((x: any) => ({ key: str(x?.key, 40), label: str(x?.label, 120), original: num(x?.original, 0, 1e12), value: num(x?.value, 0, 1e12), unit: str(x?.unit, 10) }))
+        .filter((x: { key: string; original: number; value: number }) => metricKeys.has(x.key) && x.value !== x.original);
+      const choice = { ids, message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj, scenario };
       const chosen = snap.opportunities.filter((o) => ids.includes(o.id)).map((o) => ({ ...o, savingMonth: savingOf(o, adj[o.id]) }));
       // a draft quote with exactly this scope, so nothing has to be typed by hand
       const base = share.frozen?.session ?? e;
@@ -2137,7 +2159,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             subject: `${company} quiere avanzar con ${ids.length} oportunidad${ids.length > 1 ? 'es' : ''} (${e.number})`,
             html: `<p><b>${esc(company)}</b>${choice.name ? ` · ${esc(choice.name)}` : ''} activó esto en la versión interactiva del EBS:</p><ul>${chosen
               .map((o) => `<li>${esc(o.title)} · ahorro ${clp(o.savingMonth)}/mes · inversión ${o.investment > 0 ? clp(o.investment) : 'por definir'}</li>`)
-              .join('')}</ul><p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p><p>Dejé creada la cotización <b>${quote.number}</b> en borrador con ese alcance.</p>${
+              .join('')}</ul>${scenario.length ? `<p>Simulación del cliente (números que movió): ${scenario.map((x: { label: string; original: number; value: number }) => `${esc(x.label)}: ${x.original.toLocaleString('es-CL')} → ${x.value.toLocaleString('es-CL')}`).join(' · ')}</p>` : ''}<p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p><p>Dejé creada la cotización <b>${quote.number}</b> en borrador con ese alcance.</p>${
               choice.message ? `<p>Mensaje: ${esc(choice.message).replace(/\n/g, '<br>')}</p>` : ''
             }<p><a href="${SITE_URL}/interno#ebs">Abrir en /interno</a></p>`,
           })

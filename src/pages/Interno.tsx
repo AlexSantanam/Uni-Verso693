@@ -1604,6 +1604,8 @@ interface EbsOpportunity {
   /** Steps of the process today and with the solution ("Antes y después" in the interactive EBS). */
   flowBefore?: string[];
   flowAfter?: string[];
+  /** Estimated weeks until it is live (feeds the timeline of the interactive EBS). */
+  weeks?: number;
 }
 interface EbsSiteAudit {
   url: string;
@@ -1694,7 +1696,7 @@ const oppCalc = (o: EbsOpportunity, e: Pick<EbsSession, 'sales' | 'computedLeaks
     savingMonth,
     netMonth,
     paybackMonths: o.investment > 0 && netMonth > 0 ? o.investment / netMonth : null,
-    roi12: o.investment > 0 ? (netMonth * 12 - o.investment) / o.investment : null,
+    roi12: o.investment > 0 && savingMonth > 0 ? (netMonth * 12 - o.investment) / o.investment : null,
   };
 };
 const ebsTotals = (e: EbsSession) => {
@@ -1718,7 +1720,7 @@ const ebsTotals = (e: EbsSession) => {
     monthlyCost,
     netMonth,
     paybackMonths: investment > 0 && netMonth > 0 ? investment / netMonth : null,
-    roi12: investment > 0 ? (netMonth * 12 - investment) / investment : null,
+    roi12: investment > 0 && savingMonth > 0 ? (netMonth * 12 - investment) / investment : null,
   };
 };
 const months = (m: number | null) => (m === null ? '—' : m < 1 ? '< 1 mes' : `${m.toFixed(1).replace('.', ',')} meses`);
@@ -2417,6 +2419,7 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
                     <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { investment: n, investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
                     <label className="text-xs text-slate-500" title="Hosting, APIs, soporte: el gasto que sigue todos los meses">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n })} /></label>
+                    <label className="text-xs text-slate-500" title="Semanas hasta tenerla en producción, con un equipo trabajando una solución tras otra">Semanas hasta producción<NumIn value={o.weeks ?? 0} onChange={(n) => setOpp(o.id, { weeks: Math.min(104, Math.round(n)) })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
