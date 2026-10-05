@@ -1599,6 +1599,9 @@ interface EbsOpportunity {
   assumptions: string;
   selected: boolean;
   investmentSource?: string;
+  /** Steps of the process today and with the solution ("Antes y después" in the interactive EBS). */
+  flowBefore?: string[];
+  flowAfter?: string[];
 }
 interface EbsSiteAudit {
   url: string;
@@ -1606,6 +1609,7 @@ interface EbsSiteAudit {
   findings: string[];
   signals: string;
   colors: { primary: string | null; secondary: string | null; source: string };
+  logo?: { data: string; mime: string; src: string };
   at: string;
 }
 interface EbsShare {
@@ -1841,6 +1845,23 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
     }
   };
 
+  const generateFlows = async () => {
+    const saved = await ensureSaved();
+    if (!saved?.id) return;
+    setBusy('flows');
+    setMsg(null);
+    try {
+      const d = await api<{ flows: Record<string, { before: string[]; after: string[] }> }>('ebs-flows', { body: { id: saved.id } });
+      const n = Object.keys(d.flows).length;
+      patch((c) => ({ ...c, opportunities: c.opportunities.map((o) => (d.flows[o.id] ? { ...o, flowBefore: d.flows[o.id].before, flowAfter: d.flows[o.id].after } : o)) }));
+      setMsg({ ok: true, text: n ? `Flujos "antes y después" generados para ${n} oportunidades. Revísalos y, si ya compartiste el link, publica los cambios.` : 'Todas las oportunidades seleccionadas ya tienen su flujo.' });
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const downloadPdf = async () => {
     const saved = await ensureSaved();
     if (!saved?.id) return;
@@ -1937,6 +1958,23 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
       });
       setAudit(d.audit);
       setAuditDirty(false);
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+  const [logoUrl, setLogoUrl] = useState('');
+  const changeLogo = async (extra: { logoUrl?: string; removeLogo?: boolean }) => {
+    if (!audit || !e.id) return;
+    setBusy('audit');
+    setMsg(null);
+    try {
+      const d = await api<{ audit: EbsSiteAudit }>('ebs-audit-save', {
+        body: { id: e.id, summary: audit.summary, findings: audit.findings, primary: audit.colors.primary, secondary: audit.colors.secondary, ...extra },
+      });
+      setAudit(d.audit);
+      setLogoUrl('');
     } catch (err) {
       setMsg({ ok: false, text: (err as Error).message });
     } finally {
@@ -2150,6 +2188,13 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                   ))}
                   {auditDirty && <button onClick={saveAudit} disabled={!!busy} className={btnPrimary}><Save className="w-4 h-4" /> Guardar cambios</button>}
                 </div>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                  <span>Logo del cliente (aparece en su espacio y en el PDF):</span>
+                  {audit.logo ? <img src={audit.logo.data} alt="Logo" className="h-10 w-10 rounded-lg bg-white object-contain p-1" /> : <span className="text-slate-600">no se encontró</span>}
+                  <input value={logoUrl} onChange={(ev) => setLogoUrl(ev.target.value)} placeholder="https://…/logo.png (opcional, para cambiarlo)" className={`${input} max-w-sm text-xs`} />
+                  <button onClick={() => changeLogo({ logoUrl })} disabled={!!busy || !logoUrl.trim()} className={btnGhost}>Usar este logo</button>
+                  {audit.logo && <button onClick={() => changeLogo({ removeLogo: true })} disabled={!!busy} className={`${btn} text-slate-500 hover:text-red-300`}>Quitar</button>}
+                </div>
               </>
             )}
           </section>
@@ -2313,6 +2358,11 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
           <section className={section}>
             <div className="flex items-center gap-3">
               <h3 className={h}>Oportunidades y ROI</h3>
+              {e.opportunities.some((o) => o.selected && !(o.flowBefore?.length && o.flowAfter?.length)) && (
+                <button onClick={generateFlows} disabled={!!busy} className={btnGhost} title='Pasos "hoy" y "con la solución" que el cliente ve en "Ver cómo funciona"'>
+                  {busy === 'flows' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Generar antes y después
+                </button>
+              )}
               <button
                 onClick={() => patch((c) => ({ ...c, opportunities: [...c.opportunities, { id: uid(), title: 'Nueva oportunidad', description: '', approach: 'A medida', hoursWeek: 0, hourlyCost: 0, automationPct: 0, salesRecoveryPct: 0, investment: 0, monthlyCost: 0, impact: 'Medio', effort: 'Medio', stage: 2, assumptions: '', selected: true, investmentSource: 'manual' }] }))}
                 className={`${btnGhost} ml-auto`}
@@ -2367,6 +2417,14 @@ const EbsEditor = ({ api, token, initial, onBack, onOpenQuote }: { api: Api; tok
                     <label className="text-xs text-slate-500">Costo mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <label className="text-xs text-red-200/80">Cómo funciona hoy (un paso por línea)
+                      <textarea rows={4} value={(o.flowBefore ?? []).join('\n')} onChange={(ev) => setOpp(o.id, { flowBefore: ev.target.value.split('\n') })} className={`${input} text-xs`} />
+                    </label>
+                    <label className="text-xs text-emerald-200/80">Cómo funcionaría con la solución
+                      <textarea rows={4} value={(o.flowAfter ?? []).join('\n')} onChange={(ev) => setOpp(o.id, { flowAfter: ev.target.value.split('\n') })} className={`${input} text-xs`} />
+                    </label>
+                  </div>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 rounded-lg bg-white/[0.04] p-3 text-center">
                     <div><p className="text-[10px] uppercase text-slate-500">Horas/mes</p><p className="font-bold text-white">{Math.round(c.hoursSavedMonth)}</p></div>
                     <div><p className="text-[10px] uppercase text-slate-500">Ahorro/mes</p><p className="font-bold text-white">{clp(c.savingMonth)}</p></div>

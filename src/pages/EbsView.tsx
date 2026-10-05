@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, ReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { AlertTriangle, ArrowRight, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarCheck, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, X, Zap } from 'lucide-react';
+import { KICKOFF_URL, whatsappLink } from '../data/site';
+
+const EBS_FEE = 197000;
 
 // Interactive EBS 693: the page a client opens from a private link (/ebs/<token>, 30 days).
 // Every opportunity is a node: red = the leak stays open, green = solved with the proposal.
@@ -21,6 +24,8 @@ interface ViewOpp {
   savingMonth: number;
   monthlyCost: number;
   investment: number;
+  flowBefore: string[];
+  flowAfter: string[];
   hoursWeek: number;
   hourlyCost: number;
   automationPct: number;
@@ -43,7 +48,7 @@ interface View {
   cashTrapped: number;
   leaks: { key: string; label: string; kind: 'perdida' | 'caja'; monthly: number; confidence: Confidence; explain: string }[];
   toMeasure: string[];
-  site: { host: string; summary: string; findings: string[]; primary: string | null; secondary: string | null } | null;
+  site: { host: string; summary: string; findings: string[]; primary: string | null; secondary: string | null; logo: string | null } | null;
   opportunities: ViewOpp[];
   choice: string[] | null;
   choiceAdj: Adj | null;
@@ -89,6 +94,77 @@ const onDark = (hex: string | null | undefined, fallback: string) => {
   return l >= 0.55 ? hex : hslToHex(hue, Math.max(sat, 0.5), 0.62);
 };
 
+/** "Antes y después" of one solution: how the process works today next to how it would work. Steps come from the session, with no invented times. */
+const FlowModal = ({ opp, accent, onClose }: { opp: ViewOpp; accent: string; onClose: () => void }) => {
+  const [run, setRun] = useState(0);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  const lane = (steps: string[], tone: 'before' | 'after', offset: number) => (
+    <ol className="space-y-0">
+      {steps.map((st, i) => {
+        const last = i === steps.length - 1;
+        const bad = tone === 'before';
+        return (
+          <li key={`${run}-${tone}-${i}`} className="relative pl-12 pb-4 last:pb-0" style={{ animation: 'ebsStep .5s ease both', animationDelay: `${(offset + i) * 0.35}s` }}>
+            {!last && <span className="absolute left-[15px] top-8 h-[calc(100%-1.5rem)] w-0.5" style={{ background: bad ? 'rgba(248,113,113,.45)' : 'rgba(52,211,153,.5)' }} />}
+            <span
+              className={`absolute left-0 top-0 flex h-8 w-8 items-center justify-center rounded-full text-xs font-black ${bad ? 'bg-red-400/20 text-red-200' : 'bg-emerald-400/20 text-emerald-200'}`}
+            >
+              {i + 1}
+            </span>
+            <p
+              className={`rounded-xl border px-3.5 py-2.5 text-sm leading-snug ${
+                bad ? (last ? 'border-red-400/60 bg-red-950/40 font-bold text-red-100' : 'border-red-400/20 bg-red-950/20 text-slate-200') : last ? 'border-emerald-400/60 bg-emerald-950/40 font-bold text-emerald-100' : 'border-emerald-400/20 bg-emerald-950/20 text-slate-200'
+              }`}
+            >
+              {st}
+            </p>
+          </li>
+        );
+      })}
+    </ol>
+  );
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose} role="dialog" aria-modal="true">
+      <style>{'@keyframes ebsStep{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}'}</style>
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border bg-[#070b16] p-6 sm:p-8" style={{ borderColor: 'color-mix(in srgb, ' + accent + ' 55%, transparent)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start gap-4">
+          <div className="flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: accent }}>Cómo funciona: antes y después</p>
+            <h3 className="mt-1 text-xl font-black leading-snug text-white sm:text-2xl">{opp.title}</h3>
+          </div>
+          <button onClick={onClose} aria-label="Cerrar" className="rounded-full p-2 text-slate-400 hover:bg-white/10 hover:text-white cursor-pointer">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="mt-6 grid gap-8 md:grid-cols-2">
+          <div>
+            <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-red-400/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-red-300">
+              <AlertTriangle className="h-3.5 w-3.5" /> Hoy
+            </p>
+            {lane(opp.flowBefore, 'before', 0)}
+          </div>
+          <div>
+            <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-emerald-300">
+              <Zap className="h-3.5 w-3.5" /> Con Uni-Verso693
+            </p>
+            {lane(opp.flowAfter, 'after', opp.flowBefore.length)}
+          </div>
+        </div>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+          <p className="text-xs text-slate-500">Resumen de cómo opera hoy según lo conversado y de cómo quedaría. Los detalles técnicos se definen en la reunión de inicio.</p>
+          <button onClick={() => setRun((r) => r + 1)} className="inline-flex items-center gap-1.5 text-xs font-bold hover:brightness-125 cursor-pointer" style={{ color: accent }}>
+            <RotateCcw className="h-3.5 w-3.5" /> Reproducir de nuevo
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /** Upper limit of a tweak: three times the original assumption (at least 30%, at most 100%), so a slider can't promise the impossible. */
 const sliderMax = (original: number) => Math.min(100, Math.max(30, Math.round(original * 3)));
 
@@ -113,12 +189,15 @@ const SliderRow = ({ label, value, original, accent, onChange }: { label: string
 // ---------- nodes ----------
 const hidden = { opacity: 0, width: 1, height: 1, border: 0 } as const;
 
-const RootNode = ({ data }: { data: { company: string; leakMonth: number } }) => (
+const RootNode = ({ data }: { data: { company: string; leakMonth: number; logo: string | null } }) => (
   <div
     className="w-[290px] rounded-2xl border-2 bg-[#0f172a] p-4"
     style={{ borderColor: 'var(--c2)', boxShadow: '0 0 28px color-mix(in srgb, var(--c2) 30%, transparent)' }}
   >
-    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Hoy</p>
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Hoy</p>
+      {data.logo && <img src={data.logo} alt="" className="h-11 w-11 rounded-lg bg-white object-contain p-1" />}
+    </div>
     <p className="mt-1 text-xl font-black leading-tight text-white">{data.company}</p>
     <p className="mt-2 text-[13px] text-slate-400">Se escapan cada mes</p>
     <p className="text-3xl font-black text-red-300">{clp(data.leakMonth)}</p>
@@ -198,11 +277,10 @@ const Inner = ({ token }: { token: string }) => {
   const [sel, setSel] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
   const [hint, setHint] = useState(true);
-  const [sendOpen, setSendOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', message: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [adj, setAdj] = useState<Adj>({});
+  const [flowFor, setFlowFor] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'Tu hoja de ruta EBS 693 interactiva | Uni-Verso693';
@@ -272,7 +350,7 @@ const Inner = ({ token }: { token: string }) => {
     const chain = onDark(view.site?.primary, '#22d3ee');
     const CARD_W = 290;
     const GAP = 44;
-    const nodes: any[] = [{ id: 'root', type: 'root', position: { x: 0, y: 0 }, data: { company: view.company, leakMonth: view.leakMonth }, draggable: false, selectable: false }];
+    const nodes: any[] = [{ id: 'root', type: 'root', position: { x: 0, y: 0 }, data: { company: view.company, leakMonth: view.leakMonth, logo: view.site?.logo ?? null }, draggable: false, selectable: false }];
     const edges: any[] = [];
     const stages = ([1, 2, 3] as const).filter((s) => opps.some((o) => o.stage === s));
     let prev = 'root';
@@ -307,12 +385,11 @@ const Inner = ({ token }: { token: string }) => {
       const res = await fetch('/api/admin?action=ebs-advance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ids: [...on], name: form.name, message: form.message, adj }),
+        body: JSON.stringify({ token, ids: [...on], adj }),
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || 'No pudimos enviar tu elección.');
       setSent(true);
-      setSendOpen(false);
     } catch (e) {
       setError({ text: (e as Error).message });
     } finally {
@@ -373,28 +450,43 @@ const Inner = ({ token }: { token: string }) => {
           Cifras estimadas con lo conversado en la sesión. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
         </p>
         {sent ? (
-          <p className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-400/10 p-3 text-sm text-emerald-200">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> Recibimos tu elección. Te contactamos pronto para armar la cotización.
-          </p>
-        ) : sendOpen ? (
-          <div className="mt-3 space-y-2">
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Tu nombre (opcional)" className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/60" />
-            <textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={3} placeholder="¿Algo que quieras que sepamos? (opcional)" className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/60" />
-            <div className="flex gap-2">
-              <button onClick={advance} disabled={sending} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-brand-600 px-4 py-2.5 text-sm font-extrabold text-white hover:bg-brand-700 disabled:opacity-60 cursor-pointer">
-                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Enviar mi elección
-              </button>
-              <button onClick={() => setSendOpen(false)} className="rounded-full border border-white/15 px-4 text-sm text-slate-300 cursor-pointer">Cancelar</button>
+          <div className="mt-3 space-y-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3.5 text-sm">
+            <p className="flex items-start gap-2 font-bold text-emerald-200">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> Recibimos tu elección de {totals.count} {totals.count === 1 ? 'solución' : 'soluciones'}.
+            </p>
+            <dl className="space-y-1 text-slate-200">
+              <div className="flex justify-between"><dt>Ahorro neto estimado</dt><dd className="font-bold text-emerald-300">{clp(totals.net)}/mes</dd></div>
+              <div className="flex justify-between"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}</dd></div>
+              {totals.investment > 0 && (
+                <>
+                  <div className="flex justify-between text-slate-300"><dt>Diagnóstico EBS 693 (se descuenta)</dt><dd>−{clp(Math.min(EBS_FEE, totals.investment))}</dd></div>
+                  <div className="flex justify-between border-t border-white/10 pt-1 text-base font-black text-white"><dt>Inversión neta</dt><dd>{clp(Math.max(0, totals.investment - EBS_FEE))}</dd></div>
+                </>
+              )}
+              {totals.pendingPrice && <p className="text-[11px] text-slate-400">Hay soluciones con precio por definir; se confirma en la reunión.</p>}
+            </dl>
+            <div className="border-t border-white/10 pt-3">
+              <p className="font-bold text-white">Siguiente paso: reunión de inicio y validación de supuestos</p>
+              <p className="mt-1 text-xs text-slate-300">30 minutos para confirmar el alcance y revisar contigo cada supuesto antes de la cotización formal. El valor del diagnóstico se descuenta del proyecto.</p>
+              <a
+                href={KICKOFF_URL || whatsappLink('Hola, soy de ' + view.company + '. Elegimos ' + totals.count + ' solución(es) del EBS ' + view.number + ' y quiero agendar la reunión de inicio y validación de supuestos.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-white hover:brightness-110"
+                style={{ background: brandGradient }}
+              >
+                <CalendarCheck className="h-4 w-4" /> {KICKOFF_URL ? 'Agendar la reunión de inicio' : 'Coordinar la reunión por WhatsApp'}
+              </a>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => setSendOpen(true)}
-            disabled={!totals.count}
+            onClick={advance}
+            disabled={!totals.count || sending}
             className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
             style={{ background: brandGradient }}
           >
-            Quiero avanzar con {totals.count || 'mis'} {totals.count === 1 ? 'solución' : 'soluciones'} <ArrowRight className="h-4 w-4" />
+            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Quiero avanzar con {totals.count || 'mis'} {totals.count === 1 ? 'solución' : 'soluciones'} <ArrowRight className="h-4 w-4" />
           </button>
         )}
         {error && <p className="mt-2 text-xs text-red-300">{error.text}</p>}
@@ -457,6 +549,15 @@ const Inner = ({ token }: { token: string }) => {
           )}
           {selected.assumptions && <p className="text-xs leading-relaxed text-slate-500"><span className="font-bold text-slate-400">Supuestos:</span> {selected.assumptions}</p>}
           {tweaked(selected.id) && <p className="text-[11px] text-cyan-200">Ajustaste los supuestos de esta solución; el PDF y tu elección usan tus valores.</p>}
+          {selected.flowBefore.length > 0 && selected.flowAfter.length > 0 && (
+            <button
+              onClick={() => setFlowFor(selected.id)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border py-2.5 text-sm font-bold hover:bg-white/5 cursor-pointer"
+              style={{ borderColor: 'color-mix(in srgb, var(--c2) 60%, transparent)', color: c2 }}
+            >
+              <PlayCircle className="h-4 w-4" /> Ver cómo funciona: antes y después
+            </button>
+          )}
           <button
             onClick={() => toggle(selected.id)}
             className={`w-full rounded-full py-2.5 text-sm font-extrabold cursor-pointer ${on.has(selected.id) ? 'bg-emerald-400 text-emerald-950' : 'bg-red-400/90 text-red-950'}`}
@@ -516,14 +617,13 @@ const Inner = ({ token }: { token: string }) => {
       <div className="h-1.5 w-full shrink-0" style={{ background: brandGradient }} />
       <header className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-white/10 px-5 py-3" style={{ background: 'linear-gradient(90deg, color-mix(in srgb, var(--c1) 26%, #050912), color-mix(in srgb, var(--c2) 26%, #050912))' }}>
         <p className="font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-400">EBS 693 interactivo</span></p>
-        <p className="text-sm text-slate-300">Hoja de ruta de <span className="font-extrabold" style={{ color: c2 }}>{view.company}</span></p>
-        {view.site?.primary && (
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-300">
-            <span className="h-3 w-3 rounded-full border border-white/30" style={{ background: c1 }} />
-            <span className="h-3 w-3 rounded-full border border-white/30" style={{ background: c2 }} />
-            hecho con los colores de {view.site.host}
+        {view.site?.logo && (
+          <span className="flex items-center gap-3 text-slate-400">
+            ×
+            <img src={view.site.logo} alt={view.company} className="h-10 w-10 rounded-lg bg-white object-contain p-1 shadow-lg" style={{ boxShadow: '0 0 18px color-mix(in srgb, var(--c2) 45%, transparent)' }} />
           </span>
         )}
+        <p className="text-sm text-slate-300">Hoja de ruta de <span className="font-extrabold" style={{ color: c2 }}>{view.company}</span></p>
         <div className="ml-auto flex items-center gap-4 text-xs text-slate-500">
           {view.loomUrl && (
             <a href={view.loomUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-bold text-cyan-300 hover:text-cyan-200">
@@ -567,6 +667,7 @@ const Inner = ({ token }: { token: string }) => {
           </ReactFlow>
         </div>
         {panel}
+        {flowFor && opps.find((o) => o.id === flowFor) && <FlowModal opp={opps.find((o) => o.id === flowFor)!} accent={c2} onClose={() => setFlowFor(null)} />}
       </div>
     </div>
   );
