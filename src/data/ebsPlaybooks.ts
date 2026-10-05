@@ -849,6 +849,107 @@ export const PLAYBOOKS: Playbook[] = [
   }),
 
   make({
+    id: 'automotriz',
+    name: 'Automotriz (venta y taller)',
+    who: 'un cliente compra un auto o vuelve al taller',
+    focus:
+      'En una automotora la plata se pierde en cotizaciones de vehículos que nadie retoma, clientes que compran el auto y nunca vuelven al taller (la postventa suele ser lo más rentable), citas de taller que no llegan, autos usados parados en el patio y cobranza lenta a flotas y financieras. Cuidar los datos de clientes y patentes (Ley 21.719).',
+    specific: [
+      {
+        title: 'Ventas de vehículos',
+        minutes: 12,
+        questions: [
+          { q: '¿Cuántas cotizaciones o consultas por vehículos le llegan al mes (portales, redes, WhatsApp, sala de ventas)?', fallback: '¿Cuántas consultas recibió la semana pasada?', metrics: ['cotizacionesMes'] },
+          { q: '¿Cuánto se demora un vendedor en responder una cotización nueva?', fallback: 'Si llega un mensaje un sábado en la noche, ¿cuándo se responde?' },
+          { q: '¿Cuántas cotizaciones se quedan sin segundo contacto o sin seguimiento?', fallback: 'De 10 cotizaciones, ¿a cuántas se les vuelve a escribir?', metrics: ['cotizSinSeguimientoPct'] },
+          { q: '¿De cada 100 cotizaciones, cuántas terminan en venta?', fallback: '¿Cuántos autos vendió el mes pasado y cuántas cotizaciones tuvo?', metrics: ['cierrePct'] },
+          { q: '¿Cuánto gana la automotora por cada vehículo que vende?', fallback: '¿Cuál fue el margen del último auto que vendió?', metrics: ['margenPorVenta'] },
+        ],
+      },
+      {
+        title: 'Taller y postventa',
+        minutes: 12,
+        questions: [
+          { q: '¿Cuántos clientes pasan por el taller al mes?', fallback: '¿Cuántas órdenes de trabajo abrieron la semana pasada?', metrics: ['clientesTallerMes'] },
+          { q: '¿Cuántos no vuelven después de la primera mantención?', fallback: 'De 10 autos que vendió el año pasado, ¿cuántos vuelven a mantención con ustedes?', metrics: ['noVuelvenTallerPct'] },
+          { q: '¿Cuánto deja en promedio una visita al taller (repuestos y mano de obra)?', fallback: '¿De cuánto fue la última boleta o factura del taller?', metrics: ['ticketTaller'] },
+          { q: '¿Cuántas citas de taller se pierden al mes porque el cliente no llega?', fallback: '¿Cuántas horas de taller quedaron vacías la semana pasada?', metrics: ['citasNoLlegan'] },
+        ],
+      },
+      {
+        title: 'Usados y cobranza',
+        minutes: 6,
+        questions: [
+          { q: '¿Cuántos autos usados llevan más de 90 días en el patio?', fallback: '¿Cuáles son los que nadie pregunta?', metrics: ['usadosInmovilizados'] },
+          { q: '¿Cuánto cuesta mantener un auto parado al mes (financiamiento, patio, seguro)?', fallback: '¿Cuánto paga de interés por el stock?', metrics: ['costoUsadoParadoMes'] },
+          { q: '¿Cuánto se demoran las empresas y financieras en pagarle?', fallback: '¿Hay facturas de flotas de hace 2 meses sin pagar?', metrics: ['diasPago'] },
+        ],
+      },
+    ],
+    metrics: [
+      { key: 'cotizacionesMes', label: 'Cotizaciones de vehículos al mes', unit: 'n' },
+      { key: 'cotizSinSeguimientoPct', label: 'Cotizaciones sin segundo contacto', unit: 'pct' },
+      { key: 'cierrePct', label: 'Cotizaciones que terminan en venta', unit: 'pct' },
+      { key: 'margenPorVenta', label: 'Margen por vehículo vendido', unit: 'clp' },
+      { key: 'clientesTallerMes', label: 'Clientes que pasan por el taller al mes', unit: 'n' },
+      { key: 'noVuelvenTallerPct', label: 'Clientes que no vuelven al taller', unit: 'pct' },
+      { key: 'ticketTaller', label: 'Valor de una visita al taller', unit: 'clp' },
+      { key: 'citasNoLlegan', label: 'Citas de taller que no llegan al mes', unit: 'n' },
+      { key: 'usadosInmovilizados', label: 'Usados con más de 90 días en el patio', unit: 'n' },
+      { key: 'costoUsadoParadoMes', label: 'Costo mensual de un auto parado', unit: 'clp' },
+      { key: 'diasPago', label: 'Días que tardan en pagarle', unit: 'dias' },
+    ],
+    leaks: [
+      {
+        key: 'cotizaciones',
+        label: 'Cotizaciones de vehículos sin seguimiento',
+        kind: 'perdida',
+        explain: 'cotizaciones al mes × % sin seguimiento × % que habría cerrado × margen por vehículo',
+        uses: ['cotizacionesMes', 'cotizSinSeguimientoPct', 'cierrePct', 'margenPorVenta'],
+        calc: (m) => m('cotizacionesMes') * (m('cotizSinSeguimientoPct') / 100) * (m('cierrePct') / 100) * m('margenPorVenta'),
+      },
+      {
+        key: 'tallerNoVuelve',
+        label: 'Clientes que no vuelven al taller',
+        kind: 'perdida',
+        explain: 'clientes del taller al mes × % que no vuelve × valor de una visita',
+        uses: ['clientesTallerMes', 'noVuelvenTallerPct', 'ticketTaller'],
+        calc: (m) => m('clientesTallerMes') * (m('noVuelvenTallerPct') / 100) * m('ticketTaller'),
+      },
+      {
+        key: 'citasTaller',
+        label: 'Citas de taller que no llegan',
+        kind: 'perdida',
+        explain: 'citas perdidas al mes × valor de una visita',
+        uses: ['citasNoLlegan', 'ticketTaller'],
+        calc: (m) => m('citasNoLlegan') * m('ticketTaller'),
+      },
+      {
+        key: 'usadosParados',
+        label: 'Autos usados parados en el patio',
+        kind: 'perdida',
+        explain: 'autos con más de 90 días × costo mensual de mantener un auto parado',
+        uses: ['usadosInmovilizados', 'costoUsadoParadoMes'],
+        calc: (m) => m('usadosInmovilizados') * m('costoUsadoParadoMes'),
+      },
+      {
+        key: 'cobranza',
+        label: 'Plata atrapada en flotas y financieras que pagan tarde',
+        kind: 'caja',
+        explain: 'ventas del mes × días de atraso sobre 30 ÷ 30 (no es pérdida: es plata que financia a sus clientes)',
+        uses: ['ingresosAhora', 'diasPago'],
+        calc: (m) => (m('ingresosAhora') * Math.max(0, m('diasPago') - 30)) / 30,
+      },
+    ],
+    documents: [
+      'Cotizaciones y consultas por vehículos de los últimos 3 meses (portales, WhatsApp, sala de ventas) con su resultado',
+      'Historial de órdenes de trabajo del taller del último año (fecha, patente, monto)',
+      'Stock de usados con fecha de ingreso y precio',
+      'Facturas pendientes de cobro de empresas, flotas y financieras',
+    ],
+  }),
+
+  make({
     id: 'general',
     name: 'General (otro rubro)',
     who: 'el negocio está ganando plata',
@@ -1123,6 +1224,21 @@ const SUGGESTIONS: Record<string, { processes: SuggestedProcess[]; leaks: Sugges
       { title: 'Merma de cosecha', detail: 'Fruta o producto que no llega a venderse' },
       { title: 'Rechazos por trazabilidad', detail: 'Descuentos o rechazos por documentación incompleta' },
       { title: 'Registro en papel', detail: 'Horas en papeleo en vez de en el campo' },
+    ],
+  },
+  automotriz: {
+    processes: [
+      { name: 'Responder y dar seguimiento a cotizaciones de vehículos', hoursWeek: 16, pain: 'Llegan por varios canales a vendedores distintos y no se retoman' },
+      { name: 'Agendar horas de taller y confirmar', hoursWeek: 10, pain: 'Por teléfono; los atrasos y ausencias dejan huecos' },
+      { name: 'Órdenes de trabajo y planillas del taller', hoursWeek: 12, pain: 'Se escriben a mano y se digitan de nuevo' },
+      { name: 'Publicar y actualizar stock de usados en portales', hoursWeek: 6, pain: 'Se actualiza a mano y a veces con días de atraso' },
+      { name: 'Cobranza a empresas y financieras', hoursWeek: 6, pain: 'Cobro uno por uno, sin recordatorios' },
+    ],
+    leaks: [
+      { title: 'Cotizaciones sin seguimiento', detail: 'Se contestan una vez y no se retoman; el que responde primero se queda con la venta' },
+      { title: 'Clientes que no vuelven al taller', detail: 'Compran el auto y nadie les recuerda la mantención ni la revisión técnica' },
+      { title: 'Citas de taller perdidas', detail: 'Horas de mecánico vacías por clientes que no llegan ni avisan' },
+      { title: 'Autos usados parados', detail: 'Stock que nadie pregunta y que cuesta financiamiento cada mes' },
     ],
   },
   construccion: {

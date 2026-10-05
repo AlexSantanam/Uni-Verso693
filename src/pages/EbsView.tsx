@@ -89,15 +89,18 @@ const onDark = (hex: string | null | undefined, fallback: string) => {
   return l >= 0.55 ? hex : hslToHex(hue, Math.max(sat, 0.5), 0.62);
 };
 
+/** Upper limit of a tweak: three times the original assumption (at least 30%, at most 100%), so a slider can't promise the impossible. */
+const sliderMax = (original: number) => Math.min(100, Math.max(30, Math.round(original * 3)));
+
 const SliderRow = ({ label, value, original, accent, onChange }: { label: string; value: number; original: number; accent: string; onChange: (v: number | undefined) => void }) => (
   <label className="block text-xs text-slate-400">
     <span className="flex items-baseline justify-between gap-3">
       <span>{label}</span>
       <span className="text-base font-black text-white">{value}%</span>
     </span>
-    <input type="range" min={0} max={100} step={1} value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-1.5 w-full cursor-pointer" style={{ accentColor: accent }} />
+    <input type="range" min={0} max={sliderMax(original)} step={1} value={Math.min(value, sliderMax(original))} onChange={(e) => onChange(Number(e.target.value))} className="mt-1.5 w-full cursor-pointer" style={{ accentColor: accent }} />
     <span className="flex items-center justify-between text-[11px] text-slate-500">
-      <span>Supuesto original: {original}%</span>
+      <span>Supuesto original: {original}% · máximo {sliderMax(original)}%</span>
       {value !== original && (
         <button type="button" onClick={() => onChange(undefined)} className="font-bold hover:text-white cursor-pointer" style={{ color: accent }}>
           Volver al original

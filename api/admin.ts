@@ -1433,6 +1433,19 @@ const parseAdjParam = (raw: string, ids: string[]): Adj => {
   }
   return cleanAdj(obj, ids);
 };
+/** Same limit as the page's sliders: up to three times the original assumption (at least 30%, at most 100%). */
+const sliderMax = (original: number) => Math.min(100, Math.max(30, Math.round(original * 3)));
+const clampAdj = (adj: Adj, opps: { id: string; recoveryPct: number; automationPct: number }[]): Adj => {
+  const out: Adj = {};
+  for (const o of opps) {
+    const a = adj[o.id];
+    if (!a) continue;
+    const rec = a.rec === undefined ? undefined : Math.min(a.rec, sliderMax(o.recoveryPct));
+    const auto = a.auto === undefined ? undefined : Math.min(a.auto, sliderMax(o.automationPct));
+    if (rec !== undefined || auto !== undefined) out[o.id] = { ...(rec !== undefined ? { rec } : {}), ...(auto !== undefined ? { auto } : {}) };
+  }
+  return out;
+};
 const applyChoice = (e: EbsSession, ids: string[], adj?: Adj): EbsSession => ({
   ...e,
   opportunities: e.opportunities.map((o) => ({
@@ -1897,7 +1910,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const base = share.frozen?.session ?? e;
         const frozenAudit = share.frozen ? share.frozen.audit : await redis.get<SiteAudit>(K.ebsAudit(e.id));
-        const pdf = await renderEbsPdf(applyChoice(base, wanted, parseAdjParam(str(req.query.adj, 4000), wanted)), await getSettings(), frozenAudit);
+        const pdf = await renderEbsPdf(applyChoice(base, wanted, clampAdj(parseAdjParam(str(req.query.adj, 4000), wanted), snap.opportunities)), await getSettings(), frozenAudit);
         res.setHeader('content-type', 'application/pdf');
         res.setHeader('content-disposition', `attachment; filename="Propuesta-${e.number}.pdf"`);
         res.status(200).send(pdf);
@@ -1910,7 +1923,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(400).json({ error: 'Activa al menos una oportunidad antes de continuar.' });
         return;
       }
-      const adj = cleanAdj(body.adj, ids);
+      const adj = clampAdj(cleanAdj(body.adj, ids), snap.opportunities);
       const choice = { ids, message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj };
       const chosen = snap.opportunities.filter((o) => ids.includes(o.id)).map((o) => ({ ...o, savingMonth: savingOf(o, adj[o.id]) }));
       // a draft quote with exactly this scope, so nothing has to be typed by hand
