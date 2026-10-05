@@ -15,6 +15,8 @@ export interface Metric {
   unit: MetricUnit;
   /** Assumptions start marked as such (e.g. a percentage the consultant proposes). */
   assumption?: boolean;
+  /** Clearer wording for the client's "what if" sliders, when the question's label could be misread. */
+  simLabel?: string;
 }
 
 export interface Question {
@@ -889,7 +891,7 @@ export const PLAYBOOKS: Playbook[] = [
     metrics: [
       { key: 'cotizacionesMes', label: 'Cotizaciones de vehículos al mes', unit: 'n' },
       { key: 'cotizSinSeguimientoPct', label: 'Cotizaciones sin segundo contacto', unit: 'pct' },
-      { key: 'cierrePct', label: 'Cotizaciones que terminan en venta', unit: 'pct' },
+      { key: 'cierrePct', label: 'Cotizaciones que terminan en venta', unit: 'pct', simLabel: 'De las cotizaciones que sí se atienden, cuántas cierran' },
       { key: 'margenPorVenta', label: 'Margen por vehículo vendido', unit: 'clp' },
       { key: 'clientesTallerMes', label: 'Clientes que pasan por el taller al mes', unit: 'n' },
       { key: 'noVuelvenTallerPct', label: 'Clientes que no vuelven al taller', unit: 'pct' },

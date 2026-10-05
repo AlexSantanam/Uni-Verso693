@@ -45,7 +45,21 @@ interface Lead {
   paid?: boolean;
   status: LeadStatus;
   quoteId?: string;
+  pro?: {
+    manualHours: number;
+    hourlyCost: number;
+    currency: 'CLP' | 'USD';
+    manualCostMonth: number;
+    teamSize: string;
+    location: string;
+    mainPain: string;
+    tools: string;
+    competitors: string;
+  };
 }
+/** Monthly cost of manual work from which a lead gets the "prioridad alta" tag (about a full salary a month). */
+const PRIORITY_CLP = 1_000_000;
+const PRIORITY_USD = 1_100;
 interface Module {
   id: string;
   category: string;
@@ -365,6 +379,12 @@ const Leads = ({
               {l.company && <span className="text-sm text-slate-400">· {l.company}</span>}
               <span className="text-xs text-slate-500">{SOURCE_LABEL[l.source]}</span>
               {l.source === 'audit-pro' && <Badge className={l.paid ? QUOTE_COLORS.aceptada : QUOTE_COLORS.borrador}>{l.paid ? 'pagado' : 'pago pendiente'}</Badge>}
+              {l.pro && l.pro.manualCostMonth > 0 && (
+                <>
+                  <span className="text-xs text-slate-400">trabajo manual ≈ {l.pro.currency === 'USD' ? `USD ${l.pro.manualCostMonth.toLocaleString('es-CL')}` : clp(l.pro.manualCostMonth)}/mes</span>
+                  {l.pro.manualCostMonth >= (l.pro.currency === 'USD' ? PRIORITY_USD : PRIORITY_CLP) && <Badge className="border-amber-300/50 bg-amber-300/10 text-amber-200">prioridad alta</Badge>}
+                </>
+              )}
               <span className="ml-auto text-xs text-slate-500">{when(l.createdAt)}</span>
             </button>
             {open === l.id && (
@@ -1661,22 +1681,52 @@ interface EbsSession {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+/** What the Audit PRO form already told us becomes the starting point of the EBS (hours, cost per hour, team, tools, pain). */
+const proPrefill = (lead?: Lead) => {
+  const p = lead?.pro;
+  if (!p) return { teamSize: '', tools: '', notes: '', metrics: {} as Record<string, EbsMetric>, processes: [] as EbsProcess[] };
+  const common = playbookById('general').metrics;
+  const metric = (key: string, v: number) => {
+    const d = common.find((m) => m.key === key)!;
+    return { v, c: 'estimado' as Confidence, label: d.label, unit: d.unit };
+  };
+  // hours and cost per hour only become numbers when the form was answered in pesos
+  const inPesos = p.currency === 'CLP';
+  const metrics: Record<string, EbsMetric> = {};
+  if (p.manualHours > 0) metrics.horasOficina = metric('horasOficina', p.manualHours);
+  if (inPesos && p.hourlyCost > 0) metrics.costoHoraOficina = metric('costoHoraOficina', p.hourlyCost);
+  const lines = [
+    'Datos del formulario del Audit PRO (declarados por el cliente, a confirmar en la sesión):',
+    p.location && `- Dónde vende: ${p.location}`,
+    p.teamSize && `- Equipo: ${p.teamSize}`,
+    p.manualHours > 0 && `- Horas semanales en tareas manuales o repetitivas: ${p.manualHours}`,
+    p.hourlyCost > 0 && `- Costo aproximado de una hora: ${p.currency === 'USD' ? 'USD ' : '$'}${p.hourlyCost.toLocaleString('es-CL')}`,
+    p.mainPain && `- Problema que más le quita tiempo o ventas: ${p.mainPain}`,
+    p.competitors && `- Competidores que conoce: ${p.competitors}`,
+  ].filter(Boolean);
+  const processes: EbsProcess[] =
+    p.manualHours > 0 && inPesos
+      ? [{ id: 'form1', name: 'Tareas manuales o repetitivas (según el formulario del Audit PRO)', area: '', hoursWeek: p.manualHours, people: 0, hourlyCost: p.hourlyCost, tools: p.tools, pain: p.mainPain }]
+      : [];
+  return { teamSize: p.teamSize, tools: p.tools, notes: lines.join('\n') + '\n\n', metrics, processes };
+};
+
 const emptyEbs = (lead?: Lead): EbsSession => ({
   sessionDate: todayCL(),
   leadId: lead?.id,
   loomUrl: '',
-  client: { name: lead?.name ?? '', company: lead?.company ?? '', email: lead?.email ?? '', phone: lead?.phone ?? '', url: lead?.url ?? '', industry: '', teamSize: '' },
-  context: { goals: '', budget: lead?.budget ?? '', constraints: '', tools: '', notes: lead?.notes ? `Solicitud original:\n${lead.notes}\n\n` : '' },
+  client: { name: lead?.name ?? '', company: lead?.company ?? '', email: lead?.email ?? '', phone: lead?.phone ?? '', url: lead?.url ?? '', industry: '', teamSize: proPrefill(lead).teamSize },
+  context: { goals: '', budget: lead?.budget ?? '', constraints: '', tools: proPrefill(lead).tools, notes: `${lead?.pro ? proPrefill(lead).notes : ''}${lead?.notes ? `Solicitud original:\n${lead.notes}\n\n` : ''}` },
   sales: { lostClientsMonth: 0, avgTicket: 0 },
   leaks: [],
-  processes: [],
+  processes: proPrefill(lead).processes,
   opportunities: [],
   summary: '',
   approach: '',
   nextSteps: [],
   pendingQuestions: [],
   playbook: 'general',
-  metrics: {},
+  metrics: proPrefill(lead).metrics,
   answers: {},
   computedLeaks: [],
   toMeasure: [],
@@ -2612,6 +2662,21 @@ const Catalog =({ api, catalog, onSaved }: { api: Api; catalog: Module[]; onSave
 const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings; onSaved: (s: Settings) => void }) => {
   const [s, setS] = useState(settings);
   const [msg, setMsg] = useState<string | null>(null);
+  const testWhatsApp = async () => {
+    setMsg('Enviando prueba…');
+    try {
+      const r = await api<{ ok: boolean; reason: string | null }>('notify-test', { body: {} });
+      setMsg(
+        r.ok
+          ? 'Listo: revisa tu WhatsApp, debería llegar un mensaje de prueba en unos segundos.'
+          : r.reason === 'not-configured'
+            ? 'Aún no está conectado. Faltan NOTIFY_WHATSAPP (tu número con código de país, sin +) y CALLMEBOT_APIKEY en Vercel.'
+            : `No se pudo enviar (${r.reason}). Revisa el número y la clave.`,
+      );
+    } catch (e) {
+      setMsg((e as Error).message);
+    }
+  };
   const field = (k: keyof Settings, label: string, type = 'text') => (
     <label className="block text-xs text-slate-500">
       {label}
@@ -2642,7 +2707,10 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
       </div>
       <label className="block text-xs text-slate-500">Condiciones de pago por defecto<textarea rows={2} value={s.paymentTerms} onChange={(e) => setS({ ...s, paymentTerms: e.target.value })} className={input} /></label>
       <label className="block text-xs text-slate-500">Notas por defecto<textarea rows={3} value={s.notes} onChange={(e) => setS({ ...s, notes: e.target.value })} className={input} /></label>
-      <button onClick={save} className={btnPrimary}><Save className="w-4 h-4" /> Guardar ajustes</button>
+      <div className="flex flex-wrap gap-2">
+        <button onClick={save} className={btnPrimary}><Save className="w-4 h-4" /> Guardar ajustes</button>
+        <button onClick={testWhatsApp} className={btnGhost} title="Avisos por WhatsApp cuando un cliente presiona Quiero avanzar"><Send className="w-4 h-4" /> Enviar WhatsApp de prueba</button>
+      </div>
       {msg && <p className="text-sm text-emerald-300">{msg}</p>}
     </div>
   );

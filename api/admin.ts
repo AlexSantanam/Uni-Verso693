@@ -72,6 +72,71 @@ const clientKey = (req: VercelRequest) => {
 
 // ---------- data model ----------
 export type LeadStatus = 'nuevo' | 'contactado' | 'cotizado' | 'descartado';
+/** What the person told us in the Audit PRO form, read from their order. */
+export interface LeadPro {
+  manualHours: number;
+  hourlyCost: number;
+  currency: 'CLP' | 'USD';
+  /** manualHours × hourlyCost × 4,33, in the order's currency. */
+  manualCostMonth: number;
+  teamSize: string;
+  location: string;
+  mainPain: string;
+  tools: string;
+  competitors: string;
+}
+/** What the person told us in the Audit PRO form, read from their order. */
+export interface LeadPro {
+  manualHours: number;
+  hourlyCost: number;
+  currency: 'CLP' | 'USD';
+  /** manualHours × hourlyCost × 4,33, in the order's currency. */
+  manualCostMonth: number;
+  teamSize: string;
+  location: string;
+  mainPain: string;
+  tools: string;
+  competitors: string;
+}
+/** What the person told us in the Audit PRO form, read from their order. */
+export interface LeadPro {
+  manualHours: number;
+  hourlyCost: number;
+  currency: 'CLP' | 'USD';
+  /** manualHours × hourlyCost × 4,33, in the order's currency. */
+  manualCostMonth: number;
+  teamSize: string;
+  location: string;
+  mainPain: string;
+  tools: string;
+  competitors: string;
+}
+/** What the person told us in the Audit PRO form, read from their order. */
+export interface LeadPro {
+  manualHours: number;
+  hourlyCost: number;
+  currency: 'CLP' | 'USD';
+  /** manualHours × hourlyCost × 4,33, in the order's currency. */
+  manualCostMonth: number;
+  teamSize: string;
+  location: string;
+  mainPain: string;
+  tools: string;
+  competitors: string;
+}
+/** What the person told us in the Audit PRO form, read from their order. */
+export interface LeadPro {
+  manualHours: number;
+  hourlyCost: number;
+  currency: 'CLP' | 'USD';
+  /** manualHours × hourlyCost × 4,33, in the order's currency. */
+  manualCostMonth: number;
+  teamSize: string;
+  location: string;
+  mainPain: string;
+  tools: string;
+  competitors: string;
+}
 export interface Lead {
   id: string;
   source: 'contacto' | 'audit' | 'audit-pro';
@@ -87,6 +152,7 @@ export interface Lead {
   paid?: boolean;
   status: LeadStatus;
   quoteId?: string;
+  pro?: LeadPro;
 }
 
 export type Unit = 'proyecto' | 'mes' | 'hora' | 'unidad';
@@ -1509,6 +1575,20 @@ Devuelve un flujo antes y después por cada id.`,
 
 const hexOrNull = (v: unknown) => (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v.trim()) ? v.trim().toLowerCase() : null);
 
+// ---- WhatsApp notice to the owner: CallMeBot (free, unofficial). Needs NOTIFY_WHATSAPP (number with country code) and CALLMEBOT_APIKEY in Vercel.
+const notifyWhatsApp = async (text: string): Promise<{ ok: boolean; reason?: string }> => {
+  const phone = (process.env.NOTIFY_WHATSAPP ?? '').replace(/\D/g, '');
+  const key = process.env.CALLMEBOT_APIKEY;
+  if (!phone || !key) return { ok: false, reason: 'not-configured' };
+  try {
+    const res = await fetch(`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(text.slice(0, 900))}&apikey=${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(10_000) });
+    return res.ok ? { ok: true } : { ok: false, reason: `callmebot ${res.status}` };
+  } catch (err) {
+    console.error('Admin: WhatsApp notice failed', err);
+    return { ok: false, reason: 'network' };
+  }
+};
+
 // ---- interactive EBS: private link the client opens (kept in its own keys, never inside the session) ----
 const SHARE_DAYS = 30;
 export interface ShareInfo {
@@ -2165,6 +2245,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })
           .catch((err) => console.error('Admin: EBS advance email failed', err));
       }
+      const money = (n: number) => `$${Math.round(n).toLocaleString('es-CL')}`;
+      await notifyWhatsApp(`${company} quiere avanzar con ${ids.length} solución${ids.length > 1 ? 'es' : ''} del EBS ${e.number}.
+Ahorro neto estimado ${money(saving)}/mes · inversión ${invest > 0 ? money(invest) : 'por definir'}.
+Cotización ${quote.number} en borrador.
+${SITE_URL}/interno#ebs`);
       res.status(200).json({ ok: true });
       return;
     }
@@ -2176,7 +2261,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     switch (action) {
       case 'leads': {
-        res.status(200).json({ leads: await listFrom<Lead>(K.leads, K.lead) });
+        const leads = await listFrom<Lead>(K.leads, K.lead);
+        const withOrder = leads.filter((l) => l.source === 'audit-pro' && l.id.startsWith('pro-'));
+        if (withOrder.length) {
+          const orders = await redis.mget<any[]>(...withOrder.map((l) => `uniVerso693Pro:order:${l.id.slice(4)}`));
+          withOrder.forEach((l, i) => {
+            const inp = orders[i]?.input;
+            if (!inp) return;
+            const hours = Number(inp.manualHours) || 0;
+            const cost = Number(inp.hourlyCost) || 0;
+            l.pro = {
+              manualHours: hours,
+              hourlyCost: cost,
+              currency: orders[i].currency === 'USD' ? 'USD' : 'CLP',
+              manualCostMonth: Math.round(hours * cost * 4.33),
+              teamSize: str(inp.teamSize, 40),
+              location: str(inp.location, 200),
+              mainPain: str(inp.mainPain, 1200),
+              tools: str(inp.tools, 600),
+              competitors: str(inp.competitors, 600),
+            };
+          });
+        }
+        res.status(200).json({ leads });
         return;
       }
       case 'lead-status': {
@@ -2206,6 +2313,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       case 'settings': {
         res.status(200).json({ settings: await getSettings() });
+        return;
+      }
+      case 'notify-test': {
+        const r = await notifyWhatsApp('Prueba de aviso de Uni-Verso693: si lees esto, los avisos por WhatsApp funcionan.');
+        res.status(200).json({ ok: r.ok, reason: r.reason ?? null });
         return;
       }
       case 'settings-save': {

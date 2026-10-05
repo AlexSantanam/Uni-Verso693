@@ -337,16 +337,23 @@ const Inner = ({ token }: { token: string }) => {
     if (!view?.whatIf) return null;
     const pb = playbookById(view.whatIf.playbook);
     const common = new Set(['horasOficina', 'costoHoraOficina', 'ingresosAhora', 'ingresosAntes', 'sueldosMes']);
+    // up to two numbers per leak (so every leak can be played with), six in total
     const keys: string[] = [];
     for (const l of pb.leaks.filter((x) => x.kind === 'perdida')) {
-      for (const k of l.uses) if (!common.has(k) && view.whatIf.metrics[k] && !keys.includes(k)) keys.push(k);
+      let taken = 0;
+      for (const k of l.uses) {
+        if (taken >= 2 || keys.length >= 6) break;
+        if (common.has(k) || !view.whatIf.metrics[k]) continue;
+        if (!keys.includes(k)) keys.push(k);
+        taken += 1;
+      }
     }
     const base: Record<string, MetricValue> = Object.fromEntries(Object.entries(view.whatIf.metrics).map(([k, m]: [string, { v: number; c: 'real' | 'estimado' | 'supuesto' }]) => [k, { v: m.v, c: m.c }]));
     const moved: Record<string, MetricValue> = { ...base };
     for (const k of keys) if (scn[k] !== undefined) moved[k] = { ...base[k], v: scn[k] };
     const active = keys.some((k) => scn[k] !== undefined && scn[k] !== base[k].v);
     const leaks = computeLeaks(pb, moved).filter((l) => l.kind === 'perdida' && !l.missing.length);
-    const drivers: Driver[] = keys.slice(0, 4).map((k) => ({ key: k, label: view.whatIf!.metrics[k].label, unit: view.whatIf!.metrics[k].unit, original: base[k].v, value: moved[k].v, confidence: base[k].c }));
+    const drivers: Driver[] = keys.map((k) => ({ key: k, label: pb.metrics.find((m) => m.key === k)?.simLabel ?? view.whatIf!.metrics[k].label, unit: view.whatIf!.metrics[k].unit, original: base[k].v, value: moved[k].v, confidence: base[k].c }));
     return { active, drivers, leakByKey: Object.fromEntries(leaks.map((l) => [l.key, l.monthly])), leakTotal: leaks.reduce((a, l) => a + l.monthly, 0) };
   }, [view, scn]);
   const opps = useMemo(
@@ -536,15 +543,15 @@ const Inner = ({ token }: { token: string }) => {
             </dl>
             <div className="border-t border-white/10 pt-3">
               <p className="font-bold text-white">Siguiente paso: reunión de inicio y validación de supuestos</p>
-              <p className="mt-1 text-xs text-slate-300">30 minutos para confirmar el alcance y revisar contigo cada supuesto antes de la cotización formal. El valor del diagnóstico se descuenta del proyecto.</p>
+              <p className="mt-1 text-xs text-slate-300">Una reunión corta para confirmar el alcance y revisar contigo cada supuesto antes de la cotización formal. El valor del diagnóstico se descuenta del proyecto.</p>
               <a
                 href={kickoffHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-white hover:brightness-110"
+                className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-center text-sm font-extrabold text-white hover:brightness-110"
                 style={{ background: brandGradient }}
               >
-                <CalendarCheck className="h-4 w-4" /> {view.kickoff ? 'Agendar la reunión de inicio' : 'Coordinar la reunión por WhatsApp'}
+                <CalendarCheck className="h-4 w-4 shrink-0" /> <span className="text-center">{view.kickoff ? 'Agendar la reunión de inicio' : 'Coordinar la reunión por WhatsApp'}</span>
               </a>
             </div>
           </div>
