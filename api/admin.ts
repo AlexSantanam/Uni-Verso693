@@ -187,6 +187,8 @@ export interface Settings {
   devHourRate: number;
   /** Services that cost money every month; each EBS solution says which ones it needs and its maintenance is their sum. */
   services: RecurringService[];
+  /** Our own monthly fee per solution for managing, monitoring, updating and supporting it (CLP). 0 = not set. */
+  supportMonthly: number;
   /** Booking link (Calendly) for the free kickoff meeting offered after the client presses "Quiero avanzar". Empty = WhatsApp. */
   kickoffUrl: string;
 }
@@ -265,6 +267,7 @@ const DEFAULT_SETTINGS: Settings = {
     { id: 'correo', name: 'Correo transaccional', monthly: 0 },
     { id: 'monitoreo', name: 'Monitoreo y respaldos', monthly: 0 },
   ],
+  supportMonthly: 0,
   kickoffUrl: '',
 };
 
@@ -888,6 +891,8 @@ export interface EbsOpportunity {
   weeks?: number;
   /** Monthly services this solution needs (copied here with their price when chosen). Its maintenance is their sum. */
   services?: RecurringService[];
+  /** Our monthly fee for managing and supporting this solution (on top of the third-party services). */
+  supportMonthly?: number;
   investment: number;
   monthlyCost: number;
   impact: Level3;
@@ -935,6 +940,8 @@ export interface EbsSession {
   computedLeaks: ComputedLeak[];
   /** What we don't know yet and will measure ("Lo que vamos a medir"). */
   toMeasure: string[];
+  /** Who contracts and pays the third-party services: the client in their own accounts (recommended) or us, passing the cost on. */
+  servicesPaidBy?: 'cliente' | 'universo';
 }
 
 export type Confidence = 'real' | 'estimado' | 'supuesto';
@@ -971,12 +978,14 @@ export const oppCalc = (o: EbsOpportunity, s: Pick<EbsSession, 'sales' | 'comput
 };
 
 /** Monthly maintenance of a set of solutions: every distinct service once, plus the fixed amount of those without services. */
-export const monthlyUnion = (sel: { monthlyCost: number; services?: RecurringService[] }[]) => {
+export const monthlyUnion = (sel: { monthlyCost: number; services?: RecurringService[]; supportMonthly?: number }[]) => {
   const once = new Map<string, number>();
   let fixed = 0;
   for (const o of sel) {
-    if (o.services?.length) for (const sv of o.services) once.set(sv.id, sv.monthly);
-    else fixed += o.monthlyCost;
+    if (o.services?.length) {
+      for (const sv of o.services) once.set(sv.id, sv.monthly);
+      fixed += o.supportMonthly ?? 0;
+    } else fixed += o.monthlyCost;
   }
   return [...once.values()].reduce((a, n) => a + n, 0) + fixed;
 };
@@ -1033,6 +1042,7 @@ const cleanEbs = (b: any, existing: EbsSession | null): EbsSession => {
     automationPct: num(o?.automationPct, 0, 100),
     salesRecoveryPct: num(o?.salesRecoveryPct, 0, 100),
     weeks: Math.round(num(o?.weeks, 0, 104)),
+    supportMonthly: num(o?.supportMonthly, 0, 1e9),
     services: (Array.isArray(o?.services) ? o.services : [])
       .slice(0, 12)
       .map((x: any) => ({ id: str(x?.id, 40), name: str(x?.name, 80), monthly: num(x?.monthly, 0, 1e9) }))
@@ -1107,6 +1117,7 @@ const cleanEbs = (b: any, existing: EbsSession | null): EbsSession => {
       missing: (Array.isArray(l?.missing) ? l.missing : []).map((x: unknown) => str(x, 40)).slice(0, 10),
     })),
     toMeasure: list(b?.toMeasure, 10),
+    servicesPaidBy: b?.servicesPaidBy === 'universo' ? 'universo' : 'cliente',
     answers: Object.fromEntries(
       Object.entries(b?.answers && typeof b.answers === 'object' ? b.answers : {})
         .slice(0, 80)
@@ -1250,7 +1261,8 @@ Tarifa por hora de desarrollo: ${settings.devHourRate > 0 ? `${settings.devHourR
       investmentSource: fromCatalog ? 'catálogo' : 'horas × tarifa',
       // recurring cost: the sum of the services it needs (prices loaded in Ajustes), or a monthly catalog module
       services: chosen,
-      monthlyCost: chosen.length ? chosen.reduce((a, x) => a + x.monthly, 0) : monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : 0,
+      supportMonthly: settings.supportMonthly ?? 0,
+      monthlyCost: (chosen.length ? chosen.reduce((a, x) => a + x.monthly, 0) : monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : 0) + (settings.supportMonthly ?? 0),
       impact: o.impact,
       effort: o.effort,
       stage: ([1, 2, 3].includes(Math.round(o.stage)) ? Math.round(o.stage) : 2) as 1 | 2 | 3,
@@ -1676,6 +1688,7 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
           .map(([k, m]) => [k, { v: m.v, c: m.c, label: m.label, unit: m.unit }]),
       ),
     },
+    servicesPaidBy: e.servicesPaidBy ?? 'cliente',
     leakMonth: t.leakMonth,
     cashTrapped: t.cashTrapped,
     leaks: (e.computedLeaks ?? [])
@@ -1702,6 +1715,7 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
           investment: o.investment,
           weeks: o.weeks ?? 0,
           services: (o.services ?? []).map((x) => ({ id: x.id, name: x.name, monthly: x.monthly })),
+          supportMonthly: o.supportMonthly ?? 0,
           leakKey: o.leakKey ?? '',
           flowBefore: o.flowBefore ?? [],
           flowAfter: o.flowAfter ?? [],
@@ -1768,22 +1782,25 @@ const applyChoice = (e: EbsSession, ids: string[], adj?: Adj): EbsSession => ({
 });
 
 /** Draft quote with the given opportunities as lines; the EBS fee is credited in the notes. */
-const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNote = ''): Promise<Quote> => {
+/** reuse: an earlier draft of the same EBS to update instead of creating another one (the client changed their mind). */
+const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNote = '', reuse?: Quote | null): Promise<Quote> => {
   const s = await getSettings();
   const now = new Date().toISOString();
-  const seq = await redis.incr(K.quoteSeq);
+  const seq = reuse ? 0 : await redis.incr(K.quoteSeq);
   const items: QuoteItem[] = [
     ...sel.map((o) => ({ name: o.title, description: o.description, qty: 1, unitPrice: Math.round(o.investment), unit: 'proyecto' as Unit })),
-    ...[...new Map(sel.flatMap((o) => o.services ?? []).map((x) => [x.id, x])).values()]
+    // third-party services appear as lines only when we contract them and pass the cost on; otherwise the client pays them directly (see the note)
+    ...(e.servicesPaidBy === 'universo' ? [...new Map(sel.flatMap((o) => o.services ?? []).map((x) => [x.id, x])).values()] : [])
       .filter((x) => x.monthly > 0)
-      .map((x) => ({ name: `Servicio mensual: ${x.name}`, description: 'Servicio de terceros necesario para la operación, compartido entre las soluciones.', qty: 1, unitPrice: Math.round(x.monthly), unit: 'mes' as Unit })),
+      .map((x) => ({ name: `Servicio mensual: ${x.name}`, description: 'Servicio de terceros que contrata Uni-Verso693 y traspasa al costo, compartido entre las soluciones.', qty: 1, unitPrice: Math.round(x.monthly), unit: 'mes' as Unit })),
+    ...sel.filter((o) => o.services?.length && (o.supportMonthly ?? 0) > 0).map((o) => ({ name: `Gestión y soporte mensual: ${o.title}`, description: 'Administración, monitoreo, actualizaciones y atención de la solución.', qty: 1, unitPrice: Math.round(o.supportMonthly ?? 0), unit: 'mes' as Unit })),
     ...sel.filter((o) => !o.services?.length && o.monthlyCost > 0).map((o) => ({ name: `Operación: ${o.title}`, description: 'Costo mensual de operación y soporte.', qty: 1, unitPrice: Math.round(o.monthlyCost), unit: 'mes' as Unit })),
   ];
   const q: Quote = {
-    id: randomUUID(),
-    number: `COT-${new Date().getFullYear()}-${String(seq).padStart(4, '0')}`,
+    id: reuse?.id ?? randomUUID(),
+    number: reuse?.number ?? `COT-${new Date().getFullYear()}-${String(seq).padStart(4, '0')}`,
     status: 'borrador',
-    createdAt: now,
+    createdAt: reuse?.createdAt ?? now,
     updatedAt: now,
     leadId: e.leadId,
     client: { name: e.client.name, company: e.client.company, email: e.client.email, rut: '', phone: e.client.phone },
@@ -1794,10 +1811,20 @@ const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNot
     items,
     validDays: s.validDays,
     paymentTerms: s.paymentTerms,
-    notes: [s.notes, `Se descuentan ${EBS_PRICE.toLocaleString('es-CL')} del diagnóstico EBS 693 (${e.number}) ya pagado.`, extraNote].filter(Boolean).join('\n').trim(),
+    notes: [
+      s.notes,
+      `Se descuentan ${EBS_PRICE.toLocaleString('es-CL')} del diagnóstico EBS 693 (${e.number}) ya pagado.`,
+      e.servicesPaidBy !== 'universo' && sel.some((o) => o.services?.length)
+        ? `Los servicios de terceros (${[...new Set(sel.flatMap((o) => (o.services ?? []).map((x) => x.name)))].join(', ')}) los contrata y paga el cliente directamente en su propia cuenta; los valores y condiciones son los del proveedor.`
+        : '',
+      extraNote,
+    ]
+      .filter(Boolean)
+      .join('\n')
+      .trim(),
   };
   await redis.set(K.quote(q.id), q);
-  await redis.zadd(K.quotes, { score: Date.parse(now), member: q.id });
+  if (!reuse) await redis.zadd(K.quotes, { score: Date.parse(now), member: q.id });
   return q;
 };
 
@@ -2269,7 +2296,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const chosen = snap.opportunities.filter((o) => ids.includes(o.id)).map((o) => ({ ...o, savingMonth: savingOf(o, adj[o.id]) }));
       // a draft quote with exactly this scope, so nothing has to be typed by hand
       const base = share.frozen?.session ?? e;
-      const quote = await createQuoteFromEbs(base, applyChoice(base, ids, adj).opportunities.filter((o) => o.selected), 'Alcance elegido por el cliente en la versión interactiva del EBS.');
+      // a second press (the client changed their mind) updates the same draft while nobody has touched it yet
+      const earlier = share.quoteId ? await redis.get<Quote>(K.quote(share.quoteId)) : null;
+      const quote = await createQuoteFromEbs(base, applyChoice(base, ids, adj).opportunities.filter((o) => o.selected), 'Alcance elegido por el cliente en la versión interactiva del EBS.', earlier?.status === 'borrador' ? earlier : null);
       await redis.set(K.ebsShareOf(e.id), { ...share, choice, quoteId: quote.id, quoteNumber: quote.number }, { ex: (SHARE_DAYS + 2) * 86_400 });
       const saving = chosen.reduce((a, o) => a + o.savingMonth, 0);
       const invest = chosen.reduce((a, o) => a + o.investment, 0);
@@ -2381,6 +2410,7 @@ ${SITE_URL}/interno#ebs`);
             .slice(0, 30)
             .map((x: any) => ({ id: str(x?.id, 40) || randomUUID().slice(0, 8), name: str(x?.name, 80), monthly: num(x?.monthly, 0, 1e9) }))
             .filter((x: { name: string }) => x.name),
+          supportMonthly: num(body.supportMonthly, 0, 1e9),
           kickoffUrl: /^https:\/\/\S+$/i.test(str(body.kickoffUrl, 300)) ? str(body.kickoffUrl, 300) : '',
         };
         await redis.set(K.settings, s);

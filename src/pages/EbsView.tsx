@@ -31,6 +31,8 @@ interface ViewOpp {
   flowAfter: string[];
   /** Monthly services this solution needs; its maintenance is their sum. */
   services: { id: string; name: string; monthly: number }[];
+  /** Our monthly fee for managing and supporting this solution. */
+  supportMonthly: number;
   hoursWeek: number;
   hourlyCost: number;
   automationPct: number;
@@ -59,6 +61,7 @@ interface View {
   opportunities: ViewOpp[];
   choice: string[] | null;
   choiceAdj: Adj | null;
+  servicesPaidBy: 'cliente' | 'universo';
   choiceScenario: { key: string; value: number }[] | null;
   whatIf: { playbook: string; metrics: Record<string, { v: number; c: 'real' | 'estimado' | 'supuesto'; label: string; unit: string }> } | null;
   /** Booking link of the kickoff meeting with name and email prefilled; null until it is set in Ajustes. */
@@ -379,8 +382,10 @@ const Inner = ({ token }: { token: string }) => {
     const once = new Map<string, number>();
     let fixed = 0;
     for (const o of act) {
-      if (o.services?.length) for (const sv of o.services) once.set(sv.id, sv.monthly);
-      else fixed += o.monthlyCost;
+      if (o.services?.length) {
+        for (const sv of o.services) once.set(sv.id, sv.monthly);
+        fixed += o.supportMonthly ?? 0;
+      } else fixed += o.monthlyCost;
     }
     const toolCost = [...once.values()].reduce((a, n) => a + n, 0) + fixed;
     const investment = act.reduce((a, o) => a + o.investment, 0);
@@ -630,12 +635,20 @@ const Inner = ({ token }: { token: string }) => {
             <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300">{selected.savingMonth > 0 ? `${clp(selected.savingMonth)}/mes` : 'visibilidad para decidir'}</dd></div>
             {selected.hoursSavedMonth > 0 && <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{selected.hoursSavedMonth} h/mes</dd></div>}
             <div className="flex justify-between text-slate-400"><dt>Mantención mensual</dt><dd>{selected.monthlyCost > 0 ? `${clp(selected.monthlyCost)}/mes` : 'por definir'}</dd></div>
-            {selected.services.length > 0 && (
-              <ul className="space-y-0.5 pl-3 text-xs text-slate-500">
+            {(selected.services.length > 0 || selected.supportMonthly > 0) && (
+              <div className="space-y-0.5 pl-3 text-xs text-slate-500">
+                {selected.services.length > 0 && (
+                  <p className="text-slate-400">
+                    Servicios de terceros · {view.servicesPaidBy === 'universo' ? 'los contrata Uni-Verso693 y traspasa el costo' : 'los contratas y pagas tú directo en tus cuentas'}
+                  </p>
+                )}
                 {selected.services.map((sv) => (
-                  <li key={sv.id} className="flex justify-between gap-3"><span>{sv.name}</span><span>{sv.monthly > 0 ? `${clp(sv.monthly)}/mes` : 'por definir'}</span></li>
+                  <p key={sv.id} className="flex justify-between gap-3"><span>{sv.name}</span><span>{sv.monthly > 0 ? `${clp(sv.monthly)}/mes` : 'por definir'}</span></p>
                 ))}
-              </ul>
+                {selected.supportMonthly > 0 && (
+                  <p className="flex justify-between gap-3 text-slate-400"><span>Gestión y soporte Uni-Verso693</span><span>{clp(selected.supportMonthly)}/mes</span></p>
+                )}
+              </div>
             )}
             <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{selected.investment > 0 ? clp(selected.investment) : 'por definir'}</dd></div>
           </dl>

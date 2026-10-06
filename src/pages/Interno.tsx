@@ -82,6 +82,8 @@ interface Settings {
   devHourRate: number;
   /** Services paid every month; each EBS solution says which ones it needs. */
   services: RecurringService[];
+  /** Our own monthly fee per solution for managing and supporting it (CLP). */
+  supportMonthly: number;
   kickoffUrl: string;
 }
 interface RecurringService {
@@ -1634,6 +1636,7 @@ interface EbsOpportunity {
   weeks?: number;
   /** Monthly services it needs (copied with their price when chosen); its maintenance is their sum. */
   services?: RecurringService[];
+  supportMonthly?: number;
 }
 interface EbsSiteAudit {
   url: string;
@@ -1685,6 +1688,8 @@ interface EbsSession {
   answers?: Record<string, string>;
   computedLeaks?: ComputedLeak[];
   toMeasure?: string[];
+  /** Who contracts and pays the third-party services. */
+  servicesPaidBy?: 'cliente' | 'universo';
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -1734,6 +1739,7 @@ const emptyEbs = (lead?: Lead): EbsSession => ({
   nextSteps: [],
   pendingQuestions: [],
   playbook: 'general',
+  servicesPaidBy: 'cliente',
   metrics: proPrefill(lead).metrics,
   answers: {},
   computedLeaks: [],
@@ -1769,8 +1775,10 @@ const ebsTotals = (e: EbsSession) => {
   const once = new Map<string, number>();
   let fixedMonthly = 0;
   for (const o of sel) {
-    if (o.services?.length) for (const sv of o.services) once.set(sv.id, sv.monthly);
-    else fixedMonthly += o.monthlyCost;
+    if (o.services?.length) {
+      for (const sv of o.services) once.set(sv.id, sv.monthly);
+      fixedMonthly += o.supportMonthly ?? 0;
+    } else fixedMonthly += o.monthlyCost;
   }
   const monthlyCost = [...once.values()].reduce((a, n) => a + n, 0) + fixedMonthly;
   const netMonth = savingMonth - monthlyCost;
@@ -2442,6 +2450,13 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
             <p className="text-xs leading-relaxed text-slate-500">
               Cada oportunidad es algo concreto a construir. Su ahorro mensual suma dos cosas: (1) las horas que libera = horas por semana del proceso × % automatizable × costo de la hora, y (2) la plata que recupera = el monto mensual de la fuga que ataca × el % que recupera. Los porcentajes son supuestos tuyos, no datos del cliente. A eso se le resta el costo mensual de herramientas, y con la inversión sale la recuperación en meses y el ROI a 12 meses. Solo cuentan las marcadas con el visto; las demás quedan fuera del PDF.
             </p>
+            <label className="block text-xs text-slate-500">
+              Servicios de terceros (WhatsApp, nube, dominio…): ¿quién los contrata y paga?
+              <select value={e.servicesPaidBy ?? 'cliente'} onChange={(ev) => patch((c) => ({ ...c, servicesPaidBy: ev.target.value as 'cliente' | 'universo' }))} className={`${input} [&>option]:bg-[#0a1420]`}>
+                <option value="cliente">El cliente, directo en sus propias cuentas (recomendado)</option>
+                <option value="universo">Uni-Verso693 los contrata y traspasa el costo</option>
+              </select>
+            </label>
             {e.opportunities.length === 0 && <p className="text-sm text-slate-500">Genera la propuesta con IA o agrégalas a mano.</p>}
             {e.opportunities.map((o) => {
               const c = oppCalc(o, latest.current);
@@ -2483,7 +2498,8 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                     </label>
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
                     <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { investment: n, investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
-                    <label className="text-xs text-slate-500" title="Suma de los servicios que usa. Si no eliges servicios, puedes escribir un monto fijo.">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n, services: [] })} /></label>
+                    <label className="text-xs text-slate-500" title="Suma de los servicios que usa. Si no eliges servicios, puedes escribir un monto fijo.">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n, services: [], supportMonthly: 0 })} /></label>
+                    <label className="text-xs text-slate-500" title="Tu cobro mensual por administrar, monitorear, actualizar y atender esta solución (aparte de los servicios de terceros)">Gestión y soporte mensual (CLP)<NumIn value={o.supportMonthly ?? 0} step={5000} onChange={(n) => setOpp(o.id, { supportMonthly: n, monthlyCost: (o.services?.length ? (o.services ?? []).reduce((a, x) => a + x.monthly, 0) : o.monthlyCost - (o.supportMonthly ?? 0)) + n })} /></label>
                     <label className="text-xs text-slate-500" title="Semanas hasta tenerla en producción, con un equipo trabajando una solución tras otra">Semanas hasta producción<NumIn value={o.weeks ?? 0} onChange={(n) => setOpp(o.id, { weeks: Math.min(104, Math.round(n)) })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
@@ -2500,7 +2516,7 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                             key={sv.id}
                             onClick={() => {
                               const next = on ? (o.services ?? []).filter((x) => x.id !== sv.id) : [...(o.services ?? []), sv];
-                              setOpp(o.id, { services: next, monthlyCost: next.reduce((a, x) => a + x.monthly, 0) });
+                              setOpp(o.id, { services: next, monthlyCost: next.reduce((a, x) => a + x.monthly, 0) + (o.supportMonthly ?? 0) });
                             }}
                             className={`rounded-full border px-3 py-1 text-xs cursor-pointer ${on ? 'border-cyan-300/60 bg-cyan-300/10 text-cyan-100' : 'border-white/15 text-slate-400 hover:text-white'}`}
                           >
@@ -2740,6 +2756,7 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         {field('phone', 'Teléfono')}
         {field('validDays', 'Validez por defecto (días)', 'number')}
         {field('devHourRate', 'Tarifa por hora de desarrollo (CLP), para el EBS', 'number')}
+        {field('supportMonthly', 'Gestión y soporte mensual por solución (CLP): tu cobro por administrarla y atenderla', 'number')}
         {field('kickoffUrl', 'Link de Calendly para la reunión de inicio (el botón tras Quiero avanzar)')}
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
       </div>
