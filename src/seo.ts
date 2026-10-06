@@ -253,7 +253,7 @@ const diagnosticoPage: PageSeo = {
   path: '/diagnostico-ia',
   title: 'Diagnóstico de IA para empresas en Chile | EBS 693',
   description: clip(
-    'Sesión de 45 minutos que entrega una hoja de ruta priorizada para aplicar inteligencia artificial y automatización en tu empresa, con ROI estimado. $197.000 CLP.',
+    'Diagnóstico de IA con tus propios números: fugas calculadas, hoja de ruta priorizada y un espacio interactivo privado con simulador de retorno. Sesión de 45 minutos. $197.000 CLP.',
   ),
   priority: 0.9,
   jsonLd: graph(
@@ -263,7 +263,7 @@ const diagnosticoPage: PageSeo = {
       name: 'EBS 693: diagnóstico de inteligencia artificial para empresas',
       serviceType: 'Consultoría de inteligencia artificial',
       description:
-        'Sesión remota de 45 minutos que revisa procesos y herramientas, prioriza oportunidades de IA y automatización por impacto y esfuerzo, y entrega una hoja de ruta con retorno estimado.',
+        'Diagnóstico remoto que parte de una sesión de 45 minutos, calcula las fugas de dinero con los números del cliente, prioriza oportunidades de IA y automatización por impacto y esfuerzo, y entrega una hoja de ruta con retorno estimado, un espacio interactivo privado con simulador, un PDF y un video.',
       url: url('/diagnostico-ia'),
       provider: { '@id': `${SITE_URL}/#org` },
       areaServed: [{ '@type': 'Country', name: 'Chile' }, 'Latinoamérica'],

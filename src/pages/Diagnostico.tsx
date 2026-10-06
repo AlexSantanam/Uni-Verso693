@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Receipt, Video } from 'lucide-react';
+import { ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Cpu, FileText, GitCompareArrows, Layers, Lock, Receipt, SlidersHorizontal, Sparkles, Video, Wallet, Zap, MonitorPlay, Target } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { CALENDLY_URL, ebs, whatsappLink } from '../data/site';
-import { ebsFaqs, ebsForWho, ebsIncludes, ebsSteps, ebsVideo } from '../data/ebs';
+import EbsDemoAnim from '../components/EbsDemoAnim';
+import { EbsDiagramAnim, EbsLiveAnim } from '../components/EbsDemoMore';
+import { ebsDelivers, ebsFaqs, ebsForWho, ebsIncludes, ebsSteps, ebsTech, ebsVideo } from '../data/ebs';
 import { Container, Eyebrow, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
 import { SymptomChecklist, LossCalculator } from '../components/LossTools';
@@ -44,18 +46,18 @@ export const Diagnostico: React.FC = () => {
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white leading-[1.05]">
               {es ? (
                 <>
-                  Descubre cuánto dinero estás <span className="text-gradient-brand">dejando de ganar sin IA</span>
+                  Un diagnóstico de IA que <span className="text-gradient-brand">no termina en un PDF</span>
                 </>
               ) : (
                 <>
-                  Find out how much money you’re <span className="text-gradient-brand">leaving on the table without AI</span>
+                  An AI diagnosis that <span className="text-gradient-brand">doesn’t end in a PDF</span>
                 </>
               )}
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
               {t(
-                'Diagnóstico de inteligencia artificial para empresas: en 45 minutos revisamos tu operación y te entregamos una hoja de ruta con retorno estimado. Qué automatizar primero, cuánto cuesta y en cuánto se recupera.',
-                'An AI diagnosis for businesses: in 45 minutes we review your operation and give you a roadmap with estimated return. What to automate first, what it costs and how fast it pays back.',
+                'Revisamos tu operación con tus propios números y te entregamos un espacio interactivo privado donde tu equipo activa cada solución y ve, al instante, cuánto se recupera, cuánto cuesta y en cuánto se paga.',
+                'We review your operation using your own numbers and give you a private interactive space where your team switches each solution on and instantly sees what it recovers, what it costs and how fast it pays back.',
               )}
             </p>
             {/* the price card holds the single primary CTA; this side offers a different, lighter action */}
@@ -94,6 +96,54 @@ export const Diagnostico: React.FC = () => {
                 <BookButton className="w-full" />
               </div>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container className="space-y-12">
+          <SectionHeading center eyebrow={t('Lo que recibes', 'What you get')} title={t('Un diagnóstico que tu equipo puede tocar', 'A diagnosis your team can touch')} />
+          <div className="mx-auto max-w-3xl space-y-3">
+            <EbsDemoAnim />
+          </div>
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+            <EbsLiveAnim />
+            <EbsDiagramAnim />
+            <p className="text-center text-xs text-slate-500">{t('Ejemplo ilustrativo con cifras inventadas: no corresponde a ningún cliente.', 'Illustrative example with invented figures: it does not correspond to any client.')}</p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {ebsDelivers.map((d, i) => {
+              const Icon = [Target, Layers, MonitorPlay, SlidersHorizontal, GitCompareArrows, FileText][i] ?? Check;
+              return (
+                <div key={d.title.es} className="reveal rounded-3xl border border-white/10 bg-white/[0.03] p-7 space-y-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/15 text-cyan-300">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-extrabold text-white">{tr(d.title)}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{tr(d.text)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-20 bg-[#070f19] border-y border-white/10">
+        <Container className="space-y-12">
+          <SectionHeading center eyebrow={t('La tecnología detrás', 'The technology behind it')} title={t('No es una plantilla: es un sistema', 'It’s not a template: it’s a system')} />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {ebsTech.map((d, i) => {
+              const Icon = [Layers, Calculator, Sparkles, Zap, Wallet, Lock][i] ?? Cpu;
+              return (
+                <div key={d.title.es} className="reveal rounded-3xl border border-white/10 bg-[#060a14] p-7 space-y-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-extrabold text-white">{tr(d.title)}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{tr(d.text)}</p>
+                </div>
+              );
+            })}
           </div>
         </Container>
       </section>
