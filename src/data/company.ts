@@ -90,6 +90,13 @@ export const companyFaqs: { q: L; a: L }[] = [
     },
   },
   {
+    q: { es: '¿Qué relación tiene Uni-Verso693 con YndiPet y MEMORA?', en: 'How is Uni-Verso693 related to YndiPet and MEMORA?' },
+    a: {
+      es: 'Universo693 es el holding de un pequeño grupo, y YndiPet y MEMORA son, por ahora, sus empresas hijas. El negocio de Uni-Verso693 en sí es desarrollar software y agentes de IA a medida para empresas clientes.',
+      en: 'Universo693 is the holding of a small group, and YndiPet and MEMORA are, for now, its subsidiaries. Uni-Verso693 itself is in the business of building custom software and AI agents for client companies.',
+    },
+  },
+  {
     q: { es: '¿Qué proyectos ha desarrollado?', en: 'What projects has it built?' },
     a: {
       es: 'Entre sus proyectos están una app de mascotas con inteligencia artificial, una plataforma SaaS de memoriales digitales con pagos y app Android, y un sitio inmobiliario con simulador de crédito. Los casos están en universo693.com/casos.',

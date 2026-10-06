@@ -42,6 +42,10 @@ const organization = {
   image: OG_IMAGE,
   description:
     'Empresa chilena de desarrollo de software: plataformas a medida, agentes de IA, aplicaciones móviles y producto digital para empresas.',
+  subOrganization: [
+    { '@type': 'Organization', name: 'YndiPet', url: 'https://yndipet.com' },
+    { '@type': 'Organization', name: 'MEMORA', url: 'https://memora.lat' },
+  ],
   ...(CONTACT_EMAIL && { email: CONTACT_EMAIL }),
   ...(WHATSAPP_NUMBER && { telephone: `+${WHATSAPP_NUMBER}` }),
   address: { '@type': 'PostalAddress', addressCountry: 'CL' },

@@ -32,6 +32,9 @@
     },
     "api/admin.ts": {
       "maxDuration": 300
+    },
+    "api/whatsapp.ts": {
+      "maxDuration": 60
     }
   },
   "headers": [

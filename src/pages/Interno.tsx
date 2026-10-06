@@ -32,7 +32,7 @@ type QuoteStatus = 'borrador' | 'enviada' | 'aceptada' | 'rechazada';
 
 interface Lead {
   id: string;
-  source: 'contacto' | 'audit' | 'audit-pro';
+  source: 'contacto' | 'audit' | 'audit-pro' | 'whatsapp';
   createdAt: string;
   name: string;
   email: string;
@@ -295,7 +295,7 @@ const btn = 'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 
 const btnPrimary = `${btn} bg-brand-600 hover:bg-brand-700 text-white`;
 const btnGhost = `${btn} border border-white/15 bg-white/5 hover:bg-white/10 text-white`;
 
-const SOURCE_LABEL: Record<Lead['source'], string> = { contacto: 'Formulario', audit: 'Audit gratis', 'audit-pro': 'Audit PRO' };
+const SOURCE_LABEL: Record<Lead['source'], string> = { contacto: 'Formulario', audit: 'Audit gratis', 'audit-pro': 'Audit PRO', whatsapp: 'WhatsApp' };
 const LEAD_COLORS: Record<LeadStatus, string> = {
   nuevo: 'bg-cyan-400/15 text-cyan-200 border-cyan-400/30',
   contactado: 'bg-amber-300/15 text-amber-200 border-amber-300/30',
@@ -390,7 +390,7 @@ const Leads = ({
           </button>
         ))}
       </div>
-      {list.length === 0 && <p className="text-slate-400">No hay solicitudes {filter !== 'todos' ? `en "${filter}"` : 'todavía'}. Aparecen aquí cuando alguien usa el formulario, el Audit gratis o el Audit PRO.</p>}
+      {list.length === 0 && <p className="text-slate-400">No hay solicitudes {filter !== 'todos' ? `en "${filter}"` : 'todavía'}. Aparecen aquí cuando alguien usa el formulario, el Audit gratis, el Audit PRO o te escribe por WhatsApp.</p>}
       <ul className="space-y-3">
         {list.map((l) => (
           <li key={l.id} className="rounded-xl border border-white/10 bg-white/[0.03]">
@@ -411,7 +411,7 @@ const Leads = ({
             {open === l.id && (
               <div className="border-t border-white/10 p-4 space-y-4 text-sm">
                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-slate-300">
-                  <div><dt className="text-xs text-slate-500">Correo</dt><dd><a href={`mailto:${l.email}`} className="text-cyan-300 hover:text-cyan-200">{l.email}</a></dd></div>
+                  {l.email && <div><dt className="text-xs text-slate-500">Correo</dt><dd><a href={`mailto:${l.email}`} className="text-cyan-300 hover:text-cyan-200">{l.email}</a></dd></div>}
                   {l.phone && <div><dt className="text-xs text-slate-500">Teléfono</dt><dd><a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:text-cyan-200">{l.phone}</a></dd></div>}
                   {l.url && <div><dt className="text-xs text-slate-500">Sitio</dt><dd><a href={l.url} target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:text-cyan-200 break-all">{l.url}</a></dd></div>}
                   {l.interest && <div><dt className="text-xs text-slate-500">Interés</dt><dd>{l.interest}</dd></div>}
@@ -2949,6 +2949,15 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
       setMsg((e as Error).message);
     }
   };
+  const [wa, setWa] = useState<{ configured: boolean; off: boolean; today: number } | null>(null);
+  useEffect(() => {
+    api<{ configured: boolean; off: boolean; today: number }>('wa-status', { body: {} }).then(setWa).catch(() => setWa(null));
+  }, [api]);
+  const toggleWa = async () => {
+    if (!wa) return;
+    const r = await api<{ off: boolean }>('wa-toggle', { body: { off: !wa.off } });
+    setWa({ ...wa, off: r.off });
+  };
   const field = (k: keyof Settings, label: string, type = 'text') => (
     <label className="block text-xs text-slate-500">
       {label}
@@ -2976,6 +2985,20 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         {field('supportPct', 'Gestión y soporte mensual (% de la inversión de cada solución): tu cobro por administrarla y atenderla', 'number')}
         {field('kickoffUrl', 'Link de Calendly para la reunión de inicio (el botón tras Quiero avanzar)')}
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
+      </div>
+      <div className="space-y-2 rounded-lg border border-white/10 p-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Agente de WhatsApp</p>
+          {wa && <Badge className={!wa.configured ? QUOTE_COLORS.borrador : wa.off ? 'border-red-400/40 bg-red-400/10 text-red-300' : QUOTE_COLORS.aceptada}>{!wa.configured ? 'sin conectar' : wa.off ? 'pausado' : 'activo'}</Badge>}
+          {wa && wa.configured && (
+            <button onClick={toggleWa} className={`${btnGhost} ml-auto`}>{wa.off ? 'Reactivar el agente' : 'Pausar el agente'}</button>
+          )}
+        </div>
+        <p className="text-xs text-slate-500">
+          {wa?.configured
+            ? `Responde por ti en el WhatsApp de la empresa y guarda cada contacto en Solicitudes. Si respondes tú desde el celular, se pausa solo en ese chat. Respuestas automáticas hoy: ${wa.today}.`
+            : 'Atiende por ti el WhatsApp de la empresa con la API oficial de Meta. Aún no está conectado: faltan WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_APP_SECRET y WHATSAPP_VERIFY_TOKEN en Vercel.'}
+        </p>
       </div>
       <div className="space-y-2 rounded-lg border border-white/10 p-3">
         <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Formas de trabajar del EBS (valores por defecto)</p>

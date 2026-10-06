@@ -139,7 +139,7 @@ export interface LeadPro {
 }
 export interface Lead {
   id: string;
-  source: 'contacto' | 'audit' | 'audit-pro';
+  source: 'contacto' | 'audit' | 'audit-pro' | 'whatsapp';
   createdAt: string;
   name: string;
   email: string;
@@ -2854,6 +2854,22 @@ ${SITE_URL}/interno#ebs`);
       }
       case 'settings': {
         res.status(200).json({ settings: await getSettings() });
+        return;
+      }
+      case 'wa-status': {
+        // state of the WhatsApp agent (api/whatsapp.ts): connected, switched off, answers used today
+        const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        res.status(200).json({
+          configured: Boolean(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_ID && process.env.WHATSAPP_APP_SECRET && process.env.WHATSAPP_VERIFY_TOKEN),
+          off: Boolean(await redis.get('u693:wa:off')) || process.env.WHATSAPP_BOT === 'off',
+          today: Number((await redis.get<number>(`u693:wa:day:${day}`)) ?? 0),
+        });
+        return;
+      }
+      case 'wa-toggle': {
+        if (body.off) await redis.set('u693:wa:off', 1);
+        else await redis.del('u693:wa:off');
+        res.status(200).json({ off: Boolean(body.off) });
         return;
       }
       case 'notify-test': {

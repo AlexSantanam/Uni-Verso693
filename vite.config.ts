@@ -21,6 +21,7 @@ const devApi = (): Plugin => ({
         for await (const c of req) chunks.push(c as Buffer);
         const raw = Buffer.concat(chunks).toString('utf8');
         const vreq = Object.assign(req, {
+          rawBody: Buffer.concat(chunks),
           query: Object.fromEntries(url.searchParams),
           body: raw && String(req.headers['content-type']).includes('json') ? JSON.parse(raw) : raw || undefined,
         });
