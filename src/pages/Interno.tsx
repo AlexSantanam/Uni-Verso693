@@ -82,8 +82,8 @@ interface Settings {
   devHourRate: number;
   /** Services paid every month; each EBS solution says which ones it needs. */
   services: RecurringService[];
-  /** Our own monthly fee per solution for managing and supporting it (CLP). */
-  supportMonthly: number;
+  /** Our monthly fee for managing and supporting each solution, as a % of its investment. */
+  supportPct: number;
   kickoffUrl: string;
 }
 interface RecurringService {
@@ -1637,6 +1637,8 @@ interface EbsOpportunity {
   /** Monthly services it needs (copied with their price when chosen); its maintenance is their sum. */
   services?: RecurringService[];
   supportMonthly?: number;
+  /** If above 0, supportMonthly follows this % of the investment per month; otherwise it is a fixed amount. */
+  supportPct?: number;
 }
 interface EbsSiteAudit {
   url: string;
@@ -1749,6 +1751,14 @@ const emptyEbs = (lead?: Lead): EbsSession => ({
 /** Monthly amount of the leak an opportunity targets (legacy sessions: the sales leak). */
 const targetLeak = (e: Pick<EbsSession, 'sales' | 'computedLeaks'>, key?: string) =>
   key ? (e.computedLeaks ?? []).find((l) => l.key === key && l.kind === 'perdida')?.monthly ?? 0 : e.sales.lostClientsMonth * e.sales.avgTicket;
+
+/** Monthly cost of a solution without our own fee: its services, or the fixed amount when it has none. */
+const baseMonthly = (o: EbsOpportunity) => (o.services?.length ? o.services.reduce((a, x) => a + x.monthly, 0) : o.monthlyCost - (o.supportMonthly ?? 0));
+/** Our management fee as a % of the investment, with the monthly cost it implies. */
+const supportPatch = (o: EbsOpportunity, investment: number, pct: number): Partial<EbsOpportunity> => {
+  const support = Math.round((investment * pct) / 100);
+  return { investment, supportPct: pct, supportMonthly: support, monthlyCost: baseMonthly(o) + support };
+};
 
 /** Same math as api/admin.ts `oppCalc` / `ebsTotals`. */
 const oppCalc = (o: EbsOpportunity, e: Pick<EbsSession, 'sales' | 'computedLeaks'>) => {
@@ -2497,9 +2507,10 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                       </select>
                     </label>
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
-                    <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { investment: n, investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
-                    <label className="text-xs text-slate-500" title="Suma de los servicios que usa. Si no eliges servicios, puedes escribir un monto fijo.">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n, services: [], supportMonthly: 0 })} /></label>
-                    <label className="text-xs text-slate-500" title="Tu cobro mensual por administrar, monitorear, actualizar y atender esta solución (aparte de los servicios de terceros)">Gestión y soporte mensual (CLP)<NumIn value={o.supportMonthly ?? 0} step={5000} onChange={(n) => setOpp(o.id, { supportMonthly: n, monthlyCost: (o.services?.length ? (o.services ?? []).reduce((a, x) => a + x.monthly, 0) : o.monthlyCost - (o.supportMonthly ?? 0)) + n })} /></label>
+                    <label className="text-xs text-slate-500">Inversión (CLP)<NumIn value={o.investment} step={50000} onChange={(n) => setOpp(o.id, { ...((o.supportPct ?? 0) > 0 ? supportPatch(o, n, o.supportPct ?? 0) : { investment: n }), investmentSource: 'manual' })} className={o.investment <= 0 ? 'border-amber-300/60' : ''} /></label>
+                    <label className="text-xs text-slate-500" title="Suma de los servicios que usa. Si no eliges servicios, puedes escribir un monto fijo.">Mantención mensual (CLP)<NumIn value={o.monthlyCost} step={5000} onChange={(n) => setOpp(o.id, { monthlyCost: n, services: [], supportMonthly: 0, supportPct: 0 })} /></label>
+                    <label className="text-xs text-slate-500" title="Tu cobro mensual por administrar, monitorear, actualizar y atender esta solución, como % de su inversión (aparte de los servicios de terceros). Una referencia habitual en mantención de software es 15% a 20% al año, es decir 1,25% a 1,7% al mes.">Gestión y soporte (% mensual de la inversión)<NumIn value={o.supportPct ?? 0} step={0.1} onChange={(n) => setOpp(o.id, supportPatch(o, o.investment, Math.min(100, n)))} /></label>
+                    <label className="text-xs text-slate-500" title="El mismo cobro en pesos. Si lo escribes aquí, queda como monto fijo y deja de seguir el porcentaje.">Gestión y soporte (CLP al mes)<NumIn value={o.supportMonthly ?? 0} step={5000} onChange={(n) => setOpp(o.id, { supportPct: 0, supportMonthly: n, monthlyCost: baseMonthly(o) + n })} /></label>
                     <label className="text-xs text-slate-500" title="Semanas hasta tenerla en producción, con un equipo trabajando una solución tras otra">Semanas hasta producción<NumIn value={o.weeks ?? 0} onChange={(n) => setOpp(o.id, { weeks: Math.min(104, Math.round(n)) })} /></label>
                   </div>
                   <input value={o.assumptions} onChange={(ev) => setOpp(o.id, { assumptions: ev.target.value })} placeholder="Supuestos (salen en el PDF)" className={`${input} text-xs`} />
@@ -2756,7 +2767,7 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         {field('phone', 'Teléfono')}
         {field('validDays', 'Validez por defecto (días)', 'number')}
         {field('devHourRate', 'Tarifa por hora de desarrollo (CLP), para el EBS', 'number')}
-        {field('supportMonthly', 'Gestión y soporte mensual por solución (CLP): tu cobro por administrarla y atenderla', 'number')}
+        {field('supportPct', 'Gestión y soporte mensual (% de la inversión de cada solución): tu cobro por administrarla y atenderla', 'number')}
         {field('kickoffUrl', 'Link de Calendly para la reunión de inicio (el botón tras Quiero avanzar)')}
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
       </div>

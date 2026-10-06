@@ -187,8 +187,8 @@ export interface Settings {
   devHourRate: number;
   /** Services that cost money every month; each EBS solution says which ones it needs and its maintenance is their sum. */
   services: RecurringService[];
-  /** Our own monthly fee per solution for managing, monitoring, updating and supporting it (CLP). 0 = not set. */
-  supportMonthly: number;
+  /** Our monthly fee for managing, monitoring, updating and supporting each EBS solution, as a % of that solution's investment. 0 = not set. */
+  supportPct: number;
   /** Booking link (Calendly) for the free kickoff meeting offered after the client presses "Quiero avanzar". Empty = WhatsApp. */
   kickoffUrl: string;
 }
@@ -267,7 +267,7 @@ const DEFAULT_SETTINGS: Settings = {
     { id: 'correo', name: 'Correo transaccional', monthly: 0 },
     { id: 'monitoreo', name: 'Monitoreo y respaldos', monthly: 0 },
   ],
-  supportMonthly: 0,
+  supportPct: 0,
   kickoffUrl: '',
 };
 
@@ -893,6 +893,8 @@ export interface EbsOpportunity {
   services?: RecurringService[];
   /** Our monthly fee for managing and supporting this solution (on top of the third-party services). */
   supportMonthly?: number;
+  /** If above 0, supportMonthly is this % of the investment per month; if 0, supportMonthly is a fixed amount. */
+  supportPct?: number;
   investment: number;
   monthlyCost: number;
   impact: Level3;
@@ -1043,6 +1045,7 @@ const cleanEbs = (b: any, existing: EbsSession | null): EbsSession => {
     salesRecoveryPct: num(o?.salesRecoveryPct, 0, 100),
     weeks: Math.round(num(o?.weeks, 0, 104)),
     supportMonthly: num(o?.supportMonthly, 0, 1e9),
+    supportPct: num(o?.supportPct, 0, 100),
     services: (Array.isArray(o?.services) ? o.services : [])
       .slice(0, 12)
       .map((x: any) => ({ id: str(x?.id, 40), name: str(x?.name, 80), monthly: num(x?.monthly, 0, 1e9) }))
@@ -1244,6 +1247,9 @@ Tarifa por hora de desarrollo: ${settings.devHourRate > 0 ? `${settings.devHourR
     const fromCatalog = mod && mod.price > 0 && mod.unit !== 'mes';
     const hours = Math.max(0, Math.round(o.devHours));
     const chosen = (o.serviceIds ?? []).map((id) => settings.services.find((x) => x.id === id)).filter((x): x is RecurringService => Boolean(x)).slice(0, 8);
+    const investment = fromCatalog ? mod!.price : hours * settings.devHourRate;
+    // our management fee: the % set in Ajustes applied to this solution's investment
+    const support = Math.round((investment * (settings.supportPct ?? 0)) / 100);
     return {
       id: randomUUID().slice(0, 8),
       title: o.title.slice(0, 160),
@@ -1257,12 +1263,13 @@ Tarifa por hora de desarrollo: ${settings.devHourRate > 0 ? `${settings.devHourR
       flowBefore: o.flowBefore.map((t) => t.slice(0, 160)).slice(0, 7),
       flowAfter: o.flowAfter.map((t) => t.slice(0, 160)).slice(0, 7),
       ...((s.computedLeaks ?? []).some((l) => l.key === o.leakKey && l.kind === 'perdida') ? { leakKey: o.leakKey } : {}),
-      investment: fromCatalog ? mod!.price : hours * settings.devHourRate,
+      investment,
       investmentSource: fromCatalog ? 'catálogo' : 'horas × tarifa',
       // recurring cost: the sum of the services it needs (prices loaded in Ajustes), or a monthly catalog module
       services: chosen,
-      supportMonthly: settings.supportMonthly ?? 0,
-      monthlyCost: (chosen.length ? chosen.reduce((a, x) => a + x.monthly, 0) : monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : 0) + (settings.supportMonthly ?? 0),
+      supportPct: settings.supportPct ?? 0,
+      supportMonthly: support,
+      monthlyCost: (chosen.length ? chosen.reduce((a, x) => a + x.monthly, 0) : monthly && monthly.unit === 'mes' && monthly.price > 0 ? monthly.price : 0) + support,
       impact: o.impact,
       effort: o.effort,
       stage: ([1, 2, 3].includes(Math.round(o.stage)) ? Math.round(o.stage) : 2) as 1 | 2 | 3,
@@ -2410,7 +2417,7 @@ ${SITE_URL}/interno#ebs`);
             .slice(0, 30)
             .map((x: any) => ({ id: str(x?.id, 40) || randomUUID().slice(0, 8), name: str(x?.name, 80), monthly: num(x?.monthly, 0, 1e9) }))
             .filter((x: { name: string }) => x.name),
-          supportMonthly: num(body.supportMonthly, 0, 1e9),
+          supportPct: num(body.supportPct, 0, 100),
           kickoffUrl: /^https:\/\/\S+$/i.test(str(body.kickoffUrl, 300)) ? str(body.kickoffUrl, 300) : '',
         };
         await redis.set(K.settings, s);
