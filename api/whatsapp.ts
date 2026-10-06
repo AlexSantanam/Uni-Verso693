@@ -136,6 +136,46 @@ const BRAND_NAME: Record<Brand, string> = { universo: 'Uni-Verso693', cliente: '
 const detectBrand = (t: string): Brand | null => (/yndi\s*pet/i.test(t) ? 'yndipet' : /memora/i.test(t) ? 'memora' : /uni-?\s*verso|universo/i.test(t) ? 'universo' : null);
 const GREETING_RE = /^\s*(hola|holi|holaa+|buenas|buen d[ií]a|buenos d[ií]as|buenas (tardes|noches)|hi|hello|info|informaci[oó]n|consulta|una consulta|quiero informaci[oó]n)[\s!.¡?,]*$/i;
 
+// ---------- what each brand publishes on its own site (read live, cached an hour) ----------
+/** Pages the agent may read to answer about a brand. Only pages that show real text to a plain reader (no client-side-only apps). */
+const BRAND_PAGES: Partial<Record<Brand, string[]>> = { yndipet: ['https://yndipet.com/servicios', 'https://yndipet.com/planes'] };
+const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', aacute: 'á', eacute: 'é', iacute: 'í', oacute: 'ó', uacute: 'ú', Aacute: 'Á', Eacute: 'É', Iacute: 'Í', Oacute: 'Ó', Uacute: 'Ú', ntilde: 'ñ', Ntilde: 'Ñ', uuml: 'ü', iexcl: '¡', iquest: '¿', mdash: '—', ndash: '–', hellip: '…', laquo: '«', raquo: '»', middot: '·', bull: '•' };
+const htmlToText = (html: string) =>
+  html
+    .replace(/<(script|style|noscript|svg)[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<\/(p|div|section|article|li|h[1-6]|tr|br)>|<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&([a-zA-Z]+);/g, (m, n) => ENTITIES[n] ?? m)
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\s*\n\s*/g, '\n')
+    .trim();
+const siteCache = new Map<string, { text: string; at: number }>();
+const getBrandSite = async (brand: Brand | null): Promise<string> => {
+  const pages = brand ? BRAND_PAGES[brand] : undefined;
+  if (!pages) return '';
+  const parts = await Promise.all(
+    pages.map(async (url) => {
+      const hit = siteCache.get(url);
+      if (hit && Date.now() - hit.at < 3600_000) return hit.text;
+      try {
+        const r = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; Universo693Agent)' }, signal: AbortSignal.timeout(6000) });
+        if (r.ok) {
+          const text = htmlToText(await r.text()).slice(0, 12_000);
+          if (text.length > 300) {
+            siteCache.set(url, { text, at: Date.now() });
+            return text;
+          }
+        }
+      } catch {
+        /* use the last good copy below */
+      }
+      return hit?.text ?? '';
+    }),
+  );
+  return parts.filter(Boolean).join('\n\n');
+};
+
 // ---------- the agent ----------
 const AgentTurn = z.object({
   brand: z.enum(['universo', 'cliente', 'yndipet', 'memora', 'sin_definir']).describe('Área por la que escribe la persona: universo (quiere conocer o cotizar servicios), cliente (ya es cliente de Uni-Verso693: soporte, facturas, proyecto en curso), yndipet o memora; sin_definir si todavía no está claro'),
@@ -154,12 +194,12 @@ const AgentTurn = z.object({
 });
 type AgentOut = z.infer<typeof AgentTurn>;
 
-const SYSTEM = (knowledge: string, profileName: string, introSent: boolean, brand: Brand | null) => `Eres el asistente de IA de Uni-Verso693 en WhatsApp. Este número recibe a personas de tres marcas del mismo grupo: *Uni-Verso693* es el holding (desarrollo de software, agentes de IA y el diagnóstico EBS 693) y sus empresas hijas, por ahora, son *YndiPet* (app de cuidado de mascotas con IA, yndipet.com) y *Memora* (memoriales digitales, memora.lat).
+const SYSTEM = (knowledge: string, profileName: string, introSent: boolean, brand: Brand | null, brandSite: string) => `Eres el asistente de IA de Uni-Verso693 en WhatsApp. Este número recibe a personas de tres marcas del mismo grupo: *Uni-Verso693* es el holding (desarrollo de software, agentes de IA y el diagnóstico EBS 693) y sus empresas hijas, por ahora, son *YndiPet* (app de cuidado de mascotas con IA, yndipet.com) y *Memora* (memoriales digitales, memora.lat).
 
 Marca por la que escribe esta persona ahora: ${brand ? BRAND_NAME[brand] : 'todavía sin definir'}.
 - Cliente de Uni-Verso693: ya tiene un servicio o proyecto con nosotros (soporte, cambios, facturas, un proyecto en curso). NO vendas ni ofrezcas el diagnóstico ni la demo. En pocas frases pídele su nombre, su empresa y qué necesita, y pasa a una persona (handoff=true) apenas lo tengas.
 - Uni-Verso693 (personas nuevas): objetivo comercial; el negocio es desarrollar software y agentes de IA para empresas clientes, así que no menciones a YndiPet ni a Memora salvo que pregunten por experiencia, ejemplos o por el grupo, y nunca los presentes como lo que vende Uni-Verso693. Entender qué necesita y llevarla a lo que corresponde: agendar el diagnóstico EBS 693, ver la demo, o hablar con una persona del equipo.
-- YndiPet o Memora: son parte del grupo y puedes decirlo, pero no tienes información de soporte, planes ni precios de esas apps más allá de <conocimiento> y sus sitios web; no inventes funciones ni condiciones. Pregunta qué necesita (una duda, un problema con su cuenta o un pago, una alianza o prensa), ayuda solo con lo básico que esté publicado y pasa a una persona (handoff=true) cuando sea de su cuenta, un pago, un error o algo que no puedas resolver. No ofrezcas el diagnóstico EBS ni la demo, salvo que pregunte por desarrollo de software.
+- YndiPet o Memora: son parte del grupo y puedes decirlo. Responde sobre sus servicios solo con lo que diga <sitio_de_la_marca> (su propia página pública) cuando exista, y con <conocimiento>; no tienes información de soporte interno, y no inventes funciones, planes, precios ni condiciones: lo que no aparezca publicado va a una persona. Pregunta qué necesita (una duda, un problema con su cuenta o un pago, una alianza o prensa), ayuda solo con lo básico que esté publicado y pasa a una persona (handoff=true) cuando sea de su cuenta, un pago, un error o algo que no puedas resolver. No ofrezcas el diagnóstico EBS ni la demo, salvo que pregunte por desarrollo de software.
 - Si todavía no está claro, ayúdala a decirlo con una sola pregunta corta.
 
 Estilo:
@@ -178,7 +218,11 @@ Reglas:
 
 <conocimiento>
 ${knowledge}
-</conocimiento>`;
+</conocimiento>${brandSite ? `
+
+<sitio_de_la_marca fuente="página pública de ${brand ? BRAND_NAME[brand] : 'la marca'}">
+${brandSite}
+</sitio_de_la_marca>` : ''}`;
 
 const runAgent = async (conv: Turn[], profileName: string, introSent: boolean, brand: Brand | null): Promise<AgentOut> => {
   const response = await new Anthropic().beta.messages.parse({
@@ -187,7 +231,7 @@ const runAgent = async (conv: Turn[], profileName: string, introSent: boolean, b
     output_config: { effort: 'low', format: betaZodOutputFormat(AgentTurn) },
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
-    system: SYSTEM(await getKnowledge(), profileName, introSent, brand),
+    system: SYSTEM(await getKnowledge(), profileName, introSent, brand, await getBrandSite(brand)),
     messages: toModelMessages(conv),
   });
   if (!response.parsed_output) throw new Error(`agent returned no output (stop_reason: ${response.stop_reason})`);
@@ -308,8 +352,12 @@ const handleInbound = async (m: InMsg, profileName: string) => {
     await sendText(waId, 'Listo, no te escribiremos más por este medio. Si necesitas algo más adelante, escríbenos cuando quieras.');
     return;
   }
-  // a person is handling this chat (the owner answered from the phone, or the contact asked for one)
-  if (await redis.get(`${P}:pause:${waId}`)) return;
+  // a person is handling this chat (the owner answered from the phone, or the contact asked for one);
+  // only the word "menu" brings the agent back, so the contact is never stuck without it
+  if (await redis.get(`${P}:pause:${waId}`)) {
+    if (!MENU_RE.test(text)) return;
+    await redis.del(`${P}:pause:${waId}`);
+  }
   // kill switch: the env var, or the switch in /interno → Ajustes
   if (process.env.WHATSAPP_BOT === 'off' || (await redis.get(`${P}:off`))) return;
 
