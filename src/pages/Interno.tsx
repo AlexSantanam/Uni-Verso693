@@ -1834,6 +1834,7 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
   const [sendTo, setSendTo] = useState(initial.client.email);
   const [sendMsg, setSendMsg] = useState('');
   const [copied, setCopied] = useState(false);
+  const [bulkPct, setBulkPct] = useState(0);
   const [share, setShare] = useState<EbsShare | null>(null);
   const [shareUrl, setShareUrl] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
@@ -2467,6 +2468,55 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                 <option value="universo">Uni-Verso693 los contrata y traspasa el costo</option>
               </select>
             </label>
+            {(() => {
+              // the services this project uses, with a price that can differ from the default list (volume, plan, size of the project)
+              const used = new Map<string, { sv: RecurringService; n: number }>();
+              for (const o of e.opportunities.filter((x) => x.selected)) for (const sv of o.services ?? []) used.set(sv.id, { sv, n: (used.get(sv.id)?.n ?? 0) + 1 });
+              const setPrice = (id: string, price: number) =>
+                patch((c) => ({
+                  ...c,
+                  opportunities: c.opportunities.map((o) => {
+                    if (!o.services?.some((x) => x.id === id)) return o;
+                    const next = o.services.map((x) => (x.id === id ? { ...x, monthly: price } : x));
+                    return { ...o, services: next, monthlyCost: next.reduce((a, x) => a + x.monthly, 0) + (o.supportMonthly ?? 0) };
+                  }),
+                }));
+              return (
+                <div className="space-y-3 rounded-lg border border-white/10 p-3">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Costos mensuales de este proyecto</p>
+                  <p className="text-xs text-slate-500">Los precios de Ajustes son solo los predeterminados: aquí los ajustas para este cliente (un servicio usado por varias soluciones tiene un solo precio, que vale para todas). Tu gestión y soporte también se puede ajustar por solución, abajo.</p>
+                  {[...used.values()].map(({ sv, n }) => {
+                    const list = services.find((x) => x.id === sv.id)?.monthly;
+                    return (
+                      <div key={sv.id} className="grid grid-cols-12 items-center gap-2 text-sm">
+                        <span className="col-span-12 text-slate-300 sm:col-span-6">{sv.name} <span className="text-xs text-slate-500">· {n} {n === 1 ? 'solución' : 'soluciones'}</span></span>
+                        <div className="col-span-8 sm:col-span-3"><NumIn value={sv.monthly} step={1000} onChange={(v) => setPrice(sv.id, v)} /></div>
+                        <span className="col-span-4 text-xs text-slate-500 sm:col-span-3">
+                          {list !== undefined && list !== sv.monthly ? (
+                            <button onClick={() => setPrice(sv.id, list)} className="text-cyan-300 hover:text-cyan-200 cursor-pointer">Volver a {clp(list)}</button>
+                          ) : (
+                            'precio de Ajustes'
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="flex flex-wrap items-end gap-2 border-t border-white/10 pt-3">
+                    <label className="text-xs text-slate-500">
+                      Gestión y soporte para todas las soluciones (% mensual de la inversión)
+                      <NumIn value={bulkPct} step={0.1} onChange={(v) => setBulkPct(Math.min(100, v))} className="w-40" />
+                    </label>
+                    <button
+                      onClick={() => patch((c) => ({ ...c, opportunities: c.opportunities.map((o) => ({ ...o, ...supportPatch(o, o.investment, bulkPct) })) }))}
+                      className={btnGhost}
+                    >
+                      Aplicar a todas
+                    </button>
+                    <span className="pb-2 text-xs text-slate-500">Después puedes dejar una solución distinta, escribiendo su propio % o monto.</span>
+                  </div>
+                </div>
+              );
+            })()}
             {e.opportunities.length === 0 && <p className="text-sm text-slate-500">Genera la propuesta con IA o agrégalas a mano.</p>}
             {e.opportunities.map((o) => {
               const c = oppCalc(o, latest.current);
