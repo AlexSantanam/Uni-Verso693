@@ -263,6 +263,8 @@ Cuéntanos, tu consulta es sobre:
 
 Responde con el número.`;
 const MENU_BRANDS: Brand[] = ['universo', 'cliente', 'yndipet', 'memora'];
+/** Same order as MENU: how a numbered answer is written in the conversation the model reads (a bare "3" means nothing to it). */
+const MENU_LABELS = ['Universo693 (software y servicios)', 'Ya soy cliente de Universo693 (soporte y proyectos)', 'YndiPet (seguridad y mascotas)', 'Memora (memoriales con cariño)'];
 /** What each area says once it is chosen; after this the agent continues with that brand's context. */
 const WELCOME: Record<Brand, string> = {
   universo: 'Perfecto 👍 Te atiendo por *Universo693*: software a medida, agentes de IA, apps y sitios web. Cuéntame, ¿qué necesitas resolver en tu empresa?',
@@ -295,7 +297,11 @@ const handleInbound = async (m: InMsg, profileName: string) => {
     if (!(await redis.get(`${P}:pause:${waId}`))) await sendText(waId, 'Por ahora solo puedo leer mensajes de texto. Cuéntame por escrito en qué te puedo ayudar.');
     return;
   }
-  await pushConv(waId, 'user', text);
+  // a "1" to "4" answering the menu is stored in words, so the model never has to guess what the number meant
+  const menuKey = `${P}:menu:${waId}`;
+  const choiceNum = CHOICE_RE.exec(text)?.[1];
+  const menuPending = choiceNum ? !!(await redis.get(menuKey)) : false;
+  await pushConv(waId, 'user', menuPending ? `Elegí la opción ${choiceNum}: ${MENU_LABELS[Number(choiceNum) - 1]}` : text);
 
   if (STOP_RE.test(text)) {
     await redis.set(`${P}:optout:${waId}`, 1);
@@ -316,10 +322,11 @@ const handleInbound = async (m: InMsg, profileName: string) => {
   }
   if (!(await senderLimit.limit(waId)).success) return;
 
-  const firstTime = await redis.set(`${P}:known:${waId}`, 1, { nx: true, ex: 90 * 86400 });
+  // "known" is only written once the welcome was actually delivered: if sending fails, the next message still gets the welcome
+  const knownKey = `${P}:known:${waId}`;
+  const firstTime = !(await redis.get(knownKey));
   // which of the three brands this person writes about: the menu answer, a name they wrote, or what the agent infers
   const brandKey = `${P}:brand:${waId}`;
-  const menuKey = `${P}:menu:${waId}`;
   let brand = (await redis.get<Brand>(brandKey)) ?? null;
   const named = detectBrand(text);
   if (named) brand = named;
@@ -328,18 +335,18 @@ const handleInbound = async (m: InMsg, profileName: string) => {
 
   const sendMenu = async () => {
     await sendText(waId, MENU);
+    await redis.set(knownKey, 1, { ex: 90 * 86400 });
     await redis.set(menuKey, 1, { ex: 86400 });
-    await pushConv(waId, 'assistant', 'Bienvenido a Universo693. ¿Tu consulta es sobre 1 Universo693 (software y servicios), 2 YndiPet (seguridad y mascotas) o 3 Memora (memoriales)?');
+    await pushConv(waId, 'assistant', MENU);
   };
   // "menu" brings the options back at any time
   if (MENU_RE.test(text)) {
     await sendMenu();
     return;
   }
-  // the person answered the menu with 1, 2 or 3: route the conversation to that area
-  const choice = CHOICE_RE.exec(text)?.[1];
-  if (choice && (await redis.get(menuKey))) {
-    brand = MENU_BRANDS[Number(choice) - 1];
+  // the person answered the menu with 1 to 4: route the conversation to that area
+  if (menuPending && choiceNum) {
+    brand = MENU_BRANDS[Number(choiceNum) - 1];
     await redis.set(brandKey, brand, { ex: 90 * 86400 });
     await redis.del(menuKey);
     await sendText(waId, WELCOME[brand]);
@@ -353,6 +360,7 @@ const handleInbound = async (m: InMsg, profileName: string) => {
       return;
     }
     await sendText(waId, INTRO);
+    await redis.set(knownKey, 1, { ex: 90 * 86400 });
   }
 
   const conv = await readConv(waId);
