@@ -27,7 +27,7 @@ import { Resend } from 'resend';
 const SITE = 'https://universo693.com';
 const CALENDLY = 'https://calendly.com/conectadoaia/ebs693';
 const API = (process.env.WHATSAPP_API_BASE || 'https://graph.facebook.com').replace(/\/$/, '');
-const VERSION = process.env.WHATSAPP_API_VERSION || 'v23.0';
+const VERSION = process.env.WHATSAPP_API_VERSION || 'v25.0';
 const P = process.env.WHATSAPP_KEY_PREFIX || 'u693:wa';
 const DRY = process.env.WA_DRY === '1';
 const PAUSE_SECONDS = Math.max(1, Number(process.env.WA_PAUSE_HOURS || 12)) * 3600;
@@ -92,10 +92,33 @@ interface Turn {
   at: string;
 }
 const convKey = (id: string) => `${P}:conv:${id}`;
-const pushConv = async (id: string, r: Turn['r'], t: string) => {
-  await redis.rpush(convKey(id), JSON.stringify({ r, t: t.slice(0, 1500), at: new Date().toISOString() } satisfies Turn));
-  await redis.ltrim(convKey(id), -40, -1);
-  await redis.expire(convKey(id), 7 * 86400);
+/** Summary of a chat for the inbox in /interno (same shape as api/admin.ts `WaChat`). */
+interface ChatMeta {
+  id: string;
+  name: string;
+  lastText: string;
+  lastRole: Turn['r'];
+  lastAt: string;
+  unread: number;
+}
+const chatKey = (id: string) => `${P}:chat:${id}`;
+/** Appends a turn to the conversation and keeps the inbox index up to date: unread counts the contact's messages nobody has opened yet. */
+const pushConv = async (id: string, r: Turn['r'], t: string, name = '') => {
+  const at = new Date();
+  await redis.rpush(convKey(id), JSON.stringify({ r, t: t.slice(0, 1500), at: at.toISOString() } satisfies Turn));
+  await redis.ltrim(convKey(id), -200, -1);
+  await redis.expire(convKey(id), 60 * 86400);
+  const cur = await redis.get<ChatMeta>(chatKey(id));
+  const meta: ChatMeta = {
+    id,
+    name: name || cur?.name || '',
+    lastText: t.slice(0, 160),
+    lastRole: r,
+    lastAt: at.toISOString(),
+    unread: r === 'user' ? (cur?.unread ?? 0) + 1 : r === 'human' ? 0 : (cur?.unread ?? 0),
+  };
+  await redis.set(chatKey(id), meta, { ex: 60 * 86400 });
+  await redis.zadd(`${P}:chats`, { score: at.getTime(), member: id });
 };
 const readConv = async (id: string): Promise<Turn[]> => {
   const raw = await redis.lrange<Turn | string>(convKey(id), 0, -1);
@@ -116,7 +139,10 @@ const toModelMessages = (conv: Turn[]) => {
 // ---------- knowledge: the same text the website publishes for AI systems ----------
 let knowledge: { text: string; at: number } | null = null;
 const FALLBACK_KNOWLEDGE = `Uni-Verso693 (Universo693 SpA) es una empresa chilena de desarrollo de software a medida, agentes de IA y automatización (WhatsApp, web, CRM), apps móviles, sitios web y consultoría. El punto de partida es el diagnóstico EBS 693: sesión de 45 minutos por Google Meet, $197.000 CLP, que se descuenta del proyecto si el cliente avanza. Los proyectos se cotizan a medida.`;
-const getKnowledge = async () => {
+/** For YndiPet and Memora chats: the group in a few lines, so the prompt leaves room for the brand's own pages. */
+const GROUP_FACTS = `Uni-Verso693 (Universo693 SpA) es el holding de un pequeño grupo, empresa chilena de desarrollo de software fundada en 2013. Sus empresas hijas, por ahora, son YndiPet (yndipet.com, app de mascotas con IA) y Memora (memora.lat, memoriales digitales). Contacto de Uni-Verso693: contacto@universo693.com.`;
+const getKnowledge = async (brand?: Brand | null) => {
+  if (brand === 'yndipet' || brand === 'memora') return GROUP_FACTS;
   if (knowledge && Date.now() - knowledge.at < 3600_000) return knowledge.text;
   try {
     const r = await fetch(`${SITE}/llms.txt`, { signal: AbortSignal.timeout(5000) });
@@ -138,7 +164,12 @@ const GREETING_RE = /^\s*(hola|holi|holaa+|buenas|buen d[ií]a|buenos d[ií]as|b
 
 // ---------- what each brand publishes on its own site (read live, cached an hour) ----------
 /** Pages the agent may read to answer about a brand. Only pages that show real text to a plain reader (no client-side-only apps). */
-const BRAND_PAGES: Partial<Record<Brand, string[]>> = { yndipet: ['https://yndipet.com/servicios', 'https://yndipet.com/planes'] };
+const BRAND_PAGES: Partial<Record<Brand, { url: string; cap: number }[]>> = {
+  yndipet: [
+    { url: 'https://yndipet.com/planes', cap: 4200 },
+    { url: 'https://yndipet.com/servicios', cap: 4500 },
+  ],
+};
 const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', aacute: 'á', eacute: 'é', iacute: 'í', oacute: 'ó', uacute: 'ú', Aacute: 'Á', Eacute: 'É', Iacute: 'Í', Oacute: 'Ó', Uacute: 'Ú', ntilde: 'ñ', Ntilde: 'Ñ', uuml: 'ü', iexcl: '¡', iquest: '¿', mdash: '—', ndash: '–', hellip: '…', laquo: '«', raquo: '»', middot: '·', bull: '•' };
 const htmlToText = (html: string) =>
   html
@@ -155,13 +186,13 @@ const getBrandSite = async (brand: Brand | null): Promise<string> => {
   const pages = brand ? BRAND_PAGES[brand] : undefined;
   if (!pages) return '';
   const parts = await Promise.all(
-    pages.map(async (url) => {
+    pages.map(async ({ url, cap }) => {
       const hit = siteCache.get(url);
       if (hit && Date.now() - hit.at < 3600_000) return hit.text;
       try {
         const r = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; Universo693Agent)' }, signal: AbortSignal.timeout(6000) });
         if (r.ok) {
-          const text = htmlToText(await r.text()).slice(0, 12_000);
+          const text = htmlToText(await r.text()).slice(0, cap);
           if (text.length > 300) {
             siteCache.set(url, { text, at: Date.now() });
             return text;
@@ -207,6 +238,13 @@ Estilo:
 - Haz a lo más UNA pregunta por mensaje. Califica de forma natural, de a poco: nombre, empresa y rubro, y qué quiere resolver. No pidas todo junto.
 - No escribas enlaces: el sistema agrega solos el de agendar (offerBooking) o el de la demo (offerDemo).
 
+Cómo responder (muy importante):
+- Primero contesta lo que la persona preguntó, con lo publicado; recién después, si hace falta, haz UNA pregunta. Nunca respondas solo con una pregunta cuando te hicieron una pregunta, y no pidas su nombre o empresa en cada mensaje: pídelo una vez, cuando ya conversen o cuando vayas a pasar su caso a una persona.
+- Si preguntan cuánto cuesta un proyecto o servicio de Uni-Verso693: explica en una frase que se cotiza a medida según el alcance, y que el punto de partida es el diagnóstico EBS 693 ($197.000 CLP, se descuenta del proyecto si avanza); ofrece agendarlo (offerBooking=true).
+- Si lo que preguntan NO está publicado (por ejemplo una función, un plan o una condición que no aparece en lo que sabes), dilo claramente en una frase ("eso no lo tengo publicado") y pasa su caso a una persona (handoff=true). No inventes ni lo disfraces con otra pregunta.
+- Si piden algo ajeno a la empresa (tareas, matemáticas, consejos personales, opiniones), recházalo con amabilidad en una frase, di en qué sí puedes ayudar, y NO lo pases a una persona por eso (handoff=false).
+- Responde en el idioma en que te escribe la persona: español de Chile por defecto, e inglés si te escribe en inglés.
+
 Reglas:
 - Usa SOLO la información de <conocimiento>. No inventes precios, plazos, clientes ni cifras. Los proyectos se cotizan a medida; el único precio fijo es el diagnóstico EBS 693 ($197.000 CLP, se descuenta del proyecto si avanza). Nunca prometas resultados.
 - Si te preguntan si eres una persona, di que eres el asistente de IA de Uni-Verso693 y que una persona del equipo puede continuar cuando quieran.
@@ -224,18 +262,80 @@ ${knowledge}
 ${brandSite}
 </sitio_de_la_marca>` : ''}`;
 
-const runAgent = async (conv: Turn[], profileName: string, introSent: boolean, brand: Brand | null): Promise<AgentOut> => {
+// ---------- model providers ----------
+// Groq (fast and cheap) and Anthropic, tried in the order LLM_WHATSAPP says (default "groq,anthropic"):
+// if the first one fails (no balance, outage, bad output) the next one answers, so a contact is never left waiting.
+const PROVIDERS = (process.env.LLM_WHATSAPP || 'groq,anthropic').split(',').map((x) => x.trim()).filter(Boolean);
+const GROQ_MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map((x) => x.trim()).filter(Boolean);
+/** The same JSON schema the Anthropic call uses, in the shape Groq's strict structured outputs expect. */
+const AGENT_JSON_SCHEMA = (() => {
+  const { $schema: _omit, ...schema } = z.toJSONSchema(AgentTurn) as Record<string, unknown>;
+  return schema;
+})();
+
+const callGroqModel = async (model: string, system: string, messages: { role: 'user' | 'assistant'; content: string }[]): Promise<AgentOut> => {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'system', content: system }, ...messages],
+      temperature: 0.4,
+      max_completion_tokens: 1500,
+      reasoning_effort: 'low',
+      response_format: { type: 'json_schema', json_schema: { name: 'agent_turn', strict: true, schema: AGENT_JSON_SCHEMA } },
+    }),
+    signal: AbortSignal.timeout(25_000),
+  });
+  const j = (await res.json().catch(() => ({}))) as { choices?: { message?: { content?: string } }[]; usage?: { prompt_tokens?: number; completion_tokens?: number }; error?: { message?: string } };
+  if (!res.ok) throw new Error(`Groq ${model} ${res.status}: ${j.error?.message ?? 'error'}`);
+  console.log(`WA: groq ${model} tokens in/out: ${j.usage?.prompt_tokens ?? '?'}/${j.usage?.completion_tokens ?? '?'}`);
+  const content = j.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Groq returned no content');
+  return AgentTurn.parse(JSON.parse(content));
+};
+
+const callGroq = async (system: string, messages: { role: 'user' | 'assistant'; content: string }[]): Promise<AgentOut> => {
+  let lastError: unknown;
+  for (const model of GROQ_MODELS) {
+    try {
+      return await callGroqModel(model, system, messages);
+    } catch (err) {
+      lastError = err;
+      console.error('WA: groq model failed', (err as Error).message.slice(0, 200));
+    }
+  }
+  throw lastError ?? new Error('no Groq model configured');
+};
+
+const callAnthropic = async (system: string, messages: { role: 'user' | 'assistant'; content: string }[]): Promise<AgentOut> => {
   const response = await new Anthropic().beta.messages.parse({
     model: 'claude-opus-5-5',
     max_tokens: 1200,
     output_config: { effort: 'low', format: betaZodOutputFormat(AgentTurn) },
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
-    system: SYSTEM(await getKnowledge(), profileName, introSent, brand, await getBrandSite(brand)),
-    messages: toModelMessages(conv),
+    system,
+    messages,
   });
   if (!response.parsed_output) throw new Error(`agent returned no output (stop_reason: ${response.stop_reason})`);
   return response.parsed_output;
+};
+
+const runAgent = async (conv: Turn[], profileName: string, introSent: boolean, brand: Brand | null): Promise<AgentOut> => {
+  const system = SYSTEM(await getKnowledge(brand), profileName, introSent, brand, await getBrandSite(brand));
+  const messages = toModelMessages(conv);
+  let lastError: unknown;
+  for (const provider of PROVIDERS) {
+    try {
+      if (provider === 'groq' && process.env.GROQ_API_KEY) return await callGroq(system, messages);
+      if (provider === 'anthropic' && process.env.ANTHROPIC_API_KEY) return await callAnthropic(system, messages);
+    } catch (err) {
+      lastError = err;
+      console.error(`WA: ${provider} failed, trying the next provider`, (err as Error).message);
+    }
+  }
+  throw lastError ?? new Error('no model provider configured');
 };
 
 // ---------- leads and notices ----------
@@ -271,23 +371,38 @@ const saveLead = async (waId: string, profileName: string, out: AgentOut, conv: 
   return !existing;
 };
 
-const notifyOwner = async (subject: string, text: string) => {
+/**
+ * Tells the owner. Normal notices go by email (and WhatsApp when CallMeBot is set). An urgent one (someone asks for a person)
+ * is an alarm: it also goes as a loud push through ntfy.sh when NTFY_TOPIC is set, and carries a link that opens that chat in the inbox.
+ */
+const notifyOwner = async (subject: string, text: string, opts: { urgent?: boolean; chat?: string } = {}) => {
+  const link = opts.chat ? `${SITE}/interno?chat=${opts.chat}#whatsapp` : `${SITE}/interno#whatsapp`;
   if (DRY) {
-    console.log('[wa-dry] notice:', subject, '|', text.slice(0, 200));
+    console.log('[wa-dry] notice:', opts.urgent ? 'URGENTE' : 'normal', '|', subject, '|', text.slice(0, 200), '|', link);
     return;
   }
   const tasks: Promise<unknown>[] = [];
+  if (opts.urgent && process.env.NTFY_TOPIC) {
+    tasks.push(
+      fetch(process.env.NTFY_SERVER || 'https://ntfy.sh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: process.env.NTFY_TOPIC, title: subject, message: text.slice(0, 500), priority: 5, tags: ['rotating_light'], click: link }),
+        signal: AbortSignal.timeout(10_000),
+      }).catch((e) => console.error('WA: alarm push failed', e)),
+    );
+  }
   if (process.env.CONTACT_NOTIFICATION_EMAIL && process.env.RESEND_API_KEY) {
     tasks.push(
       new Resend(process.env.RESEND_API_KEY).emails
-        .send({ from: 'Uni-Verso693 <contacto@universo693.com>', to: process.env.CONTACT_NOTIFICATION_EMAIL, subject, text: `${text}\n\nAbrir en /interno: ${SITE}/interno` })
+        .send({ from: 'Uni-Verso693 <contacto@universo693.com>', to: process.env.CONTACT_NOTIFICATION_EMAIL, subject: opts.urgent ? `🚨 ${subject}` : subject, text: `${text}\n\nAbrir la conversación: ${link}` })
         .catch((e) => console.error('WA: notice email failed', e)),
     );
   }
   const phone = (process.env.NOTIFY_WHATSAPP ?? '').replace(/\D/g, '');
   if (phone && process.env.CALLMEBOT_APIKEY) {
     tasks.push(
-      fetch(`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(`${subject}\n${text}`.slice(0, 900))}&apikey=${encodeURIComponent(process.env.CALLMEBOT_APIKEY)}`, { signal: AbortSignal.timeout(10_000) }).catch((e) => console.error('WA: notice whatsapp failed', e)),
+      fetch(`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(`${opts.urgent ? '🚨 ' : ''}${subject}\n${text}\n${link}`.slice(0, 900))}&apikey=${encodeURIComponent(process.env.CALLMEBOT_APIKEY)}`, { signal: AbortSignal.timeout(10_000) }).catch((e) => console.error('WA: notice whatsapp failed', e)),
     );
   }
   await Promise.all(tasks);
@@ -338,14 +453,19 @@ const handleInbound = async (m: InMsg, profileName: string) => {
   const text = textOf(m).slice(0, MAX_IN);
   if (!text) {
     // audio, images, documents, locations...: the agent only reads text
-    if (!(await redis.get(`${P}:pause:${waId}`))) await sendText(waId, 'Por ahora solo puedo leer mensajes de texto. Cuéntame por escrito en qué te puedo ayudar.');
+    await pushConv(waId, 'user', '[adjunto: audio, imagen u otro archivo que el agente no puede leer]', profileName);
+    if (!(await redis.get(`${P}:pause:${waId}`))) {
+      const note = 'Por ahora solo puedo leer mensajes de texto. Cuéntame por escrito en qué te puedo ayudar.';
+      await sendText(waId, note);
+      await pushConv(waId, 'assistant', note);
+    }
     return;
   }
   // a "1" to "4" answering the menu is stored in words, so the model never has to guess what the number meant
   const menuKey = `${P}:menu:${waId}`;
   const choiceNum = CHOICE_RE.exec(text)?.[1];
   const menuPending = choiceNum ? !!(await redis.get(menuKey)) : false;
-  await pushConv(waId, 'user', menuPending ? `Elegí la opción ${choiceNum}: ${MENU_LABELS[Number(choiceNum) - 1]}` : text);
+  await pushConv(waId, 'user', menuPending ? `Elegí la opción ${choiceNum}: ${MENU_LABELS[Number(choiceNum) - 1]}` : text, profileName);
 
   if (STOP_RE.test(text)) {
     await redis.set(`${P}:optout:${waId}`, 1);
@@ -355,7 +475,13 @@ const handleInbound = async (m: InMsg, profileName: string) => {
   // a person is handling this chat (the owner answered from the phone, or the contact asked for one);
   // only the word "menu" brings the agent back, so the contact is never stuck without it
   if (await redis.get(`${P}:pause:${waId}`)) {
-    if (!MENU_RE.test(text)) return;
+    if (!MENU_RE.test(text)) {
+      // the contact is waiting for a person and writes again: remind the owner (at most every 10 minutes per chat)
+      if (await redis.set(`${P}:remind:${waId}`, 1, { nx: true, ex: 600 })) {
+        await notifyOwner('Sigue esperando respuesta en WhatsApp', `+${waId}${profileName ? ` (${profileName})` : ''} escribió de nuevo: ${text.slice(0, 300)}`, { urgent: true, chat: waId });
+      }
+      return;
+    }
     await redis.del(`${P}:pause:${waId}`);
   }
   // kill switch: the env var, or the switch in /interno → Ajustes
@@ -417,16 +543,18 @@ const handleInbound = async (m: InMsg, profileName: string) => {
     out = await runAgent(conv, profileName, !!firstTime, brand);
   } catch (err) {
     console.error('WA: agent failed', err);
-    await sendText(waId, 'Gracias por escribir. En este momento no puedo responder de forma automática; una persona del equipo te escribirá por aquí.');
+    const sorry = 'Gracias por escribir. En este momento no puedo responder de forma automática; una persona del equipo te escribirá por aquí.';
+    await sendText(waId, sorry);
+    await pushConv(waId, 'assistant', sorry);
     await redis.set(`${P}:pause:${waId}`, 1, { ex: PAUSE_SECONDS });
-    await notifyOwner('WhatsApp: el agente no pudo responder', `+${waId} (${profileName || 'sin nombre'}) escribió: ${text.slice(0, 400)}`);
+    await notifyOwner('WhatsApp: el agente no pudo responder', `+${waId} (${profileName || 'sin nombre'}) escribió: ${text.slice(0, 400)}`, { urgent: true, chat: waId });
     return;
   }
 
   const extra = [out.offerBooking ? `Agenda aquí tu diagnóstico: ${CALENDLY}` : '', out.offerDemo ? `Mira la demo con datos inventados: ${SITE}/ebs/demo` : ''].filter(Boolean).join('\n');
   const reply = [out.reply.trim(), extra].filter(Boolean).join('\n\n');
   await sendText(waId, reply);
-  await pushConv(waId, 'assistant', out.reply.trim());
+  await pushConv(waId, 'assistant', reply);
 
   if (out.brand !== 'sin_definir' && out.brand !== brand) {
     brand = out.brand;
@@ -438,7 +566,11 @@ const handleInbound = async (m: InMsg, profileName: string) => {
   const who = `${brand ? `[${BRAND_NAME[brand]}] ` : ''}${out.lead.name || profileName || 'Sin nombre'}${out.lead.company ? ` · ${out.lead.company}` : ''} · +${waId}`;
   if (handoff) {
     await redis.set(`${P}:pause:${waId}`, 1, { ex: PAUSE_SECONDS });
-    await notifyOwner(brand === 'cliente' ? 'WhatsApp: un cliente escribió' : 'WhatsApp: quiere hablar con una persona', `${who}\n${out.lead.need || text.slice(0, 300)}\n\nEl agente quedó en pausa en este chat por ${Math.round(PAUSE_SECONDS / 3600)} h: respóndele desde tu WhatsApp.`);
+    await notifyOwner(
+      brand === 'cliente' ? 'Un cliente escribió por WhatsApp' : 'Piden hablar con una persona por WhatsApp',
+      `${who}\n${out.lead.need || text.slice(0, 300)}\n\nEl agente quedó en pausa en este chat por ${Math.round(PAUSE_SECONDS / 3600)} h.`,
+      { urgent: true, chat: waId },
+    );
   } else if (created) {
     await notifyOwner('WhatsApp: nuevo contacto', `${who}\n${out.lead.need || text.slice(0, 300)}`);
   }

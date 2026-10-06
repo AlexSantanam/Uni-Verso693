@@ -1994,6 +1994,44 @@ const notifyWhatsApp = async (text: string): Promise<{ ok: boolean; reason?: str
   }
 };
 
+// ---- WhatsApp inbox: the agent (api/whatsapp.ts) keeps every conversation; this lets the owner read and answer them ----
+const WA = process.env.WHATSAPP_KEY_PREFIX || 'u693:wa';
+const WA_PAUSE_SECONDS = Math.max(1, Number(process.env.WA_PAUSE_HOURS || 12)) * 3600;
+interface WaTurn {
+  r: 'user' | 'assistant' | 'human';
+  t: string;
+  at: string;
+}
+interface WaChat {
+  id: string;
+  name: string;
+  lastText: string;
+  lastRole: WaTurn['r'];
+  lastAt: string;
+  unread: number;
+}
+const waIdOk = (v: unknown) => /^\d{8,15}$/.test(String(v ?? ''));
+const waTurns = async (id: string): Promise<WaTurn[]> => {
+  const raw = await redis.lrange<WaTurn | string>(`${WA}:conv:${id}`, 0, -1);
+  return raw.map((x) => (typeof x === 'string' ? (JSON.parse(x) as WaTurn) : x));
+};
+/** Meta only lets a business answer freely within 24 hours of the contact's last message. */
+const waWindowOpen = (turns: WaTurn[]) => {
+  const last = [...turns].reverse().find((t) => t.r === 'user');
+  return !!last && Date.now() - Date.parse(last.at) < 24 * 3600_000;
+};
+const waSend = async (to: string, body: string) => {
+  const res = await fetch(`${(process.env.WHATSAPP_API_BASE || 'https://graph.facebook.com').replace(/\/$/, '')}/${process.env.WHATSAPP_API_VERSION || 'v25.0'}/${process.env.WHATSAPP_PHONE_ID}/messages`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to, type: 'text', text: { preview_url: true, body } }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  const j = (await res.json().catch(() => ({}))) as { messages?: { id: string }[]; error?: { message?: string; code?: number } };
+  if (!res.ok) throw new Error(j.error?.message ?? `WhatsApp respondió ${res.status}`);
+  return j.messages?.[0]?.id ?? '';
+};
+
 // ---- interactive EBS: private link the client opens (kept in its own keys, never inside the session) ----
 const SHARE_DAYS = 30;
 export interface ShareInfo {
@@ -2861,15 +2899,123 @@ ${SITE_URL}/interno#ebs`);
         const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
         res.status(200).json({
           configured: Boolean(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_ID && process.env.WHATSAPP_APP_SECRET && process.env.WHATSAPP_VERIFY_TOKEN),
-          off: Boolean(await redis.get('u693:wa:off')) || process.env.WHATSAPP_BOT === 'off',
-          today: Number((await redis.get<number>(`u693:wa:day:${day}`)) ?? 0),
+          off: Boolean(await redis.get(`${WA}:off`)) || process.env.WHATSAPP_BOT === 'off',
+          today: Number((await redis.get<number>(`${WA}:day:${day}`)) ?? 0),
+          // how the owner is warned when someone asks for a person
+          channels: {
+            email: Boolean(process.env.CONTACT_NOTIFICATION_EMAIL && process.env.RESEND_API_KEY),
+            whatsapp: Boolean(process.env.NOTIFY_WHATSAPP && process.env.CALLMEBOT_APIKEY),
+            push: Boolean(process.env.NTFY_TOPIC),
+          },
         });
         return;
       }
+      case 'wa-alarm-test': {
+        // the same three channels the agent uses when someone asks for a person, so the owner can check them
+        const subject = 'Prueba de alarma de WhatsApp';
+        const text = 'Así te avisará el agente cuando alguien pida hablar con una persona. Si lees esto, este canal funciona.';
+        const link = `${SITE_URL}/interno#whatsapp`;
+        const out = { email: false, whatsapp: false, push: false };
+        if (process.env.CONTACT_NOTIFICATION_EMAIL && process.env.RESEND_API_KEY) {
+          out.email = await new Resend(process.env.RESEND_API_KEY).emails
+            .send({ from: FROM, to: process.env.CONTACT_NOTIFICATION_EMAIL, subject: `🚨 ${subject}`, text: `${text}\n\n${link}` })
+            .then((r) => !r.error)
+            .catch(() => false);
+        }
+        out.whatsapp = (await notifyWhatsApp(`🚨 ${subject}\n${text}\n${link}`)).ok;
+        if (process.env.NTFY_TOPIC) {
+          out.push = await fetch(process.env.NTFY_SERVER || 'https://ntfy.sh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic: process.env.NTFY_TOPIC, title: subject, message: text, priority: 5, tags: ['rotating_light'], click: link }),
+            signal: AbortSignal.timeout(10_000),
+          })
+            .then((r) => r.ok)
+            .catch(() => false);
+        }
+        res.status(200).json(out);
+        return;
+      }
       case 'wa-toggle': {
-        if (body.off) await redis.set('u693:wa:off', 1);
-        else await redis.del('u693:wa:off');
+        if (body.off) await redis.set(`${WA}:off`, 1);
+        else await redis.del(`${WA}:off`);
         res.status(200).json({ off: Boolean(body.off) });
+        return;
+      }
+      case 'wa-chats': {
+        // the latest 100 conversations, newest first, with who is handling each (the agent or a person)
+        const ids = (await redis.zrange(`${WA}:chats`, 0, 99, { rev: true })).map((x) => String(x));
+        const rows = (
+          await Promise.all(
+            ids.map(async (id) => {
+              const m = await redis.get<WaChat>(`${WA}:chat:${id}`);
+              if (!m) return null;
+              const [paused, brand, optout] = await Promise.all([redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`), redis.get(`${WA}:optout:${id}`)]);
+              return { ...m, paused: Boolean(paused), brand: brand ?? null, optout: Boolean(optout) };
+            }),
+          )
+        ).filter((x): x is NonNullable<typeof x> => x !== null);
+        res.status(200).json({ chats: rows, unread: rows.reduce((a, c) => a + (c.unread > 0 ? 1 : 0), 0) });
+        return;
+      }
+      case 'wa-chat': {
+        const id = String(body.id ?? req.query.id ?? '');
+        if (!waIdOk(id)) {
+          res.status(400).json({ error: 'Conversación no válida.' });
+          return;
+        }
+        const [turns, meta, paused, brand] = await Promise.all([waTurns(id), redis.get<WaChat>(`${WA}:chat:${id}`), redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`)]);
+        if (meta && meta.unread > 0) await redis.set(`${WA}:chat:${id}`, { ...meta, unread: 0 }, { ex: 60 * 86400 });
+        res.status(200).json({ id, name: meta?.name ?? '', turns, paused: Boolean(paused), brand: brand ?? null, windowOpen: waWindowOpen(turns) });
+        return;
+      }
+      case 'wa-send': {
+        // the owner answers from the inbox: it goes out through the same number, and the agent steps aside in that chat
+        const id = String(body.id ?? '');
+        const text = str(body.text, 3800);
+        if (!waIdOk(id) || !text) {
+          res.status(400).json({ error: 'Falta el mensaje.' });
+          return;
+        }
+        if (!process.env.WHATSAPP_TOKEN || !process.env.WHATSAPP_PHONE_ID) {
+          res.status(503).json({ error: 'WhatsApp todavía no está conectado.' });
+          return;
+        }
+        const turns = await waTurns(id);
+        if (!waWindowOpen(turns)) {
+          res.status(409).json({ error: 'Pasaron más de 24 horas desde el último mensaje de esta persona: Meta solo permite responder libremente dentro de ese plazo (después hace falta una plantilla aprobada).' });
+          return;
+        }
+        let sentId = '';
+        try {
+          sentId = await waSend(id, text);
+        } catch (err) {
+          console.error('Admin: WhatsApp send failed', err);
+          res.status(502).json({ error: `No se pudo enviar: ${(err as Error).message}` });
+          return;
+        }
+        const at = new Date();
+        if (sentId) await redis.set(`${WA}:sent:${sentId}`, 1, { ex: 3600 });
+        await redis.rpush(`${WA}:conv:${id}`, JSON.stringify({ r: 'human', t: text.slice(0, 1500), at: at.toISOString() } satisfies WaTurn));
+        await redis.ltrim(`${WA}:conv:${id}`, -200, -1);
+        await redis.expire(`${WA}:conv:${id}`, 60 * 86400);
+        const cur = await redis.get<WaChat>(`${WA}:chat:${id}`);
+        await redis.set(`${WA}:chat:${id}`, { id, name: cur?.name ?? '', lastText: text.slice(0, 160), lastRole: 'human', lastAt: at.toISOString(), unread: 0 } satisfies WaChat, { ex: 60 * 86400 });
+        await redis.zadd(`${WA}:chats`, { score: at.getTime(), member: id });
+        await redis.set(`${WA}:pause:${id}`, 1, { ex: WA_PAUSE_SECONDS });
+        res.status(200).json({ ok: true, at: at.toISOString() });
+        return;
+      }
+      case 'wa-agent': {
+        // hand a chat back to the agent, or take it over
+        const id = String(body.id ?? '');
+        if (!waIdOk(id)) {
+          res.status(400).json({ error: 'Conversación no válida.' });
+          return;
+        }
+        if (body.on) await redis.del(`${WA}:pause:${id}`);
+        else await redis.set(`${WA}:pause:${id}`, 1, { ex: WA_PAUSE_SECONDS });
+        res.status(200).json({ paused: !body.on });
         return;
       }
       case 'notify-test': {

@@ -10,6 +10,7 @@ import {
   Loader2,
   LogOut,
   Mail,
+  MessageCircle,
   Plus,
   Save,
   Send,
@@ -2949,10 +2950,21 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
       setMsg((e as Error).message);
     }
   };
-  const [wa, setWa] = useState<{ configured: boolean; off: boolean; today: number } | null>(null);
+  const [wa, setWa] = useState<{ configured: boolean; off: boolean; today: number; channels: { email: boolean; whatsapp: boolean; push: boolean } } | null>(null);
+  const [alarm, setAlarm] = useState<string | null>(null);
   useEffect(() => {
-    api<{ configured: boolean; off: boolean; today: number }>('wa-status', { body: {} }).then(setWa).catch(() => setWa(null));
+    api<NonNullable<typeof wa>>('wa-status', { body: {} }).then(setWa).catch(() => setWa(null));
   }, [api]);
+  const testAlarm = async () => {
+    setAlarm('Enviando…');
+    try {
+      const r = await api<{ email: boolean; whatsapp: boolean; push: boolean }>('wa-alarm-test', { body: {} });
+      const ok = (b: boolean) => (b ? 'llegó' : 'no salió');
+      setAlarm(`Correo: ${ok(r.email)} · WhatsApp a tu número: ${ok(r.whatsapp)} · Alarma en el celular: ${ok(r.push)}.`);
+    } catch (e) {
+      setAlarm((e as Error).message);
+    }
+  };
   const toggleWa = async () => {
     if (!wa) return;
     const r = await api<{ off: boolean }>('wa-toggle', { body: { off: !wa.off } });
@@ -2996,9 +3008,24 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         </div>
         <p className="text-xs text-slate-500">
           {wa?.configured
-            ? `Responde por ti en el WhatsApp de la empresa y guarda cada contacto en Solicitudes. Si respondes tú desde el celular, se pausa solo en ese chat. Respuestas automáticas hoy: ${wa.today}.`
+            ? `Responde por ti en el WhatsApp de la empresa y guarda cada contacto en Solicitudes. Cuando respondes tú desde la bandeja, se pausa solo en ese chat. Respuestas automáticas hoy: ${wa.today}.`
             : 'Atiende por ti el WhatsApp de la empresa con la API oficial de Meta. Aún no está conectado: faltan WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_APP_SECRET y WHATSAPP_VERIFY_TOKEN en Vercel.'}
         </p>
+        {wa && (
+          <div className="space-y-2 rounded-lg bg-black/20 p-3">
+            <p className="text-xs font-bold text-slate-300">Alarma cuando alguien pide una persona</p>
+            <ul className="space-y-1 text-xs text-slate-400">
+              <li>{wa.channels.email ? '✅' : '⬜'} Correo con el enlace directo a la conversación</li>
+              <li>{wa.channels.whatsapp ? '✅' : '⬜'} Mensaje de WhatsApp a tu número personal {wa.channels.whatsapp ? '' : '(falta NOTIFY_WHATSAPP y CALLMEBOT_APIKEY)'}</li>
+              <li>{wa.channels.push ? '✅' : '⬜'} Alarma sonora en el celular, que suena aunque estés en una reunión {wa.channels.push ? '' : '(falta NTFY_TOPIC)'}</li>
+            </ul>
+            <p className="text-[11px] text-slate-500">Si la persona sigue escribiendo mientras espera, el aviso se repite (como máximo cada 10 minutos por conversación).</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={testAlarm} className={btnGhost}>Probar la alarma ahora</button>
+              {alarm && <span className="text-xs text-emerald-300">{alarm}</span>}
+            </div>
+          </div>
+        )}
       </div>
       <div className="space-y-2 rounded-lg border border-white/10 p-3">
         <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Formas de trabajar del EBS (valores por defecto)</p>
@@ -3030,13 +3057,206 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
   );
 };
 
+// ---------------------------------------------------------------- WhatsApp inbox
+interface WaChatRow {
+  id: string;
+  name: string;
+  lastText: string;
+  lastRole: 'user' | 'assistant' | 'human';
+  lastAt: string;
+  unread: number;
+  paused: boolean;
+  brand: string | null;
+  optout: boolean;
+}
+interface WaThread {
+  id: string;
+  name: string;
+  turns: { r: 'user' | 'assistant' | 'human'; t: string; at: string }[];
+  paused: boolean;
+  brand: string | null;
+  windowOpen: boolean;
+}
+const WA_BRAND: Record<string, string> = { universo: 'Uni-Verso693', cliente: 'Cliente', yndipet: 'YndiPet', memora: 'Memora' };
+const waTime = (iso: string) => {
+  const d = new Date(iso);
+  const hm = d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+  return d.toDateString() === new Date().toDateString() ? hm : `${d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })} ${hm}`;
+};
+/** WhatsApp writes bold as *text*: show it as bold. */
+const waBold = (t: string) => t.split(/(\*[^*\n]+\*)/g).map((p, i) => (/^\*[^*\n]+\*$/.test(p) ? <strong key={i}>{p.slice(1, -1)}</strong> : p));
+const waPhone = (id: string) => `+${id.slice(0, 2)} ${id.slice(2, 3)} ${id.slice(3, 7)} ${id.slice(7)}`;
+
+/** Every WhatsApp conversation of the agent: read them, answer as a person (the agent steps aside), hand the chat back. */
+const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => void }) => {
+  const [chats, setChats] = useState<WaChatRow[] | null>(null);
+  // an alarm links straight to a chat: /interno?chat=<number>#whatsapp
+  const [sel, setSel] = useState<string | null>(() => (typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('chat')));
+  const [thread, setThread] = useState<WaThread | null>(null);
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const bottom = useRef<HTMLDivElement>(null);
+
+  const loadList = useCallback(async () => {
+    try {
+      const r = await api<{ chats: WaChatRow[]; unread: number }>('wa-chats', { body: {} });
+      setChats(r.chats);
+      onUnread(r.unread);
+    } catch (e) {
+      setErr((e as Error).message);
+    }
+  }, [api, onUnread]);
+  const loadThread = useCallback(
+    async (id: string) => {
+      try {
+        setThread(await api<WaThread>('wa-chat', { body: { id } }));
+      } catch (e) {
+        setErr((e as Error).message);
+      }
+    },
+    [api],
+  );
+  // no websockets: a light refresh keeps the list and the open chat current
+  useEffect(() => {
+    loadList();
+    const t = setInterval(loadList, 8000);
+    return () => clearInterval(t);
+  }, [loadList]);
+  useEffect(() => {
+    if (!sel) {
+      setThread(null);
+      return;
+    }
+    loadThread(sel);
+    const t = setInterval(() => loadThread(sel), 5000);
+    return () => clearInterval(t);
+  }, [sel, loadThread]);
+  useEffect(() => {
+    bottom.current?.scrollIntoView({ block: 'end' });
+  }, [thread?.turns.length, sel]);
+
+  const send = async () => {
+    if (!sel || !text.trim() || busy) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      await api('wa-send', { body: { id: sel, text: text.trim() } });
+      setText('');
+      await Promise.all([loadThread(sel), loadList()]);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const toggleAgent = async () => {
+    if (!sel || !thread) return;
+    await api('wa-agent', { body: { id: sel, on: thread.paused } });
+    await Promise.all([loadThread(sel), loadList()]);
+  };
+
+  if (!chats) return err ? <p className="text-red-300">{err}</p> : <Loader2 className="w-5 h-5 animate-spin text-slate-400" />;
+  return (
+    <div className="grid gap-4 md:grid-cols-[340px_1fr] md:h-[calc(100vh-9rem)]">
+      {/* conversations */}
+      <div className={`${sel ? 'hidden md:flex' : 'flex'} min-h-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]`}>
+        <div className="border-b border-white/10 px-4 py-3 text-sm font-bold text-white">Conversaciones de WhatsApp</div>
+        <ul className="min-h-0 flex-1 overflow-y-auto">
+          {chats.length === 0 && <li className="p-4 text-sm text-slate-400">Todavía no hay conversaciones. Aparecen aquí cuando alguien le escribe al número del agente.</li>}
+          {chats.map((c) => (
+            <li key={c.id}>
+              <button onClick={() => setSel(c.id)} className={`w-full cursor-pointer border-b border-white/5 px-4 py-3 text-left hover:bg-white/5 ${sel === c.id ? 'bg-white/10' : ''}`}>
+                <div className="flex items-center gap-2">
+                  <span className="truncate font-bold text-white">{c.name || waPhone(c.id)}</span>
+                  {c.unread > 0 && <span className="ml-auto rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">{c.unread}</span>}
+                  {c.unread === 0 && <span className="ml-auto shrink-0 text-[11px] text-slate-500">{waTime(c.lastAt)}</span>}
+                </div>
+                <div className="mt-0.5 flex items-center gap-2">
+                  {c.brand && <span className="shrink-0 text-[11px] font-bold text-cyan-300">{WA_BRAND[c.brand] ?? c.brand}</span>}
+                  {c.paused ? <span className="shrink-0 rounded bg-amber-300/15 px-1.5 text-[10px] font-bold text-amber-200">persona</span> : <span className="shrink-0 rounded bg-emerald-400/15 px-1.5 text-[10px] font-bold text-emerald-300">agente</span>}
+                  {c.optout && <span className="shrink-0 rounded bg-red-400/15 px-1.5 text-[10px] font-bold text-red-300">baja</span>}
+                </div>
+                <p className="mt-1 truncate text-sm text-slate-400">
+                  {c.lastRole === 'user' ? '' : c.lastRole === 'human' ? 'Tú: ' : 'Agente: '}
+                  {c.lastText}
+                </p>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* open chat */}
+      <div className={`${sel ? 'flex' : 'hidden md:flex'} min-h-[70vh] min-w-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] md:min-h-0`}>
+        {!sel || !thread ? (
+          <div className="flex flex-1 items-center justify-center p-6 text-center text-sm text-slate-400">{sel ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Elige una conversación para leerla y responder.'}</div>
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center gap-2 border-b border-white/10 px-4 py-3">
+              <button onClick={() => setSel(null)} className={`${btnGhost} px-2 md:hidden`} aria-label="Volver a la lista"><ArrowLeft className="w-4 h-4" /></button>
+              <div className="min-w-0">
+                <p className="truncate font-bold text-white">{thread.name || waPhone(thread.id)}</p>
+                <p className="text-xs text-slate-400">
+                  <a href={`https://wa.me/${thread.id}`} target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:text-cyan-200">{waPhone(thread.id)}</a>
+                  {thread.brand ? ` · ${WA_BRAND[thread.brand] ?? thread.brand}` : ''}
+                </p>
+              </div>
+              <Badge className={thread.paused ? 'border-amber-300/50 bg-amber-300/10 text-amber-200' : QUOTE_COLORS.aceptada}>{thread.paused ? 'La atiende una persona' : 'La atiende el agente'}</Badge>
+              <button onClick={toggleAgent} className={`${btnGhost} ml-auto`}>{thread.paused ? 'Devolver al agente' : 'Atender yo'}</button>
+            </div>
+            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-4">
+              {thread.turns.map((m, i) => (
+                <div key={i} className={`flex ${m.r === 'user' ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${m.r === 'user' ? 'bg-white/10 text-slate-100' : m.r === 'human' ? 'bg-emerald-500/20 text-emerald-50' : 'bg-brand-600/25 text-slate-100'}`}>
+                    {m.r !== 'user' && <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">{m.r === 'human' ? 'Tú' : 'Agente IA'}</p>}
+                    <p className="whitespace-pre-wrap break-words">{waBold(m.t)}</p>
+                    <p className="mt-1 text-right text-[10px] text-slate-500">{waTime(m.at)}</p>
+                  </div>
+                </div>
+              ))}
+              <div ref={bottom} />
+            </div>
+            <div className="border-t border-white/10 p-3">
+              {err && <p className="mb-2 text-xs text-red-300">{err}</p>}
+              {!thread.windowOpen && <p className="mb-2 rounded-lg bg-amber-300/10 p-2 text-xs text-amber-100">Pasaron más de 24 horas desde el último mensaje de esta persona: Meta solo permite responder libremente dentro de ese plazo. Para escribirle hoy hace falta una plantilla aprobada.</p>}
+              <div className="flex items-end gap-2">
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      send();
+                    }
+                  }}
+                  rows={2}
+                  maxLength={3800}
+                  disabled={!thread.windowOpen}
+                  placeholder={thread.windowOpen ? 'Escribe tu respuesta (Enter envía, Shift+Enter hace un salto de línea)' : 'No se puede responder fuera de las 24 horas'}
+                  className={`${input} flex-1 resize-none`}
+                />
+                <button onClick={send} disabled={busy || !text.trim() || !thread.windowOpen} className={btnPrimary}>
+                  {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Enviar
+                </button>
+              </div>
+              <p className="mt-1.5 text-[11px] text-slate-500">Al responder tú, el agente se pausa en esta conversación; pulsa "Devolver al agente" cuando termines.</p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- shell
-type Tab = 'solicitudes' | 'ebs' | 'cotizaciones' | 'facturacion' | 'audit' | 'catalogo' | 'ajustes';
+type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'audit' | 'catalogo' | 'ajustes';
 
 // EBS first: it's the main working tool, the rest supports it
 const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
   { id: 'ebs', label: 'EBS 693', Icon: Target },
   { id: 'solicitudes', label: 'Solicitudes', Icon: Inbox },
+  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
   { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
   { id: 'facturacion', label: 'Facturación', Icon: Receipt },
   { id: 'audit', label: 'Audit PRO', Icon: Sparkles },
@@ -3060,6 +3280,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
   const [auditPrefill, setAuditPrefill] = useState<AuditPrefill | null>(null);
   const [ebsEditing, setEbsEditing] = useState<EbsSession | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [waUnread, setWaUnread] = useState(0);
 
   const api = useCallback(
     async <T,>(action: string, opts: { body?: unknown; query?: Record<string, string> } = {}) => {
@@ -3081,6 +3302,19 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
       })
       .catch((e) => setError(e.message));
   }, [api]);
+
+  // the red counter on the WhatsApp tab: conversations with messages nobody has read (the inbox refreshes it itself while open)
+  useEffect(() => {
+    if (tab === 'whatsapp') return;
+    let alive = true;
+    const poll = () => api<{ unread: number }>('wa-chats', { body: {} }).then((r) => alive && setWaUnread(r.unread)).catch(() => undefined);
+    poll();
+    const t = setInterval(poll, 30_000);
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, [api, tab]);
 
   const openQuote = async (id: string) => {
     const { quote } = await api<{ quote: Quote }>('quote', { query: { id } });
@@ -3104,6 +3338,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
               className={`${btn} ${tab === id ? 'bg-white/10 text-white' : id === 'ebs' ? 'text-brand-100 hover:text-white' : 'text-slate-400 hover:text-white'} ${id === 'ebs' ? 'border border-brand-500/50' : ''}`}
             >
               <Icon className="w-4 h-4" /> {label}
+              {id === 'whatsapp' && waUnread > 0 && <span className="rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">{waUnread}</span>}
             </button>
           ))}
           <button onClick={onLogout} className={`${btn} ml-auto text-slate-400 hover:text-white`}><LogOut className="w-4 h-4" /> Salir</button>
@@ -3126,6 +3361,8 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
             onAudit={(lead) => { setAuditPrefill({ url: lead.url, fullName: lead.name, email: lead.email, company: lead.company }); setTab('audit'); }}
             onEbs={(lead) => { setEbsEditing(emptyEbs(lead)); setTab('ebs'); }}
           />
+        ) : tab === 'whatsapp' ? (
+          <WhatsAppInbox api={api} onUnread={setWaUnread} />
         ) : tab === 'cotizaciones' ? (
           <Quotes api={api} settings={settings} onOpen={setEditing} onNew={() => setEditing(emptyQuote(settings))} />
         ) : tab === 'facturacion' ? (
