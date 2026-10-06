@@ -111,6 +111,18 @@ export const Diagnostico: React.FC = () => {
             <EbsDiagramAnim />
             <p className="text-center text-xs text-slate-500">{t('Ejemplo ilustrativo con cifras inventadas: no corresponde a ningún cliente.', 'Illustrative example with invented figures: it does not correspond to any client.')}</p>
           </div>
+          <div className="mx-auto max-w-2xl space-y-3 text-center">
+            <p className="text-lg font-bold text-white">{t('Pruébalo tú: es el espacio real, con datos inventados', 'Try it yourself: the real space, with invented data')}</p>
+            <p className="text-sm text-slate-400">
+              {t(
+                'Una empresa de transporte con 200 camiones. Activa soluciones, agrega un área que falte y mira cómo cambia el resultado. No se envía nada.',
+                'A transport company with 200 trucks. Switch solutions on, add an area that is missing and watch the result change. Nothing is sent.',
+              )}
+            </p>
+            <a href="/ebs/demo" target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3.5 text-sm font-bold text-white hover:bg-brand-500">
+              {t('Probar el espacio interactivo', 'Try the interactive space')} <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {ebsDelivers.map((d, i) => {
               const Icon = [Target, Layers, MonitorPlay, SlidersHorizontal, GitCompareArrows, FileText][i] ?? Check;

@@ -36,10 +36,35 @@ export interface Block {
 /** 'perdida' adds to the monthly leak; 'caja' is money trapped (not lost); 'contexto' is shown, not summed. */
 export type LeakKind = 'perdida' | 'caja' | 'contexto';
 
+/**
+ * The company as the client lives it: areas (nodes) in the order a customer goes through them,
+ * from the first call or visit to delivery and payment. The interactive EBS draws it and hangs
+ * each money leak (red) and each solution (green) on the area where it happens.
+ */
+export interface MapNode {
+  id: string;
+  label: string;
+  /** Short line under the name: what happens in this area. */
+  hint?: string;
+  /** Name of a lucide icon (see the icon table in the interactive page); unknown names fall back to a generic one. */
+  icon: string;
+  col: number;
+  row: number;
+  /** The customer's entry point (call, visit, order): shows the company and the total leak. */
+  entry?: boolean;
+}
+export interface CompanyMap {
+  nodes: MapNode[];
+  /** from → to; 'support' draws a dashed line (an area that serves another one, e.g. workshop → fleet). */
+  edges: [string, string, ('flow' | 'support')?][];
+}
+
 export interface LeakDef {
   key: string;
   label: string;
   kind: LeakKind;
+  /** Area of the company map where this leak happens. */
+  area?: string;
   /** Plain-language formula, printed under the amount. */
   explain: string;
   uses: string[];
@@ -55,7 +80,68 @@ export interface Playbook {
   metrics: Metric[];
   leaks: LeakDef[];
   documents: string[];
+  /** Company map of this industry; without one the generic map is used. */
+  map?: CompanyMap;
 }
+
+// ---------- company maps ----------
+/** Used by every industry that has no map of its own yet. */
+export const GENERIC_MAP: CompanyMap = {
+  nodes: [
+    { id: 'entrada', label: 'Tus clientes', hint: 'Llamados, visitas, mensajes y pedidos', icon: 'phone', col: 1.5, row: 0, entry: true },
+    { id: 'ventas', label: 'Ventas y cotizaciones', hint: 'Responder, cotizar y hacer seguimiento', icon: 'receipt', col: 0, row: 1 },
+    { id: 'operacion', label: 'Operación', hint: 'Hacer el trabajo o prestar el servicio', icon: 'cog', col: 1, row: 1 },
+    { id: 'entrega', label: 'Entrega al cliente', hint: 'Dejar el trabajo o producto listo', icon: 'package', col: 2, row: 1 },
+    { id: 'cobranza', label: 'Facturación y cobranza', hint: 'Emitir, cobrar y conciliar', icon: 'wallet', col: 3, row: 1 },
+    { id: 'oficina', label: 'Oficina y administración', hint: 'Papeleo, reportes y tareas repetitivas', icon: 'file', col: 0, row: 2 },
+    { id: 'atencion', label: 'Atención y postventa', hint: 'Consultas, reclamos y seguimiento', icon: 'headset', col: 2, row: 2 },
+  ],
+  edges: [
+    ['entrada', 'ventas'],
+    ['ventas', 'operacion'],
+    ['operacion', 'entrega'],
+    ['entrega', 'cobranza'],
+    ['entrega', 'atencion'],
+    ['oficina', 'ventas', 'support'],
+    ['oficina', 'cobranza', 'support'],
+  ],
+};
+
+/** Transport and fleets: from the customer's call to the delivery and the invoice; workshop, fuel and tracking serve the trip. */
+const TRANSPORT_MAP: CompanyMap = {
+  nodes: [
+    { id: 'entrada', label: 'Pedidos y clientes', hint: 'Llamados, visitas y pedidos de carga', icon: 'phone', col: 1.5, row: 0, entry: true },
+    { id: 'oficina', label: 'Secretaría comercial', hint: 'Atiende, registra y deriva cada pedido', icon: 'file', col: 0, row: 1 },
+    { id: 'cotizacion', label: 'Cotización de fletes', hint: 'Precio por ruta, carga y camión', icon: 'receipt', col: 1, row: 1 },
+    { id: 'planificacion', label: 'Planificación de rutas', hint: 'Qué camión va, con qué carga y por dónde', icon: 'route', col: 2, row: 1 },
+    { id: 'despacho', label: 'Despacho', hint: 'Asigna camión y chofer, emite la guía', icon: 'send', col: 3, row: 1 },
+    { id: 'carga', label: 'Bodega, carga y descarga', hint: 'Carga, descarga y esperas', icon: 'warehouse', col: 3, row: 2 },
+    { id: 'viaje', label: 'Flota y choferes', hint: 'Camiones y camionetas en ruta', icon: 'truck', col: 2, row: 2 },
+    { id: 'entrega', label: 'Entrega al cliente', hint: 'Recepción y prueba de entrega', icon: 'package', col: 1, row: 2 },
+    { id: 'cobranza', label: 'Facturación y cobranza', hint: 'Factura, cobra y concilia', icon: 'wallet', col: 0, row: 2 },
+    { id: 'taller', label: 'Mantención y taller', hint: 'Revisiones y reparaciones', icon: 'wrench', col: 1, row: 3 },
+    { id: 'control', label: 'Control y GPS', hint: 'Dónde está cada camión', icon: 'radar', col: 2, row: 3 },
+    { id: 'combustible', label: 'Combustible', hint: 'Cargas, consumo y rendimiento', icon: 'fuel', col: 3, row: 3 },
+  ],
+  edges: [
+    ['entrada', 'oficina'],
+    ['oficina', 'cotizacion'],
+    ['cotizacion', 'planificacion'],
+    ['planificacion', 'despacho'],
+    ['despacho', 'carga'],
+    ['carga', 'viaje'],
+    ['viaje', 'entrega'],
+    ['entrega', 'cobranza'],
+    ['taller', 'viaje', 'support'],
+    ['control', 'viaje', 'support'],
+    ['combustible', 'viaje', 'support'],
+  ],
+};
+
+export const mapOf = (pb: Pick<Playbook, 'map'> | undefined): CompanyMap => pb?.map ?? GENERIC_MAP;
+
+/** Where a leak is drawn when its playbook did not say: cash collection goes to billing, office work to the office, the rest to the operation. */
+export const leakArea = (l: { key: string; area?: string }) => l.area ?? (/cobr|pago/.test(l.key) ? 'cobranza' : l.key === 'oficina' ? 'oficina' : 'operacion');
 
 // ---------- shared by every playbook ----------
 const COMMON_METRICS: Metric[] = [
@@ -147,6 +233,7 @@ const make = (p: Omit<Playbook, 'blocks' | 'metrics' | 'leaks' | 'documents'> & 
   metrics: [...p.metrics, ...COMMON_METRICS],
   leaks: [...p.leaks, ...COMMON_LEAKS],
   documents: [...COMMON_DOCS, ...p.documents],
+  ...(p.map ? { map: p.map } : {}),
 });
 
 // ---------- playbooks ----------
@@ -154,6 +241,7 @@ export const PLAYBOOKS: Playbook[] = [
   make({
     id: 'transporte-y-flotas',
     name: 'Transporte y flotas',
+    map: TRANSPORT_MAP,
     who: 'un camión le da plata o le cuesta',
     focus:
       'En transporte la plata se pierde en camiones parados, retornos vacíos, esperas en carga y descarga, petróleo y clientes que pagan tarde. Muchos dueños no tienen visibilidad por camión: si faltan datos, la etapa 1 debe ser ver los números (viajes, ingresos y costos por camión) antes de automatizar.',
@@ -196,6 +284,7 @@ export const PLAYBOOKS: Playbook[] = [
         key: 'parados',
         label: 'Camiones parados',
         kind: 'perdida',
+        area: 'taller',
         explain: 'camiones parados × viajes al mes × valor del viaje',
         uses: ['camionesParados', 'viajesCamionMes', 'valorViaje'],
         calc: (m) => m('camionesParados') * m('viajesCamionMes') * m('valorViaje'),
@@ -204,6 +293,7 @@ export const PLAYBOOKS: Playbook[] = [
         key: 'retornos',
         label: 'Retornos vacíos',
         kind: 'perdida',
+        area: 'planificacion',
         explain: 'viajes al mes × % que vuelve vacío × valor de una carga de retorno',
         uses: ['camiones', 'camionesParados', 'viajesCamionMes', 'retornosVaciosPct', 'valorViaje', 'valorRetornoPct'],
         calc: (m) =>
@@ -213,6 +303,7 @@ export const PLAYBOOKS: Playbook[] = [
         key: 'espera',
         label: 'Esperas en carga y descarga',
         kind: 'perdida',
+        area: 'carga',
         explain: 'horas de espera × viajes al mes × costo por hora de camión con chofer',
         uses: ['horasEspera', 'camiones', 'camionesParados', 'viajesCamionMes', 'costoHoraCamion'],
         calc: (m) => m('horasEspera') * Math.max(0, m('camiones') - m('camionesParados')) * m('viajesCamionMes') * m('costoHoraCamion'),
@@ -999,6 +1090,8 @@ export interface ComputedLeak {
   key: string;
   label: string;
   kind: LeakKind;
+  /** Area of the company map where it happens. */
+  area: string;
   monthly: number;
   explain: string;
   /** Lowest confidence among the metrics it uses. */
@@ -1016,7 +1109,7 @@ export const computeLeaks = (pb: Playbook, metrics: Record<string, MetricValue>)
     const confs = l.uses.map((k) => metrics[k]?.c ?? 'estimado');
     const confidence = confs.reduce<Confidence>((a, c) => (RANK[c] < RANK[a] ? c : a), 'real');
     const monthly = missing.length ? 0 : Math.round(l.calc((k) => metrics[k]?.v ?? 0));
-    return { key: l.key, label: l.label, kind: l.kind, monthly, explain: l.explain, confidence, missing };
+    return { key: l.key, label: l.label, kind: l.kind, area: leakArea(l), monthly, explain: l.explain, confidence, missing };
   });
 
 /** Email asking the client (or their accountant) for the documents. */

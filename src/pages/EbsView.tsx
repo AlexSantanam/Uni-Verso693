@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, ReactFlow, ReactFlowProvider } from '@xyflow/react';
+import { Background, BackgroundVariant, Controls, Handle, MiniMap, Position, ReactFlow, ReactFlowProvider, useReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { AlertTriangle, ArrowRight, CalendarCheck, Check, CheckCircle2, Download, Loader2, Monitor, PlayCircle, RotateCcw, X, Zap } from 'lucide-react';
-import { whatsappLink } from '../data/site';
+import { AlertTriangle, ArrowRight, Building2, CalendarCheck, Check, CheckCircle2, Cog, Download, FileText, Fuel, Headset, Loader2, Monitor, Package, Phone, PlayCircle, Plus, Radar, Receipt, RotateCcw, Route, Send, Truck, Wallet, Warehouse, Wrench, X, Zap, type LucideIcon } from 'lucide-react';
+import { CALENDLY_URL, whatsappLink } from '../data/site';
 import { playbookById, computeLeaks, type MetricValue } from '../data/ebsPlaybooks';
 import { AnimNum, TimelineModal, WhatIfPanel, type Driver, type TimelineItem } from './ebsParts';
 import { CalendarRange } from 'lucide-react';
@@ -39,6 +39,8 @@ interface ViewOpp {
   recoveryPct: number;
   leakBase: number;
   leakKey: string;
+  /** Area of the company map where it hangs. */
+  area: string;
   weeks: number;
   leakLabel: string;
   leakMonthly: number;
@@ -66,6 +68,24 @@ interface View {
   whatIf: { playbook: string; metrics: Record<string, { v: number; c: 'real' | 'estimado' | 'supuesto'; label: string; unit: string }> } | null;
   /** Booking link of the kickoff meeting with name and email prefilled; null until it is set in Ajustes. */
   kickoff: string | null;
+  /** The company as areas and the flow between them; null in older EBS (they keep the by-stage diagram). */
+  map: { nodes: { id: string; label: string; hint: string; icon: string; col: number; row: number; entry?: boolean; inferred?: boolean }[]; edges: [string, string, ('flow' | 'support')?][] } | null;
+  /** Public demo with invented data. */
+  demo: boolean;
+  /** Areas the client added the last time they pressed "Quiero avanzar". */
+  choiceAreas?: ExtraArea[];
+}
+
+/** An area the client adds to the map because the system missed it; they also place it by dragging. */
+interface ExtraArea {
+  id: string;
+  label: string;
+  note: string;
+  after: string;
+  next: string;
+  pain: boolean;
+  x: number;
+  y: number;
 }
 
 /** The client's tweaks to the assumptions of a solution (percentages, 0 to 100). */
@@ -282,7 +302,176 @@ const OppNode = ({ data }: { data: { opp: ViewOpp; on: boolean; selected: boolea
   );
 };
 
-const nodeTypes = { root: RootNode, stage: StageNode, opp: OppNode };
+// ---- company map: areas of the business with their leaks (red) and solutions (green) hanging from them ----
+const AREA_ICONS: Record<string, LucideIcon> = { plus: Plus, phone: Phone, receipt: Receipt, cog: Cog, package: Package, wallet: Wallet, file: FileText, headset: Headset, route: Route, send: Send, warehouse: Warehouse, truck: Truck, wrench: Wrench, radar: Radar, fuel: Fuel };
+
+const sideHandles = [
+  [Position.Top, 't'],
+  [Position.Bottom, 'b'],
+  [Position.Left, 'l'],
+  [Position.Right, 'r'],
+] as const;
+const MapHandles = () => (
+  <>
+    {sideHandles.map(([pos, k]) => (
+      <React.Fragment key={k}>
+        <Handle type="source" position={pos} id={`s${k}`} style={hidden} />
+        <Handle type="target" position={pos} id={`t${k}`} style={hidden} />
+      </React.Fragment>
+    ))}
+  </>
+);
+
+interface AreaItem {
+  opp: ViewOpp;
+  on: boolean;
+}
+const AreaNode = ({ data }: { data: { node: { label: string; hint: string; icon: string; inferred?: boolean }; items: AreaItem[]; selId: string | null; onSel: (id: string) => void; onToggle: (id: string) => void; mine?: boolean; pain?: boolean; onRemove?: () => void } }) => {
+  const Icon = AREA_ICONS[data.node.icon] ?? Building2;
+  const allOn = data.items.length > 0 && data.items.every((i) => i.on);
+  return (
+    <div
+      className="w-[280px] rounded-2xl border bg-[#0b1220] p-3.5 transition-colors duration-300"
+      style={{
+        borderColor: data.mine ? '#fbbf24' : allOn ? 'rgba(52,211,153,0.7)' : 'color-mix(in srgb, var(--c2) 55%, transparent)',
+        borderStyle: data.mine ? 'dashed' : undefined,
+        boxShadow: '0 0 24px color-mix(in srgb, var(--c2) 14%, transparent)',
+      }}
+    >
+      <MapHandles />
+      {data.mine && (
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="rounded-full bg-amber-300/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-200">Agregado por ti · arrástralo</span>
+          <button onClick={data.onRemove} aria-label="Quitar esta área" className="nodrag nopan cursor-pointer text-slate-500 hover:text-white"><X className="h-4 w-4" /></button>
+        </div>
+      )}
+      {data.node.inferred && <span className="mb-2 inline-block rounded-full border border-slate-500/50 px-2 py-0.5 text-[10px] text-slate-400">por confirmar contigo</span>}
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--c2) 18%, transparent)', color: 'var(--c2)' }}>
+          <Icon className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[15px] font-extrabold leading-tight text-white">{data.node.label}</p>
+          {data.node.hint && <p className="mt-0.5 text-[12px] leading-snug text-slate-400">{data.node.hint}</p>}
+        </div>
+      </div>
+      {data.mine && data.pain && (
+        <p className="mt-3 rounded-xl border border-amber-300/50 bg-amber-300/10 px-2.5 py-2 text-[12px] font-bold text-amber-100">Señalaste: aquí se pierde tiempo o plata</p>
+      )}
+      {data.items.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {data.items.map(({ opp, on }) => (
+            <div
+              key={opp.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => data.onSel(opp.id)}
+              onKeyDown={(ev) => ev.key === 'Enter' && data.onSel(opp.id)}
+              className={`nodrag nopan flex cursor-pointer items-start gap-2 rounded-xl border px-2.5 py-2 transition-colors duration-300 ${on ? 'border-emerald-400/60 bg-emerald-400/10' : 'border-red-400/50 bg-red-400/10'} ${data.selId === opp.id ? 'ring-2 ring-white/70' : ''}`}
+            >
+              {on ? <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-300" /> : <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 animate-pulse text-red-300" />}
+              <div className="min-w-0 flex-1">
+                <p className={`text-[10px] font-extrabold uppercase tracking-wide ${on ? 'text-emerald-300' : 'text-red-300'}`}>
+                  {on ? 'Resuelto con IA' : opp.leakLabel ? `Fuga: ${opp.leakLabel}` : 'Oportunidad'}
+                </p>
+                <p className="line-clamp-2 text-[12.5px] font-bold leading-snug text-white">{opp.title}</p>
+              </div>
+              <button
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  data.onToggle(opp.id);
+                }}
+                aria-pressed={on}
+                aria-label={on ? 'Quitar esta solución' : 'Activar esta solución'}
+                className={`nodrag nopan flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm font-black ${on ? 'bg-emerald-400 text-emerald-950' : 'bg-red-400/90 text-red-950'}`}
+              >
+                {on ? <Check className="h-4 w-4" /> : '+'}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const EntryNode = ({ data }: { data: { company: string; leakMonth: number; logo: string | null; label: string; hint: string } }) => (
+  <div className="w-[300px] rounded-2xl border-2 bg-[#0f172a] p-4" style={{ borderColor: 'var(--c2)', boxShadow: '0 0 28px color-mix(in srgb, var(--c2) 30%, transparent)' }}>
+    <MapHandles />
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{data.label}</p>
+      {data.logo && <img src={data.logo} alt="" className="h-11 w-11 rounded-lg bg-white object-contain p-1" />}
+    </div>
+    <p className="mt-1 text-xl font-black leading-tight text-white">{data.company}</p>
+    {data.hint && <p className="text-[12px] text-slate-400">{data.hint}</p>}
+    <p className="mt-2 text-[13px] text-slate-400">Se escapan cada mes</p>
+    <p className="text-3xl font-black text-red-300">{clp(data.leakMonth)}</p>
+  </div>
+);
+
+const AddAreaModal = ({ areas, extra, accent, onClose, onAdd }: { areas: { id: string; label: string; entry?: boolean }[]; extra: ExtraArea[]; accent: string; onClose: () => void; onAdd: (a: Omit<ExtraArea, 'x' | 'y'>) => void }) => {
+  const [label, setLabel] = useState('');
+  const [note, setNote] = useState('');
+  const [after, setAfter] = useState('');
+  const [next, setNext] = useState('');
+  const [pain, setPain] = useState(false);
+  const options = [...areas, ...extra.map((a) => ({ id: a.id, label: a.label }))];
+  const field = 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:border-white/40 [&>option]:bg-[#0b1220]';
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label="Agregar un área">
+      <div className="w-full max-w-md space-y-4 rounded-2xl border border-white/15 bg-[#0b1220] p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-black text-white">Agregar un área que falta</h2>
+            <p className="text-xs text-slate-400">Si tu empresa tiene un paso que no aparece, súmalo. Después lo arrastras donde corresponde.</p>
+          </div>
+          <button onClick={onClose} aria-label="Cerrar" className="cursor-pointer text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
+        </div>
+        <label className="block text-xs font-bold text-slate-300">
+          Nombre del área
+          <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={60} placeholder="Ej.: Revisión técnica" className={field} autoFocus />
+        </label>
+        <label className="block text-xs font-bold text-slate-300">
+          ¿Qué pasa ahí? (opcional)
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={300} rows={2} className={field} />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-xs font-bold text-slate-300">
+            Viene después de
+            <select value={after} onChange={(e) => setAfter(e.target.value)} className={field}>
+              <option value="">—</option>
+              {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+            </select>
+          </label>
+          <label className="block text-xs font-bold text-slate-300">
+            Y luego pasa a (opcional)
+            <select value={next} onChange={(e) => setNext(e.target.value)} className={field}>
+              <option value="">—</option>
+              {options.filter((o) => !(o as { entry?: boolean }).entry).map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+            </select>
+          </label>
+        </div>
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-200">
+          <input type="checkbox" checked={pain} onChange={(e) => setPain(e.target.checked)} className="h-4 w-4" />
+          Aquí se nos pierde tiempo o plata
+        </label>
+        <div className="flex justify-end gap-3">
+          <button onClick={onClose} className="cursor-pointer rounded-full border border-white/20 px-4 py-2 text-sm font-bold text-slate-300">Cancelar</button>
+          <button
+            disabled={!label.trim()}
+            onClick={() => onAdd({ id: `x${Date.now().toString(36)}`, label: label.trim(), note: note.trim(), after, next, pain })}
+            className="cursor-pointer rounded-full px-5 py-2 text-sm font-extrabold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: accent }}
+          >
+            Agregar al mapa
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const nodeTypes = { root: RootNode, stage: StageNode, opp: OppNode, area: AreaNode, entry: EntryNode };
 
 // ---------- page ----------
 const Inner = ({ token }: { token: string }) => {
@@ -298,6 +487,10 @@ const Inner = ({ token }: { token: string }) => {
   const [flowFor, setFlowFor] = useState<string | null>(null);
   const [scn, setScn] = useState<Record<string, number>>({});
   const [showTimeline, setShowTimeline] = useState(false);
+  const [mode, setMode] = useState<'map' | 'stages'>('map');
+  const [extra, setExtra] = useState<ExtraArea[]>([]);
+  const [adding, setAdding] = useState(false);
+  const rf = useReactFlow();
 
   useEffect(() => {
     document.title = 'Tu hoja de ruta EBS 693 interactiva | Uni-Verso693';
@@ -315,6 +508,7 @@ const Inner = ({ token }: { token: string }) => {
           setScn(Object.fromEntries((v.choiceScenario ?? []).map((x) => [x.key, x.value])));
           setSent(true);
         }
+        if (v.choiceAreas?.length) setExtra(v.choiceAreas);
       })
       .catch((e) => setError({ text: e.message, expired: e.expired }));
   }, [token]);
@@ -438,6 +632,122 @@ const Inner = ({ token }: { token: string }) => {
     return { nodes, edges };
   }, [view, opps, on, sel, toggle, leakNow]);
 
+  // company map: areas on a grid in the order a customer goes through them; leaks and solutions hang inside each area
+  const mapGraph = useMemo(() => {
+    if (!view?.map) return null;
+    const m = view.map;
+    const chain = onDark(view.site?.primary, '#22d3ee');
+    const ids = new Set(m.nodes.map((n) => n.id));
+    const fallback = ids.has('oficina') ? 'oficina' : (m.nodes.find((n) => !n.entry)?.id ?? '');
+    const byArea = new Map<string, AreaItem[]>();
+    for (const o of opps) {
+      const a = ids.has(o.area) && !m.nodes.find((n) => n.id === o.area)?.entry ? o.area : fallback;
+      byArea.set(a, [...(byArea.get(a) ?? []), { opp: o, on: on.has(o.id) }]);
+    }
+    const COLW = 330;
+    const GAP = 64;
+    const heightOf = (id: string, entry?: boolean) => (entry ? 190 : 78 + (byArea.get(id)?.length ?? 0) * 66 + ((byArea.get(id)?.length ?? 0) > 0 ? 12 : 0));
+    const rowIds = Array.from(new Set<number>(m.nodes.map((n) => n.row))).sort((a, b) => a - b);
+    const rowY = new Map<number, number>();
+    let y = 0;
+    for (const r of rowIds) {
+      rowY.set(r, y);
+      y += Math.max(...m.nodes.filter((n) => n.row === r).map((n) => heightOf(n.id, n.entry))) + GAP;
+    }
+    const pos = new Map<string, { x: number; y: number; col: number; row: number }>(m.nodes.map((n) => [n.id, { x: n.col * COLW, y: rowY.get(n.row) ?? 0, col: n.col, row: n.row }] as [string, { x: number; y: number; col: number; row: number }]));
+    const nodes: any[] = m.nodes.map((n) => {
+      const p = pos.get(n.id)!;
+      return n.entry
+        ? { id: n.id, type: 'entry', position: { x: p.x - 10, y: p.y }, initialWidth: 300, initialHeight: 190, data: { company: view.company, leakMonth: leakNow, logo: view.site?.logo ?? null, label: n.label, hint: n.hint }, draggable: false, selectable: false }
+        : { id: n.id, type: 'area', position: { x: p.x, y: p.y }, initialWidth: 280, initialHeight: heightOf(n.id), data: { node: n, items: byArea.get(n.id) ?? [], selId: sel, onSel: setSel, onToggle: toggle }, draggable: false, selectable: false };
+    });
+    const edges = m.edges
+      .filter(([a, b]) => pos.has(a) && pos.has(b))
+      .map(([a, b, kind], i) => {
+        const pa = pos.get(a)!;
+        const pb = pos.get(b)!;
+        // leave and arrive on the sides that face each other
+        let sh: string, th: string;
+        if (pa.row === pb.row) [sh, th] = pb.col > pa.col ? ['sr', 'tl'] : ['sl', 'tr'];
+        else [sh, th] = pb.row > pa.row ? ['sb', 'tt'] : ['st', 'tb'];
+        const support = kind === 'support';
+        // the flow reacts to what is switched on: the more of the areas it joins are solved, the greener and faster it runs
+        const state = (id: string) => {
+          const it = byArea.get(id) ?? [];
+          const solved = it.filter((x) => x.on).length;
+          return it.length > 0 && solved === it.length ? 2 : solved > 0 ? 1 : 0;
+        };
+        const ends = [state(a), state(b)];
+        const done = ends.filter((x) => x === 2).length;
+        const partial = ends.some((x) => x === 1);
+        const level = done === 2 ? 3 : done === 1 ? 2 : partial ? 1 : 0;
+        const color = level >= 2 ? (level === 3 ? '#4ade80' : '#34d399') : level === 1 ? '#a3e635' : support ? '#64748b' : chain;
+        const seconds = [2.4, 1.2, 0.8, 0.45][level];
+        return {
+          id: `m${i}-${a}-${b}`,
+          source: a,
+          target: b,
+          sourceHandle: sh,
+          targetHandle: th,
+          type: 'smoothstep',
+          // a support line only moves once something it serves is solved
+          animated: !support || level > 0,
+          data: { kind: support ? 'support' : 'flow' },
+          markerEnd: { type: 'arrowclosed' as const, color, width: 18, height: 18 },
+          style: {
+            stroke: color,
+            strokeWidth: (support ? 2 : 3) + (level === 3 ? 1 : 0),
+            strokeDasharray: support && level === 0 ? '6 5' : undefined,
+            opacity: support && level === 0 ? 0.8 : 0.95,
+            animationDuration: `${seconds}s`,
+            transition: 'stroke 0.4s ease, stroke-width 0.4s ease',
+          },
+        };
+      });
+    // areas the client added: draggable, joined to the area they come after (and the one they lead to)
+    const sidesFor = (a: { x: number; y: number }, b: { x: number; y: number }): [string, string] => {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? ['sr', 'tl'] : ['sl', 'tr']) : dy > 0 ? ['sb', 'tt'] : ['st', 'tb'];
+    };
+    const mineEdge = (id: string, from: string, to: string, a: { x: number; y: number }, b: { x: number; y: number }) => {
+      const [sh, th] = sidesFor(a, b);
+      return { id, source: from, target: to, sourceHandle: sh, targetHandle: th, type: 'smoothstep', animated: true, data: { kind: 'mine' }, markerEnd: { type: 'arrowclosed' as const, color: '#fbbf24', width: 18, height: 18 }, style: { stroke: '#fbbf24', strokeWidth: 3 } };
+    };
+    const where = new Map<string, { x: number; y: number }>([...pos.entries()].map(([k, v]) => [k, { x: v.x, y: v.y }] as [string, { x: number; y: number }]));
+    for (const a of extra) {
+      where.set(a.id, { x: a.x, y: a.y });
+      nodes.push({ id: a.id, type: 'area', position: { x: a.x, y: a.y }, initialWidth: 280, initialHeight: 150, draggable: true, selectable: false, data: { node: { label: a.label, hint: a.note, icon: 'plus' }, items: [], selId: null, onSel: setSel, onToggle: toggle, mine: true, pain: a.pain, onRemove: () => setExtra((c) => c.filter((x) => x.id !== a.id)) } });
+    }
+    for (const a of extra) {
+      const here = where.get(a.id)!;
+      if (a.after && where.has(a.after)) edges.push(mineEdge(`mine-${a.after}-${a.id}`, a.after, a.id, where.get(a.after)!, here));
+      if (a.next && where.has(a.next)) edges.push(mineEdge(`mine-${a.id}-${a.next}`, a.id, a.next, here, where.get(a.next)!));
+    }
+    return { nodes, edges };
+  }, [view, opps, on, sel, toggle, leakNow, extra]);
+  const graph = mode === 'map' && mapGraph ? mapGraph : { nodes, edges };
+
+  /** The diagram as the client sees it now (positions, sizes, chips and arrows), so the consultant gets the whole picture. */
+  const buildDiagram = () => ({
+    nodes: rf.getNodes().map((n: any) => ({
+      id: n.id,
+      label: n.data?.node?.label ?? n.data?.company ?? '',
+      hint: n.data?.node?.hint ?? n.data?.hint ?? '',
+      x: n.position.x,
+      y: n.position.y,
+      w: n.measured?.width ?? n.width ?? 280,
+      h: n.measured?.height ?? n.height ?? 120,
+      mine: !!n.data?.mine,
+      entry: n.type === 'entry',
+      chips: [
+        ...((n.data?.items ?? []) as AreaItem[]).map((it) => ({ text: it.on ? `Resuelto con IA: ${it.opp.title}` : `${it.opp.leakLabel ? `Fuga: ${it.opp.leakLabel} · ` : ''}${it.opp.title}`, on: it.on })),
+        ...(n.data?.mine && n.data?.pain ? [{ text: 'El cliente indica que aquí se pierde tiempo o plata', on: false }] : []),
+      ],
+    })),
+    edges: graph.edges.map((e: any) => ({ from: e.source, to: e.target, kind: e.data?.kind ?? 'flow' })),
+  });
+
   const advance = async () => {
     setSending(true);
     try {
@@ -448,6 +758,8 @@ const Inner = ({ token }: { token: string }) => {
           token,
           ids: [...on],
           adj,
+          areas: extra,
+          diagram: mode === 'map' && mapGraph ? buildDiagram() : undefined,
           scenario: (sim?.drivers ?? []).filter((d) => d.value !== d.original).map((d) => ({ key: d.key, label: d.label, original: d.original, value: d.value, unit: d.unit })),
         }),
       });
@@ -538,7 +850,21 @@ const Inner = ({ token }: { token: string }) => {
         <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
           Cifras estimadas con lo conversado en la sesión. El ahorro neto ya descuenta la mantención mensual: los servicios de terceros (WhatsApp, nube, dominio, APIs de IA) que se pagan todos los meses, contando una sola vez los que comparten varias soluciones. Los porcentajes de recuperación son supuestos que se validan al empezar; el valor del diagnóstico se descuenta del proyecto si decides avanzar.
         </p>
-        {sent ? (
+        {sent && view.demo ? (
+          <div className="mt-3 space-y-3 rounded-xl border border-amber-300/30 bg-amber-300/10 p-3.5 text-sm">
+            <p className="font-bold text-amber-100">Así llegaría tu elección a nuestro equipo.</p>
+            <p className="text-xs text-slate-300">Como esto es una demo con datos inventados, no enviamos nada. En tu diagnóstico real armamos este mismo espacio con los números de tu empresa y, al avanzar, te llega el borrador de cotización y puedes agendar la reunión de inicio.</p>
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-center text-sm font-extrabold text-white hover:brightness-110"
+              style={{ background: brandGradient }}
+            >
+              <CalendarCheck className="h-4 w-4 shrink-0" /> <span className="text-center">Agendar mi diagnóstico EBS 693</span>
+            </a>
+          </div>
+        ) : sent ? (
           <div className="mt-3 space-y-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3.5 text-sm">
             <p className="flex items-start gap-2 font-bold text-emerald-200">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> Recibimos tu elección de {totals.count} {totals.count === 1 ? 'solución' : 'soluciones'}.
@@ -743,6 +1069,12 @@ const Inner = ({ token }: { token: string }) => {
       }}
     >
       <div className="h-1.5 w-full shrink-0" style={{ background: brandGradient }} />
+      {view.demo && (
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-b border-amber-300/25 bg-amber-300/10 px-5 py-2 text-center text-sm text-amber-100">
+          <span><strong>Demo con datos inventados.</strong> Pruébalo como lo haría tu empresa: activa soluciones, mueve los números y mira el resultado. No se envía nada.</span>
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="font-bold underline">Quiero el mío →</a>
+        </div>
+      )}
       <header className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-white/10 px-5 py-3" style={{ background: 'linear-gradient(90deg, color-mix(in srgb, var(--c1) 26%, #050912), color-mix(in srgb, var(--c2) 26%, #050912))' }}>
         <p className="font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-400">EBS 693 interactivo</span></p>
         {view.site?.logo && (
@@ -758,7 +1090,7 @@ const Inner = ({ token }: { token: string }) => {
               <PlayCircle className="h-4 w-4" /> Ver el video explicativo
             </a>
           )}
-          <span>Disponible hasta el {expires}</span>
+          {!view.demo && <span>Disponible hasta el {expires}</span>}
         </div>
       </header>
 
@@ -772,17 +1104,50 @@ const Inner = ({ token }: { token: string }) => {
       )}
 
       <div className={`flex min-h-0 flex-1 ${narrow ? 'flex-col overflow-y-auto' : ''}`}>
-        <div className={narrow ? 'h-[60vh] min-h-[360px] shrink-0' : 'min-w-0 flex-1'}>
+        <div className={`relative ${narrow ? 'h-[60vh] min-h-[360px] shrink-0' : 'min-w-0 flex-1'}`}>
+          {mapGraph && (
+            <div className="absolute right-3 top-3 z-10 flex rounded-full border border-white/15 bg-[#0b1220]/90 p-1 text-xs font-bold backdrop-blur">
+              {(['map', 'stages'] as const).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setMode(k)}
+                  aria-pressed={mode === k}
+                  className={`cursor-pointer rounded-full px-3 py-1.5 ${mode === k ? 'text-white' : 'text-slate-400 hover:text-white'}`}
+                  style={mode === k ? { background: brandGradient } : undefined}
+                >
+                  {k === 'map' ? 'Mapa de la empresa' : 'Por etapas'}
+                </button>
+              ))}
+            </div>
+          )}
+          {mode === 'map' && mapGraph && (
+            <button
+              onClick={() => setAdding(true)}
+              className="absolute left-3 top-3 z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-amber-300/50 bg-[#0b1220]/90 px-3.5 py-2 text-xs font-bold text-amber-100 backdrop-blur hover:bg-amber-300/10"
+            >
+              <Plus className="h-4 w-4" /> ¿Falta un área de tu empresa? Agrégala
+            </button>
+          )}
+          {mode === 'map' && mapGraph && (
+            <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-full border border-white/10 bg-[#0b1220]/90 px-4 py-1.5 text-[11px] text-slate-300 backdrop-blur">
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" /> Fuga abierta</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-400" /> Resuelto con IA</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-0 w-5 border-t-2" style={{ borderColor: c2 }} /> Camino del cliente</span>
+              <span className="inline-flex items-center gap-1.5"><span className="h-0 w-5 border-t-2 border-dashed border-slate-500" /> Apoya a otra área</span>
+            </div>
+          )}
           <ReactFlow
-            nodes={nodes}
-            edges={edges}
+            key={mode}
+            nodes={graph.nodes}
+            edges={graph.edges}
             nodeTypes={nodeTypes as any}
             onNodeClick={(_, n) => n.type === 'opp' && setSel(n.id)}
+            onNodeDrag={(_, n) => (n.data as any)?.mine && setExtra((c) => c.map((a) => (a.id === n.id ? { ...a, x: n.position.x, y: n.position.y } : a)))}
             onPaneClick={() => setSel(null)}
             fitView
             fitViewOptions={{ padding: 0.12 }}
-            minZoom={0.15}
-            maxZoom={1.6}
+            minZoom={0.05}
+            maxZoom={2.5}
             nodesDraggable={false}
             nodesConnectable={false}
             proOptions={{ hideAttribution: true }}
@@ -791,10 +1156,37 @@ const Inner = ({ token }: { token: string }) => {
           >
             <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="#1e293b" />
             <Controls showInteractive={false} position="bottom-left" />
-            {view.opportunities.length > 9 && <MiniMap pannable zoomable nodeColor={(n: any) => (n.type === 'opp' ? (on.has(n.id) ? '#34d399' : '#f87171') : '#475569')} maskColor="rgba(5,9,18,0.7)" style={{ background: '#0b1220' }} />}
+            {(view.opportunities.length > 9 || (mode === 'map' && mapGraph)) && (
+              <MiniMap
+                pannable
+                zoomable
+                nodeColor={(n: any) => (n.type === 'opp' ? (on.has(n.id) ? '#34d399' : '#f87171') : n.data?.mine ? '#fbbf24' : n.type === 'area' ? (n.data?.items?.length && n.data.items.every((i: AreaItem) => i.on) ? '#34d399' : n.data?.items?.length ? '#f87171' : '#475569') : '#22d3ee')}
+                maskColor="rgba(5,9,18,0.7)"
+                style={{ background: '#0b1220' }}
+              />
+            )}
           </ReactFlow>
         </div>
         {panel}
+        {adding && view.map && (
+          <AddAreaModal
+            areas={view.map.nodes}
+            extra={extra}
+            accent={c2}
+            onClose={() => setAdding(false)}
+            onAdd={(a) => {
+              // dropped below the diagram, under the area it comes after; the client then drags it where it belongs
+              const all = rf.getNodes();
+              const bottom = Math.max(0, ...all.map((n: any) => n.position.y + (n.measured?.height ?? 160)));
+              const anchor = all.find((n: any) => n.id === a.after) as any;
+              setExtra((c) => [...c, { ...a, x: anchor?.position.x ?? 0, y: bottom + 90 + c.length * 20 }]);
+              setSent(false);
+              setAdding(false);
+              // show the whole diagram again so the new area is in view
+              setTimeout(() => rf.fitView({ padding: 0.12, duration: 400 }), 80);
+            }}
+          />
+        )}
         {flowFor && opps.find((o) => o.id === flowFor) && <FlowModal opp={opps.find((o) => o.id === flowFor)!} accent={c2} onClose={() => setFlowFor(null)} />}
         {showTimeline && <TimelineModal items={timelineItems} accent={c2} onClose={() => setShowTimeline(false)} />}
       </div>

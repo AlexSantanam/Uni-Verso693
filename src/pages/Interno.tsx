@@ -21,7 +21,7 @@ import {
   Receipt,
   RefreshCw,
 } from 'lucide-react';
-import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
+import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, mapOf, leakArea, type CompanyMap, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
 
 // Internal workspace (/interno). Spanish only, not indexed, not linked from the site.
 // Everything goes through api/admin.ts with a bearer token saved in this browser.
@@ -1621,6 +1621,8 @@ interface EbsOpportunity {
   /** % of the target leak (leakKey) this opportunity recovers; legacy sessions: % of the sales leak. */
   salesRecoveryPct: number;
   leakKey?: string;
+  /** Area of the company map where it is drawn in the interactive EBS. */
+  area?: string;
   investment: number;
   monthlyCost: number;
   impact: Level3;
@@ -1689,6 +1691,11 @@ interface EbsSession {
   /** Answers written during the live session, keyed by the question text. */
   answers?: Record<string, string>;
   computedLeaks?: ComputedLeak[];
+  /** Company map (industry template, AI from the session, or edited by hand), saved with the session so the interactive page can draw it. */
+  map?: CompanyMap;
+  mapSource?: 'plantilla' | 'ia' | 'manual';
+  /** Area of each leak when the map is not the template (key → area id). */
+  leakAreas?: Record<string, string>;
   toMeasure?: string[];
   /** Who contracts and pays the third-party services. */
   servicesPaidBy?: 'cliente' | 'universo';
@@ -1845,7 +1852,10 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
   const computedLeaks = useMemo(() => computeLeaks(pb, e.metrics ?? {}), [pb, e.metrics]);
   const latest = useRef(e);
   // the leaks are recomputed here and travel with every save, so the server and the PDF don't need the formulas
-  latest.current = { ...e, computedLeaks, playbookName: pb.name, playbookFocus: pb.focus };
+  const ownMap = e.mapSource === 'ia' || e.mapSource === 'manual';
+  const leaksWithArea = computedLeaks.map((l) => (e.leakAreas?.[l.key] ? { ...l, area: e.leakAreas[l.key] } : l));
+  latest.current = { ...e, computedLeaks: leaksWithArea, playbookName: pb.name, playbookFocus: pb.focus, map: ownMap && e.map ? e.map : mapOf(pb), mapSource: e.mapSource ?? 'plantilla' };
+  const shownMap: CompanyMap = latest.current.map ?? mapOf(pb);
 
   const patch = (fn: (cur: EbsSession) => EbsSession) => {
     setE((cur) => fn(cur));
@@ -1932,6 +1942,31 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
       setBusy(null);
     }
   };
+
+  const generateMap = async () => {
+    if (e.mapSource === 'manual' && !window.confirm('Tienes un mapa editado a mano. Armarlo con IA lo reemplaza. ¿Continuar?')) return;
+    const saved = await ensureSaved();
+    if (!saved?.id) return;
+    setBusy('map');
+    setMsg(null);
+    try {
+      const { session } = await api<{ session: EbsSession }>('ebs-map', { body: { id: saved.id } });
+      setE((c) => ({ ...c, map: session.map, mapSource: 'ia', leakAreas: session.leakAreas }));
+      setDirty(true);
+      setMsg({ ok: true, text: 'Mapa armado con lo recogido en la sesión. Revisa las áreas (las marcadas "por confirmar" son supuestos del rubro) y guarda.' });
+    } catch (err) {
+      setMsg({ ok: false, text: (err as Error).message });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  /** Edit the map by hand: any change makes it "manual" so a later AI draft does not overwrite it. */
+  const editMap = (fn: (m: CompanyMap) => CompanyMap) =>
+    patch((c) => {
+      const cur = (c.mapSource === 'ia' || c.mapSource === 'manual') && c.map ? c.map : mapOf(pb);
+      return { ...c, map: fn(cur), mapSource: 'manual' };
+    });
 
   const generateFlows = async () => {
     const saved = await ensureSaved();
@@ -2222,6 +2257,9 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                     patch((c) => ({
                       ...c,
                       playbook: next.id,
+                      map: undefined,
+                      mapSource: undefined,
+                      leakAreas: undefined,
                       client: { ...c.client, industry: c.client.industry || (next.id === 'general' ? '' : next.name) },
                       // numbers that also exist in the new approach survive the switch
                       metrics: Object.fromEntries(Object.entries(c.metrics ?? {}).filter(([k]) => keep.has(k))),
@@ -2420,6 +2458,52 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
             </button>
           </section>
 
+          <section className={section}>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Mapa de la empresa</h3>
+                <p className="text-xs text-slate-500">
+                  {e.mapSource === 'ia' ? 'Armado con IA a partir de la sesión.' : e.mapSource === 'manual' ? 'Editado a mano.' : 'Plantilla del enfoque elegido.'} Es el diagrama que ve el cliente: sus áreas, de la primera llamada a la entrega y el cobro. El cliente puede agregar las que falten.
+                </p>
+              </div>
+              <button onClick={generateMap} disabled={!!busy} className={`${btnGhost} ml-auto`}>
+                {busy === 'map' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} {busy === 'map' ? 'Armando…' : 'Armar el mapa con IA'}
+              </button>
+            </div>
+            <div className="space-y-2">
+              {shownMap.nodes.map((n) => (
+                <div key={n.id} className="grid grid-cols-12 items-center gap-2">
+                  <input value={n.label} onChange={(ev) => editMap((m) => ({ ...m, nodes: m.nodes.map((x) => (x.id === n.id ? { ...x, label: ev.target.value } : x)) }))} className={`${input} col-span-12 sm:col-span-4`} />
+                  <input value={n.hint ?? ''} onChange={(ev) => editMap((m) => ({ ...m, nodes: m.nodes.map((x) => (x.id === n.id ? { ...x, hint: ev.target.value } : x)) }))} placeholder="Qué pasa ahí" className={`${input} col-span-10 sm:col-span-7`} />
+                  {n.entry ? (
+                    <span className="col-span-2 sm:col-span-1 text-center text-[10px] text-slate-500">entrada</span>
+                  ) : (
+                    <button
+                      onClick={() => editMap((m) => ({ nodes: m.nodes.filter((x) => x.id !== n.id), edges: m.edges.filter(([a, b]) => a !== n.id && b !== n.id) }))}
+                      className={`${btnGhost} col-span-2 sm:col-span-1 px-2`}
+                      aria-label="Quitar el área"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                onClick={() =>
+                  editMap((m) => {
+                    const id = `area${m.nodes.length + 1}`;
+                    const row = Math.max(...m.nodes.map((x) => x.row)) + 1;
+                    const last = m.nodes.filter((x) => !x.entry).at(-1);
+                    return { nodes: [...m.nodes, { id, label: 'Nueva área', hint: '', icon: 'cog', col: 0, row }], edges: last ? [...m.edges, [last.id, id, 'flow']] : m.edges };
+                  })
+                }
+                className={btnGhost}
+              >
+                <Plus className="w-4 h-4" /> Agregar un área
+              </button>
+            </div>
+          </section>
+
           {e.pendingQuestions.length > 0 && (
             <section className="rounded-xl border border-amber-300/30 bg-amber-300/5 p-5 space-y-2">
               <h3 className="text-sm font-bold uppercase tracking-wider text-amber-200">Datos por confirmar con el cliente</h3>
@@ -2554,6 +2638,16 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
                       <select value={o.leakKey ?? ''} onChange={(ev) => setOpp(o.id, { leakKey: ev.target.value || undefined })} className={`${input} [&>option]:bg-[#0a1420]`}>
                         <option value="">{t.leak > 0 ? 'Ventas que se escapan' : 'Ninguna (solo horas)'}</option>
                         {computedLeaks.filter((l) => l.kind === 'perdida').map((l) => <option key={l.key} value={l.key}>{l.label}{l.monthly ? ` · ${clp(l.monthly)}/mes` : ' · sin calcular'}</option>)}
+                      </select>
+                    </label>
+                    <label className="text-xs text-slate-500 col-span-2">Área de la empresa (dónde se dibuja en el diagrama)
+                      <select
+                        value={o.area ?? (o.leakKey ? leakArea(computedLeaks.find((l) => l.key === o.leakKey) ?? { key: o.leakKey }) : '')}
+                        onChange={(ev) => setOpp(o.id, { area: ev.target.value || undefined })}
+                        className={`${input} [&>option]:bg-[#0a1420]`}
+                      >
+                        <option value="">Sin área (se dibuja en la entrada)</option>
+                        {mapOf(pb).nodes.filter((n) => !n.entry).map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
                       </select>
                     </label>
                     <label className="text-xs text-amber-200/80">% de esa fuga que recupera (supuesto)<NumIn value={o.salesRecoveryPct} onChange={(n) => setOpp(o.id, { salesRecoveryPct: Math.min(100, n) })} /></label>
