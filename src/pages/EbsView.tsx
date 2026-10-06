@@ -74,7 +74,11 @@ interface View {
   demo: boolean;
   /** Areas the client added the last time they pressed "Quiero avanzar". */
   choiceAreas?: ExtraArea[];
+  /** The two ways of working (llave en mano / servicio); null in EBS published before they existed. */
+  delivery: { terms: { warrantyDays: number; inductionHours: number; serviceSetupPct: number; serviceTermMonths: number; serviceCodeOwner: 'universo' | 'cliente' }; inductionPerSolution: number } | null;
+  choiceMode?: WorkMode | null;
 }
+type WorkMode = 'llave' | 'servicio';
 
 /** An area the client adds to the map because the system missed it; they also place it by dragging. */
 interface ExtraArea {
@@ -489,6 +493,7 @@ const Inner = ({ token }: { token: string }) => {
   const [showTimeline, setShowTimeline] = useState(false);
   const [mode, setMode] = useState<'map' | 'stages'>('map');
   const [extra, setExtra] = useState<ExtraArea[]>([]);
+  const [workMode, setWorkMode] = useState<WorkMode>('llave');
   const [adding, setAdding] = useState(false);
   const rf = useReactFlow();
 
@@ -509,6 +514,7 @@ const Inner = ({ token }: { token: string }) => {
           setSent(true);
         }
         if (v.choiceAreas?.length) setExtra(v.choiceAreas);
+        if (v.choiceMode) setWorkMode(v.choiceMode);
       })
       .catch((e) => setError({ text: e.message, expired: e.expired }));
   }, [token]);
@@ -574,28 +580,61 @@ const Inner = ({ token }: { token: string }) => {
     const saving = act.reduce((a, o) => a + o.savingMonth, 0);
     // a service shared by several solutions is paid once
     const once = new Map<string, number>();
-    let fixed = 0;
+    let support = 0;
+    let legacy = 0;
     for (const o of act) {
       if (o.services?.length) {
         for (const sv of o.services) once.set(sv.id, sv.monthly);
-        fixed += o.supportMonthly ?? 0;
-      } else fixed += o.monthlyCost;
+        support += o.supportMonthly ?? 0;
+      } else legacy += o.monthlyCost;
     }
-    const toolCost = [...once.values()].reduce((a, n) => a + n, 0) + fixed;
+    const svc = [...once.values()].reduce((a, n) => a + n, 0);
     const investment = act.reduce((a, o) => a + o.investment, 0);
-    const net = saving - toolCost;
+    const dl = view?.delivery ?? null;
+    // the two ways of working: what is paid at the start and every month (without them, the single original model)
+    const plan = (mode: WorkMode) => {
+      if (!dl) return { upfront: investment, monthly: svc + support + legacy, steady: svc + support + legacy, avg12: svc + support + legacy, inst: 0, term: 0 };
+      const t = dl.terms;
+      if (mode === 'llave') return { upfront: investment + act.length * dl.inductionPerSolution, monthly: svc + legacy, steady: svc + legacy, avg12: svc + legacy, inst: 0, term: 0 };
+      const setup = (investment * t.serviceSetupPct) / 100;
+      const inst = (investment - setup) / t.serviceTermMonths;
+      const steady = svc + support + legacy;
+      return { upfront: setup, monthly: steady + inst, steady, avg12: steady + (inst * Math.min(12, t.serviceTermMonths)) / 12, inst, term: t.serviceTermMonths };
+    };
+    const cum = (mode: WorkMode, m: number) => {
+      const q = plan(mode);
+      return q.upfront + q.steady * m + q.inst * Math.min(m, q.term);
+    };
+    const p = plan(workMode);
+    const net = saving - p.avg12;
     return {
       count: act.length,
       hours: act.reduce((a, o) => a + o.hoursSavedMonth, 0),
       saving,
-      toolCost,
+      toolCost: p.monthly,
       net,
-      investment,
+      investment: p.upfront,
       pendingPrice: act.some((o) => o.investment <= 0),
-      payback: investment > 0 && net > 0 ? investment / net : null,
-      roi12: investment > 0 && saving > 0 ? (net * 12 - investment) / investment : null,
+      inductionPending: !!dl && workMode === 'llave' && dl.terms.inductionHours > 0 && dl.inductionPerSolution <= 0 && act.length > 0,
+      // with the two ways of working, payback and return use the real accumulated cost of the chosen one; without them, the original formula
+      payback: dl
+        ? (() => {
+            if (saving <= 0 || p.upfront + p.steady <= 0) return null;
+            let prev = -p.upfront;
+            for (let m = 1; m <= 60; m++) {
+              const f = saving * m - cum(workMode, m);
+              if (f >= 0) return m - 1 + -prev / (f - prev);
+              prev = f;
+            }
+            return null;
+          })()
+        : p.upfront > 0 && net > 0
+          ? p.upfront / net
+          : null,
+      roi12: dl ? (saving > 0 && cum(workMode, 12) > 0 ? (saving * 12 - cum(workMode, 12)) / cum(workMode, 12) : null) : p.upfront > 0 && saving > 0 ? (net * 12 - p.upfront) / p.upfront : null,
+      compare: dl && investment > 0 && act.length > 0 ? [12, 24, 36].map((m) => ({ m, llave: cum('llave', m), servicio: cum('servicio', m) })) : null,
     };
-  }, [opps, on]);
+  }, [opps, on, view, workMode]);
 
   // diagram: Hoy → stage hubs in a row, their opportunities in a column under each hub
   const { nodes, edges } = useMemo(() => {
@@ -759,6 +798,7 @@ const Inner = ({ token }: { token: string }) => {
           ids: [...on],
           adj,
           areas: extra,
+          mode: view.delivery ? workMode : undefined,
           diagram: mode === 'map' && mapGraph ? buildDiagram() : undefined,
           scenario: (sim?.drivers ?? []).filter((d) => d.value !== d.original).map((d) => ({ key: d.key, label: d.label, original: d.original, value: d.value, unit: d.unit })),
         }),
@@ -793,7 +833,7 @@ const Inner = ({ token }: { token: string }) => {
   const selected = opps.find((o) => o.id === sel) ?? null;
   const onIds = [...on];
   const adjParam = onIds.map((id) => `${id}:${adj[id]?.rec ?? ''}:${adj[id]?.auto ?? ''}`).join(';');
-  const pdfHref = `/api/admin?action=ebs-view-pdf&token=${encodeURIComponent(token)}&ids=${encodeURIComponent(onIds.join(','))}&adj=${encodeURIComponent(adjParam)}`;
+  const pdfHref = `/api/admin?action=ebs-view-pdf&token=${encodeURIComponent(token)}&ids=${encodeURIComponent(onIds.join(','))}&adj=${encodeURIComponent(adjParam)}${view.delivery ? `&mode=${workMode}` : ''}`;
   // the booking page opens with name and email filled in and the chosen solutions in the first custom question
   const chosenTitles = opps.filter((o) => on.has(o.id)).map((o) => o.title);
   const kickoffHref = (() => {
@@ -832,16 +872,63 @@ const Inner = ({ token }: { token: string }) => {
         <p className="mt-1 text-sm text-slate-300">
           <span className="text-2xl font-black text-white">{totals.count}</span> de {view.opportunities.length} soluciones activadas
         </p>
+        {view.delivery && (
+          <div className="mt-3 space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Cómo quieres trabajar</p>
+            <div className="grid grid-cols-2 gap-1 rounded-xl bg-black/30 p-1" role="group" aria-label="Metodología de trabajo">
+              {(['llave', 'servicio'] as const).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => {
+                    setWorkMode(k);
+                    setSent(false);
+                  }}
+                  aria-pressed={workMode === k}
+                  className={`cursor-pointer rounded-lg px-2 py-2 text-xs font-extrabold ${workMode === k ? 'text-white' : 'text-slate-400 hover:text-white'}`}
+                  style={workMode === k ? { background: brandGradient } : undefined}
+                >
+                  {k === 'llave' ? 'Llave en mano' : 'Servicio mensual'}
+                </button>
+              ))}
+            </div>
+            <p className="text-[12px] leading-snug text-slate-400">
+              {workMode === 'llave'
+                ? `Te entregamos todo a tu nombre: cuentas, claves, código, enlaces y documentación, con inducción para tu equipo. Incluye ${view.delivery.terms.warrantyDays} días de garantía; después, el soporte y los cambios se cotizan según lo necesites. Los servicios de terceros los pagas tú directo.`
+                : `Lo operamos nosotros: hosting, monitoreo, soporte y mejoras dentro de la cuota. Pagas el ${view.delivery.terms.serviceSetupPct}% al partir y el saldo en ${view.delivery.terms.serviceTermMonths} cuotas; permanencia mínima de ${view.delivery.terms.serviceTermMonths} meses. ${view.delivery.terms.serviceCodeOwner === 'universo' ? 'El código queda con Uni-Verso693 mientras dure el servicio.' : 'El código es tuyo.'} La garantía se mantiene mientras dure el convenio: corregir fallas está incluido en la cuota.`}
+            </p>
+          </div>
+        )}
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between text-slate-400"><dt>Se escapan hoy</dt><dd className="font-bold text-red-300"><AnimNum value={leakNow} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Recuperas</dt><dd className="font-bold text-emerald-300"><AnimNum value={totals.saving} format={clp} />/mes</dd></div>
-          <div className="flex justify-between text-slate-400"><dt title="Servicios de terceros que se pagan cada mes (WhatsApp, nube, dominio…). Un servicio que usan varias soluciones se cuenta una sola vez.">Mantención mensual</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
+          <div className="flex justify-between text-slate-400"><dt title="Servicios de terceros que se pagan cada mes (WhatsApp, nube, dominio…). Un servicio que usan varias soluciones se cuenta una sola vez.">{view.delivery ? (workMode === 'llave' ? 'Servicios de terceros (los pagas tú)' : 'Cuota mensual del servicio') : 'Mantención mensual'}</dt><dd>{totals.toolCost > 0 ? `−${clp(totals.toolCost)}/mes` : 'por definir'}</dd></div>
           <div className={`flex justify-between border-t border-white/10 pt-1.5 text-base font-black ${totals.net < 0 ? "text-red-300" : "text-white"}`}><dt>Ahorro neto</dt><dd><AnimNum value={totals.net} format={clp} />/mes</dd></div>
           <div className="flex justify-between text-slate-400"><dt>Horas liberadas</dt><dd>{totals.hours} h/mes</dd></div>
-          <div className="flex justify-between text-slate-400"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}{totals.pendingPrice && totals.investment > 0 ? ' + por definir' : ''}</dd></div>
+          <div className="flex justify-between text-slate-400"><dt>{view.delivery ? (workMode === 'llave' ? 'Pago inicial (con inducción)' : 'Pago de puesta en marcha') : 'Inversión'}</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}{totals.pendingPrice && totals.investment > 0 ? ' + por definir' : ''}</dd></div>
           <div className="flex justify-between text-lg font-black text-emerald-300"><dt>Se recupera en</dt><dd>{months(totals.payback)}</dd></div>
           <div className={`flex justify-between text-lg font-black ${totals.roi12 !== null && totals.roi12 < 0 ? "text-red-300" : "text-emerald-300"}`}><dt>Retorno a 12 meses</dt><dd>{totals.roi12 === null ? '—' : <AnimNum value={totals.roi12 * 100} format={(n) => `${Math.round(n)}%`} />}</dd></div>
         </dl>
+        {view.delivery && totals.compare && (
+          <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs">
+            <p className="font-bold text-slate-300">Costo acumulado de cada forma de trabajar</p>
+            <p className="text-[11px] text-slate-500">Pago inicial más mensualidades, sin contar lo que recuperas. En llave en mano no está el soporte posterior a la garantía (se cotiza según lo necesites); en servicio, la operación y el soporte van dentro de la cuota.</p>
+            <table className="mt-2 w-full text-left">
+              <thead>
+                <tr className="text-slate-500"><th className="font-semibold">A los</th><th className="text-right font-semibold">Llave en mano</th><th className="text-right font-semibold">Servicio</th></tr>
+              </thead>
+              <tbody>
+                {totals.compare.map((r) => (
+                  <tr key={r.m} className="border-t border-white/5">
+                    <td className="py-1 text-slate-400">{r.m} meses</td>
+                    <td className={`py-1 text-right ${r.llave < r.servicio ? 'font-bold text-emerald-300' : 'text-slate-300'}`}>{clp(r.llave)}</td>
+                    <td className={`py-1 text-right ${r.servicio < r.llave ? 'font-bold text-emerald-300' : 'text-slate-300'}`}>{clp(r.servicio)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {totals.inductionPending && <p className="mt-2 text-[11px] text-slate-500">La inducción de la llave en mano está por definir: se confirma en la reunión y se suma al pago inicial.</p>}
+          </div>
+        )}
         {totals.count > 0 && totals.saving <= 0 && (
           <p className="mt-3 rounded-lg bg-cyan-400/10 p-2.5 text-xs leading-relaxed text-cyan-100">
             Lo que activaste hasta ahora sirve para medir y preparar el terreno: no recupera plata por sí solo, pero permite ver los números y habilita a las demás. Activa también las que recuperan dinero para ver el retorno.
@@ -869,6 +956,7 @@ const Inner = ({ token }: { token: string }) => {
             <p className="flex items-start gap-2 font-bold text-emerald-200">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> Recibimos tu elección de {totals.count} {totals.count === 1 ? 'solución' : 'soluciones'}.
             </p>
+            {view.delivery && <p className="text-xs text-slate-300">Metodología: {workMode === 'llave' ? 'llave en mano' : 'servicio con mantención mensual'} · {workMode === 'llave' ? `${view.delivery.terms.warrantyDays} días de garantía` : 'garantía mientras dure el convenio'}.</p>}
             <dl className="space-y-1 text-slate-200">
               <div className="flex justify-between"><dt>Ahorro neto estimado</dt><dd className="font-bold text-emerald-300">{clp(totals.net)}/mes</dd></div>
               <div className="flex justify-between"><dt>Inversión</dt><dd>{totals.investment > 0 ? clp(totals.investment) : 'por definir'}</dd></div>

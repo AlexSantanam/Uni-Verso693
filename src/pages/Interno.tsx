@@ -85,7 +85,20 @@ interface Settings {
   /** Our monthly fee for managing and supporting each solution, as a % of its investment. */
   supportPct: number;
   kickoffUrl: string;
+  /** Default terms of the two ways of working (llave en mano / servicio mensual). */
+  terms: DeliveryTerms;
 }
+/** The two ways of working; a copy of this lives in each EBS when its terms differ from Ajustes. */
+interface DeliveryTerms {
+  warrantyDays: number;
+  inductionHours: number;
+  serviceSetupPct: number;
+  serviceTermMonths: number;
+  serviceCodeOwner: 'universo' | 'cliente';
+  /** Hourly rate of this project (0 = the one in Ajustes). */
+  hourRate: number;
+}
+const DEFAULT_TERMS: DeliveryTerms = { warrantyDays: 60, inductionHours: 8, serviceSetupPct: 30, serviceTermMonths: 12, serviceCodeOwner: 'universo', hourRate: 0 };
 interface RecurringService {
   id: string;
   name: string;
@@ -1693,6 +1706,8 @@ interface EbsSession {
   computedLeaks?: ComputedLeak[];
   /** Company map (industry template, AI from the session, or edited by hand), saved with the session so the interactive page can draw it. */
   map?: CompanyMap;
+  /** Terms of the two ways of working for this EBS; without it the defaults of Ajustes apply. */
+  terms?: DeliveryTerms;
   mapSource?: 'plantilla' | 'ia' | 'manual';
   /** Area of each leak when the map is not the template (key → area id). */
   leakAreas?: Record<string, string>;
@@ -1827,7 +1842,40 @@ const NumIn = ({ value, onChange, placeholder, step, className = '' }: { value: 
   <input type="number" min={0} step={step ?? 1} value={value || ''} onChange={(e) => onChange(Number(e.target.value))} placeholder={placeholder} className={`${input} ${className}`} />
 );
 
-const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api: Api; token: string; initial: EbsSession; services: RecurringService[]; onBack: () => void; onOpenQuote: (id: string) => void }) => {
+/** Terms of the two ways of working: warranty, induction (llave en mano) and start-up share, instalments and minimum term (servicio). */
+const TermsFields = ({ value, onChange }: { value: DeliveryTerms; onChange: (t: DeliveryTerms) => void }) => (
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <label className="text-xs text-slate-500" title="Solo llave en mano: días de garantía desde la puesta en marcha; después, el soporte y los cambios se cobran según necesidad. En el servicio mensual la garantía dura mientras exista el convenio.">
+      Llave en mano: días de garantía de la puesta en marcha
+      <NumIn value={value.warrantyDays} onChange={(n) => onChange({ ...value, warrantyDays: Math.min(365, n) })} />
+    </label>
+    <label className="text-xs text-slate-500" title="Llave en mano: horas de capacitación y entrega de cuentas, claves y documentación por cada solución, cobradas a tu tarifa por hora.">
+      Llave en mano: horas de inducción por solución
+      <NumIn value={value.inductionHours} onChange={(n) => onChange({ ...value, inductionHours: Math.min(200, n) })} />
+    </label>
+    <label className="text-xs text-slate-500" title="Servicio mensual: porcentaje de la inversión que se paga al partir. El saldo se reparte en cuotas mensuales.">
+      Servicio: % de la inversión al partir
+      <NumIn value={value.serviceSetupPct} onChange={(n) => onChange({ ...value, serviceSetupPct: Math.min(100, n) })} />
+    </label>
+    <label className="text-xs text-slate-500" title="Servicio mensual: meses de las cuotas del saldo y permanencia mínima.">
+      Servicio: cuotas y permanencia mínima (meses)
+      <NumIn value={value.serviceTermMonths} onChange={(n) => onChange({ ...value, serviceTermMonths: Math.max(1, Math.min(60, n)) })} />
+    </label>
+    <label className="text-xs text-slate-500 sm:col-span-2" title="Para la inducción y los cambios después de la garantía. Con 0 se usa la tarifa por hora de Ajustes.">
+      Tarifa por hora de este proyecto (CLP; 0 = la de Ajustes)
+      <NumIn value={value.hourRate} step={1000} onChange={(n) => onChange({ ...value, hourRate: n })} />
+    </label>
+    <label className="text-xs text-slate-500 sm:col-span-2">
+      Servicio: de quién es el código mientras dure
+      <select value={value.serviceCodeOwner} onChange={(ev) => onChange({ ...value, serviceCodeOwner: ev.target.value as 'universo' | 'cliente' })} className={`${input} [&>option]:bg-[#0a1420]`}>
+        <option value="universo">De Uni-Verso693 (el cliente usa el servicio mientras paga)</option>
+        <option value="cliente">Del cliente (solo se cobra la operación)</option>
+      </select>
+    </label>
+  </div>
+);
+
+const EbsEditor = ({ api, token, initial, services, terms, onBack, onOpenQuote }: { api: Api; token: string; initial: EbsSession; services: RecurringService[]; terms: DeliveryTerms; onBack: () => void; onOpenQuote: (id: string) => void }) => {
   const [e, setE] = useState<EbsSession>(initial);
   const [dirty, setDirty] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>(initial.id ? 'saved' : 'idle');
@@ -2461,6 +2509,20 @@ const EbsEditor = ({ api, token, initial, services, onBack, onOpenQuote }: { api
           <section className={section}>
             <div className="flex flex-wrap items-center gap-3">
               <div className="space-y-1">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Formas de trabajar</h3>
+                <p className="text-xs text-slate-500">
+                  El cliente elige entre <b>llave en mano</b> (le entregamos cuentas, claves, código y documentación con inducción; los servicios de terceros los paga él) y <b>servicio con mantención mensual</b> (lo operamos nosotros; parte pagando un porcentaje y el saldo en cuotas, con permanencia mínima).{' '}
+                  {e.terms ? 'Este EBS usa valores propios.' : 'Este EBS usa los valores de Ajustes.'} Publica los cambios para que el cliente los vea.
+                </p>
+              </div>
+              {e.terms && <button onClick={() => patch((c) => ({ ...c, terms: undefined }))} className={`${btnGhost} ml-auto`}>Volver a los de Ajustes</button>}
+            </div>
+            <TermsFields value={e.terms ?? terms} onChange={(t) => patch((c) => ({ ...c, terms: t }))} />
+          </section>
+
+          <section className={section}>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="space-y-1">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Mapa de la empresa</h3>
                 <p className="text-xs text-slate-500">
                   {e.mapSource === 'ia' ? 'Armado con IA a partir de la sesión.' : e.mapSource === 'manual' ? 'Editado a mano.' : 'Plantilla del enfoque elegido.'} Es el diagrama que ve el cliente: sus áreas, de la primera llamada a la entrega y el cobro. El cliente puede agregar las que falten.
@@ -2916,6 +2978,11 @@ const SettingsView = ({ api, settings, onSaved }: { api: Api; settings: Settings
         <label className="block text-xs text-slate-500">IVA (%)<input type="number" min={0} max={100} value={Math.round(s.ivaRate * 100)} onChange={(e) => setS({ ...s, ivaRate: Number(e.target.value) / 100 })} className={input} /></label>
       </div>
       <div className="space-y-2 rounded-lg border border-white/10 p-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Formas de trabajar del EBS (valores por defecto)</p>
+        <p className="text-xs text-slate-500">Llave en mano: entregas cuentas, claves, código y documentación a nombre del cliente, con inducción. Servicio mensual: lo operas tú, con una parte al partir y el saldo en cuotas. Cada EBS puede usar valores distintos.</p>
+        <TermsFields value={s.terms ?? DEFAULT_TERMS} onChange={(t) => setS({ ...s, terms: t })} />
+      </div>
+      <div className="space-y-2 rounded-lg border border-white/10 p-3">
         <div className="flex items-center gap-3">
           <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Servicios mensuales (mantención del EBS)</p>
           <button onClick={() => setS({ ...s, services: [...(s.services ?? []), { id: uid(), name: '', monthly: 0 }] })} className={`${btnGhost} ml-auto`}><Plus className="w-4 h-4" /> Servicio</button>
@@ -3043,7 +3110,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
         ) : tab === 'ebs' ? (
           ebsEditing ? (
             <React.Fragment key={ebsEditing.id ?? 'new'}>
-              <EbsEditor api={api} token={token} initial={ebsEditing} services={settings.services ?? []} onBack={() => setEbsEditing(null)} onOpenQuote={openQuote} />
+              <EbsEditor api={api} token={token} initial={ebsEditing} services={settings.services ?? []} terms={settings.terms ?? DEFAULT_TERMS} onBack={() => setEbsEditing(null)} onOpenQuote={openQuote} />
             </React.Fragment>
           ) : (
             <EbsList api={api} onOpen={setEbsEditing} onNew={() => setEbsEditing(emptyEbs())} />

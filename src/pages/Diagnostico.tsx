@@ -106,7 +106,7 @@ export const Diagnostico: React.FC = () => {
           <div className="mx-auto max-w-3xl space-y-3">
             <EbsDemoAnim />
           </div>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="mx-auto max-w-3xl space-y-6">
             <EbsLiveAnim />
             <EbsDiagramAnim />
             <p className="text-center text-xs text-slate-500">{t('Ejemplo ilustrativo con cifras inventadas: no corresponde a ningún cliente.', 'Illustrative example with invented figures: it does not correspond to any client.')}</p>

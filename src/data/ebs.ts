@@ -170,6 +170,13 @@ export const ebsFaqs: { q: L; a: L }[] = [
     },
   },
   {
+    q: { es: '¿Cómo trabajamos después del diagnóstico?', en: 'How do we work after the diagnosis?' },
+    a: {
+      es: 'Tú eliges entre dos formas, y el espacio interactivo muestra cómo cambia el costo en cada una. Llave en mano: te entregamos todo a tu nombre (cuentas, claves, código, enlaces y documentación) y capacitamos a tu equipo; los servicios de terceros los pagas tú directo. Servicio con mantención mensual: lo operamos nosotros, con una parte al partir, el saldo en cuotas y una permanencia mínima. En llave en mano, la puesta en marcha tiene 60 días de garantía y después lo que necesites se cotiza según el caso; en el servicio mensual, la garantía se mantiene mientras dure el convenio.',
+      en: 'You choose between two ways, and the interactive space shows how the cost changes in each. Turnkey: we hand everything over in your name (accounts, keys, code, links and documentation) and train your team; you pay third-party services directly. Service with monthly upkeep: we run it for you, with a share paid at the start, the balance in instalments and a minimum term. With turnkey, the start-up has a 60-day warranty and afterwards whatever you need is quoted case by case; with the monthly service, the warranty lasts for as long as the agreement does.',
+    },
+  },
+  {
     q: { es: '¿Qué es el espacio interactivo?', en: 'What is the interactive space?' },
     a: {
       es: 'Es una página privada con tu diagnóstico. Cada solución aparece como una tarjeta que tu equipo puede activar o desactivar, y al hacerlo se recalculan en pantalla el ahorro, la inversión, la mantención mensual y el retorno. También incluye un simulador con tus números, un cronograma estimado y el "antes y después" de cada solución.',

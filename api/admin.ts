@@ -172,6 +172,43 @@ export interface RecurringService {
   /** CLP per month. 0 = price not loaded yet. */
   monthly: number;
 }
+/**
+ * The two ways of working. "Llave en mano": everything is handed over in the client's name (accounts, keys, code, links,
+ * documentation) with an induction, and the client pays third-party services directly. "Servicio": we operate it for a
+ * monthly fee; the implementation is split into a start-up payment and monthly instalments, with a minimum term.
+ * "Llave en mano" has a warranty on the start-up (warrantyDays); after it, support and changes are charged as needed.
+ * "Servicio" is covered for as long as the service agreement lasts: fixing faults is part of the monthly fee.
+ */
+export interface DeliveryTerms {
+  /** Days of warranty from the start-up (llave en mano only; in servicio the warranty lasts as long as the agreement does). */
+  warrantyDays: number;
+  /** Induction hours per solution (llave en mano), priced at the development hour rate. */
+  inductionHours: number;
+  /** Servicio: % of the investment paid at the start-up. The rest goes in monthly instalments. */
+  serviceSetupPct: number;
+  /** Servicio: months of the instalments and minimum term. */
+  serviceTermMonths: number;
+  /** Servicio: who owns the code while the service lasts. */
+  serviceCodeOwner: 'universo' | 'cliente';
+  /** Hourly rate for this project (induction and later changes). 0 = use the rate in Ajustes. */
+  hourRate: number;
+}
+export type WorkMode = 'llave' | 'servicio';
+const DEFAULT_TERMS: DeliveryTerms = { warrantyDays: 60, inductionHours: 8, serviceSetupPct: 30, serviceTermMonths: 12, serviceCodeOwner: 'universo', hourRate: 0 };
+const cleanTerms = (v: any): DeliveryTerms => ({
+  warrantyDays: num(v?.warrantyDays ?? DEFAULT_TERMS.warrantyDays, 0, 365),
+  inductionHours: num(v?.inductionHours ?? DEFAULT_TERMS.inductionHours, 0, 200),
+  serviceSetupPct: num(v?.serviceSetupPct ?? DEFAULT_TERMS.serviceSetupPct, 0, 100),
+  serviceTermMonths: Math.max(1, num(v?.serviceTermMonths ?? DEFAULT_TERMS.serviceTermMonths, 1, 60)),
+  serviceCodeOwner: v?.serviceCodeOwner === 'cliente' ? 'cliente' : 'universo',
+  hourRate: num(v?.hourRate ?? 0, 0, 10_000_000),
+});
+/** The hourly rate that applies to an EBS: its own if set, otherwise the one in Ajustes. */
+const hourRateOf = (e: Pick<EbsSession, 'terms'>, s: Pick<Settings, 'devHourRate' | 'terms'>) => {
+  const t = e.terms ?? s.terms;
+  return t.hourRate > 0 ? t.hourRate : s.devHourRate;
+};
+
 export interface Settings {
   legalName: string;
   brand: string;
@@ -191,6 +228,8 @@ export interface Settings {
   supportPct: number;
   /** Booking link (Calendly) for the free kickoff meeting offered after the client presses "Quiero avanzar". Empty = WhatsApp. */
   kickoffUrl: string;
+  /** Default terms of the two ways of working; each EBS can override them. */
+  terms: DeliveryTerms;
 }
 
 export type QuoteStatus = 'borrador' | 'enviada' | 'aceptada' | 'rechazada';
@@ -269,6 +308,7 @@ const DEFAULT_SETTINGS: Settings = {
   ],
   supportPct: 0,
   kickoffUrl: '',
+  terms: DEFAULT_TERMS,
 };
 
 /** Starting catalog: only the two published prices are filled in; the rest are set by the owner. */
@@ -291,7 +331,10 @@ const DEFAULT_CATALOG: Module[] = [
   { id: 'hora-dev', category: 'Soporte', name: 'Hora de desarrollo adicional', description: 'Cambios o funcionalidades fuera del alcance.', price: 0, unit: 'hora' },
 ];
 
-const getSettings = async () => ({ ...DEFAULT_SETTINGS, ...((await redis.get<Partial<Settings>>(K.settings)) ?? {}) });
+const getSettings = async (): Promise<Settings> => {
+  const saved = (await redis.get<Partial<Settings>>(K.settings)) ?? {};
+  return { ...DEFAULT_SETTINGS, ...saved, terms: cleanTerms(saved.terms) };
+};
 const getCatalog = async () => (await redis.get<Module[]>(K.catalog)) ?? DEFAULT_CATALOG;
 
 // ---------- validation helpers ----------
@@ -948,6 +991,8 @@ export interface EbsSession {
   servicesPaidBy?: 'cliente' | 'universo';
   /** Areas of the company and how work flows between them (the interactive EBS draws it). */
   map?: CompanyMapData;
+  /** Terms of the two ways of working for this EBS (Ajustes has the defaults). */
+  terms?: DeliveryTerms;
   /** Where the map came from: the industry template, the AI from the session, or edited by hand. */
   mapSource?: 'plantilla' | 'ia' | 'manual';
   /** Area of each computed leak when the map is the AI's (key → area id); the industry formulas know their own template areas. */
@@ -1160,6 +1205,7 @@ const cleanEbs = (b: any, existing: EbsSession | null): EbsSession => {
       ...(str(l?.area, 30) ? { area: str(l.area, 30) } : {}),
     })),
     ...(cleanMap(b?.map) ? { map: cleanMap(b?.map)! } : {}),
+    ...(b?.terms && typeof b.terms === 'object' ? { terms: cleanTerms(b.terms) } : {}),
     mapSource: (['plantilla', 'ia', 'manual'].includes(b?.mapSource) ? b.mapSource : 'plantilla') as 'plantilla' | 'ia' | 'manual',
     leakAreas: Object.fromEntries(
       Object.entries(b?.leakAreas && typeof b.leakAreas === 'object' ? b.leakAreas : {})
@@ -1961,7 +2007,7 @@ export interface ShareInfo {
   viewedAt?: string;
   lastViewedAt?: string;
   /** What the client left switched on when they pressed "Quiero avanzar". */
-  choice?: { ids: string[]; areas?: ExtraArea[]; diagram?: MapDiagram; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }>; scenario?: { key: string; label: string; original: number; value: number; unit: string }[] };
+  choice?: { ids: string[]; mode?: WorkMode; areas?: ExtraArea[]; diagram?: MapDiagram; message: string; name: string; at: string; adj?: Record<string, { rec?: number; auto?: number }>; scenario?: { key: string; label: string; original: number; value: number; unit: string }[] };
   /** Copy of the session and audit at publish time: the client's PDF is built from this, never from the live session. */
   frozen?: { session: EbsSession; audit: SiteAudit | null };
   /** Draft quote created when the client pressed "Quiero avanzar". */
@@ -1972,7 +2018,15 @@ export interface ShareInfo {
 }
 
 /** Only what the client may see: no notes, answers, contact data or internal assumptions. */
-const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | null) => {
+/** What the client sees about the two ways of working. The hourly rate itself stays private: only the induction price per solution goes out. */
+const deliveryView = (e: EbsSession, s: Settings) => {
+  const terms = e.terms ?? s.terms;
+  // the hourly rate stays private: the client only sees the induction price per solution
+  const { hourRate: _private, ...publicTerms } = terms;
+  return { terms: publicTerms, inductionPerSolution: Math.round(terms.inductionHours * hourRateOf(e, s)) };
+};
+
+const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | null, delivery?: ReturnType<typeof deliveryView> | null) => {
   const t = ebsTotals(e);
   const leakOf = (key?: string) => (key ? (e.computedLeaks ?? []).find((l) => l.key === key && l.kind === 'perdida') : undefined);
   const cleanText = (v: string) => v.replace(/\s*\(falta definir[^)]*\)/gi, '');
@@ -1998,6 +2052,7 @@ const ebsClientView = (e: EbsSession, expiresAt: string, audit?: SiteAudit | nul
       ),
     },
     servicesPaidBy: e.servicesPaidBy ?? 'cliente',
+    delivery: delivery ?? null,
     map: e.map ?? null,
     leakMonth: t.leakMonth,
     cashTrapped: t.cashTrapped,
@@ -2094,19 +2149,53 @@ const applyChoice = (e: EbsSession, ids: string[], adj?: Adj): EbsSession => ({
 
 /** Draft quote with the given opportunities as lines; the EBS fee is credited in the notes. */
 /** reuse: an earlier draft of the same EBS to update instead of creating another one (the client changed their mind). */
-const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNote = '', reuse?: Quote | null): Promise<Quote> => {
+/** Lines and notes of the draft quote for an EBS: they depend on the way of working the client chose (llave en mano / servicio). */
+export const ebsQuoteParts = (e: EbsSession, sel: EbsOpportunity[], s: Settings, mode?: WorkMode) => {
+  const terms = e.terms ?? s.terms;
+  // who pays the third-party services: in "llave en mano" the client in their own accounts, in "servicio" we do and pass the cost on
+  const paidBy = mode ? (mode === 'servicio' ? 'universo' : 'cliente') : e.servicesPaidBy;
+  const setup = terms.serviceSetupPct / 100;
+  const totalInvest = sel.reduce((a, o) => a + o.investment, 0);
+  const induction = Math.round(sel.length * terms.inductionHours);
+  const rate = hourRateOf(e, s);
+  const items: QuoteItem[] = [
+    ...sel.map((o) => ({
+      name: mode === 'servicio' ? `${o.title} · puesta en marcha (${terms.serviceSetupPct}%)` : o.title,
+      description: o.description,
+      qty: 1,
+      unitPrice: Math.round(mode === 'servicio' ? o.investment * setup : o.investment),
+      unit: 'proyecto' as Unit,
+    })),
+    // llave en mano: the induction and hand-over of accounts, keys, code and documentation
+    ...(mode === 'llave' && induction > 0 && rate > 0
+      ? [{ name: 'Inducción y entrega llave en mano', description: 'Capacitación al equipo y entrega de cuentas, claves, código, enlaces y documentación a nombre del cliente.', qty: induction, unitPrice: Math.round(rate), unit: 'hora' as Unit }]
+      : []),
+    // servicio: the rest of the implementation in monthly instalments
+    ...(mode === 'servicio' && totalInvest > 0 && setup < 1
+      ? [{ name: 'Cuota de implementación', description: `Saldo de la implementación en ${terms.serviceTermMonths} cuotas mensuales.`, qty: terms.serviceTermMonths, unitPrice: Math.round((totalInvest * (1 - setup)) / terms.serviceTermMonths), unit: 'mes' as Unit }]
+      : []),
+    // third-party services appear as lines only when we contract them and pass the cost on; otherwise the client pays them directly (see the note)
+    ...(paidBy === 'universo' ? [...new Map(sel.flatMap((o) => o.services ?? []).map((x) => [x.id, x])).values()] : [])
+      .filter((x) => x.monthly > 0)
+      .map((x) => ({ name: `Servicio mensual: ${x.name}`, description: 'Servicio de terceros que contrata Uni-Verso693 y traspasa al costo, compartido entre las soluciones.', qty: 1, unitPrice: Math.round(x.monthly), unit: 'mes' as Unit })),
+    // our monthly management and support belongs to the service; in "llave en mano" support after the warranty is charged as needed
+    ...(mode === 'llave' ? [] : sel.filter((o) => o.services?.length && (o.supportMonthly ?? 0) > 0).map((o) => ({ name: `Gestión y soporte mensual: ${o.title}`, description: 'Administración, monitoreo, actualizaciones y atención de la solución.', qty: 1, unitPrice: Math.round(o.supportMonthly ?? 0), unit: 'mes' as Unit }))),
+    ...(mode === 'llave' ? [] : sel.filter((o) => !o.services?.length && o.monthlyCost > 0).map((o) => ({ name: `Operación: ${o.title}`, description: 'Costo mensual de operación y soporte.', qty: 1, unitPrice: Math.round(o.monthlyCost), unit: 'mes' as Unit }))),
+  ];
+  const modeNote =
+    mode === 'llave'
+      ? `Metodología llave en mano: se entregan cuentas, claves, código, enlaces y documentación a nombre del cliente, con inducción. Incluye ${terms.warrantyDays} días de garantía desde la puesta en marcha; después, el soporte y los cambios se cotizan según necesidad${rate > 0 ? ` (referencia: ${Math.round(rate).toLocaleString('es-CL')} CLP por hora)` : ''}.`
+      : mode === 'servicio'
+        ? `Metodología servicio con mantención mensual: Uni-Verso693 opera, monitorea y da soporte. Puesta en marcha ${terms.serviceSetupPct}% y el saldo en ${terms.serviceTermMonths} cuotas mensuales; permanencia mínima de ${terms.serviceTermMonths} meses. ${terms.serviceCodeOwner === 'universo' ? 'El código y las cuentas de operación son de Uni-Verso693 mientras dure el servicio.' : 'El código es del cliente; se cobra la operación.'} La garantía se mantiene mientras el convenio esté vigente: la corrección de fallas está incluida en la cuota mensual.`
+        : '';
+  return { items, modeNote, paidBy, terms };
+};
+
+const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNote = '', reuse?: Quote | null, mode?: WorkMode): Promise<Quote> => {
   const s = await getSettings();
   const now = new Date().toISOString();
   const seq = reuse ? 0 : await redis.incr(K.quoteSeq);
-  const items: QuoteItem[] = [
-    ...sel.map((o) => ({ name: o.title, description: o.description, qty: 1, unitPrice: Math.round(o.investment), unit: 'proyecto' as Unit })),
-    // third-party services appear as lines only when we contract them and pass the cost on; otherwise the client pays them directly (see the note)
-    ...(e.servicesPaidBy === 'universo' ? [...new Map(sel.flatMap((o) => o.services ?? []).map((x) => [x.id, x])).values()] : [])
-      .filter((x) => x.monthly > 0)
-      .map((x) => ({ name: `Servicio mensual: ${x.name}`, description: 'Servicio de terceros que contrata Uni-Verso693 y traspasa al costo, compartido entre las soluciones.', qty: 1, unitPrice: Math.round(x.monthly), unit: 'mes' as Unit })),
-    ...sel.filter((o) => o.services?.length && (o.supportMonthly ?? 0) > 0).map((o) => ({ name: `Gestión y soporte mensual: ${o.title}`, description: 'Administración, monitoreo, actualizaciones y atención de la solución.', qty: 1, unitPrice: Math.round(o.supportMonthly ?? 0), unit: 'mes' as Unit })),
-    ...sel.filter((o) => !o.services?.length && o.monthlyCost > 0).map((o) => ({ name: `Operación: ${o.title}`, description: 'Costo mensual de operación y soporte.', qty: 1, unitPrice: Math.round(o.monthlyCost), unit: 'mes' as Unit })),
-  ];
+  const { items, modeNote, paidBy } = ebsQuoteParts(e, sel, s, mode);
   const q: Quote = {
     id: reuse?.id ?? randomUUID(),
     number: reuse?.number ?? `COT-${new Date().getFullYear()}-${String(seq).padStart(4, '0')}`,
@@ -2125,7 +2214,8 @@ const createQuoteFromEbs = async (e: EbsSession, sel: EbsOpportunity[], extraNot
     notes: [
       s.notes,
       `Se descuentan ${EBS_PRICE.toLocaleString('es-CL')} del diagnóstico EBS 693 (${e.number}) ya pagado.`,
-      e.servicesPaidBy !== 'universo' && sel.some((o) => o.services?.length)
+      modeNote,
+      paidBy !== 'universo' && sel.some((o) => o.services?.length)
         ? `Los servicios de terceros (${[...new Set(sel.flatMap((o) => (o.services ?? []).map((x) => x.name)))].join(', ')}) los contrata y paga el cliente directamente en su propia cuenta; los valores y condiciones son los del proveedor.`
         : '',
       extraNote,
@@ -2156,7 +2246,7 @@ const STAGE_TIME: Record<1 | 2 | 3, string> = { 1: '0 a 30 días', 2: '1 a 3 mes
  * The EBS 693 deliverable: cover, why EBS, money leaks, current situation, prioritised opportunities,
  * ROI (table + break-even chart), staged roadmap and a closing page with the amount to pay.
  */
-export const renderEbsPdf = async (e: EbsSession, s: Settings, audit?: SiteAudit | null): Promise<Buffer> => {
+export const renderEbsPdf = async (e: EbsSession, s: Settings, audit?: SiteAudit | null, mode?: WorkMode): Promise<Buffer> => {
   const company = e.client.company || e.client.name || 'tu empresa';
   const doc = new PDFDocument({ size: 'A4', margins: { top: 56, bottom: 64, left: 56, right: 56 }, bufferPages: true, info: { Title: `EBS 693 · ${company}`, Author: s.brand } });
   const chunks: Buffer[] = [];
@@ -2449,6 +2539,55 @@ export const renderEbsPdf = async (e: EbsSession, s: Settings, audit?: SiteAudit
     e.nextSteps.forEach((n) => para(`•  ${n}`));
   }
 
+  // ---------------- 7b. how we will work (only when the client chose a way of working) ----------------
+  if (mode && t.investment > 0) {
+    const terms = e.terms ?? s.terms;
+    const sel2 = e.opportunities.filter((o) => o.selected);
+    const svc = [...new Map(sel2.flatMap((o) => o.services ?? []).map((x) => [x.id, x])).values()].reduce((a, x) => a + x.monthly, 0);
+    const support = sel2.filter((o) => o.services?.length).reduce((a, o) => a + (o.supportMonthly ?? 0), 0);
+    const legacy = sel2.filter((o) => !o.services?.length).reduce((a, o) => a + o.monthlyCost, 0);
+    const rate = hourRateOf(e, s);
+    const induction = sel2.length * terms.inductionHours * rate;
+    const setup = (t.investment * terms.serviceSetupPct) / 100;
+    const inst = (t.investment - setup) / terms.serviceTermMonths;
+    doc.addPage();
+    darkPage();
+    doc.font('Helvetica-Bold').fontSize(10).fillColor('#67e8f9').text('CÓMO TRABAJAREMOS', L, 110, { characterSpacing: 2 });
+    doc.font('Helvetica-Bold').fontSize(26).fillColor('#ffffff').text(mode === 'llave' ? 'Llave en mano' : 'Servicio con mantención mensual', L, 134, { width: W });
+    const para = (txt: string) => doc.font('Helvetica').fontSize(11).fillColor('#cbd5e1').text(txt, L, doc.y + 14, { width: W, lineGap: 3 });
+    if (mode === 'llave') {
+      para('Te entregamos todo a tu nombre: cuentas, claves, código, enlaces y documentación, y capacitamos a tu equipo para que lo use y lo administre sin depender de nosotros.');
+      para(`Incluye ${terms.warrantyDays} días de garantía desde la puesta en marcha. Después, el soporte y los cambios se cotizan según lo que necesites${rate > 0 ? ` (referencia: ${clpFmt(rate)} por hora)` : ''}.`);
+      para('Los servicios de terceros (WhatsApp, nube, dominio, APIs de IA) los contratas y pagas tú directamente en tus propias cuentas.');
+    } else {
+      para('Lo operamos nosotros: hosting, monitoreo, soporte y mejoras dentro de la cuota mensual. Tú te concentras en usarlo.');
+      para(`La garantía se mantiene mientras el convenio esté vigente: corregir fallas está incluido en la cuota mensual. Permanencia mínima de ${terms.serviceTermMonths} meses. ${terms.serviceCodeOwner === 'universo' ? 'El código y las cuentas de operación son de Uni-Verso693 mientras dure el servicio.' : 'El código es tuyo; se cobra la operación.'}`);
+    }
+    const by = doc.y + 28;
+    const rows: [string, string][] =
+      mode === 'llave'
+        ? [
+            ['Implementación de las soluciones', clpFmt(t.investment)],
+            ['Inducción y entrega de claves y documentación', induction > 0 ? clpFmt(induction) : 'por definir'],
+            ['Pago inicial', t.investment + induction > 0 ? `${clpFmt(t.investment + induction)}${induction > 0 ? '' : ' + inducción'}` : 'por definir'],
+            ['Servicios de terceros al mes (los pagas tú)', svc + legacy > 0 ? clpFmt(svc + legacy) : 'por definir'],
+          ]
+        : [
+            [`Puesta en marcha (${terms.serviceSetupPct}%)`, clpFmt(setup)],
+            [`Cuota de implementación (${terms.serviceTermMonths} meses)`, terms.serviceSetupPct < 100 ? `${clpFmt(inst)} al mes` : '—'],
+            ['Servicio mensual (servicios, monitoreo y soporte)', svc + support + legacy > 0 ? `${clpFmt(svc + support + legacy)} al mes` : 'por definir'],
+            ['Pago mensual durante la permanencia', `${clpFmt(inst + svc + support + legacy)} al mes`],
+          ];
+    doc.roundedRect(L, by, W, 40 + rows.length * 30, 14).fill('#111827');
+    rows.forEach(([k, v], i) => {
+      const ry = by + 22 + i * 30;
+      const last = i === rows.length - 1;
+      doc.font(last ? 'Helvetica-Bold' : 'Helvetica').fontSize(11).fillColor(last ? '#ffffff' : '#cbd5e1').text(k, L + 22, ry, { width: W - 190 });
+      doc.font('Helvetica-Bold').fontSize(11).fillColor(last ? '#6ee7b7' : '#ffffff').text(v, L + W - 190, ry, { width: 168, align: 'right' });
+    });
+    doc.font('Helvetica').fontSize(8.5).fillColor(SOFT).text('Valores netos, sin IVA. Las cifras de los servicios de terceros son referenciales y las confirma cada proveedor. El valor del EBS 693 se descuenta del proyecto si decides avanzar.', L, by + 40 + rows.length * 30 + 14, { width: W });
+  }
+
   // ---------------- 8. closing ----------------
   doc.addPage();
   darkPage();
@@ -2554,7 +2693,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(410).json({ error: 'Este enlace venció. Pide uno nuevo a tu consultor.', expired: true });
         return;
       }
-      const snap = share.snapshot ?? ebsClientView(e, share.expiresAt, await redis.get<SiteAudit>(K.ebsAudit(e.id)));
+      const snap = share.snapshot ?? ebsClientView(e, share.expiresAt, await redis.get<SiteAudit>(K.ebsAudit(e.id)), deliveryView(e, await getSettings()));
       if (action === 'ebs-view') {
         const now = new Date().toISOString();
         await redis.set(K.ebsShareOf(e.id), { ...share, views: (share.views ?? 0) + 1, viewedAt: share.viewedAt ?? now, lastViewedAt: now }, share.demo ? undefined : { ex: (SHARE_DAYS + 2) * 86_400 });
@@ -2571,7 +2710,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             kickoff = null;
           }
         }
-        res.status(200).json({ view: { ...snap, demo: share.demo === true, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceAreas: share.choice?.areas ?? [], choiceAdj: share.choice?.adj ?? null, choiceScenario: share.choice?.scenario ?? null, kickoff } });
+        res.status(200).json({ view: { ...snap, demo: share.demo === true, expiresAt: share.expiresAt, choice: share.choice?.ids ?? null, choiceMode: share.choice?.mode ?? null, choiceAreas: share.choice?.areas ?? [], choiceAdj: share.choice?.adj ?? null, choiceScenario: share.choice?.scenario ?? null, kickoff } });
         return;
       }
       if (action === 'ebs-view-pdf') {
@@ -2584,7 +2723,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const base = share.frozen?.session ?? e;
         const frozenAudit = share.frozen ? share.frozen.audit : await redis.get<SiteAudit>(K.ebsAudit(e.id));
-        const pdf = await renderEbsPdf(applyChoice(base, wanted, clampAdj(parseAdjParam(str(req.query.adj, 4000), wanted), snap.opportunities)), await getSettings(), frozenAudit);
+        const pdfMode: WorkMode | undefined = snap.delivery ? (req.query.mode === 'servicio' ? 'servicio' : 'llave') : undefined;
+        const pdf = await renderEbsPdf(applyChoice(base, wanted, clampAdj(parseAdjParam(str(req.query.adj, 4000), wanted), snap.opportunities)), await getSettings(), frozenAudit, pdfMode);
         res.setHeader('content-type', 'application/pdf');
         res.setHeader('content-disposition', `attachment; filename="Propuesta-${e.number}.pdf"`);
         res.status(200).send(pdf);
@@ -2615,7 +2755,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .filter((a: ExtraArea) => a.id && a.label)
         .map((a: ExtraArea) => ({ ...a, after: nodeIds.has(a.after) ? a.after : '', next: nodeIds.has(a.next) ? a.next : '' }));
       const diagram = cleanDiagram(body.diagram);
-      const choice = { ids, areas, ...(diagram ? { diagram } : {}), message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj, scenario };
+      const mode: WorkMode | undefined = snap.delivery ? (body.mode === 'servicio' ? 'servicio' : 'llave') : undefined;
+      const choice = { ids, ...(mode ? { mode } : {}), areas, ...(diagram ? { diagram } : {}), message: str(body.message, 1000), name: str(body.name, 120), at: new Date().toISOString(), adj, scenario };
       const chosen = snap.opportunities.filter((o) => ids.includes(o.id)).map((o) => ({ ...o, savingMonth: savingOf(o, adj[o.id]) }));
       // a draft quote with exactly this scope, so nothing has to be typed by hand
       const base = share.frozen?.session ?? e;
@@ -2623,7 +2764,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const earlier = share.quoteId ? await redis.get<Quote>(K.quote(share.quoteId)) : null;
       const areaLabel = (id: string) => snap.map?.nodes.find((n: { id: string; label: string }) => n.id === id)?.label ?? 'el inicio';
       const areasNote = areas.length ? ` Áreas que el cliente agregó al mapa (por validar): ${areas.map((a) => `${a.label} (después de ${areaLabel(a.after)})${a.note ? `: ${a.note}` : ''}${a.pain ? ' [dice que ahí se pierde tiempo o plata]' : ''}`).join('; ')}.` : '';
-      const quote = await createQuoteFromEbs(base, applyChoice(base, ids, adj).opportunities.filter((o) => o.selected), `Alcance elegido por el cliente en la versión interactiva del EBS.${areasNote}`, earlier?.status === 'borrador' ? earlier : null);
+      const quote = await createQuoteFromEbs(base, applyChoice(base, ids, adj).opportunities.filter((o) => o.selected), `Alcance elegido por el cliente en la versión interactiva del EBS.${areasNote}`, earlier?.status === 'borrador' ? earlier : null, mode);
       await redis.set(K.ebsShareOf(e.id), { ...share, choice, quoteId: quote.id, quoteNumber: quote.number }, { ex: (SHARE_DAYS + 2) * 86_400 });
       const saving = chosen.reduce((a, o) => a + o.savingMonth, 0);
       const invest = chosen.reduce((a, o) => a + o.investment, 0);
@@ -2639,7 +2780,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             subject: `${company} quiere avanzar con ${ids.length} oportunidad${ids.length > 1 ? 'es' : ''} (${e.number})`,
             html: `<p><b>${esc(company)}</b>${choice.name ? ` · ${esc(choice.name)}` : ''} activó esto en la versión interactiva del EBS:</p><ul>${chosen
               .map((o) => `<li>${esc(o.title)} · ahorro ${clp(o.savingMonth)}/mes · inversión ${o.investment > 0 ? clp(o.investment) : 'por definir'}</li>`)
-              .join('')}</ul>${scenario.length ? `<p>Simulación del cliente (números que movió): ${scenario.map((x: { label: string; original: number; value: number }) => `${esc(x.label)}: ${x.original.toLocaleString('es-CL')} → ${x.value.toLocaleString('es-CL')}`).join(' · ')}</p>` : ''}<p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p>${areas.length ? `<p>Áreas que agregó al mapa de su empresa (por validar en la reunión; el cuadro completo va adjunto en PDF):</p><ul>${areas.map((a) => `<li><b>${esc(a.label)}</b> (después de ${esc(areaLabel(a.after))})${a.note ? ` · ${esc(a.note)}` : ''}${a.pain ? ' · <b>dice que ahí se pierde tiempo o plata</b>' : ''}</li>`).join('')}</ul>` : ''}<p>Dejé creada la cotización <b>${quote.number}</b> en borrador con ese alcance.</p>${
+              .join('')}</ul>${scenario.length ? `<p>Simulación del cliente (números que movió): ${scenario.map((x: { label: string; original: number; value: number }) => `${esc(x.label)}: ${x.original.toLocaleString('es-CL')} → ${x.value.toLocaleString('es-CL')}`).join(' · ')}</p>` : ''}<p>Ahorro total ${clp(saving)}/mes · inversión ${invest > 0 ? clp(invest) : 'por definir'}</p>${mode ? `<p><b>Metodología elegida:</b> ${mode === 'llave' ? 'llave en mano (entrega de cuentas, claves, código y documentación, con inducción)' : 'servicio con mantención mensual (lo operamos nosotros)'}.</p>` : ''}${areas.length ? `<p>Áreas que agregó al mapa de su empresa (por validar en la reunión; el cuadro completo va adjunto en PDF):</p><ul>${areas.map((a) => `<li><b>${esc(a.label)}</b> (después de ${esc(areaLabel(a.after))})${a.note ? ` · ${esc(a.note)}` : ''}${a.pain ? ' · <b>dice que ahí se pierde tiempo o plata</b>' : ''}</li>`).join('')}</ul>` : ''}<p>Dejé creada la cotización <b>${quote.number}</b> en borrador con ese alcance.</p>${
               choice.message ? `<p>Mensaje: ${esc(choice.message).replace(/\n/g, '<br>')}</p>` : ''
             }<p><a href="${SITE_URL}/interno#ebs">Abrir en /interno</a></p>`,
           })
@@ -2739,6 +2880,7 @@ ${SITE_URL}/interno#ebs`);
             .filter((x: { name: string }) => x.name),
           supportPct: num(body.supportPct, 0, 100),
           kickoffUrl: /^https:\/\/\S+$/i.test(str(body.kickoffUrl, 300)) ? str(body.kickoffUrl, 300) : '',
+          terms: cleanTerms(body.terms),
         };
         await redis.set(K.settings, s);
         res.status(200).json({ settings: s });
@@ -3017,7 +3159,7 @@ ${SITE_URL}/interno#ebs`);
         const demo = body.demo === true || current?.demo === true;
         const expiresAt = new Date(now.getTime() + (demo ? 3650 : SHARE_DAYS) * 86_400_000).toISOString();
         const audit = await redis.get<SiteAudit>(K.ebsAudit(e.id));
-        const snapshot = ebsClientView(e, expiresAt, audit);
+        const snapshot = ebsClientView(e, expiresAt, audit, deliveryView(e, await getSettings()));
         if (demo && current && current.token !== 'demo') await redis.del(K.ebsShare(current.token));
         const share: ShareInfo = current
           ? { ...current, expiresAt, ...(demo ? { demo: true, token: 'demo' } : {}), ...(body.refresh || !current.snapshot ? { snapshot, publishedAt: now.toISOString(), frozen: { session: e, audit: audit ?? null } } : {}) }

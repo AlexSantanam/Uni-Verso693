@@ -78,8 +78,8 @@ export const companyFaqs: { q: L; a: L }[] = [
   {
     q: { es: '¿Cuánto cuesta trabajar con Uni-Verso693?', en: 'How much does it cost to work with Uni-Verso693?' },
     a: {
-      es: 'Los proyectos se cotizan a medida según su alcance. El punto de partida es el diagnóstico EBS 693: una sesión de 45 minutos por $197.000 CLP que entrega una hoja de ruta priorizada con ROI estimado; ese monto se descuenta del proyecto si el cliente decide avanzar. Detalles en universo693.com/diagnostico-ia.',
-      en: 'Projects are quoted individually based on scope. The starting point is the EBS 693 diagnosis: a 45-minute session for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward.',
+      es: 'Los proyectos se cotizan a medida según su alcance. El punto de partida es el diagnóstico EBS 693: una sesión de 45 minutos por $197.000 CLP que entrega una hoja de ruta priorizada con ROI estimado; ese monto se descuenta del proyecto si el cliente decide avanzar. Incluye un espacio interactivo privado con el mapa de la empresa, el simulador y el PDF. Después, el proyecto puede hacerse llave en mano (entrega de cuentas, claves, código y documentación a nombre del cliente, con inducción) o como servicio con mantención mensual (lo operamos nosotros). Detalles y una demo en universo693.com/diagnostico-ia.',
+      en: 'Projects are quoted individually based on scope. The starting point is the EBS 693 diagnosis: a 45-minute session for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. It includes a private interactive space with a map of the company, a simulator and a PDF. Afterwards the project can be delivered turnkey (accounts, keys, code and documentation handed over in the client’s name, with an induction) or as a service with monthly upkeep (we run it). Details and a demo at universo693.com/diagnostico-ia.',
     },
   },
   {
