@@ -3066,6 +3066,8 @@ interface WaChatRow {
   lastAt: string;
   unread: number;
   paused: boolean;
+  awaiting: boolean;
+  resolved: boolean;
   brand: string | null;
   optout: boolean;
 }
@@ -3074,6 +3076,8 @@ interface WaThread {
   name: string;
   turns: { r: 'user' | 'assistant' | 'human'; t: string; at: string }[];
   paused: boolean;
+  awaiting: boolean;
+  resolved: boolean;
   brand: string | null;
   windowOpen: boolean;
 }
@@ -3096,6 +3100,7 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'abiertas' | 'resueltas' | 'todas'>('abiertas');
   const bottom = useRef<HTMLDivElement>(null);
 
   const loadList = useCallback(async () => {
@@ -3150,6 +3155,11 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
       setBusy(false);
     }
   };
+  const toggleResolved = async () => {
+    if (!sel || !thread) return;
+    await api('wa-resolve', { body: { id: sel, resolved: !thread.resolved } });
+    await Promise.all([loadThread(sel), loadList()]);
+  };
   const toggleAgent = async () => {
     if (!sel || !thread) return;
     await api('wa-agent', { body: { id: sel, on: thread.paused } });
@@ -3161,10 +3171,17 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
     <div className="grid gap-4 md:grid-cols-[340px_1fr] md:h-[calc(100vh-9rem)]">
       {/* conversations */}
       <div className={`${sel ? 'hidden md:flex' : 'flex'} min-h-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]`}>
-        <div className="border-b border-white/10 px-4 py-3 text-sm font-bold text-white">Conversaciones de WhatsApp</div>
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-white/10 px-3 py-2.5">
+          {(['abiertas', 'resueltas', 'todas'] as const).map((f) => (
+            <button key={f} onClick={() => setFilter(f)} className={`cursor-pointer rounded-full px-3 py-1 text-xs font-bold capitalize ${filter === f ? 'bg-white/15 text-white' : 'text-slate-400 hover:text-white'}`}>
+              {f} <span className="text-slate-500">{f === 'todas' ? chats.length : chats.filter((c) => (f === 'resueltas' ? c.resolved : !c.resolved)).length}</span>
+            </button>
+          ))}
+        </div>
         <ul className="min-h-0 flex-1 overflow-y-auto">
           {chats.length === 0 && <li className="p-4 text-sm text-slate-400">Todavía no hay conversaciones. Aparecen aquí cuando alguien le escribe al número del agente.</li>}
-          {chats.map((c) => (
+          {chats.length > 0 && chats.filter((c) => (filter === 'todas' ? true : filter === 'resueltas' ? c.resolved : !c.resolved)).length === 0 && <li className="p-4 text-sm text-slate-400">{filter === 'resueltas' ? 'Aún no has marcado ninguna como resuelta.' : 'No quedan conversaciones abiertas. 🎉'}</li>}
+          {chats.filter((c) => (filter === 'todas' ? true : filter === 'resueltas' ? c.resolved : !c.resolved)).map((c) => (
             <li key={c.id}>
               <button onClick={() => setSel(c.id)} className={`w-full cursor-pointer border-b border-white/5 px-4 py-3 text-left hover:bg-white/5 ${sel === c.id ? 'bg-white/10' : ''}`}>
                 <div className="flex items-center gap-2">
@@ -3174,7 +3191,7 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
                 </div>
                 <div className="mt-0.5 flex items-center gap-2">
                   {c.brand && <span className="shrink-0 text-[11px] font-bold text-cyan-300">{WA_BRAND[c.brand] ?? c.brand}</span>}
-                  {c.paused ? <span className="shrink-0 rounded bg-amber-300/15 px-1.5 text-[10px] font-bold text-amber-200">persona</span> : <span className="shrink-0 rounded bg-emerald-400/15 px-1.5 text-[10px] font-bold text-emerald-300">agente</span>}
+                  {c.resolved ? <span className="shrink-0 rounded bg-slate-400/20 px-1.5 text-[10px] font-bold text-slate-300">resuelta</span> : c.paused ? <span className="shrink-0 rounded bg-amber-300/15 px-1.5 text-[10px] font-bold text-amber-200">persona</span> : c.awaiting ? <span className="shrink-0 rounded bg-red-400/20 px-1.5 text-[10px] font-bold text-red-200">espera a una persona</span> : <span className="shrink-0 rounded bg-emerald-400/15 px-1.5 text-[10px] font-bold text-emerald-300">agente</span>}
                   {c.optout && <span className="shrink-0 rounded bg-red-400/15 px-1.5 text-[10px] font-bold text-red-300">baja</span>}
                 </div>
                 <p className="mt-1 truncate text-sm text-slate-400">
@@ -3202,8 +3219,13 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
                   {thread.brand ? ` · ${WA_BRAND[thread.brand] ?? thread.brand}` : ''}
                 </p>
               </div>
-              <Badge className={thread.paused ? 'border-amber-300/50 bg-amber-300/10 text-amber-200' : QUOTE_COLORS.aceptada}>{thread.paused ? 'La atiende una persona' : 'La atiende el agente'}</Badge>
-              <button onClick={toggleAgent} className={`${btnGhost} ml-auto`}>{thread.paused ? 'Devolver al agente' : 'Atender yo'}</button>
+              <Badge className={thread.resolved ? 'border-slate-400/40 bg-slate-400/10 text-slate-300' : thread.paused ? 'border-amber-300/50 bg-amber-300/10 text-amber-200' : thread.awaiting ? 'border-red-400/50 bg-red-400/10 text-red-200' : QUOTE_COLORS.aceptada}>{thread.resolved ? 'Resuelta' : thread.paused ? 'La atiende una persona' : thread.awaiting ? 'Espera a una persona (el agente sigue atendiendo)' : 'La atiende el agente'}</Badge>
+              <div className="ml-auto flex flex-wrap gap-2">
+                <button onClick={toggleAgent} className={btnGhost}>{thread.paused ? 'Devolver al agente' : 'Atender yo'}</button>
+                <button onClick={toggleResolved} className={thread.resolved ? btnGhost : `${btn} bg-emerald-500 text-emerald-950 hover:bg-emerald-400`}>
+                  <Check className="w-4 h-4" /> {thread.resolved ? 'Reabrir' : 'Resuelto'}
+                </button>
+              </div>
             </div>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-4">
               {thread.turns.map((m, i) => (

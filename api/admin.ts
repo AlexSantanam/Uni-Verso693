@@ -2950,12 +2950,13 @@ ${SITE_URL}/interno#ebs`);
             ids.map(async (id) => {
               const m = await redis.get<WaChat>(`${WA}:chat:${id}`);
               if (!m) return null;
-              const [paused, brand, optout] = await Promise.all([redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`), redis.get(`${WA}:optout:${id}`)]);
-              return { ...m, paused: Boolean(paused), brand: brand ?? null, optout: Boolean(optout) };
+              const [paused, brand, optout, awaiting, resolved] = await Promise.all([redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`), redis.get(`${WA}:optout:${id}`), redis.get(`${WA}:awaiting:${id}`), redis.get(`${WA}:resolved:${id}`)]);
+              return { ...m, paused: Boolean(paused), brand: brand ?? null, optout: Boolean(optout), awaiting: Boolean(awaiting), resolved: Boolean(resolved) };
             }),
           )
         ).filter((x): x is NonNullable<typeof x> => x !== null);
-        res.status(200).json({ chats: rows, unread: rows.reduce((a, c) => a + (c.unread > 0 ? 1 : 0), 0) });
+        // the counter on the tab only counts open conversations
+        res.status(200).json({ chats: rows, unread: rows.reduce((a, c) => a + (c.unread > 0 && !c.resolved ? 1 : 0), 0) });
         return;
       }
       case 'wa-chat': {
@@ -2964,9 +2965,9 @@ ${SITE_URL}/interno#ebs`);
           res.status(400).json({ error: 'Conversación no válida.' });
           return;
         }
-        const [turns, meta, paused, brand] = await Promise.all([waTurns(id), redis.get<WaChat>(`${WA}:chat:${id}`), redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`)]);
+        const [turns, meta, paused, brand, awaiting, resolved] = await Promise.all([waTurns(id), redis.get<WaChat>(`${WA}:chat:${id}`), redis.get(`${WA}:pause:${id}`), redis.get<string>(`${WA}:brand:${id}`), redis.get(`${WA}:awaiting:${id}`), redis.get(`${WA}:resolved:${id}`)]);
         if (meta && meta.unread > 0) await redis.set(`${WA}:chat:${id}`, { ...meta, unread: 0 }, { ex: 60 * 86400 });
-        res.status(200).json({ id, name: meta?.name ?? '', turns, paused: Boolean(paused), brand: brand ?? null, windowOpen: waWindowOpen(turns) });
+        res.status(200).json({ id, name: meta?.name ?? '', turns, paused: Boolean(paused), awaiting: Boolean(awaiting), resolved: Boolean(resolved), brand: brand ?? null, windowOpen: waWindowOpen(turns) });
         return;
       }
       case 'wa-send': {
@@ -3003,7 +3004,24 @@ ${SITE_URL}/interno#ebs`);
         await redis.set(`${WA}:chat:${id}`, { id, name: cur?.name ?? '', lastText: text.slice(0, 160), lastRole: 'human', lastAt: at.toISOString(), unread: 0 } satisfies WaChat, { ex: 60 * 86400 });
         await redis.zadd(`${WA}:chats`, { score: at.getTime(), member: id });
         await redis.set(`${WA}:pause:${id}`, 1, { ex: WA_PAUSE_SECONDS });
+        await redis.del(`${WA}:awaiting:${id}`);
         res.status(200).json({ ok: true, at: at.toISOString() });
+        return;
+      }
+      case 'wa-resolve': {
+        // mark a conversation as finished (or reopen it): finishing it hands the chat back to the agent and ends any wait for a person
+        const id = String(body.id ?? '');
+        if (!waIdOk(id)) {
+          res.status(400).json({ error: 'Conversación no válida.' });
+          return;
+        }
+        if (body.resolved) {
+          await redis.set(`${WA}:resolved:${id}`, new Date().toISOString(), { ex: 60 * 86400 });
+          await redis.del(`${WA}:pause:${id}`, `${WA}:awaiting:${id}`);
+          const cur = await redis.get<WaChat>(`${WA}:chat:${id}`);
+          if (cur && cur.unread > 0) await redis.set(`${WA}:chat:${id}`, { ...cur, unread: 0 }, { ex: 60 * 86400 });
+        } else await redis.del(`${WA}:resolved:${id}`);
+        res.status(200).json({ resolved: Boolean(body.resolved) });
         return;
       }
       case 'wa-agent': {
@@ -3015,6 +3033,8 @@ ${SITE_URL}/interno#ebs`);
         }
         if (body.on) await redis.del(`${WA}:pause:${id}`);
         else await redis.set(`${WA}:pause:${id}`, 1, { ex: WA_PAUSE_SECONDS });
+        // taking a chat over (or handing it back) ends the wait for a person
+        await redis.del(`${WA}:awaiting:${id}`);
         res.status(200).json({ paused: !body.on });
         return;
       }
