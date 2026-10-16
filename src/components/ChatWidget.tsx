@@ -120,17 +120,21 @@ export const ChatWidget: React.FC = () => {
                 {t.thinking}
               </div>
             )}
-            {/* after the agent answers, offer to continue with a person on WhatsApp */}
-            {!isLoading && messages[messages.length - 1]?.role === 'assistant' && (
-              <div className="pt-1">
-                <p className="mb-2 text-xs text-slate-400">{t.handoff}</p>
-                <WhatsAppButton
-                  message={t.handoffMessage(lastUserQuestion(messages))}
-                  label={t.handoffButton}
-                  className="w-full py-2.5!"
-                />
-              </div>
-            )}
+            {/* after the agent answers, offer to continue with a person on WhatsApp as a last resort or after conversation advances */}
+            {!isLoading &&
+              messages[messages.length - 1]?.role === 'assistant' &&
+              (messages.filter((m) => m.role === 'user').length >= 2 ||
+                /humano|persona|ejecutivo|whats|asesor|hablar con/i.test(lastUserQuestion(messages)) ||
+                /whatsapp/i.test(messages[messages.length - 1]?.content ?? '')) && (
+                <div className="pt-1">
+                  <p className="mb-2 text-xs text-slate-400">{t.handoff}</p>
+                  <WhatsAppButton
+                    message={t.handoffMessage(lastUserQuestion(messages))}
+                    label={t.handoffButton}
+                    className="w-full py-2.5!"
+                  />
+                </div>
+              )}
             {error && <div className="rounded-xl bg-red-950/40 border border-red-800/50 p-3 text-xs text-red-300">{error}</div>}
           </div>
 
