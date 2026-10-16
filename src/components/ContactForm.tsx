@@ -33,7 +33,7 @@ const budgets = [
 ];
 
 const inputClass =
-  'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-brand-600/20';
+  'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-brand-600/20 [&>option]:bg-[#0a1420] [&>option]:text-white';
 
 export const ContactForm: React.FC = () => {
   const { lang, tr } = useLang();
@@ -125,7 +125,7 @@ export const ContactForm: React.FC = () => {
           <span className="text-xs font-bold text-slate-300">{es ? '¿Qué necesitas?' : 'What do you need?'}</span>
           <select name="serviceInterest" value={form.serviceInterest} onChange={handleChange} className={inputClass}>
             {interestOptions.map((o) => (
-              <option key={o.es} value={tr(o)}>
+              <option key={o.es} value={tr(o)} className="bg-[#0a1420] text-white">
                 {tr(o)}
               </option>
             ))}
@@ -135,7 +135,7 @@ export const ContactForm: React.FC = () => {
           <span className="text-xs font-bold text-slate-300">{es ? 'Inversión estimada' : 'Estimated investment'}</span>
           <select name="budget" value={form.budget} onChange={handleChange} className={inputClass}>
             {budgets.map((b) => (
-              <option key={b.es} value={b.value}>
+              <option key={b.es} value={b.value} className="bg-[#0a1420] text-white">
                 {es ? b.es : b.en}
               </option>
             ))}

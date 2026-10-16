@@ -29,6 +29,11 @@
     background: var(--color-brand-600);
     color: #fff;
   }
+
+  select option {
+    background-color: #0a1420;
+    color: #ffffff;
+  }
 }
 
 /* Subtle grid used behind hero sections */

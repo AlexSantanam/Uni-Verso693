@@ -57,6 +57,64 @@ interface ChatMessage {
   content: string;
 }
 
+const PROVIDERS = (process.env.LLM_CHAT || 'groq,anthropic')
+  .split(',')
+  .map((x) => x.trim())
+  .filter(Boolean);
+
+const GROQ_MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b')
+  .split(',')
+  .map((x) => x.trim())
+  .filter(Boolean);
+
+const callGroq = async (system: string, messages: ChatMessage[]): Promise<string> => {
+  if (!process.env.GROQ_API_KEY) throw new Error('No GROQ_API_KEY configured');
+  let lastErr: unknown;
+  for (const model of GROQ_MODELS) {
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'system', content: system }, ...messages],
+          temperature: 0.5,
+          max_completion_tokens: 500,
+        }),
+        signal: AbortSignal.timeout(15_000),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        choices?: { message?: { content?: string } }[];
+        error?: { message?: string };
+      };
+      if (!res.ok) throw new Error(`Groq ${model} ${res.status}: ${data.error?.message ?? 'error'}`);
+      const content = data.choices?.[0]?.message?.content?.trim();
+      if (content) return content;
+    } catch (err) {
+      lastErr = err;
+      console.error(`Chat: Groq ${model} failed:`, (err as Error).message);
+    }
+  }
+  throw lastErr ?? new Error('All Groq models failed');
+};
+
+const callAnthropic = async (system: string, messages: ChatMessage[]): Promise<string> => {
+  if (!process.env.ANTHROPIC_API_KEY) throw new Error('No ANTHROPIC_API_KEY configured');
+  const client = new Anthropic();
+  const response = await client.messages.create({
+    model: process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-latest',
+    max_tokens: 400,
+    system,
+    messages,
+  });
+  const reply = response.content.find((block) => block.type === 'text')?.text?.trim() ?? '';
+  if (!reply) throw new Error('Anthropic returned empty response');
+  return reply;
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).send('Method Not Allowed');
@@ -88,43 +146,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const client = new Anthropic();
+  const fullSystem = `${SYSTEM_PROMPT}\n\n${languageNote(req.body?.lang)}`;
+  const start = Date.now();
+  let reply = '';
+  let lastError: unknown;
 
-  try {
-    const start = Date.now();
-    const response = await client.messages.create({
-      model: 'claude-opus-5',
-      max_tokens: 400,
-      output_config: { effort: 'low' },
-      system: `${SYSTEM_PROMPT}\n\n${languageNote(req.body?.lang)}`,
-      messages,
-    });
-    const latencyMs = Date.now() - start;
-
-    const reply = response.content.find((block) => block.type === 'text')?.text ?? '';
-
-    res.status(200).json({ reply, latencyMs });
-  } catch (error) {
-    if (error instanceof Anthropic.RateLimitError) {
-      res.status(429).json({ error: 'Rate limited, please try again shortly.' });
-      return;
+  for (const provider of PROVIDERS) {
+    try {
+      if (provider === 'groq' && process.env.GROQ_API_KEY) {
+        reply = await callGroq(fullSystem, messages);
+        if (reply) break;
+      }
+      if (provider === 'anthropic' && process.env.ANTHROPIC_API_KEY) {
+        reply = await callAnthropic(fullSystem, messages);
+        if (reply) break;
+      }
+    } catch (error) {
+      lastError = error;
+      console.error(`Chat: provider ${provider} failed, trying next:`, (error as Error).message);
     }
-    if (error instanceof Anthropic.AuthenticationError) {
-      console.error('Anthropic auth error — check ANTHROPIC_API_KEY:', error.message);
-      res.status(500).json({ error: 'Server misconfiguration.' });
-      return;
-    }
-    if (error instanceof Anthropic.APIConnectionError) {
-      console.error('Anthropic connection error:', error.message);
-      res.status(502).json({ error: 'Could not reach the AI service.' });
-      return;
-    }
-    if (error instanceof Anthropic.APIError) {
-      console.error('Anthropic API error:', error.status, error.message);
-      res.status(502).json({ error: 'AI service error.' });
-      return;
-    }
-    console.error('Unexpected error calling Anthropic:', error);
-    res.status(500).json({ error: 'Unexpected server error.' });
   }
+
+  if (!reply) {
+    console.error('Chat: all model providers failed:', lastError);
+    res.status(502).json({ error: 'AI service temporarily unavailable.' });
+    return;
+  }
+
+  const latencyMs = Date.now() - start;
+  res.status(200).json({ reply, latencyMs });
 }
