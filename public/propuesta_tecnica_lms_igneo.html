@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Propuesta Técnica & Comercial - OTEC Ígneo | UNIVERSO693 SpA</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --accent: #f59e0b;
+      --fire-red: #dc2626;
+      --bg-gray: #f8fafc;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-dark: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background-color: #ffffff;
+      line-height: 1.6;
+      padding: 40px 60px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Print settings */
+    @media print {
+      body {
+        padding: 0;
+        max-width: 100%;
+        color: #1e293b;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .avoid-break {
+        page-break-inside: avoid;
+      }
+      @page {
+        margin: 1.8cm 1.5cm;
+        size: A4 portrait;
+      }
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 25px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .header-brand h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .header-brand .subtitle {
+      font-size: 13px;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+    }
+
+    .meta-box {
+      text-align: right;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .meta-box strong {
+      color: var(--navy);
+    }
+
+    .badge-client {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* Typography & Sections */
+    h2 {
+      font-size: 17px;
+      color: var(--navy);
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+      margin: 28px 0 14px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h3 {
+      font-size: 15px;
+      color: var(--navy);
+      margin: 18px 0 10px 0;
+      font-weight: 700;
+    }
+
+    p {
+      margin-bottom: 12px;
+      font-size: 13.5px;
+      color: #334155;
+    }
+
+    ul {
+      margin: 10px 0 16px 20px;
+      font-size: 13.5px;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    /* Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: var(--bg-gray);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .card h4 {
+      font-size: 13px;
+      color: var(--navy);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .card p {
+      font-size: 12px;
+      margin: 0;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 12px;
+    }
+
+    th {
+      background: var(--navy);
+      color: #ffffff;
+      text-align: left;
+      padding: 9px 12px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    .col-highlight {
+      background-color: #f0fdf4 !important;
+      border-left: 2px solid #22c55e;
+      border-right: 2px solid #22c55e;
+      font-weight: 500;
+    }
+
+    th.col-highlight {
+      background: #15803d !important;
+      color: #ffffff;
+    }
+
+    .badge-star {
+      display: inline-block;
+      background: #fef08a;
+      color: #854d0e;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .price-tag {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .price-sub {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: normal;
+    }
+
+    /* Callout Boxes */
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 13px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      color: #1e40af;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .callout-ia {
+      background: #faf5ff;
+      border-left: 4px solid #a855f7;
+    }
+
+    .callout-ia .callout-title {
+      color: #7e22ce;
+    }
+
+    .callout-vault {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+    }
+
+    .callout-vault .callout-title {
+      color: #15803d;
+    }
+
+    /* Signature & Footer */
+    .footer-sign {
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .sign-box {
+      font-size: 12.5px;
+    }
+
+    .sign-box strong {
+      color: var(--navy);
+      font-size: 13.5px;
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Print Button (Screen only) -->
+  <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar como PDF</button>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="subtitle">Propuesta Técnica & Comercial</div>
+      <h1>Campus Virtual LMS & Ecosistema Digital</h1>
+      <div class="badge-client">Cliente: OTEC Ígneo | Fundación Cuerpo de Bomberos de Viña del Mar</div>
+    </div>
+    <div class="meta-box">
+      <div><strong>Proveedor:</strong> UNIVERSO693 SpA</div>
+      <div><strong>RUT:</strong> 78.521.951-1</div>
+      <div><strong>Director de Proyecto:</strong> Alexis Santana M.</div>
+      <div><strong>Fecha:</strong> Octubre 2026 | Validez: 15 días</div>
+      <div><strong>Contacto:</strong> contacto@universo693.com</div>
+    </div>
+  </div>
+
+  <!-- 1. Resumen Ejecutivo -->
+  <h2>1. Resumen Ejecutivo y Diagnóstico Estratégico</h2>
+  <p>
+    <strong>OTEC Ígneo</strong>, organismo de capacitación de la <strong>Fundación Cuerpo de Bomberos de Viña del Mar</strong>, desempeña un rol esencial formando brigadas de emergencia, empresas e industrias en rescate y combate de incendios. Actualmente, su modelo es 100% presencial, limitando su alcance a aproximadamente 100 alumnos mensuales.
+  </p>
+  <p>
+    <strong>UNIVERSO693 SpA</strong> propone el desarrollo de un <strong>Campus Virtual LMS B-Learning propio</strong> que permite impartir la fase teórica de manera 100% digital y flexible (en computadores y celulares), reservando los centros prácticos (CECAB) para los ejercicios de fuego y rescate en terreno.
+  </p>
+
+  <!-- 2. Arquitectura de Roles -->
+  <h2>2. Arquitectura de Roles y Soberanía Tecnológica</h2>
+  <div class="cards-grid">
+    <div class="card">
+      <h4>👨‍🎓 Alumnos</h4>
+      <p>Cursos asignados, reproductor con control de tiempo, guías PDF/PPT, clases en vivo y diploma con QR verificable en terreno.</p>
+    </div>
+    <div class="card">
+      <h4>👨‍🏫 Docentes</h4>
+      <p>Panel privado para crear evaluaciones, cargar videos por YouTube o videos propios en el servidor, subir material y revisar notas.</p>
+    </div>
+    <div class="card">
+      <h4>🏢 Administración</h4>
+      <p>Matrícula manual y carga masiva Excel B2B, reporte oficial de asistencia SENCE, firmas digitales y control de diplomas.</p>
+    </div>
+    <div class="card" style="border-color: #86efac; background: #f0fdf4;">
+      <h4 style="color: #166534;">🔐 Bóveda Digital</h4>
+      <p><strong>Cero Secuestro de Accesos:</strong> Panel seguro donde la directiva tiene el 100% de sus contraseñas, DNS y bases de datos en su poder.</p>
+    </div>
+  </div>
+
+  <!-- Callout Bóveda -->
+  <div class="callout callout-vault avoid-break">
+    <div class="callout-title">🛡️ COMPROMISO DE SOBERANÍA DIGITAL: BÓVEDA DE CREDENCIALES CONTRA EL "SECUESTRO TECNOLÓGICO"</div>
+    <p style="font-size: 13px; margin: 0; color: #166534;">
+      Muchas instituciones sufren cuando un proveedor informático retiene contraseñas o dificulta el traspaso. En <strong>UNIVERSO693 SpA</strong> garantizamos soberanía digital total desde el Día 1: la directiva de la Fundación tendrá acceso a una <strong>Bóveda Digital Cifrada</strong> con el 100% de las credenciales maestras (DNS, hosting, subdominios, bases de datos y tokens de APIs). Si en el futuro desean migrar o auditar, son dueños absolutos de sus activos tecnológicos sin amarras.
+    </p>
+  </div>
+
+  <!-- 3. Matriz Comercial (3 Opciones) -->
+  <div class="page-break"></div>
+  <h2>3. Matriz de Propuestas Comerciales</h2>
+  <p>Presentamos 3 opciones escalables, destacando la <strong>Opción 2</strong> como la alternativa recomendada por cumplir el 100% de las exigencias técnicas y normativas levantadas:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 32%;">Módulo / Funcionalidad</th>
+        <th style="width: 21%;">Opción 1: Esencial<br><span style="font-weight: normal; font-size: 11px;">Arranque Rápido</span></th>
+        <th style="width: 27%;" class="col-highlight">Opción 2: Profesional ⭐<br><span class="badge-star">RECOMENDADA OTEC</span></th>
+        <th style="width: 20%;">Opción 3: Enterprise<br><span style="font-weight: normal; font-size: 11px;">Tiendas & B2B</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Portal Alumno + Portal Docente</strong></td>
+        <td>Básico</td>
+        <td class="col-highlight"><strong>Roles Separados Autónomos</strong></td>
+        <td>Roles Separados Autónomos</td>
+      </tr>
+      <tr>
+        <td><strong>Carga Docente de Material & Quizzes</strong></td>
+        <td>Solo Administrador</td>
+        <td class="col-highlight"><strong>Docentes suben directo</strong></td>
+        <td>Docentes suben directo</td>
+      </tr>
+      <tr>
+        <td><strong>Reproductor Híbrido de Video</strong></td>
+        <td>Solo YouTube</td>
+        <td class="col-highlight"><strong>YouTube + Videos Propios MP4</strong></td>
+        <td>YouTube + Videos Propios MP4</td>
+      </tr>
+      <tr>
+        <td><strong>Control Anti-Salto de Video (SENCE)</strong></td>
+        <td>❌ Avance manual</td>
+        <td class="col-highlight"><strong>Estricto Anti-Bypass SENCE</strong></td>
+        <td>Estricto Anti-Bypass SENCE</td>
+      </tr>
+      <tr>
+        <td><strong>Reporte Oficial Horas SENCE (Excel)</strong></td>
+        <td>⚠️ Básico</td>
+        <td class="col-highlight"><strong>Cronológico Exacto SENCE</strong></td>
+        <td>SENCE + Gráficos B2B</td>
+      </tr>
+      <tr>
+        <td><strong>Certificado PDF con QR en Terreno</strong></td>
+        <td>PDF simple</td>
+        <td class="col-highlight"><strong>Validación Web Pública en Terreno</strong></td>
+        <td>QR + Carnet Digital</td>
+      </tr>
+      <tr>
+        <td><strong>Bóveda Digital de Credenciales</strong></td>
+        <td>✅ Incluido</td>
+        <td class="col-highlight"><strong>✅ Incluido (Soberanía Total)</strong></td>
+        <td>✅ Incluido (Soberanía Total)</td>
+      </tr>
+      <tr>
+        <td><strong>Sesión Anual de Auditoría EBS 693</strong></td>
+        <td>❌ Opcional</td>
+        <td class="col-highlight"><strong>1 Sesión Anual Incluida (Libre)</strong></td>
+        <td>2 Sesiones Anuales Incluidas</td>
+      </tr>
+      <tr>
+        <td><strong>Carga Masiva Excel de Alumnos</strong></td>
+        <td>❌ Uno a uno</td>
+        <td class="col-highlight"><strong>Carga Masiva B2B en 1 clic</strong></td>
+        <td>Carga Masiva + API</td>
+      </tr>
+      <tr>
+        <td><strong>Clases en Vivo (Zoom/Teams/Meet)</strong></td>
+        <td>Solo enlaces</td>
+        <td class="col-highlight"><strong>Calendario Sincrónico</strong></td>
+        <td>Calendario Sincrónico</td>
+      </tr>
+      <tr>
+        <td><strong>Estrategia SEO Especializada</strong></td>
+        <td>Metadatos básicos</td>
+        <td class="col-highlight"><strong>SEO Técnico + Schema Course</strong></td>
+        <td>SEO Avanzado + Analytics</td>
+      </tr>
+      <tr>
+        <td><strong>Aplicación Móvil</strong></td>
+        <td>Navegador móvil</td>
+        <td class="col-highlight"><strong>App PWA Instalable (iOS/Android)</strong></td>
+        <td>Apps en App Store & Play Store</td>
+      </tr>
+      <tr>
+        <td><strong>Garantía Técnica Post-Lanzamiento</strong></td>
+        <td>30 días</td>
+        <td class="col-highlight"><strong>60 días</strong></td>
+        <td>90 días</td>
+      </tr>
+      <tr>
+        <td><strong>Tiempo Estimado de Entrega</strong></td>
+        <td>3 semanas</td>
+        <td class="col-highlight"><strong>4 semanas</strong></td>
+        <td>6 a 7 semanas</td>
+      </tr>
+      <tr style="border-top: 2px solid var(--navy);">
+        <td><strong>INVERSIÓN TOTAL (CLP)</strong></td>
+        <td><div class="price-tag">$1.800.000</div><div class="price-sub">+ IVA</div></td>
+        <td class="col-highlight">
+          <div class="price-tag" style="color: #15803d;">$2.900.000</div>
+          <div class="price-sub">(Precio lista $3.3M - Desc. Bomberos) + IVA</div>
+        </td>
+        <td><div class="price-tag">$4.600.000</div><div class="price-sub">+ IVA</div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 4. Modulo Opcional IA -->
+  <div class="callout callout-ia avoid-break">
+    <div class="callout-title">🤖 MÓDULO OPCIONAL (ADD-ON): TUTOR VIRTUAL IA CON APRENDIZAJE DEL CURSO</div>
+    <p style="font-size: 13px; margin-bottom: 8px;">
+      Asistente de Inteligencia Artificial embebido en el aula 24/7 entrenado exclusivamente con los manuales en PDF, normativas técnicas y presentaciones subidas por los docentes de Ígneo (arquitectura RAG):
+    </p>
+    <ul style="font-size: 12.5px; margin-bottom: 8px;">
+      <li><strong>Cero Alucinaciones:</strong> Responde solo basándose en el material del curso, citando el documento y página exacta.</li>
+      <li><strong>Simulador de Exámenes:</strong> El alumno puede pedirle que le tome preguntas de práctica antes de rendir la evaluación final.</li>
+      <li><strong>Alivio Docente:</strong> Resuelve hasta el 85% de dudas recurrentes sin saturar a los instructores.</li>
+    </ul>
+    <div style="font-size: 12.5px; font-weight: 700; color: #7e22ce;">
+      Inversión de Implementación e Integración: $950.000 + IVA (Pago único) | Inferencia mensual: $45.000 a $75.000 + IVA/mes.
+    </div>
+  </div>
+
+  <!-- 5. Metodología de Trabajo -->
+  <div class="page-break"></div>
+  <h2>4. Metodología de Trabajo de Alto Impacto</h2>
+  <div class="cards-grid">
+    <div class="card">
+      <h4>⚡ Sprints Semanales</h4>
+      <p>Entregas funcionales cada 7 días. El cliente valida módulos navegables en un entorno <strong>Staging en la nube</strong> desde la primera semana.</p>
+    </div>
+    <div class="card">
+      <h4>🛡️ Aseguramiento de Calidad</h4>
+      <p>Pruebas rigurosas del temporizador SENCE, simulación de estrés con más de 250 alumnos simultáneos y seguridad de notas (Ley 19.628).</p>
+    </div>
+    <div class="card">
+      <h4>🎓 Transferencia & Onboarding</h4>
+      <p>Taller de inducción para docentes y coordinadores, cápsulas de video tutorial en HD y manual de usuario operativo ilustrado.</p>
+    </div>
+    <div class="card">
+      <h4>🔑 Propiedad & Bóveda</h4>
+      <p>Entrega formal de la Bóveda de Contraseñas, código propio y base de datos: <strong>100% de la Fundación</strong> sin amarras ni cobros por alumno.</p>
+    </div>
+  </div>
+
+  <!-- 6. Soporte y Servidores All-Inclusive -->
+  <h2>5. Planes Mensuales de Soporte, Servidores Cloud & SLA (Todo Incluido)</h2>
+  <p>
+    La mensualidad incluye la <strong>gestión, administración y pago del 100% de los planes de servicios de terceros necesarios para que el sistema funcione</strong> (servidores cloud, bases de datos dedicadas, almacenamiento de videos y plataforma de envío masivo de correos a alumnos). La Fundación recibe <strong>una sola factura local consolidada en pesos chilenos (+ IVA)</strong>, liberándola de pagos en dólares, cargos imprevistos en tarjetas de crédito o riesgos de suspensión de servicio:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">Servicio Incluido</th>
+        <th style="width: 25%;">Plan Base OTEC<br><span style="font-size: 11px; font-weight: normal;">(Recomendado Plan 1 y 2)</span></th>
+        <th style="width: 25%;">Plan Pro & Evolución<br><span style="font-size: 11px; font-weight: normal;">(Para Plan 3 o alto tráfico)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Pago y Gestión de Servidores Cloud de Alta Velocidad</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Pago y Gestión de Bases de Datos Cifradas</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Servicio de Envío Masivo de Correos y Credenciales</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+        <td><strong>100% Pagado e Incluido</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Almacenamiento de Videos Propios, PDFs y Diplomas</strong></td>
+        <td>50 GB SSD de alta velocidad</td>
+        <td>200 GB SSD dedicado</td>
+      </tr>
+      <tr>
+        <td><strong>Capacidad de Alumnos Concurrentes</strong></td>
+        <td>Hasta 300 simultáneos</td>
+        <td>Hasta 1.000 simultáneos</td>
+      </tr>
+      <tr>
+        <td><strong>Copias de Seguridad (Backups de Notas)</strong></td>
+        <td>Semanales automáticos</td>
+        <td>Diarios automáticos</td>
+      </tr>
+      <tr>
+        <td><strong>Certificados de Seguridad SSL & Monitoreo 24/7</strong></td>
+        <td>✅ Incluido</td>
+        <td>✅ Incluido</td>
+      </tr>
+      <tr>
+        <td><strong>Soporte Técnico Especializado</strong></td>
+        <td>Email y WhatsApp directo</td>
+        <td>Prioritario (< 2 hrs de respuesta)</td>
+      </tr>
+      <tr>
+        <td><strong>Bolsa de Horas de Mejoras Continuas</strong></td>
+        <td>No</td>
+        <td><strong>5 horas mensuales</strong> de ajustes</td>
+      </tr>
+      <tr>
+        <td><strong>Sesión Anual de Auditoría EBS 693</strong></td>
+        <td><strong>1 Sesión Anual Incluida</strong></td>
+        <td><strong>2 Sesiones Anuales Incluidas</strong></td>
+      </tr>
+      <tr style="border-top: 2px solid var(--navy);">
+        <td><strong>VALOR MENSUAL CONSOLIDADO (CLP)</strong></td>
+        <td><strong style="font-size: 14px; color: var(--navy);">$190.000 + IVA</strong></td>
+        <td><strong style="font-size: 14px; color: var(--navy);">$290.000 + IVA</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="background: #f8fafc; border-left: 4px solid var(--navy); margin-top: 10px;">
+    <div class="callout-title" style="color: var(--navy);">🛡️ CERO PREOCUPACIONES OPERATIVAS Y PAGOS EN DÓLARES PARA LA FUNDACIÓN</div>
+    <p style="font-size: 12.5px; margin: 0; color: #475569;">
+      UNIVERSO693 SpA asume la responsabilidad total de pagar y renovar las suscripciones técnicas (servidores, bases de datos y despacho de correos) directamente con los proveedores cloud. Ígneo no necesita asociar tarjetas corporativas ni sufrirá suspensiones imprevistas por cobros en moneda extranjera.
+    </p>
+  </div>
+
+  <!-- 7. Condiciones Comerciales -->
+  <div class="avoid-break">
+    <h2>6. Condiciones Comerciales y Formas de Pago</h2>
+    <div style="background: var(--bg-gray); padding: 15px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px;">
+      <p style="margin-bottom: 6px;"><strong>Hitos de Pago (Plan 2 Profesional):</strong></p>
+      <ul style="margin-bottom: 10px;">
+        <li><strong>50% al Inicio:</strong> A la firma del acuerdo y reunión de kickoff ($1.450.000 + IVA).</li>
+        <li><strong>25% al Hito Intermedio:</strong> A la entrega del prototipo funcional en Staging en la Semana 2 ($725.000 + IVA).</li>
+        <li><strong>25% contra Entrega Final:</strong> Al desplegar en <code>campus.igneo.cl</code>, entrega de la Bóveda de Credenciales y capacitación ($725.000 + IVA).</li>
+      </ul>
+      <p style="margin: 0; color: #166534; font-weight: 600;">
+        ✓ Garantía técnica total de 60 días sin costo ante cualquier corrección o afinamiento.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer & Firmas -->
+  <div class="footer-sign avoid-break">
+    <div class="sign-box">
+      <strong>Alexis Santana Miranda</strong><br>
+      Gerente General & Director de Proyectos<br>
+      <strong>UNIVERSO693 SpA</strong> | RUT 78.521.951-1<br>
+      Villa Alemana / Viña del Mar, Chile<br>
+      <span style="color: var(--primary);">contacto@universo693.com</span> | +56 9 9038 7414
+    </div>
+    <div class="sign-box" style="text-align: right; color: #64748b;">
+      <em>Propuesta Técnica y Comercial Oficial</em><br>
+      <span style="font-size: 11px;">www.universo693.com</span>
+    </div>
+  </div>
+
+</body>
+</html>

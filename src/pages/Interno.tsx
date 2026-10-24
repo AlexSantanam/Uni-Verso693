@@ -21,6 +21,17 @@ import {
   Package,
   Receipt,
   RefreshCw,
+  KeyRound,
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Globe,
+  Server,
+  Database,
+  UserCheck,
+  Cpu,
+  ExternalLink,
+  Lock,
 } from 'lucide-react';
 import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, mapOf, leakArea, type CompanyMap, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
 
@@ -3271,8 +3282,504 @@ const WhatsAppInbox = ({ api, onUnread }: { api: Api; onUnread: (n: number) => v
   );
 };
 
+// ---------------------------------------------------------------- boveda (Client Vault)
+interface AdminVaultCred {
+  id: string;
+  category: 'dominio' | 'servidor' | 'bd' | 'admin' | 'api' | 'otro';
+  title: string;
+  url?: string;
+  username: string;
+  password?: string;
+  tokenOrKey?: string;
+  notes?: string;
+}
+
+interface AdminVault {
+  id: string;
+  clientName: string;
+  project: string;
+  clientEmail: string;
+  updatedAt: string;
+  hasPassword?: boolean;
+  lastLoginAt?: string;
+  credentials: AdminVaultCred[];
+}
+
+const CATEGORY_NAMES: Record<AdminVaultCred['category'], string> = {
+  dominio: 'Dominios & DNS',
+  servidor: 'Servidores & Cloud',
+  bd: 'Bases de Datos',
+  admin: 'Superadministrador',
+  api: 'APIs & Integraciones',
+  otro: 'Otro Acceso',
+};
+
+const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit) => Promise<T> }) => {
+  const [vaults, setVaults] = useState<AdminVault[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<AdminVault | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const loadVaults = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api<{ vaults: AdminVault[] }>('/api/admin?action=vault-list');
+      setVaults(res.vaults || []);
+    } catch (err: any) {
+      console.error('Error al cargar bóvedas', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [api]);
+
+  useEffect(() => {
+    loadVaults();
+  }, [loadVaults]);
+
+  const handleNew = () => {
+    setEditing({
+      id: `vlt-${Date.now()}`,
+      clientName: '',
+      project: '',
+      clientEmail: '',
+      updatedAt: new Date().toISOString(),
+      credentials: [],
+    });
+    setNewPassword('');
+  };
+
+  const handlePreloadIgneo = () => {
+    setEditing({
+      id: `vlt-igneo-${Date.now()}`,
+      clientName: 'OTEC Ígneo (Fundación Cuerpo de Bomberos de Viña del Mar)',
+      project: 'Campus Virtual LMS & App PWA',
+      clientEmail: 'contacto@igneo.cl',
+      updatedAt: new Date().toISOString(),
+      credentials: [
+        {
+          id: `c-1`,
+          category: 'dominio',
+          title: 'NIC Chile (Dominio igneo.cl)',
+          url: 'https://www.nic.cl',
+          username: 'contacto@bomberosvinadelmar.cl',
+          password: 'PasswordSegura2026!',
+          notes: 'Administración del nombre de dominio oficial.',
+        },
+        {
+          id: `c-2`,
+          category: 'dominio',
+          title: 'Subdominio Campus Virtual (campus.igneo.cl)',
+          url: 'https://campus.igneo.cl',
+          username: 'CNAME campus apuntando a cname.universo693.com',
+          notes: 'Registro DNS configurado en servidores cloud.',
+        },
+        {
+          id: `c-3`,
+          category: 'servidor',
+          title: 'Servidor Cloud de Alta Concurrencia (Campus LMS)',
+          url: 'https://cloud.universo693.com',
+          username: 'server-admin-igneo',
+          password: 'ServerPass_Igneo#2026',
+          notes: 'Capacidad para 300 alumnos concurrentes y backups automáticos.',
+        },
+        {
+          id: `c-4`,
+          category: 'admin',
+          title: 'Acceso Superadministrador (Campus LMS)',
+          url: 'https://campus.igneo.cl/login',
+          username: 'admin@igneo.cl',
+          password: 'CampusAdmin2026*!',
+          notes: 'Control total de matrículas, cursos y reportes SENCE.',
+        },
+        {
+          id: `c-5`,
+          category: 'api',
+          title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
+          url: 'https://sence.gob.cl',
+          username: 'OTEC-76.XXX.XXX-X',
+          tokenOrKey: 'sence_token_prod_987213897129837198237',
+          notes: 'Token de sincronización de asistencia y horas en tiempo real.',
+        },
+      ],
+    });
+    setNewPassword('Bomberos2026!');
+  };
+
+  const handleGeneratePassword = () => {
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*';
+    let p = '';
+    for (let i = 0; i < 12; i++) {
+      p += chars[Math.floor(Math.random() * chars.length)];
+    }
+    setNewPassword(p);
+  };
+
+  const handleSave = async () => {
+    if (!editing) return;
+    if (!editing.clientName.trim() || !editing.clientEmail.trim()) {
+      alert('Ingresa al menos el Nombre del Cliente y su Correo.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await api('/api/admin?action=vault-save', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...editing,
+          newPassword: newPassword.trim() || undefined,
+        }),
+      });
+      setEditing(null);
+      setNewPassword('');
+      await loadVaults();
+    } catch (err: any) {
+      alert(err.message || 'Error al guardar bóveda.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`¿Eliminar la bóveda de "${name}"? El cliente perderá el acceso.`)) return;
+    try {
+      await api('/api/admin?action=vault-delete', {
+        method: 'POST',
+        body: JSON.stringify({ id }),
+      });
+      await loadVaults();
+    } catch (err: any) {
+      alert(err.message || 'Error al eliminar.');
+    }
+  };
+
+  const handleAddCred = () => {
+    if (!editing) return;
+    const cred: AdminVaultCred = {
+      id: `c-${Date.now()}`,
+      category: 'dominio',
+      title: '',
+      username: '',
+      password: '',
+    };
+    setEditing({ ...editing, credentials: [...(editing.credentials || []), cred] });
+  };
+
+  const handleUpdateCred = (idx: number, patch: Partial<AdminVaultCred>) => {
+    if (!editing) return;
+    const creds = [...editing.credentials];
+    creds[idx] = { ...creds[idx], ...patch };
+    setEditing({ ...editing, credentials: creds });
+  };
+
+  const handleDeleteCred = (idx: number) => {
+    if (!editing) return;
+    setEditing({ ...editing, credentials: editing.credentials.filter((_, i) => i !== idx) });
+  };
+
+  const copyPortalLink = () => {
+    navigator.clipboard.writeText('https://universo693.com/boveda');
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Top Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-white">Bóvedas de Credenciales</h1>
+            <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20">
+              Soberanía Tecnológica
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+            Gestiona los accesos maestros que entregas a tus clientes. Cada cliente puede iniciar sesión en{' '}
+            <code className="text-cyan-300 bg-white/5 px-1.5 py-0.5 rounded">/boveda</code> con su correo y contraseña
+            para ver y copiar sus claves o descargar su respaldo maestro.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button onClick={copyPortalLink} className={btnGhost} title="Copiar enlace de acceso para clientes">
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-cyan-400" />}
+            {copiedLink ? '¡Enlace copiado!' : 'Copiar link /boveda'}
+          </button>
+          {!editing && (
+            <button onClick={handleNew} className={btnPrimary}>
+              <Plus className="w-4 h-4" /> Nueva Bóveda
+            </button>
+          )}
+        </div>
+      </div>
+
+      {editing ? (
+        /* Vault Editor */
+        <div className="space-y-6 bg-white/[0.02] border border-white/10 rounded-2xl p-6">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="flex items-center gap-2">
+              <button onClick={() => setEditing(null)} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <h2 className="text-lg font-bold text-white">
+                {editing.clientName ? `Editando Bóveda: ${editing.clientName}` : 'Nueva Bóveda de Cliente'}
+              </h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={handlePreloadIgneo} className={`${btnGhost} text-xs text-amber-300 hover:text-amber-200 border-amber-500/30`}>
+                ⚡ Cargar Plantilla OTEC Ígneo
+              </button>
+              <button onClick={handleSave} disabled={saving} className={btnPrimary}>
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Guardar Bóveda
+              </button>
+            </div>
+          </div>
+
+          {/* Client General Info */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre del Cliente / Empresa</label>
+              <input
+                type="text"
+                placeholder="ej. OTEC Ígneo (Cuerpo de Bomberos)"
+                value={editing.clientName}
+                onChange={(e) => setEditing({ ...editing, clientName: e.target.value })}
+                className={input}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
+              <input
+                type="text"
+                placeholder="ej. Campus Virtual LMS & PWA"
+                value={editing.project}
+                onChange={(e) => setEditing({ ...editing, project: e.target.value })}
+                className={input}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Correo de Acceso del Cliente</label>
+              <input
+                type="email"
+                placeholder="contacto@igneo.cl"
+                value={editing.clientEmail}
+                onChange={(e) => setEditing({ ...editing, clientEmail: e.target.value.toLowerCase().trim() })}
+                className={input}
+              />
+            </div>
+          </div>
+
+          {/* Client Password */}
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Contraseña de Acceso del Cliente</span>
+                <p className="text-[11px] text-slate-400">
+                  {editing.hasPassword
+                    ? 'Esta bóveda ya tiene clave activa. Si ingresas una nueva aquí, se actualizará.'
+                    : 'Ingresa la contraseña con la que el cliente entrará en /boveda.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleGeneratePassword}
+                className="text-xs text-cyan-300 hover:text-cyan-200 underline font-semibold"
+              >
+                Generar clave segura
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder={editing.hasPassword ? 'Dejar en blanco para mantener contraseña actual' : 'Escribe una clave (mínimo 4 caracteres)'}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={`${input} font-mono text-cyan-300`}
+            />
+          </div>
+
+          {/* Credentials Section */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-white">Credenciales y Activos Registrados ({editing.credentials?.length || 0})</h3>
+                <p className="text-xs text-slate-400">Agrega todos los accesos: hosting, DNS, bases de datos, contraseñas de admin y APIs.</p>
+              </div>
+              <button onClick={handleAddCred} className={`${btnGhost} text-xs`}>
+                <Plus className="w-3.5 h-3.5 text-cyan-400" /> Agregar Credencial
+              </button>
+            </div>
+
+            {editing.credentials?.length === 0 ? (
+              <div className="text-center py-8 border border-dashed border-white/10 rounded-xl text-slate-400 text-xs">
+                No hay credenciales añadidas aún. Haz clic en "Agregar Credencial" o carga la plantilla de ejemplo.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {editing.credentials.map((cred, idx) => (
+                  <div key={cred.id || idx} className="p-4 rounded-xl bg-black/30 border border-white/10 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Categoría</label>
+                        <select
+                          value={cred.category}
+                          onChange={(e) => handleUpdateCred(idx, { category: e.target.value as any })}
+                          className={`${selectSm} w-full`}
+                        >
+                          <option value="dominio">Dominios & DNS</option>
+                          <option value="servidor">Servidores & Cloud</option>
+                          <option value="bd">Bases de Datos</option>
+                          <option value="admin">Superadministrador LMS</option>
+                          <option value="api">APIs & Integraciones</option>
+                          <option value="otro">Otro Acceso</option>
+                        </select>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Título del Servicio</label>
+                        <input
+                          type="text"
+                          placeholder="ej. NIC Chile (Dominio igneo.cl)"
+                          value={cred.title}
+                          onChange={(e) => handleUpdateCred(idx, { title: e.target.value })}
+                          className={input}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">URL del Servicio</label>
+                        <input
+                          type="text"
+                          placeholder="https://nic.cl"
+                          value={cred.url || ''}
+                          onChange={(e) => handleUpdateCred(idx, { url: e.target.value })}
+                          className={input}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Usuario / Correo</label>
+                        <input
+                          type="text"
+                          placeholder="usuario o admin@..."
+                          value={cred.username}
+                          onChange={(e) => handleUpdateCred(idx, { username: e.target.value })}
+                          className={`${input} font-mono`}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Contraseña</label>
+                        <input
+                          type="text"
+                          placeholder="Contraseña del servicio"
+                          value={cred.password || ''}
+                          onChange={(e) => handleUpdateCred(idx, { password: e.target.value })}
+                          className={`${input} font-mono`}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Token / Llave API (Opcional)</label>
+                        <input
+                          type="text"
+                          placeholder="Token SENCE o Secret Key"
+                          value={cred.tokenOrKey || ''}
+                          onChange={(e) => handleUpdateCred(idx, { tokenOrKey: e.target.value })}
+                          className={`${input} font-mono`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Notas o instrucciones para el cliente (ej. Renovación anual, soporte, etc.)"
+                          value={cred.notes || ''}
+                          onChange={(e) => handleUpdateCred(idx, { notes: e.target.value })}
+                          className={`${input} text-xs text-slate-300`}
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleDeleteCred(idx)}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Eliminar credencial"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Vaults List Table */
+        <div className="space-y-4">
+          {loading ? (
+            <div className="py-12 flex justify-center text-slate-400">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+          ) : vaults.length === 0 ? (
+            <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
+              <KeyRound className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+              <h3 className="text-sm font-bold text-white">Aún no hay bóvedas de clientes creadas</h3>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                Crea una bóveda para OTEC Ígneo u otros clientes para centralizar sus contraseñas y garantizarles
+                soberanía tecnológica.
+              </p>
+              <button onClick={handleNew} className={`${btnPrimary} mt-4`}>
+                <Plus className="w-4 h-4" /> Crear Primera Bóveda
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {vaults.map((v) => (
+                <div
+                  key={v.id}
+                  className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 transition-all flex flex-col justify-between gap-4"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="text-sm font-bold text-white leading-snug">{v.clientName}</h3>
+                      <Badge className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 shrink-0">
+                        {v.credentials?.length || 0} claves
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-cyan-400 font-medium">{v.project}</p>
+                    <p className="text-xs text-slate-400 mt-1">Login: {v.clientEmail}</p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Último ingreso: {v.lastLoginAt ? new Date(v.lastLoginAt).toLocaleDateString('es-CL') : 'Nunca'}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                    <button
+                      onClick={() => setEditing(v)}
+                      className="font-bold text-cyan-300 hover:text-cyan-200"
+                    >
+                      Editar Accesos
+                    </button>
+                    <button
+                      onClick={() => handleDelete(v.id, v.clientName)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- shell
-type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'audit' | 'catalogo' | 'ajustes';
+type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'ajustes';
 
 // EBS first: it's the main working tool, the rest supports it
 const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
@@ -3281,6 +3788,7 @@ const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[]
   { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
   { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
   { id: 'facturacion', label: 'Facturación', Icon: Receipt },
+  { id: 'boveda', label: 'Bóveda', Icon: KeyRound },
   { id: 'audit', label: 'Audit PRO', Icon: Sparkles },
   { id: 'catalogo', label: 'Catálogo', Icon: Package },
   { id: 'ajustes', label: 'Ajustes', Icon: SettingsIcon },
@@ -3403,6 +3911,8 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
           </React.Fragment>
         ) : tab === 'catalogo' ? (
           <Catalog api={api} catalog={catalog} onSaved={setCatalog} />
+        ) : tab === 'boveda' ? (
+          <BovedaAdmin api={api} />
         ) : (
           <SettingsView api={api} settings={settings} onSaved={setSettings} />
         )}

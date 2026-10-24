@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHmac, randomBytes, randomUUID, timingSafeEqual, scryptSync } from 'node:crypto';
 import PDFDocument from 'pdfkit';
 import { Resend } from 'resend';
 import { Ratelimit } from '@upstash/ratelimit';
@@ -38,10 +38,15 @@ const K = {
   ebsAudit: (id: string) => `u693:ebs-audit:${id}`,
   catalog: 'u693:admin:catalog',
   settings: 'u693:admin:settings',
+  vaults: 'u693:vaults',
+  vault: (id: string) => `u693:vault:${id}`,
+  vaultByEmail: (email: string) => `u693:vault-by-email:${email.toLowerCase().trim()}`,
+  vaultSession: (token: string) => `u693:vault-session:${token}`,
 };
 
 const redis = Redis.fromEnv();
 const loginLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '15 m'), prefix: 'u693AdminLogin' });
+const vaultLoginLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(6, '15 m'), prefix: 'u693VaultLogin' });
 const ebsViewLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, '10 m'), prefix: 'u693EbsView' });
 const ebsPdfLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '10 m'), prefix: 'u693EbsPdf' });
 const ebsAdvanceLimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 h'), prefix: 'u693EbsAdvance' });
@@ -2684,6 +2689,32 @@ const listFrom =async <T>(zkey: string, keyOf: (id: string) => string, limit = 3
 
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+export type VaultCategory = 'dominio' | 'servidor' | 'bd' | 'admin' | 'api' | 'otro';
+
+export interface VaultCredential {
+  id: string;
+  category: VaultCategory;
+  title: string;
+  url?: string;
+  username: string;
+  password?: string;
+  tokenOrKey?: string;
+  notes?: string;
+}
+
+export interface ClientVault {
+  id: string;
+  clientName: string;
+  project: string;
+  clientEmail: string;
+  passwordHash: string;
+  salt: string;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string;
+  credentials: VaultCredential[];
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('cache-control', 'no-store');
   res.setHeader('x-robots-tag', 'noindex');
@@ -2709,6 +2740,81 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       await loginLimit.resetUsedTokens(ip);
       res.status(200).json({ token: makeToken() });
+      return;
+    }
+
+    // ---------- public: Client Vault (Email + Password) ----------
+    if (action === 'vault-login' && req.method === 'POST') {
+      const email = str(body.email, 200).toLowerCase().trim();
+      const password = str(body.password, 200);
+      const ip = clientKey(req);
+      if ((await vaultLoginLimit.getRemaining(ip)).remaining <= 0) {
+        res.status(429).json({ error: 'Demasiados intentos fallidos. Espera 15 minutos.' });
+        return;
+      }
+      if (!email || !password) {
+        res.status(400).json({ error: 'Ingresa correo y contraseña.' });
+        return;
+      }
+      const vaultId = await redis.get<string>(K.vaultByEmail(email));
+      const vault = vaultId ? await redis.get<ClientVault>(K.vault(vaultId)) : null;
+      if (!vault || !vault.passwordHash || !vault.salt) {
+        await vaultLoginLimit.limit(ip);
+        res.status(401).json({ error: 'Correo o contraseña incorrectos.' });
+        return;
+      }
+      const hash = scryptSync(password, vault.salt, 64).toString('hex');
+      if (!safeEq(hash, vault.passwordHash)) {
+        await vaultLoginLimit.limit(ip);
+        res.status(401).json({ error: 'Correo o contraseña incorrectos.' });
+        return;
+      }
+      await vaultLoginLimit.resetUsedTokens(ip);
+      const sessionToken = randomBytes(32).toString('hex');
+      await redis.set(K.vaultSession(sessionToken), { vaultId: vault.id, email: vault.clientEmail }, { ex: 86400 });
+      await redis.set(K.vault(vault.id), { ...vault, lastLoginAt: new Date().toISOString() });
+      res.status(200).json({
+        ok: true,
+        sessionToken,
+        vault: {
+          id: vault.id,
+          clientName: vault.clientName,
+          project: vault.project,
+          clientEmail: vault.clientEmail,
+          credentials: vault.credentials ?? [],
+          updatedAt: vault.updatedAt,
+        },
+      });
+      return;
+    }
+
+    if (action === 'vault-client-view') {
+      const authHeader = req.headers.authorization ?? '';
+      const sessionToken = authHeader.replace(/^Bearer\s+/i, '').trim();
+      if (!sessionToken) {
+        res.status(401).json({ error: 'Sesión no válida o expirada.' });
+        return;
+      }
+      const session = await redis.get<{ vaultId: string; email: string }>(K.vaultSession(sessionToken));
+      if (!session?.vaultId) {
+        res.status(401).json({ error: 'Sesión vencida. Vuelve a ingresar.' });
+        return;
+      }
+      const vault = await redis.get<ClientVault>(K.vault(session.vaultId));
+      if (!vault) {
+        res.status(404).json({ error: 'Bóveda no encontrada.' });
+        return;
+      }
+      res.status(200).json({
+        vault: {
+          id: vault.id,
+          clientName: vault.clientName,
+          project: vault.project,
+          clientEmail: vault.clientEmail,
+          credentials: vault.credentials ?? [],
+          updatedAt: vault.updatedAt,
+        },
+      });
       return;
     }
 
@@ -3575,6 +3681,79 @@ ${SITE_URL}/interno#ebs`);
         q.updatedAt = now;
         await redis.set(K.quote(q.id), q);
         res.status(200).json({ quote: q });
+        return;
+      }
+      case 'vault-list': {
+        const ids = (await redis.get<string[]>(K.vaults)) ?? [];
+        if (!ids.length) {
+          res.status(200).json({ vaults: [] });
+          return;
+        }
+        const rows = await redis.mget<(ClientVault | null)[]>(...ids.map(K.vault));
+        const vaults = rows.filter(Boolean).map((v) => ({
+          ...v,
+          passwordHash: undefined,
+          salt: undefined,
+          hasPassword: Boolean(v?.passwordHash),
+        }));
+        res.status(200).json({ vaults });
+        return;
+      }
+      case 'vault-save': {
+        const id = str(body.id, 80) || `vlt-${Date.now()}`;
+        const existing = await redis.get<ClientVault>(K.vault(id));
+        const clientEmail = str(body.clientEmail, 200).toLowerCase().trim();
+        const clientName = str(body.clientName, 200);
+        const project = str(body.project, 200);
+        const credentials = Array.isArray(body.credentials) ? body.credentials : [];
+
+        let salt = existing?.salt || '';
+        let passwordHash = existing?.passwordHash || '';
+        if (body.newPassword && typeof body.newPassword === 'string' && body.newPassword.trim().length >= 4) {
+          salt = randomBytes(16).toString('hex');
+          passwordHash = scryptSync(body.newPassword.trim(), salt, 64).toString('hex');
+        }
+
+        const now = new Date().toISOString();
+        const updated: ClientVault = {
+          id,
+          clientName: clientName || existing?.clientName || 'Cliente',
+          project: project || existing?.project || 'Proyecto Digital',
+          clientEmail: clientEmail || existing?.clientEmail || '',
+          passwordHash,
+          salt,
+          createdAt: existing?.createdAt || now,
+          updatedAt: now,
+          lastLoginAt: existing?.lastLoginAt,
+          credentials,
+        };
+
+        await redis.set(K.vault(id), updated);
+        const ids = new Set((await redis.get<string[]>(K.vaults)) ?? []);
+        ids.add(id);
+        await redis.set(K.vaults, Array.from(ids));
+
+        if (existing?.clientEmail && existing.clientEmail !== clientEmail) {
+          await redis.del(K.vaultByEmail(existing.clientEmail));
+        }
+        if (clientEmail) {
+          await redis.set(K.vaultByEmail(clientEmail), id);
+        }
+
+        res.status(200).json({ ok: true, id });
+        return;
+      }
+      case 'vault-delete': {
+        const id = str(body.id, 80);
+        if (!id) break;
+        const existing = await redis.get<ClientVault>(K.vault(id));
+        if (existing?.clientEmail) {
+          await redis.del(K.vaultByEmail(existing.clientEmail));
+        }
+        await redis.del(K.vault(id));
+        const ids = (await redis.get<string[]>(K.vaults)) ?? [];
+        await redis.set(K.vaults, ids.filter((x) => x !== id));
+        res.status(200).json({ ok: true });
         return;
       }
     }

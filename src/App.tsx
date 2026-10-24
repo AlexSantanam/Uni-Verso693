@@ -18,6 +18,8 @@ import { Container } from './components/ui';
 const Interno = React.lazy(() => import('./pages/Interno'));
 // Interactive EBS the client opens from a private link (/ebs/<token>): own chunk, outside the layout, noindex.
 const EbsView = React.lazy(() => import('./pages/EbsView'));
+// Client Vault (Bóveda de Credenciales & Soberanía Tecnológica): own chunk, outside the layout, noindex.
+const Boveda = React.lazy(() => import('./pages/Boveda'));
 
 const NotFound: React.FC = () => (
   <Container className="py-32 text-center space-y-4">
@@ -44,6 +46,14 @@ export const AppRoutes: React.FC = () => (
             element={
               <React.Suspense fallback={null}>
                 <EbsView />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="boveda"
+            element={
+              <React.Suspense fallback={null}>
+                <Boveda />
               </React.Suspense>
             }
           />
