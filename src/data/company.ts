@@ -36,8 +36,8 @@ export const companyFacts: { label: L; value: L }[] = [
   {
     label: { es: 'Cómo se cotiza', en: 'How pricing works' },
     value: {
-      es: 'A medida, tras el diagnóstico EBS 693 ($197.000 CLP, 45 min, se descuenta del proyecto)',
-      en: 'Per project, after the EBS 693 diagnosis ($197,000 CLP, 45 min, credited to the project)',
+      es: 'Propuesta técnica y económica modular según alcance, con estimación transparente, costos fijos y entrega llave en mano con custodia soberana en Bóveda Cliente',
+      en: 'Modular technical and financial proposal based on scope, transparent estimation, fixed milestones, and turnkey delivery with sovereign custody in Client Vault',
     },
   },
   {
@@ -78,8 +78,8 @@ export const companyFaqs: { q: L; a: L }[] = [
   {
     q: { es: '¿Cuánto cuesta trabajar con Uni-Verso693?', en: 'How much does it cost to work with Uni-Verso693?' },
     a: {
-      es: 'Los proyectos se cotizan a medida según su alcance. El punto de partida es el diagnóstico EBS 693: una sesión de 45 minutos por $197.000 CLP que entrega una hoja de ruta priorizada con ROI estimado; ese monto se descuenta del proyecto si el cliente decide avanzar. Incluye un espacio interactivo privado con el mapa de la empresa, el simulador y el PDF. Después, el proyecto puede hacerse llave en mano (entrega de cuentas, claves, código y documentación a nombre del cliente, con inducción) o como servicio con mantención mensual (lo operamos nosotros). Detalles y una demo en universo693.com/diagnostico-ia.',
-      en: 'Projects are quoted individually based on scope. The starting point is the EBS 693 diagnosis: a 45-minute session for $197,000 CLP that delivers a prioritized roadmap with estimated ROI; the fee is credited to the project if the client moves forward. It includes a private interactive space with a map of the company, a simulator and a PDF. Afterwards the project can be delivered turnkey (accounts, keys, code and documentation handed over in the client’s name, with an induction) or as a service with monthly upkeep (we run it). Details and a demo at universo693.com/diagnostico-ia.',
+      es: 'Cotizamos cada proyecto de forma transparente y modular según su alcance técnico y requerimientos reales. Entregamos propuestas técnicas con tiempos y costos fijos por etapa, sin cobros ocultos ni tarifas por usuario o alumno. Todo desarrollo incluye 60 días de garantía técnica post-lanzamiento y entrega soberana de credenciales, repositorios y accesos en su Bóveda Digital privada.',
+      en: 'We quote each project transparently and modularly based on actual technical scope and requirements. We deliver formal proposals with fixed milestones, zero hidden fees, and no per-user charges. Every project includes a 60-day post-launch warranty and full handover of credentials, repositories, and access via their private Digital Vault.',
     },
   },
   {
@@ -106,8 +106,8 @@ export const companyFaqs: { q: L; a: L }[] = [
   {
     q: { es: '¿Cómo contactar a Uni-Verso693?', en: 'How can I contact Uni-Verso693?' },
     a: {
-      es: 'Por el formulario en universo693.com/contacto, por WhatsApp al +56 9 9038 7414 o por correo a contacto@universo693.com. El diagnóstico EBS 693 se agenda en calendly.com/conectadoaia/ebs693. Responde en menos de 2 horas.',
-      en: 'Through the form at universo693.com/contacto, on WhatsApp at +56 9 9038 7414 or by email at contacto@universo693.com. The EBS 693 diagnosis can be booked at calendly.com/conectadoaia/ebs693. Replies within 2 hours.',
+      es: 'Por el formulario en universo693.com/contacto, por WhatsApp directo al +56 9 9038 7414 o por correo a contacto@universo693.com. Respondemos directamente con un ingeniero en menos de 2 horas.',
+      en: 'Through the form at universo693.com/contacto, on direct WhatsApp at +56 9 9038 7414 or by email at contacto@universo693.com. A technical lead replies within 2 hours.',
     },
   },
 ];
