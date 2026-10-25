@@ -4,6 +4,219 @@ import type { Post } from './blog';
 export type PostCopy = Pick<Post, 'title' | 'description' | 'tags' | 'body'>;
 
 export const postsEn: Record<string, PostCopy> = {
+  'soberania-tecnologica-boveda-digital-codigo-propio': {
+    title: 'Technological sovereignty: why your company must own its code and how to prevent digital lock-in',
+    description:
+      'Learn how agencies lock businesses in by withholding credentials and repositories, and how to guarantee full technology ownership with a Digital Vault.',
+    tags: ['Tech Sovereignty', 'Cloud Security', 'Digital Vault'],
+    body: [
+      {
+        type: 'p',
+        text: 'The biggest hidden risk when hiring software development is not a bug or a delayed deadline; it is technological lock-in. Hundreds of businesses discover too late that their agency retained server passwords, database credentials, or the GitHub repository, charging exorbitant fees for minor changes or preventing migrations.',
+      },
+      { type: 'h2', text: 'The three classic forms of agency lock-in' },
+      {
+        type: 'ul',
+        items: [
+          'Third-party registered accounts: The agency registers AWS, GCP, or domains under their own name. If the business relationship ends, the client loses control of their infrastructure.',
+          'Withheld source code: Only the compiled app or deployed site is delivered on a private server, without access to the GitHub/GitLab repository and change history.',
+          'Scattered API keys and credentials: Payment gateways, transactional mail, and Meta accounts remain tied to developers’ personal inboxes.',
+        ],
+      },
+      { type: 'h2', text: 'What true Technological Sovereignty means' },
+      {
+        type: 'p',
+        text: 'Technological sovereignty means everything built legally and technically belongs to your company from day one. If you decide to switch teams or hire internal engineers, the handover takes 15 minutes, not a legal dispute.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Repository hosted in your own GitHub/GitLab organisation with full architecture documentation.',
+          'Cloud infrastructure (AWS, Google Cloud, or dedicated nodes) billed directly to your company tax ID.',
+          'Domains and SSL certificates registered in your name, without middlemen.',
+          'Zero dependency on closed per-user or per-transaction recurring software licenses.',
+        ],
+      },
+      { type: 'h2', text: 'The Digital Vault concept ($0 bonified)' },
+      {
+        type: 'p',
+        text: 'At Uni-Verso693, we deploy the Client Digital Vault: an encrypted, secure portal where every client retains 24/7 access to database credentials, repositories, cloud consoles, DNS records, and API tokens. It is an anti-lock-in guarantee included at $0 in all our projects.',
+      },
+      {
+        type: 'cta',
+        text: 'Protect your company’s digital assets. Talk with our architects to plan your project with full sovereign custody in your Digital Vault.',
+      },
+    ],
+  },
+  'campus-virtual-lms-sence-sin-licencias-por-alumno': {
+    title: 'Virtual Campuses & Training LMS: build your own platform with zero per-student licensing fees',
+    description:
+      'A practical guide for training academies, corporate learning, and SENCE compliance: biometrics, QR certificates, and advantages of proprietary LMS over SaaS.',
+    tags: ['Virtual Campus', 'LMS & E-learning', 'Compliance'],
+    body: [
+      {
+        type: 'p',
+        text: 'Traditional e-learning software hides a mathematical trap: the more students you teach, the more you pay your SaaS provider. For training academies and corporate institutions, paying $2 to $5 USD monthly per active user devours operational margins as enrollment grows.',
+      },
+      { type: 'h2', text: 'Closed SaaS vs. Proprietary Virtual Campus' },
+      {
+        type: 'p',
+        text: 'Standard SaaS platforms do not just charge per seat; they also force generic UIs, complicate regulatory audit reporting, and offer zero flexibility for customized assessments.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Zero per-student fee: Your cloud server handles 50 or 5,000 students without increasing software licensing costs.',
+          'Installable Mobile PWA: Students access courses directly on Android and iOS with low data consumption and offline-first capabilities.',
+          'Proprietary database: Full custody of academic records, grading, and student personal data under strict privacy standards.',
+        ],
+      },
+      { type: 'h2', text: 'Key technical requirements for official training compliance' },
+      {
+        type: 'p',
+        text: 'To certify remote courses with tax incentives or official training bodies, the platform must comply with strict traceability standards:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Digital class ledger: Exact logs of connection time, module completion, and assessment attempts.',
+          'Identity verification: Integration with facial biometrics or official state single sign-on authentication.',
+          'QR-verified certificates and diplomas: Every certificate includes a unique cryptographic QR code allowing instant validation by employers and auditors.',
+          'B2B management for corporate clients: Dedicated dashboards where enterprise clients upload employee cohorts and track learning curves in real time.',
+        ],
+      },
+      { type: 'h2', text: 'Modern architecture and high concurrency' },
+      {
+        type: 'p',
+        text: 'Gone are the days of sluggish Moodle servers crashing when 50 students submit exams simultaneously. A modern stack based on React, Node.js, and optimized database queries ensures sub-800ms load times and massive concurrency at minimal server costs.',
+      },
+      {
+        type: 'cta',
+        text: 'Looking to launch a high-performance training campus without per-user licensing? Let’s design your sovereign LMS platform.',
+      },
+    ],
+  },
+  'pasarelas-de-pago-chile-transbank-flow-mercadopago-stripe': {
+    title: 'Payment gateways in Chile: Transbank Webpay, Flow, Mercado Pago or Stripe, which should you choose?',
+    description:
+      'Technical and business comparison of Chilean payment methods: fees, settlements, webhooks, and preventing checkout drop-offs.',
+    tags: ['Payment Gateways', 'E-commerce', 'Fintech Chile'],
+    body: [
+      {
+        type: 'p',
+        text: 'Choosing the right payment gateway is a vital decision for any e-commerce or SaaS platform operating in Chile. A bad choice results in high checkout abandonment, steep transaction fees, or payment processing downtime during high-traffic CyberDays.',
+      },
+      { type: 'h2', text: 'Direct acquirers vs. payment aggregators' },
+      {
+        type: 'p',
+        text: 'The main division in Chile is between contracting directly with banking acquirers (like Transbank Webpay Plus) or utilizing modern payment aggregators (like Flow, Mercado Pago, or Stripe).',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Transbank Webpay Plus: Lowest transaction commissions and direct bank settlement (next business day for debit). Requires formal merchant affiliation and technical certification.',
+          'Flow: Outstanding local support, quick activation, and multiple combined payment options (Webpay, Servipag, Mach, bank transfers). Perfect for rapid launch without banking bureaucracy.',
+          'Mercado Pago: Huge penetration for users paying with account balance or installments. Slightly higher fees, but immediate onboarding and robust anti-fraud engines.',
+          'Stripe: Global benchmark for international SaaS subscriptions in USD, though with higher currency conversion fees for local payments.',
+        ],
+      },
+      { type: 'h2', text: 'Secure Webhooks and automated reconciliation' },
+      {
+        type: 'p',
+        text: 'The most frequent mistake in payment integration is relying on the customer returning to the browser success screen. If the buyer closes the tab, the sale stays as pending despite funds being captured.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Asynchronous server webhooks: The gateway server notifies your backend with cryptographic signatures, confirming sales with 100% reliability.',
+          'Idempotency keys: Guarantees that duplicate network retries do not charge customers twice or create duplicate invoices.',
+          'Automated electronic invoicing: Instant connection with tax authorities (SII DTE) to issue receipts and invoices in real time.',
+        ],
+      },
+      {
+        type: 'cta',
+        text: 'Integrate debit, credit, and bank transfers into your platform with automated reconciliation and high security. Contact us for a quote.',
+      },
+    ],
+  },
+  'seo-tecnico-plataformas-web-react-posicionamiento': {
+    title: 'Technical SEO for web applications: how to rank custom software on Google',
+    description:
+      'Why React applications can be invisible to search engines and how static site generation (SSG) and Core Web Vitals guarantee qualified organic traffic.',
+    tags: ['Technical SEO', 'React & Web', 'Performance'],
+    body: [
+      {
+        type: 'p',
+        text: 'Many founders and marketing executives invest heavily in developing modern React platforms, only to discover months later that Google is not indexing their site, even when searching for their exact brand name. The issue is not the copy or keywords; it is an architectural flaw known as Single Page Application (SPA) invisibility.',
+      },
+      { type: 'h2', text: 'The Client-Side Rendering hurdle with search crawlers' },
+      {
+        type: 'p',
+        text: 'In standard client-side React apps, the server sends an empty HTML skeleton and the user’s browser downloads JavaScript to render views. While modern crawlers can execute JavaScript, they defer this into a slow secondary queue, often timing out before indexing critical content.',
+      },
+      { type: 'h2', text: 'Static Site Generation (SSG) and Server-Side Rendering (SSR)' },
+      {
+        type: 'p',
+        text: 'The architecture we implement at Uni-Verso693 prerenders every route during build time. When Googlebot visits, it receives pure, instantaneous HTML with full semantic copy, links, titles, and schema metadata.',
+      },
+      { type: 'h2', text: 'Core Web Vitals: speed as a direct ranking factor' },
+      {
+        type: 'ul',
+        items: [
+          'Largest Contentful Paint (LCP): Primary viewport content must render in under 1.2 seconds for top ranking tier.',
+          'Cumulative Layout Shift (CLS): Zero layout jank or shifting elements while assets load.',
+          'Interaction to Next Paint (INP): Instant response to user taps and navigation.',
+        ],
+      },
+      { type: 'h2', text: 'Structured JSON-LD Data: speaking directly to AI search' },
+      {
+        type: 'p',
+        text: 'Search engines now interpret semantic entities rather than just parsing raw keywords. Implementing structured JSON-LD schemas enables rich search snippets, FAQs, breadcrumbs, and inclusion in AI Search overviews.',
+      },
+      {
+        type: 'cta',
+        text: 'Is your web platform lacking organic search visibility? We audit and optimize web applications for technical SEO and high performance.',
+      },
+    ],
+  },
+  'agentes-ia-cognitivos-rag-empresas': {
+    title: 'Cognitive AI agents with RAG architecture: intelligence without hallucinations',
+    description:
+      'Technical and commercial guide on Retrieval-Augmented Generation (RAG): document accuracy, source citations, and deployment across WhatsApp and CRM.',
+    tags: ['Artificial Intelligence', 'Vector RAG', 'Automation'],
+    body: [
+      {
+        type: 'p',
+        text: 'The primary reason companies hesitate to deploy AI in customer support or internal workflows is hallucination: the risk of a language model inventing prices, promising unavailable terms, or delivering outdated data with supreme confidence.',
+      },
+      { type: 'h2', text: 'What is RAG architecture and why does it solve hallucinations?' },
+      {
+        type: 'p',
+        text: 'RAG stands for Retrieval-Augmented Generation. Instead of asking a foundation model to guess from general training weights, the system executes two strict stages:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Step 1: Semantic Retrieval: When a query arrives, the engine queries your vector database to find the exact paragraphs from your manuals, specs, or policies containing the factual answer.',
+          'Step 2: Grounded Generation: The LLM receives the question together with those official snippets and a strict rule: “Answer exclusively using the attached text. If not present, state you do not have that information and hand off to a human.”',
+        ],
+      },
+      { type: 'h2', text: 'From scattered PDFs to an active corporate knowledge base' },
+      {
+        type: 'p',
+        text: 'Deploying enterprise RAG goes far beyond uploading a PDF. It requires semantic chunking with overlapping boundaries, high-dimensional vector embeddings, and indexing in specialized vector stores like PostgreSQL with pgvector or Redis.',
+      },
+      { type: 'h2', text: 'Deployment on official WhatsApp and business tools' },
+      {
+        type: 'p',
+        text: 'A true cognitive agent does not sit inside an isolated playground. It operates where your users are: connected to official WhatsApp Business API, scheduling meetings on calendars, querying real-time inventory in your ERP, and logging qualified leads directly into your CRM.',
+      },
+      {
+        type: 'cta',
+        text: 'Ready to deploy an autonomous AI agent trained on your company’s real knowledge? Contact our team to launch a functional pilot in 7 days.',
+      },
+    ],
+  },
   'chatbot-whatsapp-empresas-chile': {
     title: 'WhatsApp chatbots for businesses in Chile: what you need, how long it takes and what drives the cost',
     description:

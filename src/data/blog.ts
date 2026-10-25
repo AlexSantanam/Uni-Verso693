@@ -27,6 +27,239 @@ export interface Post {
 
 export const posts: Post[] = [
   {
+    slug: 'soberania-tecnologica-boveda-digital-codigo-propio',
+    seoTitle: 'Soberanía tecnológica: protege tu código y evita el secuestro digital',
+    title: 'Soberanía tecnológica: por qué tu empresa debe ser dueña de su código y cómo evitar el secuestro digital',
+    description:
+      'Descubre cómo muchas agencias atrapan a las empresas reteniendo credenciales y repositorios, y cómo garantizar la custodia total de tu tecnología con una Bóveda Digital.',
+    date: '2026-10-25',
+    minutes: 6,
+    tags: ['Soberanía Tecnológica', 'Seguridad Cloud', 'Bóveda Digital'],
+    body: [
+      {
+        type: 'p',
+        text: 'El mayor riesgo oculto al contratar desarrollo de software no es un bug ni un retraso en la entrega; es el secuestro tecnológico. Cientos de empresas en Chile y Latinoamérica descubren tarde que su agencia retuvo las contraseñas del servidor, los accesos a la base de datos o el repositorio en GitHub, cobrando sumas astronómicas por hacer cambios mínimos o impidiendo migrar a otro proveedor.',
+      },
+      { type: 'h2', text: 'Las tres formas clásicas de secuestro tecnológico' },
+      {
+        type: 'ul',
+        items: [
+          'Cuentas a nombre de terceros: La agencia contrata AWS, GCP o el dominio a su propio nombre. Si la relación comercial termina, la empresa pierde el control de su infraestructura.',
+          'Código fuente retenido o inaccesible: Se entrega solo el ejecutable o el sitio publicado en un servidor privado, sin dar acceso al repositorio GitHub/GitLab con el historial de cambios.',
+          'Llaves de API y credenciales dispersas: Pasarelas de pago, servicios de correos y cuentas de Meta quedan en correos personales de desarrolladores que luego dejan la agencia.',
+        ],
+      },
+      { type: 'h2', text: '¿Qué significa tener Soberanía Tecnológica real?' },
+      {
+        type: 'p',
+        text: 'Soberanía tecnológica significa que todo lo construido le pertenece legal y técnicamente a tu empresa desde el primer día. Si decides cambiar de equipo o contratar desarrolladores internos, la transición debe tomar 15 minutos, no una batalla legal.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Repositorio en tu propia organización (GitHub / GitLab) con documentación de arquitectura completa.',
+          'Infraestructura cloud (AWS, Google Cloud o servidores dedicados) facturada directamente al RUT de tu empresa.',
+          'Dominio y certificados SSL a tu nombre, sin intermediarios.',
+          'Cero dependencias de licencias propietarias cerradas que cobren por cada usuario o transacción.',
+        ],
+      },
+      { type: 'h2', text: 'El concepto de Bóveda Digital ($0 bonificada)' },
+      {
+        type: 'p',
+        text: 'En Uni-Verso693 implementamos la Bóveda Digital de Credenciales: un espacio seguro y encriptado donde cada cliente tiene acceso 24/7 a sus credenciales de base de datos, repositorios, accesos a paneles cloud, DNS y llaves de APIs. Es una garantía anti-secuestro que entregamos bonificada al 100% en todo proyecto.',
+      },
+      {
+        type: 'cta',
+        text: 'Protege el activo digital de tu empresa. Escríbenos para planificar tu proyecto con soberanía tecnológica total y entrega de llaves en tu Bóveda Digital.',
+      },
+    ],
+  },
+  {
+    slug: 'campus-virtual-lms-sence-sin-licencias-por-alumno',
+    seoTitle: 'Campus Virtuales y OTEC SENCE: LMS propio sin licencias por alumno',
+    title: 'Campus Virtuales y OTEC SENCE: cómo implementar un LMS propio sin pagar licencias por alumno',
+    description:
+      'Guía para OTECs, academias y empresas que capacitan: requisitos técnicos SENCE, biometría, diplomas QR y ventajas de una plataforma propia frente a SaaS.',
+    date: '2026-10-22',
+    minutes: 8,
+    tags: ['Campus Virtual', 'OTEC SENCE', 'Educación & LMS'],
+    body: [
+      {
+        type: 'p',
+        text: 'El modelo tradicional de e-learning tiene una trampa matemática: mientras más alumnos capacitas, más le pagas al proveedor de la plataforma. Para una OTEC o empresa de formación en Chile, los planes SaaS que cobran $2 a $5 USD mensuales por usuario activo terminan devorándose el margen operacional a medida que el negocio escala.',
+      },
+      { type: 'h2', text: 'SaaS cerrado vs. Campus Virtual propio' },
+      {
+        type: 'p',
+        text: 'Las plataformas SaaS estándar no solo cobran por alumno; además imponen interfaces genéricas, dificultan la descarga de reportes para auditorías y ofrecen nula flexibilidad para personalizar evaluaciones complejas.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Cero cobro por alumno o usuario: Tu servidor maneja 50 o 5.000 alumnos sin aumentar el costo de software.',
+          'PWA instalable en móviles: Los estudiantes acceden desde Android e iOS sin pasar por las tiendas de apps y con bajísimo consumo de datos.',
+          'Base de datos propia: Custodia total de historiales académicos, notas y datos personales bajo la ley chilena.',
+        ],
+      },
+      { type: 'h2', text: 'Requisitos técnicos indispensables para certificar ante SENCE' },
+      {
+        type: 'p',
+        text: 'Para que los cursos a distancia sean reconocidos con franquicia tributaria SENCE, la plataforma debe cumplir con estándares estrictos de trazabilidad y seguridad:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Libro de Clases Digital sincronizado: Registro exacto de horas de conexión, módulos completados e intentos en evaluaciones.',
+          'Validación de identidad: Integración con sistemas de verificación biométrica o autenticación con ClaveÚnica del Estado.',
+          'Diplomas y certificados con validación QR: Cada certificado emitido debe contar con un código QR único que permita verificar su autenticidad en tiempo real por empleadores o fiscalizadores.',
+          'Gestión B2B para clientes corporativos: Paneles donde las empresas clientes del OTEC pueden cargar nóminas masivas de trabajadores y monitorear su avance en tiempo real.',
+        ],
+      },
+      { type: 'h2', text: 'Rendimiento y arquitectura moderna' },
+      {
+        type: 'p',
+        text: 'Atrás quedaron los tiempos de servidores Moodle lentos que se caían apenas 50 alumnos rendían un examen simultáneamente. Una arquitectura moderna basada en React, Node.js y bases de datos optimizadas permite tiempos de carga inferiores a 800 milisegundos y concurrencia masiva con costos de servidor mínimos.',
+      },
+      {
+        type: 'cta',
+        text: '¿Diriges una OTEC o un instituto de capacitación? Diseñamos tu Campus Virtual propio cumpliendo con la normativa SENCE y sin licencias por alumno.',
+      },
+    ],
+  },
+  {
+    slug: 'pasarelas-de-pago-chile-transbank-flow-mercadopago-stripe',
+    seoTitle: 'Pasarelas de pago en Chile: Webpay, Flow, Mercado Pago o Stripe',
+    title: 'Pasarelas de pago en Chile: Transbank Webpay, Flow, Mercado Pago o Stripe, ¿cuál elegir?',
+    description:
+      'Comparativa técnica y comercial de medios de pago en Chile: comisiones, abonos, webhooks y cómo prevenir caídas de ventas en tu checkout.',
+    date: '2026-10-18',
+    minutes: 7,
+    tags: ['Pasarelas de Pago', 'E-commerce', 'Fintech Chile'],
+    body: [
+      {
+        type: 'p',
+        text: 'Elegir la pasarela de pago adecuada es una de las decisiones más críticas para cualquier comercio electrónico o plataforma de software en Chile. Una mala elección se traduce en altas tasas de abandono de carrito, comisiones excesivas que erosionan el margen o caídas del sistema en fechas clave como CyberDays.',
+      },
+      { type: 'h2', text: 'Transbank Webpay Plus vs. Agregadores de pago' },
+      {
+        type: 'p',
+        text: 'La primera gran división en Chile es entre contratar directamente con adquirentes (como Transbank Webpay Plus) o utilizar agregadores de pago (como Flow, Mercado Pago o Stripe).',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Transbank Webpay Plus: Comisiones más bajas del mercado y abono directo en tu cuenta bancaria (generalmente al día hábil siguiente para débito). Requiere proceso de afiliación y certificación técnica formal.',
+          'Flow: Excelente soporte local, activación rápida y múltiples medios de pago combinados (Webpay, Servipag, Mach, transferencias). Ideal para iniciar rápido sin trámites bancarios complejos.',
+          'Mercado Pago: Gran penetración en usuarios que pagan con saldo en cuenta o cuotas de Mercado Pago. Comisiones ligeramente superiores, pero onboarding inmediato y herramientas anti-fraude integradas.',
+          'Stripe: El estándar global de experiencia de usuario para cobros recurrentes en dólares (SaaS B2B internacional) y tarjetas internacionales, aunque con comisiones más altas para moneda local.',
+        ],
+      },
+      { type: 'h2', text: 'La importancia de los Webhooks seguros y la conciliación automática' },
+      {
+        type: 'p',
+        text: 'El error más común al integrar pagos es depender de que el usuario regrese a la pantalla de éxito en su navegador. Si el usuario cierra la pestaña antes de la redirección, la compra queda como "pendiente" aunque el banco haya descontado el dinero.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Notificación asíncrona por Webhooks: El servidor de la pasarela avisa a tu sistema en segundo plano con firma criptográfica, confirmando la venta de forma 100% infalible.',
+          'Idempotencia: Garantizar que una notificación duplicada de la pasarela no procese dos veces el mismo pedido ni genere dobles facturas.',
+          'Emisión automática de boletas/facturas: Conexión inmediata de la confirmación de pago con el SII para emitir el DTE tributario al instante.',
+        ],
+      },
+      {
+        type: 'cta',
+        text: 'Integra cobros con tarjeta, débito y transferencias en tu plataforma con conciliación automática y alta seguridad. Escríbenos para cotizar tu integración de pagos.',
+      },
+    ],
+  },
+  {
+    slug: 'seo-tecnico-plataformas-web-react-posicionamiento',
+    seoTitle: 'SEO técnico para plataformas web: cómo posicionar software en Google',
+    title: 'SEO técnico para aplicaciones web: cómo lograr que Google indexe y posicione tu software',
+    description:
+      'Por qué una app en React puede ser invisible para Google y cómo la generación estática (SSG) y Core Web Vitals garantizan tráfico orgánico calificado.',
+    date: '2026-10-14',
+    minutes: 7,
+    tags: ['SEO Técnico', 'React & Web', 'Rendimiento'],
+    body: [
+      {
+        type: 'p',
+        text: 'Muchos fundadores y directores de marketing invierten millones en desarrollar una plataforma moderna en React, solo para descubrir meses después que su sitio no aparece en Google, ni siquiera al buscar el nombre exacto de la empresa. El problema no es el contenido ni las palabras clave; es una falla de arquitectura conocida como la invisibilidad de las Single Page Applications (SPA).',
+      },
+      { type: 'h2', text: 'El problema del Client-Side Rendering con Googlebot' },
+      {
+        type: 'p',
+        text: 'En una aplicación React clásica, el servidor entrega un archivo HTML prácticamente vacío y es el navegador del usuario el que descarga el JavaScript y renderiza la pantalla. Aunque Googlebot hoy es capaz de ejecutar JavaScript, lo hace con una cola diferida que puede tardar días o semanas en procesar, o descartar la página por superar el presupuesto de CPU.',
+      },
+      { type: 'h2', text: 'Prerenderizado estático (SSG) y Server-Side Rendering (SSR)' },
+      {
+        type: 'p',
+        text: 'La solución moderna que aplicamos en Uni-Verso693 es prerenderizar cada página en tiempo de compilación. Cuando el robot de Google visita la web, recibe de inmediato el código HTML completo con sus textos, enlaces, títulos y metadatos, garantizando una indexación instantánea al 100%.',
+      },
+      { type: 'h2', text: 'Core Web Vitals: La velocidad como factor directo de ranking' },
+      {
+        type: 'ul',
+        items: [
+          'Largest Contentful Paint (LCP): El contenido principal debe cargar en menos de 1.2 segundos para recibir la máxima puntuación en los algoritmos de Google.',
+          'Cumulative Layout Shift (CLS): Cero saltos inesperados de pantalla mientras cargan imágenes o tipografías.',
+          'Interaction to Next Paint (INP): Respuesta inmediata a clics e interacciones de usuario.',
+        ],
+      },
+      { type: 'h2', text: 'Datos estructurados JSON-LD: Hablándole directamente a la IA y a Google' },
+      {
+        type: 'p',
+        text: 'Los buscadores ya no solo leen texto; interpretan entidades. Implementar microdatos JSON-LD (Organization, Product, Service, FAQPage, BreadcrumbList) permite que Google muestre resultados enriquecidos con preguntas frecuentes, calificaciones y extractos directos en los resúmenes de inteligencia artificial.',
+      },
+      {
+        type: 'cta',
+        text: '¿Tu web o plataforma no está recibiendo visitas orgánicas? Auditamos y optimizamos tu arquitectura con SEO técnico de alto impacto.',
+      },
+    ],
+  },
+  {
+    slug: 'agentes-ia-cognitivos-rag-empresas',
+    seoTitle: 'Agentes de IA con arquitectura RAG: inteligencia sin alucinaciones',
+    title: 'Agentes de IA con arquitectura RAG: cómo entrenar modelos con tus manuales sin que inventen datos',
+    description:
+      'Guía técnica y de negocio sobre Retrieval-Augmented Generation (RAG): precisión documental, citas de fuentes y despliegue en WhatsApp y CRM.',
+    date: '2026-10-10',
+    minutes: 8,
+    tags: ['Inteligencia Artificial', 'RAG Vectorial', 'Automatización'],
+    body: [
+      {
+        type: 'p',
+        text: 'La principal razón por la que las empresas temen implementar inteligencia artificial en su atención al cliente o procesos internos es la alucinación: el riesgo de que el modelo invente un precio, prometa una condición que la empresa no ofrece o entregue información desactualizada con total seguridad.',
+      },
+      { type: 'h2', text: '¿Qué es la arquitectura RAG y por qué resuelve las alucinaciones?' },
+      {
+        type: 'p',
+        text: 'RAG significa Retrieval-Augmented Generation (Generación Aumentada por Recuperación). En lugar de pedirle a un modelo de IA que responda desde su memoria general, el sistema funciona en dos pasos estrictos:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Paso 1: Búsqueda Semántica (Retrieval): Cuando el usuario hace una pregunta, el sistema busca en tu propia base de datos vectorial los párrafos exactos de tus manuales, fichas técnicas o normativas que contienen la respuesta.',
+          'Paso 2: Generación Condicionada: El modelo recibe la pregunta junto con esos fragmentos oficiales y tiene una instrucción inquebrantable: «Responde únicamente utilizando la información adjunta. Si no está en el texto, di que no tienes esa información y deriva a un humano»',
+        ],
+      },
+      { type: 'h2', text: 'De documentos PDF dispersos a una base de conocimiento viva' },
+      {
+        type: 'p',
+        text: 'Para implementar RAG de forma exitosa en una empresa, no basta con subir un PDF. El proceso de ingeniería requiere fragmentar los documentos con solapamiento semántico (chunking), generar embeddings de alta dimensión y almacenar en bases de datos vectoriales optimizadas como PostgreSQL con pgvector o Redis.',
+      },
+      { type: 'h2', text: 'Integración en WhatsApp oficial y herramientas corporativas' },
+      {
+        type: 'p',
+        text: 'Un agente de IA cognitivo no vive aislado en un chat de prueba. Debe operar donde están tus clientes: conectado a la API oficial de WhatsApp Business, con capacidad de agendar reuniones en calendarios, consultar disponibilidad de stock en tu ERP y calificar prospectos registrándolos directamente en tu CRM.',
+      },
+      {
+        type: 'cta',
+        text: '¿Quieres implementar un agente de IA entrenado con el conocimiento real de tu empresa? Contáctanos para diseñar un piloto funcional en 7 días.',
+      },
+    ],
+  },
+  {
     slug: 'chatbot-whatsapp-empresas-chile',
     seoTitle: 'Chatbot de WhatsApp para empresas en Chile: requisitos y costos',
     title: 'Chatbot de WhatsApp para empresas en Chile: qué necesitas, cuánto tarda y de qué depende el costo',
