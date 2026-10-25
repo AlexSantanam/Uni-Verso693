@@ -21,8 +21,12 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-[#050b13]/80 backdrop-blur-xl border-b border-white/10">
       <Container className="h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="Uni-Verso693" className="w-10 h-10 rounded-xl object-cover" />
+        <Link to="/" className="flex items-center gap-3 group">
+          <img
+            src={logo}
+            alt="Uni-Verso693"
+            className="w-10 h-10 object-contain drop-shadow-[0_0_14px_rgba(168,85,247,0.55)] transition-transform duration-300 group-hover:scale-110"
+          />
           <span className="font-extrabold text-xl tracking-tight text-white whitespace-nowrap">
             Uni-Verso<span className="text-brand-500">693</span>
           </span>

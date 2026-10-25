@@ -91,3 +91,4 @@ export const teamMembers: TeamMember[] = [
     gradient: 'from-rose-500 to-red-600',
   },
 ];
+

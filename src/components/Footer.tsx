@@ -16,7 +16,11 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           <div className="md:col-span-5 space-y-5">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="Uni-Verso693" className="w-10 h-10 rounded-xl object-cover" />
+              <img
+                src={logo}
+                alt="Uni-Verso693"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+              />
               <span className="font-extrabold text-xl text-white">
                 Uni-Verso<span className="text-brand-500">693</span>
               </span>
