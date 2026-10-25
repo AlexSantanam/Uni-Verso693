@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Cpu, FileText, GitCompareArrows, Layers, Lock, Receipt, SlidersHorizontal, Sparkles, Video, Wallet, Zap, MonitorPlay, Target } from 'lucide-react';
+import { AlertTriangle, ArrowDown, ArrowRight, Calculator, CalendarDays, Check, Clock3, Cpu, FileText, GitCompareArrows, Layers, Lock, MonitorPlay, Receipt, SlidersHorizontal, Sparkles, Target, TrendingUp, Truck, Video, Wallet, Zap } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { CALENDLY_URL, ebs, whatsappLink } from '../data/site';
 import EbsDemoAnim from '../components/EbsDemoAnim';
@@ -94,6 +94,114 @@ export const Diagnostico: React.FC = () => {
                   </li>
                 </ul>
                 <BookButton className="w-full" />
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Explicación Aterrizada: ¿Qué es el Diagnóstico EBS y para qué le sirve a tu empresa? */}
+      <section className="py-20 bg-gradient-to-b from-[#070f19] to-[#040810] border-b border-white/10 relative">
+        <Container className="space-y-12">
+          <SectionHeading
+            center
+            eyebrow={t('En palabras simples', 'In plain words')}
+            title={t('¿Qué es el Diagnóstico EBS 693 y para qué le sirve a tu empresa?', 'What is the EBS 693 Diagnosis and how does it help your business?')}
+            subtitle={t(
+              'Pensado para dueños de empresas, transporte, distribución o servicios que quieren modernizarse sin enredarse en tecnicismos.',
+              'Designed for business owners, transport, distribution, or services who want to modernize without tech jargon.'
+            )}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-4 hover:border-cyan-400/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xl font-black">
+                1
+              </div>
+              <h3 className="text-xl font-extrabold text-white">
+                {t('¿Qué es? Una radiografía, no una venta', 'What is it? An operational x-ray, not a sales pitch')}
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                {t(
+                  'No venimos a venderte un software empaquetado que no necesitas ni a llenarte de palabras difíciles. Nos sentamos contigo 45 minutos a revisar cómo opera tu negocio hoy: qué tareas se hacen a mano en Excel o papel (como guías de despacho, cotizaciones, llamadas repetitivas o control de personal) y dónde se te está yendo la plata y el tiempo sin darte cuenta.',
+                  'We are not here to sell generic software you do not need or overwhelm you with jargon. We sit down with you for 45 minutes to review your day-to-day operations: what manual spreadsheets or paperwork slow you down (dispatch notes, quotes, repetitive calls, fleet logs) and where hidden leaks are costing you money.'
+                )}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-4 hover:border-cyan-400/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/30 text-cyan-300 flex items-center justify-center text-xl font-black">
+                2
+              </div>
+              <h3 className="text-xl font-extrabold text-white">
+                {t('¿Para qué te sirve? Para no gastar a ciegas', 'What is it for? To stop spending money blindly')}
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                {t(
+                  'En vez de gastar $10 o $20 millones en desarrollos que nadie termina usando, el diagnóstico te da números claros: te dice exactamente qué proceso conviene digitalizar primero, cuánto vas a ahorrar al mes y en cuántos meses recuperas la inversión. Sabrás qué hacer ya, qué dejar para después y qué definitivamente no comprar.',
+                  'Instead of spending $10k-$20k on software developments that end up abandoned, the diagnosis gives you exact numbers: which process to automate first, how much cash you save every month, and how fast the investment pays for itself. You learn what to build now, what to defer, and what to avoid.'
+                )}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 space-y-4 hover:border-cyan-400/40 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl font-black">
+                3
+              </div>
+              <h3 className="text-xl font-extrabold text-white">
+                {t('¿Por qué es único? Ves tus números en vivo', 'Why is it unique? Live numbers on your screen')}
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                {t(
+                  'Olvida los informes de 80 páginas que nadie lee. Te entregamos un espacio interactivo privado donde puedes mover perillas, simular cuántos camiones, clientes o pedidos tienes, y ver al instante cómo cambia tu rentabilidad. Todo con una garantía: si decides construir la solución con nosotros, el valor del diagnóstico se descuenta al 100%.',
+                  'Forget 80-page slide decks that gather digital dust. We hand you a private interactive space where you adjust sliders, simulate truck fleet or order volumes, and watch ROI update live. Best of all: if you build the project with us, the diagnosis fee is 100% credited back to you.'
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* Ejemplo práctico de la vida real */}
+          <div className="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/40 via-[#070f19] to-[#060a14] p-8 sm:p-10 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
+                  {t('Ejemplo real y cotidiano', 'Real-world example')}
+                </span>
+                <h4 className="text-xl sm:text-2xl font-black text-white">
+                  {t('El caso típico en una empresa de transporte o logística', 'The typical logistics or trucking scenario')}
+                </h4>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-cyan-400/10 px-4 py-1.5 text-xs font-bold text-cyan-300 border border-cyan-400/20">
+                <Truck className="w-4 h-4" />
+                {t('Flota & Operaciones', 'Fleet & Operations')}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3 bg-red-950/20 border border-red-500/20 rounded-2xl p-6">
+                <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  {t('El problema que vemos a diario:', 'The problem we see every day:')}
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {t(
+                    'Tienes a 2 o 3 personas respondiendo llamadas y WhatsApps todo el día preguntando "¿dónde viene el chofer?", digitando guías de despacho a mano en planillas Excel hasta tarde, y cobros que se retrasan porque las facturas no coinciden con las entregas.',
+                    'You have 2 or 3 staff members answering calls and messages asking "where is the truck?", manually transcribing delivery slips into spreadsheets late into the evening, and delayed customer billing due to paperwork discrepancies.'
+                  )}
+                </p>
+              </div>
+
+              <div className="space-y-3 bg-emerald-950/20 border border-emerald-500/20 rounded-2xl p-6">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <TrendingUp className="w-4 h-4 shrink-0" />
+                  {t('Lo que descubrimos con el Diagnóstico EBS:', 'What the EBS Diagnosis uncovers:')}
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {t(
+                    'Te mostramos exactamente cómo conectar un WhatsApp inteligente con lectura automática de guías: el chofer sube una foto con su celular, el sistema digita la entrega al instante y el cliente se autoatiende en 5 segundos. Te ahorras 60 horas al mes de trabajo manual y aceleras tus cobros en 15 días.',
+                    'We map out an automated flow where drivers snap photos of delivery slips, systems parse data instantly into your billing engine, and clients track loads on WhatsApp automatically. You save 60 hours of manual work monthly and speed up billing cycles by 15 days.'
+                  )}
+                </p>
               </div>
             </div>
           </div>
