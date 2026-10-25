@@ -1,67 +1,97 @@
 # Uni-Verso693 (Universo693 SpA)
 
-> Uni-Verso693 is the brand of Universo693 SpA, a Chilean software development company founded in 2013. It designs and builds custom software, AI agents (WhatsApp, web, CRM), mobile apps (iOS and Android), websites and e-commerce, and offers technology consulting. Also known as Universo693, UniVerso693 and Estudio UniVerso693 — all the same company. Official website: https://universo693.com
+> Uni-Verso693 is the brand of Universo693 SpA, an established Chilean software engineering and artificial intelligence consulting company founded in 2013. Led by Founder and Principal Solutions Architect Alexis Santana M., the studio designs, builds, and operates custom software platforms, autonomous AI agents (WhatsApp API, web, CRM), mobile apps (iOS, Android, PWA), e-commerce systems, and cloud infrastructure.
+>
+> Core philosophy: 100% Technological Sovereignty (clients own 100% of their source code, repositories, domains, and credentials without agency vendor lock-in via the Client Digital Vault), zero recurring per-user/student software licensing fees, and a 60-day post-launch technical warranty on every project.
+>
+> Official website: https://universo693.com
 
-## Company facts
-- Legal name: Universo693 SpA
-- Founded: 2013
-- Country: Chile. Remote-first company (no public office) serving clients across Chile, including Santiago, and internationally in Latin America, the United States and Europe.
-- Languages: Spanish and English.
-- Group: Universo693 is the holding of a small group; its subsidiaries, for now, are YndiPet (yndipet.com) and MEMORA (memora.lat). Uni-Verso693 itself is in the business of building custom software and AI for client companies.
-- Pricing: projects are quoted individually. Entry point is the EBS 693 diagnosis (https://universo693.com/diagnostico-ia): a 45-minute session (Google Meet) for $197,000 CLP that delivers a prioritized roadmap with estimated ROI plus a private interactive space (see "EBS 693 in detail" below); the fee is credited to the project if the client moves forward. The other published price is the AUDIT 693 PRO report (19,990 CLP or USD 21, see below).
-- Typical timelines: initial AI agents live in about 7 days; custom platforms and mobile apps are delivered in stages.
-- Contact: form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · contacto@universo693.com · book the EBS 693 diagnosis at https://calendly.com/conectadoaia/ebs693 · replies within 2 hours.
+## Company Facts
+- Legal name: Universo693 SpA (RUT 78.521.951-1)
+- Also known as: Universo693, UniVerso693, Estudio UniVerso693
+- Founded: 2013 (+12 years of software engineering track record)
+- Track record: +50 cloud projects and software systems in production across 14 industry sectors.
+- Country: Chile. Remote-first engineering studio based in Viña del Mar / Santiago, serving corporate clients across Chile, Latin America, the United States, and Europe.
+- Languages: Spanish and English (bilingual engineering and support).
+- Group structure: Universo693 is the holding entity; its spin-offs include YndiPet (yndipet.com) and MEMORA (memora.lat). Uni-Verso693 itself develops high-impact custom software, AI agents, and cloud platforms for business clients.
+- Work culture: Direct engineering communication without account manager middlemen or anonymous help desks. Clients collaborate directly with the solutions architect and developers.
+- Pricing model: Transparent, fixed-cost milestones based on technical scope. Every project includes turnkey handover, full repository transfer, 60-day warranty, and sovereign credentials in the Client Digital Vault.
+- Client Digital Vault (Bóveda Digital, $0): Encrypted portal at https://universo693.com/boveda where clients maintain 24/7 access to database credentials, server consoles, DNS records, repositories, and API keys. Included at $0 in all projects as an anti-vendor-lock-in guarantee.
+- Direct contact: Form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · Email contacto@universo693.com · Direct engineer reply in less than 2 hours.
 
-## Services
-- [Custom software development](https://universo693.com/servicios/software-a-medida): SaaS platforms, internal systems, backends, APIs, ERP/CRM integrations, payments.
-- [AI agents and automation](https://universo693.com/servicios/agentes-ia): WhatsApp and web agents grounded in the client's own documents (RAG), human hand-off, CRM and calendar integration, n8n/Make workflows.
-- [Mobile apps](https://universo693.com/servicios/apps-moviles): iOS and Android from one codebase, push notifications, store publishing.
-- [Web, e-commerce and digital product](https://universo693.com/servicios/web-y-producto): corporate sites, stores, customer portals, UX/UI and brand identity.
-- [Consulting and architecture](https://universo693.com/servicios/consultoria): process audits, technology roadmaps with ROI, security and AI adoption.
+## Master Services Catalog
+- [Custom Software Development](https://universo693.com/servicios/software-a-medida): Scalable web apps, internal intranets, B2B portals, backends, REST/GraphQL APIs, ERP/CRM integrations, and automated business workflows.
+- [AI Agents & Cognitive Automation](https://universo693.com/servicios/agentes-ia): Autonomous AI agents with RAG architecture (Retrieval-Augmented Generation) trained strictly on company documents, manuals, and catalogs. Deployed on official WhatsApp Business API, web, and internal CRMs with zero hallucinations and human hand-off. Live in ~7 days.
+- [Virtual Campuses & LMS](https://universo693.com/servicios/campus-virtuales): Proprietary e-learning platforms for corporate training and educational institutes. Zero per-student licensing fees, installable mobile PWA, multimedia classrooms, and interactive assessments.
+- [Government & Public Integrations](https://universo693.com/servicios/integraciones-gob): Integration with Chilean state systems including SENCE (Libro de Clases Digital, biometric and ClaveÚnica verification, QR diplomas), and SII electronic invoicing (DTE).
+- [Payment Gateways & Fintech](https://universo693.com/servicios/pasarelas-pago): Seamless integration of Transbank Webpay Plus, Flow, Mercado Pago, and Stripe. Fault-tolerant asynchronous webhooks, automated bank reconciliation, and zero checkout drop-offs.
+- [Technical SEO & Growth](https://universo693.com/servicios/seo-tecnico): Search engine optimization for React/SPA applications via Static Site Generation (SSG), Core Web Vitals (<1.2s LCP), semantic schema markup (JSON-LD), and international search indexation.
+- [Mobile Apps & PWA](https://universo693.com/servicios/apps-moviles): Cross-platform iOS, Android, and Progressive Web Apps (PWAs). Offline-first synchronization, push notifications, camera/GPS hardware integrations, and 60 FPS performance.
+- [Cloud Migrations & Data Resilience](https://universo693.com/servicios/migraciones-cloud): Migration from on-premise servers to AWS, Google Cloud, or DigitalOcean VPS. Containerization with Docker, automated daily backups, and 99.9% uptime architectures.
+- [Technology Consulting & Architecture](https://universo693.com/servicios/consultoria): Architecture blueprints, security audits, technical due diligence, and operational diagnostic roadmaps.
+- [Client Sovereign Vault](https://universo693.com/boveda): Private digital vault for client credentials, repositories, and cloud access keys.
+
+## EBS 693 AI Diagnosis in Detail (https://universo693.com/diagnostico-ia)
+EBS 693 is a strategic operational diagnosis for businesses that turns tech uncertainty into an interactive, prioritized roadmap with estimated ROI.
+- Designed for business owners: Transport, logistics, clinics, retail, manufacturing, agriculture, and service companies looking to automate manual tasks (Excel spreadsheets, repetitive phone calls, dispatch notes) without getting lost in technical jargon.
+- Format: 45-minute remote Google Meet session for $197,000 CLP.
+- Zero-risk guarantee: The $197,000 CLP fee is 100% credited toward the project if the client moves forward with Uni-Verso693 (making the diagnosis effectively $0).
+- Deliverables:
+  1. Operational x-ray identifying money leaks and repetitive bottlenecks.
+  2. Prioritized technical roadmap ranked by impact vs. effort.
+  3. Private interactive space (expires in 30 days, not indexed by search engines) with the client's logo, where they adjust business numbers live ("what if") and view recalculating payback and 12-month ROI.
+  4. Visual before-and-after process flows and executive PDF report.
+- Live demo with transport fleet data (200 trucks): https://universo693.com/ebs/demo
 
 ## Audit 693 (https://universo693.com/audit-693)
-- Free version: in about 20 seconds shows on screen a summary of the business and 3 AI opportunities, one sentence each, based on the home page of the company's website. No PDF, no email.
-- AUDIT 693 PRO - Informe de Fugas de Dinero ("money-leak report"): 19,990 CLP paid with Mercado Pago in Chile, or USD 21 with PayPal outside Chile. Delivered 2-4 minutes after payment as a PDF (on the page, by email, downloadable for 90 days).
-- The PRO report reads up to 7 pages of the site; evaluates the site as a sales channel (value proposition, calls to action, lead capture, customer service, trust, basic SEO); researches direct competitors on the web in the same industry and area, plus any the client names, using only public information and never inventing competitors; calculates the monthly and yearly cost of manual work from the client's own numbers (weekly hours x hourly cost x 4.33, no invented savings percentages); and prioritises 8-10 AI and automation opportunities by impact and effort, with quick wins and key questions to answer before implementing.
-- It explains WHAT and WHY, not HOW: implementation order, approach and estimated ROI are defined in the EBS 693 diagnosis. AUDIT 693 PRO and EBS 693 are separate services; the PRO price is not credited to EBS 693.
-- Works for any industry and company size. Card data is processed by Mercado Pago or PayPal; Uni-Verso693 never sees it. Site content and form answers are confidential.
+- Free instant tool: In ~20 seconds analyzes the home page of a company's website and displays 3 immediate AI and automation opportunities on screen.
+- AUDIT 693 PRO ($19,990 CLP in Chile / USD 21 internationally): Full PDF report analyzing up to 7 web pages, local competitor benchmarks, exact monthly and annual cost of manual hours, and 8-10 prioritized automation opportunities.
 
-## AI by industry
-- [Transport and fleets](https://universo693.com/ia-para/transporte-y-flotas)
-- [Clinics and healthcare](https://universo693.com/ia-para/clinicas-y-salud)
-- [Real estate](https://universo693.com/ia-para/inmobiliarias)
-- [Retail and e-commerce](https://universo693.com/ia-para/retail-y-ecommerce)
-- [Accounting and law firms](https://universo693.com/ia-para/estudios-profesionales)
-- [Education](https://universo693.com/ia-para/educacion)
-- [Mining](https://universo693.com/ia-para/mineria)
-- [Insurance](https://universo693.com/ia-para/seguros)
-- [Banking and finance](https://universo693.com/ia-para/banca-y-finanzas)
-- [Food and restaurants](https://universo693.com/ia-para/alimentacion-y-restaurantes)
-- [Tourism and hospitality](https://universo693.com/ia-para/turismo-y-hoteleria)
-- [Manufacturing](https://universo693.com/ia-para/manufactura)
-- [Agriculture](https://universo693.com/ia-para/agro)
-- [Construction](https://universo693.com/ia-para/construccion)
-- These industry pages describe typical problems and the solutions Uni-Verso693 designs for each sector; the case studies with named clients are listed below.
+## AI by Industry (14 Sectors)
+- [Transport and logistics fleets](https://universo693.com/ia-para/transporte-y-flotas): Automatic dispatch slip OCR, WhatsApp driver tracking, route optimization.
+- [Clinics and healthcare](https://universo693.com/ia-para/clinicas-y-salud): Patient triage bots, medical schedule sync, clinical vademecum RAG.
+- [Real estate and PropTech](https://universo693.com/ia-para/inmobiliarias): Investment simulators in UF, automated mortgage qualification, CRM lead capture.
+- [Retail and e-commerce](https://universo693.com/ia-para/retail-y-ecommerce): WhatsApp catalog sales, stock inquiry automation, abandoned cart recovery.
+- [Accounting and legal firms](https://universo693.com/ia-para/estudios-profesionales): Tax and contract analysis, document parsing, deadline tracking.
+- [Education and training](https://universo693.com/ia-para/educacion): Virtual campuses, SENCE attendance verification, student dropout alerts.
+- [Mining and industry](https://universo693.com/ia-para/mineria): Shift reports, predictive maintenance logs, field safety compliance.
+- [Insurance](https://universo693.com/ia-para/seguros): Claims processing, policy underwriting assistance, risk scoring.
+- [Banking and finance](https://universo693.com/ia-para/banca-y-finanzas): Fraud pattern detection, loan eligibility, statement reconciliation.
+- [Food and restaurants](https://universo693.com/ia-para/alimentacion-y-restaurantes): Order automation, table reservations, inventory tracking.
+- [Tourism and hospitality](https://universo693.com/ia-para/turismo-y-hoteleria): Multilingual concierge, direct booking engines, guest feedback analysis.
+- [Manufacturing](https://universo693.com/ia-para/manufactura): Production quality control, supplier invoice processing, assembly monitoring.
+- [Agriculture](https://universo693.com/ia-para/agro): Harvest forecasting, weather-linked irrigation logs, supply chain traceability.
+- [Construction](https://universo693.com/ia-para/construccion): Worksite daily logs, material inventory tracking, budget deviation alerts.
 
-## Case studies
-- [YndiPet](https://universo693.com/casos/yndipet): AI-powered pet app for Chile (health records, SOS alerts, QR tags, AI assistant, payments).
-- [MEMORA](https://universo693.com/casos/memora): SaaS for digital memorials with AI-assisted life stories, payments and an Android app.
-- [MELSA](https://universo693.com/casos/melsa): real-estate website with project search and a mortgage/capital-gain simulator.
+## Case Studies & Featured Systems in Production
+- [YndiPet](https://universo693.com/casos/yndipet): Mobile pet health and community platform for Chile with AI assistants, SOS lost pet geolocation, emergency QR tags, and payments.
+- [MEMORA](https://universo693.com/casos/memora): Digital memorials SaaS with AI-assisted life biography drafting, ceremony QR plaques, multi-gateway payments, and Android app.
+- [MELSA](https://universo693.com/casos/melsa): Luxury real estate portal with dynamic UF mortgage and capital-gain simulator.
+- [Corporate Systems Portfolio](https://universo693.com/casos): +50 systems deployed including SENCE-compliant LMS platforms, mobile driver dispatch systems with OCR, B2B automated billing portals, and enterprise RAG cognitive agents.
 
-## More
-- [EBS 693 AI diagnosis](https://universo693.com/diagnostico-ia): what it delivers and the technology behind it (see "EBS 693 in detail")
-- [Audit 693](https://universo693.com/audit-693): free automatic AI analysis of a company website (3 opportunities, on screen). Paid version "AUDIT 693 PRO - Informe de Fugas de Dinero" (19,990 CLP or USD 21): PDF report with up to 7 pages analysed, competitor analysis, cost of manual work and 8-10 prioritised opportunities. It is a separate service from the EBS 693 diagnosis.
-- [About the company](https://universo693.com/nosotros)
-- [Blog](https://universo693.com/blog)
-- [Sitemap](https://universo693.com/sitemap.xml)
+## Technical Guides & Articles (https://universo693.com/blog)
+- [Soberanía tecnológica: protege tu código y evita el secuestro digital](https://universo693.com/blog/soberania-tecnologica-boveda-digital-codigo-propio): How traditional agencies trap clients by withholding credentials, and how the Client Digital Vault ensures sovereign ownership.
+- [Campus Virtuales y OTEC SENCE: LMS propio sin licencias por alumno](https://universo693.com/blog/campus-virtual-lms-sence-sin-licencias-por-alumno): Requisites for training compliance (Libro de Clases Digital, biometric verification, QR certificates) and zero per-seat licensing.
+- [Pasarelas de pago en Chile: Webpay, Flow, Mercado Pago o Stripe](https://universo693.com/blog/pasarelas-de-pago-chile-transbank-flow-mercadopago-stripe): Technical comparison of fees, settlement times, and asynchronous webhooks for zero lost checkouts.
+- [SEO técnico para plataformas web en React](https://universo693.com/blog/seo-tecnico-plataformas-web-react-posicionamiento): Solving SPA search engine invisibility with static site prerendering (SSG), Core Web Vitals, and JSON-LD structured schemas.
+- [Agentes de IA con arquitectura RAG: inteligencia sin alucinaciones](https://universo693.com/blog/agentes-ia-cognitivos-rag-empresas): Training LLMs on private enterprise manuals and catalogs with semantic vector search (pgvector/Redis) and official WhatsApp integration.
+- [Chatbot de WhatsApp para empresas en Chile](https://universo693.com/blog/chatbot-whatsapp-empresas-chile): Meta Business API requirements, cost structures, and qualification workflows.
+- [Software a medida vs. suscripción](https://universo693.com/blog/software-a-medida-vs-suscripcion): When to build custom software vs. when to use off-the-shelf SaaS.
+- [Inteligencia artificial en tu empresa: 5 casos prácticos](https://universo693.com/blog/inteligencia-artificial-en-tu-empresa-casos-practicos): Concrete AI adoption without losing operational control.
+- [IA y software por industria en Chile](https://universo693.com/blog/inteligencia-artificial-por-industria-chile): Industry-specific automation bottlenecks across Chilean economic sectors.
 
-## EBS 693 in detail
-EBS 693 is an AI diagnosis for businesses that starts with a 45-minute remote session and does not end in a PDF.
-- Method: questions and loss formulas for 16 approaches (transport, health, real estate, retail, professional services, education, mining, insurance, banking, food, tourism, manufacturing, agriculture, construction, automotive and general). Money leaks are calculated from the client's own numbers, and every number is tagged as real data, the client's estimate or an assumption to validate. What is not known is listed as "to be measured".
-- AI with human review: AI reads the client's website and the conversation and drafts the proposal; a person on the team reviews and adjusts it before delivery.
-- Deliverables: a prioritized roadmap by impact and effort with an estimated timeline, investment, monthly upkeep (the services that must be paid each month) and estimated return per solution; a private interactive space; a simulator; a before-and-after flow per solution; a PDF; an explainer video.
-- Interactive space: a private link (unique, expires after 30 days, not indexed by search engines) where the client's team switches each solution on or off and sees savings, investment, monthly upkeep, payback and 12-month return recalculate on screen, moves the numbers of the business ("what if"), sees an estimated rollout timeline and downloads a PDF of its selection. It takes the client's logo and brand colours.
-- Company map: the interactive space draws the client's company as areas in the order a customer goes through them, from the first call or visit to delivery and payment, with money leaks (red) and solutions (green) hanging from each area. The map is built from what was gathered in the session, reviewed by a person, and the client can add any area the system missed and drag it into place; the consultant receives the full diagram the client built.
-- Live demo with invented data (a transport company with 200 trucks): https://universo693.com/ebs/demo
-- Two ways of working, chosen by the client in the interactive space (which shows the cost of each over 12, 24 and 36 months): "llave en mano" (turnkey: accounts, keys, code, links and documentation are handed over in the client's name, with an induction for their team; the client pays third-party services directly) and "servicio con mantención mensual" (Uni-Verso693 runs it: a share is paid at the start, the balance in monthly instalments, with a minimum term). Turnkey includes a 60-day warranty on the start-up and afterwards support and changes are quoted as needed; with the monthly service the warranty lasts for as long as the agreement does (fixing faults is part of the monthly fee).
-- Not a guarantee: figures are estimates built from the information shared in the session.
+## Key Team Leadership
+- Alexis Santana M.: Founder & Principal Solutions Architect (+12 years experience in distributed cloud architectures, applied AI, and technology sovereignty).
+- Engineering specialists across Cloud Infrastructure & DevOps (AWS/GCP), Product Design & UX/UI Architecture, AI & RAG Engineering, Fullstack/PWA Development, and QA/Regulatory Compliance.
+
+## Navigation & Discovery
+- Home: https://universo693.com
+- Services: https://universo693.com/servicios
+- Case Studies: https://universo693.com/casos
+- About Us: https://universo693.com/nosotros
+- AI Diagnosis (EBS 693): https://universo693.com/diagnostico-ia
+- Audit 693: https://universo693.com/audit-693
+- Client Vault: https://universo693.com/boveda
+- Blog: https://universo693.com/blog
+- Contact: https://universo693.com/contacto
+- Sitemap: https://universo693.com/sitemap.xml

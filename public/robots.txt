@@ -20,5 +20,6 @@ Allow: /
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /interno
 
 Sitemap: https://universo693.com/sitemap.xml
