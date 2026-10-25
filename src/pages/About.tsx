@@ -4,7 +4,6 @@ import { BarChart3, Brain, Clapperboard, Code2, GraduationCap, PenTool, Target }
 import { capabilities, credentials, process, stats, values, type Capability } from '../data/site';
 import { Container, CtaBand, Eyebrow, PageHero, SectionHeading } from '../components/ui';
 import { ParticleField } from '../components/effects';
-import { EbsOffer } from '../components/EbsOffer';
 import { companyFacts, companyFaqs } from '../data/company';
 
 const capabilityIcons: Record<Capability['icon'], React.FC<{ className?: string }>> = {
@@ -40,8 +39,6 @@ export const About: React.FC = () => {
           ))}
         </Container>
       </section>
-
-      <EbsOffer />
 
       <section className="py-20 relative overflow-hidden">
         <ParticleField className="absolute inset-0 opacity-30 pointer-events-none" />
