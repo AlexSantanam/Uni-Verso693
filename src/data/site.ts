@@ -35,10 +35,10 @@ export const navItems: { to: string; label: L }[] = [
 ];
 
 export const stats: { value: string; label: L }[] = [
-  { value: '5', label: { es: 'líneas de servicio de software', en: 'software service lines' } },
-  { value: '24/7', label: { es: 'agentes de IA en operación', en: 'AI agents in operation' } },
-  { value: '< 2 h', label: { es: 'respuesta a nuevas solicitudes', en: 'response to new requests' } },
-  { value: 'ES · EN', label: { es: 'equipo y soporte bilingüe', en: 'bilingual team and support' } },
+  { value: '7 a 28 d', label: { es: 'de la idea a producción en la nube', en: 'from idea to cloud production' } },
+  { value: '100%', label: { es: 'código propio y soberanía en tu Bóveda', en: 'proprietary code & sovereign custody' } },
+  { value: '60 días', label: { es: 'garantía técnica post-lanzamiento', en: 'post-launch technical warranty' } },
+  { value: '$0', label: { es: 'costo de licencias por alumno o usuario', en: 'license fees per student or user' } },
 ];
 
 export interface Service {
