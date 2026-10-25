@@ -13,7 +13,7 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    name: 'Alexis Santana Miranda',
+    name: 'Alexis Santana M.',
     role: { es: 'Fundador & Principal Solutions Architect', en: 'Founder & Principal Solutions Architect' },
     initials: 'AS',
     location: 'Viña del Mar / Santiago, CL',
