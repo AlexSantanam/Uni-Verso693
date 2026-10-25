@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Globe, Menu, X, ChevronDown } from 'lucide-react';
+import { Globe, Menu, X, ChevronDown, KeyRound } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { navItems, services } from '../data/site';
 import { Container } from './ui';
@@ -36,16 +36,16 @@ export const Header: React.FC = () => {
                   {tr(item.label)}
                   <ChevronDown className="w-3.5 h-3.5" />
                 </NavLink>
-                <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all absolute left-1/2 -translate-x-1/2 top-full w-80">
-                  <div className="rounded-2xl bg-[#0a1420]/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/60 p-2">
+                <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all absolute left-1/2 -translate-x-1/2 top-full w-[38rem]">
+                  <div className="rounded-2xl bg-[#0a1420]/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/60 p-3 grid grid-cols-2 gap-1.5">
                     {services.map((s) => (
                       <Link
                         key={s.slug}
                         to={`/servicios/${s.slug}`}
-                        className="block rounded-xl px-4 py-3 hover:bg-brand-500/10 transition-colors"
+                        className="block rounded-xl px-3.5 py-2.5 hover:bg-brand-500/10 transition-colors"
                       >
-                        <span className="block text-sm font-bold text-white">{tr(s.title)}</span>
-                        <span className="block text-xs text-slate-400 mt-0.5">{tr(s.tagline)}</span>
+                        <span className="block text-xs font-bold text-white truncate">{tr(s.title)}</span>
+                        <span className="block text-[11px] text-slate-400 mt-0.5 truncate">{tr(s.tagline)}</span>
                       </Link>
                     ))}
                   </div>
@@ -60,6 +60,14 @@ export const Header: React.FC = () => {
         </nav>
 
         <div className="hidden xl:flex items-center gap-3 whitespace-nowrap">
+          <Link
+            to="/boveda"
+            className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-3.5 py-2 text-xs font-bold text-cyan-200 hover:border-cyan-300 hover:bg-cyan-400/10 transition-colors"
+            title={lang === 'es' ? 'Portal seguro de credenciales para clientes' : 'Client Sovereign Vault'}
+          >
+            <KeyRound className="w-3.5 h-3.5 text-cyan-300" />
+            {lang === 'es' ? 'Bóveda Cliente' : 'Client Vault'}
+          </Link>
           <button
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-2 text-xs font-bold text-slate-300 hover:border-ink cursor-pointer"
@@ -77,6 +85,13 @@ export const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 xl:hidden">
+          <Link
+            to="/boveda"
+            className="inline-flex items-center gap-1 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-2.5 py-1.5 text-xs font-bold text-cyan-200"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-cyan-300" />
+            {lang === 'es' ? 'Bóveda' : 'Vault'}
+          </Link>
           <button
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
             className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-slate-300 cursor-pointer"
@@ -109,6 +124,12 @@ export const Header: React.FC = () => {
                 {tr(item.label)}
               </NavLink>
             ))}
+            <Link
+              to="/boveda"
+              className="block rounded-xl px-4 py-3 text-base font-bold text-cyan-300 bg-cyan-400/5 border border-cyan-400/20"
+            >
+              🔑 {lang === 'es' ? 'Ingreso a Bóveda Cliente' : 'Client Vault Login'}
+            </Link>
             <Link to="/contacto" className="mt-4 block rounded-full bg-brand-600 px-5 py-3.5 text-center text-sm font-bold text-white">
               {lang === 'es' ? 'Contáctanos' : 'Contact us'}
             </Link>

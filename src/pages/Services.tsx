@@ -14,8 +14,8 @@ export const Services: React.FC = () => {
         eyebrow={{ es: 'Servicios', en: 'Services' }}
         title={{ es: 'Software, IA y producto digital de punta a punta', en: 'Software, AI and digital product, end to end' }}
         subtitle={{
-          es: 'Cinco líneas de servicio que cubren desde la estrategia hasta la operación de tu producto.',
-          en: 'Five service lines covering everything from strategy to running your product.',
+          es: 'Soluciones tecnológicas de alto impacto que cubren desde la estrategia y la IA hasta el software a medida y la operación continua.',
+          en: 'High-impact technology solutions covering everything from strategy and AI to custom software and continuous operation.',
         }}
       />
       <section className="py-20">

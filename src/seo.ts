@@ -98,11 +98,15 @@ const graph = (...nodes: object[]) => [{ '@context': 'https://schema.org', '@gra
 
 /** Search-oriented titles per service (the on-page titles stay as they are). */
 const serviceTitles: Record<string, string> = {
-  'software-a-medida': 'Desarrollo de software a medida en Chile',
-  'agentes-ia': 'Agentes de IA y chatbots para WhatsApp en 7 días',
-  'apps-moviles': 'Desarrollo de apps móviles iOS y Android',
-  'web-y-producto': 'Desarrollo web, e-commerce y diseño UX/UI',
-  consultoria: 'Consultoría tecnológica y de IA para empresas',
+  'software-a-medida': 'Desarrollo de software a medida, intranets y portales B2B',
+  'agentes-ia': 'Agentes de IA cognitivos y automatización con RAG',
+  'campus-virtuales': 'Campus virtuales y plataformas educativas a medida',
+  'integraciones-gob': 'Integraciones gubernamentales, SENCE y ClaveÚnica',
+  'pasarelas-pago': 'Integración de pasarelas de pago Webpay y Mercado Pago',
+  'seo-tecnico': 'Posicionamiento SEO técnico y crecimiento orgánico',
+  'apps-moviles': 'Desarrollo de apps móviles y PWA instalables',
+  'migracion-cloud': 'Migración a la nube y servidores VPS dedicados',
+  consultoria: 'Diagnóstico tecnológico y hoja de ruta EBS 693',
 };
 
 const home: PageSeo = {

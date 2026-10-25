@@ -1,11 +1,11 @@
 import React from 'react';
-import { Code2, Bot, Smartphone, Globe, Compass, Zap } from 'lucide-react';
+import { Code2, Bot, Smartphone, Globe, Compass, Zap, GraduationCap, Landmark, CreditCard, Search, Cloud, ShieldCheck } from 'lucide-react';
 import type { Service } from '../data/site';
 
-const icons = { Code2, Bot, Smartphone, Globe, Compass };
+const icons = { Code2, Bot, Smartphone, Globe, Compass, GraduationCap, Landmark, CreditCard, Search, Cloud, ShieldCheck };
 
 export const ServiceIcon: React.FC<{ name: Service['icon']; className?: string }> = ({ name, className = 'w-6 h-6' }) => {
-  const Icon = icons[name];
+  const Icon = icons[name] || Code2;
   return <Icon className={className} />;
 };
 

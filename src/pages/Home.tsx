@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Check } from 'lucide-react';
+import { ArrowUpRight, Check, KeyRound, ShieldCheck } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import { cases, process, services, stats, faqs } from '../data/site';
 import { ButtonLink, Container, CtaBand, SectionHeading } from '../components/ui';
@@ -114,6 +114,63 @@ export const Home: React.FC = () => {
       </section>
 
       <EbsOffer />
+
+      {/* Soberanía Tecnológica / Bóveda Digital */}
+      <section className="py-20 bg-gradient-to-b from-[#02060c] via-[#040e1b] to-[#02060c] border-y border-cyan-500/20 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[20rem] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <Container className="relative">
+          <div className="rounded-3xl border border-cyan-400/30 bg-[#071322]/80 backdrop-blur-xl p-8 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center shadow-2xl shadow-cyan-500/5">
+            <div className="lg:col-span-8 space-y-6">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-1.5 text-xs font-bold text-cyan-200">
+                <ShieldCheck className="w-4 h-4 text-cyan-300" />
+                {es ? 'Compromiso Ético Uni-Verso693' : 'Uni-Verso693 Ethical Standard'}
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+                {es ? (
+                  <>Garantía de Cero Secuestro Tecnológico: <span className="text-gradient-brand">Tu Bóveda Digital</span></>
+                ) : (
+                  <>Zero Vendor Lock-in Guarantee: <span className="text-gradient-brand">Your Sovereign Vault</span></>
+                )}
+              </h2>
+              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
+                {es
+                  ? 'A diferencia de las agencias tradicionales que retienen tus contraseñas y servidores para amarrarte, en Uni-Verso693 garantizamos tu independencia: cada cliente recibe acceso permanente a su Bóveda Digital con el 100% de sus credenciales, bases de datos y accesos desde el primer día a costo $0.'
+                  : 'Unlike agencies that hold your credentials hostage to lock you in, at Uni-Verso693 we guarantee your technological independence: every client gets 24/7 access to their Sovereign Vault with 100% of their keys, databases, and infrastructure at zero cost.'}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <div className="text-cyan-300 font-bold text-sm mb-1">{es ? '🔑 100% Accesos' : '🔑 100% Control'}</div>
+                  <div className="text-xs text-slate-400">{es ? 'Servidores, DNS, BD y Superadmin.' : 'Servers, DNS, DB & Superadmin.'}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <div className="text-cyan-300 font-bold text-sm mb-1">{es ? '🛡️ Cero Amarres' : '🛡️ Zero Lock-in'}</div>
+                  <div className="text-xs text-slate-400">{es ? 'Libre de migrar cuando tú decidas.' : 'Free to migrate whenever you want.'}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <div className="text-cyan-300 font-bold text-sm mb-1">{es ? '📦 Respaldo JSON' : '📦 JSON Backup'}</div>
+                  <div className="text-xs text-slate-400">{es ? 'Exportable con 1 clic para custodia.' : '1-click export for offline custody.'}</div>
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-4 flex flex-col items-center justify-center text-center space-y-4 rounded-2xl border border-white/10 bg-[#050b14] p-8">
+              <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 text-cyan-300 flex items-center justify-center border border-cyan-400/30">
+                <KeyRound className="w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-white">{es ? 'Portal Bóveda Cliente' : 'Client Vault Portal'}</h3>
+              <p className="text-xs text-slate-400">
+                {es ? 'Ingresa con tu correo y contraseña corporativa para revisar o respaldar tus accesos.' : 'Log in with your corporate email to review or backup your credentials.'}
+              </p>
+              <Link
+                to="/boveda"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-500 px-6 py-3 text-sm font-bold text-white transition-all shadow-lg shadow-cyan-500/20"
+              >
+                {es ? 'Acceder a la Bóveda' : 'Enter Vault'}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
 
       <YndiPetSpotlight />
 

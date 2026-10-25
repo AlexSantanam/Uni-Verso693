@@ -43,7 +43,7 @@ export const stats: { value: string; label: L }[] = [
 
 export interface Service {
   slug: string;
-  icon: 'Code2' | 'Bot' | 'Smartphone' | 'Globe' | 'Compass';
+  icon: 'Code2' | 'Bot' | 'Smartphone' | 'Globe' | 'Compass' | 'GraduationCap' | 'Landmark' | 'CreditCard' | 'Search' | 'Cloud' | 'ShieldCheck';
   title: L;
   tagline: L;
   description: L;
@@ -57,95 +57,273 @@ export interface Service {
 
 export const services: Service[] = [
   {
-    slug: 'software-a-medida',
-    icon: 'Code2',
-    title: { es: 'Desarrollo de software a medida', en: 'Custom software development' },
-    tagline: { es: 'Sistemas que encajan con tu operación', en: 'Systems that fit your operation' },
-    description: {
-      es: 'Diseñamos y construimos plataformas, sistemas internos y productos SaaS con arquitectura sólida, pensados para crecer contigo y para integrarse con las herramientas que ya usas.',
-      en: 'We design and build platforms, internal systems and SaaS products on a solid architecture, made to grow with you and plug into the tools you already use.',
-    },
-    bullets: {
-      es: ['Plataformas SaaS y sistemas internos', 'Backends, APIs e integraciones ERP/CRM', 'Pagos, autenticación y roles de usuario', 'Bases de datos seguras y escalables'],
-      en: ['SaaS platforms and internal systems', 'Backends, APIs and ERP/CRM integrations', 'Payments, authentication and user roles', 'Secure, scalable databases'],
-    },
-    deliverables: {
-      es: ['Código fuente y documentación', 'Infraestructura desplegada y monitoreada', 'Pruebas automatizadas', 'Traspaso técnico a tu equipo'],
-      en: ['Source code and documentation', 'Deployed and monitored infrastructure', 'Automated tests', 'Technical handover to your team'],
-    },
-  },
-  {
     slug: 'agentes-ia',
     icon: 'Bot',
     badge: { es: 'Deploy en 7 días', en: 'Live in 7 days' },
-    cta: { es: 'Quiero mi empleado de IA en 7 días', en: 'I want my AI employee in 7 days' },
-    title: { es: 'Agentes de IA y automatización', en: 'AI agents and automation' },
-    tagline: { es: 'Empleados digitales que no descansan', en: 'Digital employees that never clock out' },
+    cta: { es: 'Cotizar mi agente de IA', en: 'Get an AI agent quote' },
+    title: { es: 'Agentes de IA cognitivos y automatización', en: 'Cognitive AI agents and automation' },
+    tagline: { es: 'Inteligencia entrenada con el conocimiento de tu empresa', en: 'Intelligence trained on your company knowledge' },
     description: {
-      es: 'Agentes conversacionales y flujos automáticos que atienden clientes, califican prospectos y ejecutan tareas en tu CRM, con respuestas basadas en tus propios documentos.',
-      en: 'Conversational agents and automated workflows that serve customers, qualify leads and run tasks in your CRM, with answers grounded in your own documents.',
+      es: 'Diseñamos agentes autónomos con arquitectura RAG entrenados exclusivamente con tus manuales, documentos y normativas. Responden consultas complejas 24/7 sin alucinaciones, califican prospectos y ejecutan flujos en tu CRM.',
+      en: 'We build autonomous agents with RAG architecture trained strictly on your manuals, documents and policies. They answer complex questions 24/7 with zero hallucinations, qualify leads and trigger CRM workflows.',
     },
     bullets: {
-      es: ['WhatsApp, web, Instagram y correo', 'Bases de conocimiento con RAG para evitar alucinaciones', 'Traspaso fluido a una persona cuando hace falta', 'Automatización con webhooks, Make/n8n y microservicios'],
-      en: ['WhatsApp, web, Instagram and email', 'RAG knowledge bases to avoid hallucinations', 'Smooth handover to a person when needed', 'Automation with webhooks, Make/n8n and microservices'],
+      es: [
+        'Base de conocimiento propia (RAG) con citas exactas de fuentes',
+        'Despliegue multicanal: WhatsApp oficial, web y plataformas internas',
+        'Calificación inteligente de prospectos y derivación a ejecutivos',
+        'Automatización de flujos con APIs, n8n y webhooks seguros',
+      ],
+      en: [
+        'Proprietary knowledge base (RAG) with exact source citations',
+        'Omnichannel deployment: Official WhatsApp, web and internal tools',
+        'Intelligent lead qualification and human handover',
+        'Workflow automation with APIs, n8n and secure webhooks',
+      ],
     },
     deliverables: {
-      es: ['Agente entrenado con tu información', 'Integración con tu CRM y calendario', 'Panel de métricas y ajuste continuo', 'Guías de seguridad y privacidad'],
-      en: ['Agent trained on your information', 'CRM and calendar integration', 'Metrics dashboard and ongoing tuning', 'Security and privacy guidelines'],
+      es: ['Agente entrenado y calibrado con tu información', 'Integración con WhatsApp Business API o web', 'Panel de métricas y afinamiento continuo', 'Protocolos de privacidad y seguridad de datos'],
+      en: ['Trained and calibrated agent with your data', 'WhatsApp Business API or web integration', 'Metrics dashboard and continuous fine-tuning', 'Data privacy and security protocols'],
+    },
+  },
+  {
+    slug: 'campus-virtuales',
+    icon: 'GraduationCap',
+    badge: { es: 'Aulas PWA', en: 'PWA Classrooms' },
+    cta: { es: 'Cotizar campus virtual', en: 'Get a campus quote' },
+    title: { es: 'Campus virtuales y plataformas educativas', en: 'Virtual campuses and learning platforms' },
+    tagline: { es: 'Ecosistemas de aprendizaje a medida sin cobros por alumno', en: 'Tailored learning ecosystems with no per-student fees' },
+    description: {
+      es: 'Construimos campus virtuales e intranets de capacitación para academias, colegios, institutos y empresas. Portales separados para alumnos y profesores, aulas interactivas, banco de evaluaciones y certificados con verificación QR.',
+      en: 'We build virtual campuses and training intranets for academies, schools, institutes and corporations. Separate portals for students and teachers, interactive classrooms, quizzing and QR-verified diplomas.',
+    },
+    bullets: {
+      es: [
+        'Portales independientes con accesos para Alumnos, Docentes y Admin',
+        'Reproductor de video híbrido de alta velocidad y gestor documental',
+        'Banco de preguntas, evaluaciones automáticas y entrega de tareas',
+        'Certificados vectoriales en alta resolución con validación pública QR',
+      ],
+      en: [
+        'Separate portals and access levels for Students, Teachers and Admins',
+        'High-speed hybrid video player and document management',
+        'Question banks, automated grading and assignment turn-in',
+        'High-res vector certificates with public instant QR verification',
+      ],
+    },
+    deliverables: {
+      es: ['Campus virtual desplegado y 100% de propiedad del cliente', 'Portales operativos Alumno/Docente/Admin', 'Módulo de emisión de certificados con QR', 'Inducción operativa y material para docentes'],
+      en: ['Deployed virtual campus 100% owned by the client', 'Active Student/Teacher/Admin portals', 'Certificate generator with QR validation', 'Operational training and guide for teachers'],
+    },
+  },
+  {
+    slug: 'integraciones-gob',
+    icon: 'Landmark',
+    badge: { es: 'Cumplimiento Normativo', en: 'Regulatory Compliance' },
+    cta: { es: 'Consultar integración normativa', en: 'Consult regulatory integration' },
+    title: { es: 'Integraciones gubernamentales y cumplimiento SENCE', en: 'Government integrations and SENCE compliance' },
+    tagline: { es: 'Trazabilidad cronológica, ClaveÚnica y conexión con el Estado', en: 'Time tracking, ClaveUnica and state integrations' },
+    description: {
+      es: 'Desarrollamos conectores técnicos e integraciones regulatorias para OTECs e instituciones acreditadas: trazabilidad de asistencia bajo norma NCh 2728, webservices de SENCE, autenticación oficial vía ClaveÚnica y conexión con el SII.',
+      en: 'We engineer technical connectors and regulatory integrations for certified training providers and accredited bodies: NCh 2728 time tracking, SENCE webservices, official ClaveUnica state authentication and tax authority APIs.',
+    },
+    bullets: {
+      es: [
+        'Temporizador cronológico estricto de conexión y bloqueo anti-fraude',
+        'Reportes oficiales consolidados en Excel listos para auditorías SENCE',
+        'Validación de identidad oficial de usuarios mediante ClaveÚnica',
+        'Conexión segura con plataformas de fiscalización y emisión de DTEs',
+      ],
+      en: [
+        'Strict chronological attendance timer and anti-cheat video lock',
+        'Official consolidated Excel reports ready for SENCE audits',
+        'Official citizen identity validation via state ClaveUnica',
+        'Secure connection with regulatory oversight platforms and tax DTEs',
+      ],
+    },
+    deliverables: {
+      es: ['Motor de trazabilidad cronológica integrado', 'Módulo de exportación de planillas para fiscalizadores', 'Conexión validada con ClaveÚnica o SENCE', 'Documentación técnica para auditorías'],
+      en: ['Integrated chronological tracking engine', 'Inspector-ready spreadsheet export module', 'Validated connection with ClaveUnica or SENCE', 'Technical audit documentation'],
+    },
+  },
+  {
+    slug: 'software-a-medida',
+    icon: 'Code2',
+    badge: { es: 'Sistemas a Medida', en: 'Custom Systems' },
+    cta: { es: 'Cotizar desarrollo a medida', en: 'Get custom software quote' },
+    title: { es: 'Plataformas web, intranets y portales B2B', en: 'Web platforms, intranets and B2B portals' },
+    tagline: { es: 'Sistemas que reemplazan planillas y ordenan tu operación', en: 'Systems that replace spreadsheets and streamline your operation' },
+    description: {
+      es: 'Diseñamos y programamos plataformas web seguras, sistemas internos y portales para clientes con arquitectura moderna (React 19, TypeScript y Node.js). Control granular de roles, bases de datos cifradas y reportes en tiempo real.',
+      en: 'We engineer secure web platforms, internal systems and customer portals with modern architecture (React 19, TypeScript, Node.js). Granular role permissions, encrypted databases and real-time reports.',
+    },
+    bullets: {
+      es: [
+        'Plataformas web y portales de autoservicio para clientes y proveedores',
+        'Sustitución de planillas manuales por bases de datos PostgreSQL cifradas',
+        'Control de permisos, roles de usuario y flujos operativos internos',
+        'Dashboards interactivos con KPIs y métricas clave en tiempo real',
+      ],
+      en: [
+        'Web platforms and self-service portals for customers and vendors',
+        'Spreadsheet replacement with encrypted PostgreSQL databases',
+        'Permission management, user roles and internal operational workflows',
+        'Interactive dashboards with KPIs and real-time business metrics',
+      ],
+    },
+    deliverables: {
+      es: ['Código fuente propio sin dependencias cautivas', 'Infraestructura desplegada y monitoreada', 'Manual operativo de administración', 'Garantía técnica post-lanzamiento'],
+      en: ['Proprietary source code with zero vendor lock-in', 'Deployed and monitored cloud infrastructure', 'Operational administration manual', 'Post-launch technical warranty'],
+    },
+  },
+  {
+    slug: 'pasarelas-pago',
+    icon: 'CreditCard',
+    badge: { es: 'Webpay & Mercado Pago', en: 'Webpay & Mercado Pago' },
+    cta: { es: 'Cotizar integración de pagos', en: 'Get payment integration quote' },
+    title: { es: 'Integración de pasarelas de pago online', en: 'Online payment gateways integration' },
+    tagline: { es: 'Cobra con tarjetas de crédito y débito sin fricción', en: 'Collect credit and debit card payments smoothly' },
+    description: {
+      es: 'Conectamos pasarelas de pago chilenas e internacionales (Transbank Webpay Plus, Mercado Pago, Flow y Stripe) a tu sitio web, tienda o sistema interno, con confirmación instantánea por webhooks y emisión de comprobantes.',
+      en: 'We connect local and global payment gateways (Transbank Webpay Plus, Mercado Pago, Flow, Stripe) to your site, store or custom platform, with instant webhook confirmation and automated receipts.',
+    },
+    bullets: {
+      es: [
+        'Integración oficial con Webpay Plus, Mercado Pago, Flow y Stripe',
+        'Sincronización instantánea de estados de pago mediante Webhooks',
+        'Conciliación automática y despacho de correos de confirmación',
+        'Arquitectura segura bajo estándares PCI-DSS y prevención de fraudes',
+      ],
+      en: [
+        'Official integration with Webpay Plus, Mercado Pago, Flow and Stripe',
+        'Real-time payment status synchronization via Webhooks',
+        'Automated reconciliation and customer confirmation emails',
+        'Secure architecture adhering to PCI-DSS standards and fraud protection',
+      ],
+    },
+    deliverables: {
+      es: ['Pasarela conectada y probada en ambiente productivo', 'Módulo de confirmación y comprobantes de venta', 'Panel de historial de transacciones', 'Guía de administración de cobros'],
+      en: ['Live payment gateway tested in production', 'Confirmation module and sales receipt generator', 'Transaction history dashboard', 'Payment administration guide'],
+    },
+  },
+  {
+    slug: 'seo-tecnico',
+    icon: 'Search',
+    badge: { es: 'Escala Orgánica', en: 'Organic Scale' },
+    cta: { es: 'Auditar mi posicionamiento', en: 'Audit my search ranking' },
+    title: { es: 'Posicionamiento SEO técnico y crecimiento orgánico', en: 'Technical SEO and organic growth' },
+    tagline: { es: 'Visibilidad en Google con alcance nacional e internacional', en: 'Google visibility with national and international reach' },
+    description: {
+      es: 'Optimizamos la arquitectura de tu sitio web, datos estructurados (Schema.org) y Core Web Vitals para que Google te indexe en las primeras posiciones y conviertas visitas en prospectos calificados en Chile y el extranjero.',
+      en: 'We optimize site architecture, structured data (Schema.org) and Core Web Vitals to rank at the top of Google and turn organic traffic into qualified leads in Chile and global markets.',
+    },
+    bullets: {
+      es: [
+        'SEO técnico profundo, sitemaps dinámicos y arquitectura semántica',
+        'Optimización de velocidad de carga y rendimiento Core Web Vitals',
+        'Estrategia de palabras clave de alta intención de compra',
+        'Estructura multilingüe para posicionamiento nacional e internacional',
+      ],
+      en: [
+        'Deep technical SEO, dynamic sitemaps and semantic architecture',
+        'Page speed and Core Web Vitals performance optimization',
+        'High commercial intent keyword positioning strategy',
+        'Multilingual indexing architecture for domestic and global ranking',
+      ],
+    },
+    deliverables: {
+      es: ['Auditoría técnica de indexación y errores en Search Console', 'Implementación de metadatos estructurados Schema.org', 'Optimización de velocidad en móviles y escritorio', 'Informe ejecutivo de métricas y posiciones'],
+      en: ['Technical audit and Search Console error resolution', 'Schema.org structured metadata implementation', 'Mobile and desktop speed optimization', 'Executive rankings and organic traffic report'],
     },
   },
   {
     slug: 'apps-moviles',
     icon: 'Smartphone',
-    title: { es: 'Aplicaciones móviles', en: 'Mobile applications' },
-    tagline: { es: 'iOS y Android desde una sola base de código', en: 'iOS and Android from one codebase' },
+    badge: { es: 'PWA & Nativas', en: 'PWA & Native' },
+    cta: { es: 'Cotizar aplicación móvil', en: 'Get mobile app quote' },
+    title: { es: 'Aplicaciones móviles y PWA instalables', en: 'Mobile applications and installable PWAs' },
+    tagline: { es: 'Experiencia móvil de alta velocidad para iOS y Android', en: 'High-speed mobile experience for iOS and Android' },
     description: {
-      es: 'Apps nativas y multiplataforma listas para las tiendas, con notificaciones, pagos y sincronización en tiempo real con tu backend.',
-      en: 'Native and cross-platform apps ready for the stores, with notifications, payments and real-time sync with your backend.',
+      es: 'Creamos aplicaciones web progresivas (PWA) instalables en un clic sin pagar comisiones a las tiendas, así como aplicaciones empaquetadas para Google Play y App Store con notificaciones push y sincronización en tiempo real.',
+      en: 'We build 1-click installable Progressive Web Apps (PWAs) with no store commission cuts, alongside packaged mobile apps for Google Play and App Store with push alerts and real-time cloud sync.',
     },
     bullets: {
-      es: ['iOS y Android con una sola base de código', 'Notificaciones push y actualizaciones en tiempo real', 'Integración segura con APIs y CRM', 'Publicación en App Store y Google Play'],
-      en: ['iOS and Android from a single codebase', 'Push notifications and real-time updates', 'Secure API and CRM integration', 'App Store and Google Play publishing'],
+      es: [
+        'PWA instalable directamente desde el navegador en iOS y Android',
+        'Acceso directo en pantalla de inicio, modo offline y carga instantánea',
+        'Apps compiladas para publicación en App Store y Google Play Store',
+        'Notificaciones push y sincronización bidireccional con tu backend',
+      ],
+      en: [
+        '1-click PWA direct browser installation on iOS and Android',
+        'Home screen icon, offline capability and instant loading',
+        'Packaged apps compiled for App Store and Google Play publishing',
+        'Push notifications and bi-directional real-time backend sync',
+      ],
     },
     deliverables: {
-      es: ['App publicada en las tiendas', 'Panel de administración', 'Analítica de uso', 'Plan de actualizaciones'],
-      en: ['App published on the stores', 'Admin panel', 'Usage analytics', 'Update plan'],
+      es: ['Aplicación PWA configurada con Service Workers y manifiesto', 'Código fuente optimizado para pantallas táctiles', 'Panel de administración en la nube', 'Garantía técnica de funcionamiento'],
+      en: ['PWA app configured with Service Workers and manifest', 'Touch-optimized source code', 'Cloud administration dashboard', 'Operational technical warranty'],
     },
   },
   {
-    slug: 'web-y-producto',
-    icon: 'Globe',
-    title: { es: 'Web, e-commerce y producto digital', en: 'Web, e-commerce and digital product' },
-    tagline: { es: 'Diseño y conversión, de la marca al código', en: 'Design and conversion, from brand to code' },
+    slug: 'migracion-cloud',
+    icon: 'Cloud',
+    badge: { es: 'Factura Local CLP', en: 'Local Invoicing' },
+    cta: { es: 'Cotizar migración a la nube', en: 'Get cloud migration quote' },
+    title: { es: 'Migración a la nube y continuidad operativa', en: 'Cloud migration and operational continuity' },
+    tagline: { es: 'Traslado a servidores VPS de alto rendimiento sin caídas', en: 'Transition to high-performance VPS servers with zero downtime' },
     description: {
-      es: 'Sitios corporativos, tiendas y portales con diseño UX/UI cuidado, velocidad, SEO y una identidad de marca coherente en todos los puntos de contacto.',
-      en: 'Corporate sites, stores and portals with careful UX/UI design, speed, SEO and a coherent brand identity across every touchpoint.',
+      es: 'Trasladamos tu sitio web, base de datos o sistema desde hostings convencionales lentos a servidores VPS dedicados en la nube (Hetzner / Vercel), con red global Cloudflare, certificados SSL, respaldos automáticos y soporte continuo.',
+      en: 'We migrate your website, database or system from legacy shared hosting to dedicated high-performance cloud VPS instances (Hetzner / Vercel), with Cloudflare CDN, SSL, automated backups and ongoing support.',
     },
     bullets: {
-      es: ['Sitios corporativos y landing pages', 'E-commerce y portales de clientes', 'Diseño UX/UI e identidad de marca', 'Optimización de velocidad y SEO'],
-      en: ['Corporate sites and landing pages', 'E-commerce and customer portals', 'UX/UI design and brand identity', 'Speed and SEO optimization'],
+      es: [
+        'Migración segura con cero tiempo de inactividad de tu negocio',
+        'Servidores VPS de alta velocidad con bases de datos PostgreSQL cifradas',
+        'Configuración de seguridad Cloudflare (WAF, DNS y protección anti-DDoS)',
+        'Asumimos y pagamos los servidores en el extranjero con una sola factura local en CLP',
+      ],
+      en: [
+        'Safe migration with zero operational downtime for your business',
+        'High-speed VPS instances with encrypted PostgreSQL databases',
+        'Cloudflare security configuration (WAF, DNS and anti-DDoS defense)',
+        'We handle and pay foreign cloud servers with a single local invoice',
+      ],
     },
     deliverables: {
-      es: ['Diseño en alta fidelidad', 'Sitio desplegado y optimizado', 'Kit de marca (logo, piezas gráficas)', 'Capacitación para editar contenido'],
-      en: ['High-fidelity design', 'Deployed, optimized site', 'Brand kit (logo, graphic assets)', 'Training to edit content'],
+      es: ['Infraestructura cloud aprovisionada y configurada', 'Traspaso de bases de datos y archivos sin pérdida de información', 'Certificados SSL y monitoreo de salud 24/7', 'Consolidación de costos en una factura local'],
+      en: ['Provisioned and hardened cloud infrastructure', 'Data and asset transfer with zero record loss', 'SSL certificates and 24/7 uptime monitoring', 'Cost consolidation into a single local invoice'],
     },
   },
   {
     slug: 'consultoria',
     icon: 'Compass',
-    title: { es: 'Consultoría y arquitectura tecnológica', en: 'Consulting and technology architecture' },
-    tagline: { es: 'Decisiones técnicas con retorno medible', en: 'Technical decisions with measurable return' },
+    badge: { es: 'Diagnóstico 45 min', en: '45-min Diagnosis' },
+    cta: { es: 'Agendar diagnóstico EBS 693', en: 'Book EBS 693 diagnosis' },
+    title: { es: 'Diagnóstico tecnológico y hoja de ruta EBS 693', en: 'Technology diagnosis and EBS 693 roadmap' },
+    tagline: { es: 'Decisiones de software e IA con retorno de inversión medible', en: 'Software and AI decisions with measurable ROI' },
     description: {
-      es: 'Auditamos tus procesos y tu stack, definimos una hoja de ruta con ROI estimado y te acompañamos en la adopción de IA y modernización de sistemas.',
-      en: 'We audit your processes and stack, define a roadmap with estimated ROI and support you through AI adoption and systems modernization.',
+      es: 'Auditamos tus procesos y tu stack tecnológico para detectar cuellos de botella y fugas de dinero. Diseñamos una hoja de ruta priorizada con cálculo de ROI concreto para implementar automatizaciones y software que realmente rentabilicen tu empresa.',
+      en: 'We audit your workflows and technology stack to detect operational bottlenecks and money leaks. We craft a prioritized roadmap with concrete ROI projections to implement software and AI that genuinely pay off.',
     },
     bullets: {
-      es: ['Auditoría de procesos y cuellos de botella', 'Hoja de ruta tecnológica y modelo de ROI', 'Seguridad, privacidad y cumplimiento', 'Capacitación de equipos'],
-      en: ['Process and bottleneck audit', 'Technology roadmap and ROI model', 'Security, privacy and compliance', 'Team training'],
+      es: [
+        'Auditoría operativa de tareas manuales repetitivas y cuellos de botella',
+        'Hoja de ruta priorizada con proyección de ahorro y retorno de inversión',
+        'Selección de arquitectura agnóstica sin amarres forzosos a proveedores',
+        'Sesión ejecutiva de presentación de hallazgos para gerencia o directorio',
+      ],
+      en: [
+        'Operational audit of manual repetitive tasks and team bottlenecks',
+        'Prioritized roadmap with savings projections and ROI modeling',
+        'Agnostic architecture selection with zero vendor lock-in',
+        'Executive presentation session for management or board members',
+      ],
     },
     deliverables: {
-      es: ['Informe de diagnóstico', 'Roadmap priorizado', 'Estimación de esfuerzo e inversión', 'Sesión de presentación ejecutiva'],
-      en: ['Diagnostic report', 'Prioritized roadmap', 'Effort and investment estimate', 'Executive presentation session'],
+      es: ['Informe de diagnóstico técnico y operativo', 'Hoja de ruta priorizada por impacto y costo', 'Modelo de retorno de inversión (ROI)', 'Acceso a la plataforma interactiva del diagnóstico'],
+      en: ['Technical and operational diagnostic report', 'Roadmap prioritized by business impact vs cost', 'Financial ROI projection model', 'Access to the interactive diagnosis dashboard'],
     },
   },
 ];

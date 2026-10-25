@@ -63,6 +63,11 @@ export const Footer: React.FC = () => {
                     </Link>
                   </li>
                 ))}
+              <li key="/boveda">
+                <Link to="/boveda" className="hover:text-cyan-300 text-cyan-200/90 transition-colors flex items-center gap-1.5 font-medium">
+                  <span>🔑</span> {lang === 'es' ? 'Bóveda Cliente' : 'Client Vault'}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
