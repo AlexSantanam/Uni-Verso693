@@ -1156,8 +1156,9 @@
               <div class="brand-text-sub">Fundación Bomberos Viña del Mar &bull; OTEC NCh 2728</div>
             </div>
           </div>
-          <div class="user-pill">
-            👤 Alumno: Rodrigo Valenzuela (División Minera)
+          <div class="user-pill" id="user-session-pill" onclick="toggleUserSession()" title="Haz clic para alternar entre Rodrigo Valenzuela y Directora Claudia" style="cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;">
+            <span id="user-session-label">👤 Alumno: Rodrigo Valenzuela (División Minera)</span>
+            <span style="font-size: 9px; background: #e2e8f0; color: #334155; padding: 2px 7px; border-radius: 10px; font-weight: 700;">🔄 Cambiar Sesión</span>
           </div>
         </div>
 
@@ -1201,8 +1202,8 @@
                   <strong>Profesor Virtual Ígneo (IA 24/7)</strong>
                   <span style="font-size: 10px; color: #16a34a; font-weight: 700; margin-left: 4px;">● EN LÍNEA</span>
                 </div>
-                <div style="font-size: 9.5px; background: #e9d5ff; color: #581c87; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 0.3px;">
-                  ✨ ¡CHATEA EN VIVO!
+                <div style="font-size: 9.5px; background: #e9d5ff; color: #581c87; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 0.3px;" id="ai-active-user-badge">
+                  👤 Alumno: Rodrigo Valenzuela
                 </div>
               </div>
 
@@ -1298,6 +1299,16 @@
             <h5>Diploma Oficial Verificable al Instante en Terreno</h5>
             <p>Al aprobar, el alumno descarga su diploma con un <strong>Código QR activo</strong>. Cuando el prevencionista de riesgos en faena o el supervisor de faena minera escanea el QR con su teléfono, la plataforma valida en 1 segundo que el diploma es legítimo, sin fraudes ni fotocopias adulteradas.</p>
             <span class="qr-hash">HASH DE SEGURIDAD: 9f82a4...d8721c &bull; CERTIFICADO #IGN-2026-0841</span>
+          </div>
+        </div>
+
+      <!-- Callout Contexto de Sesión Real -->
+        <div style="margin-top: 14px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 12px; color: #166534; display: flex; align-items: flex-start; gap: 10px;">
+          <span style="font-size: 18px;">💡</span>
+          <div>
+            <strong style="color: #15803d; font-size: 12.5px;">Reconocimiento Contextual de Sesión en Tiempo Real:</strong><br>
+            A diferencia de chatbots genéricos, el Profesor Virtual de Ígneo <strong>reconoce al alumno en sesión activa (Rodrigo Valenzuela, División Minera)</strong>, monitorea su lección actual y su tiempo acumulado SENCE, adaptando el tono de la respuesta según su perfil técnico. 
+            <em>(Haz clic en <strong>"🔄 Cambiar Sesión"</strong> arriba para ver cómo la IA adapta su respuesta si entra la <strong>Directora Claudia</strong> de OTEC Ígneo).</em>
           </div>
         </div>
 
@@ -1723,6 +1734,63 @@ const LESSON_DATA = {
   }
 };
 
+
+// Gestión de Perfiles de Usuario en Sesión (Rodrigo Valenzuela / Directora Claudia)
+let currentActiveUser = {
+  id: 'rodrigo',
+  name: 'Rodrigo Valenzuela',
+  role: 'Alumno • División Minera',
+  displayLabel: '👤 Alumno: Rodrigo Valenzuela (División Minera)',
+  badgeText: '👤 Alumno: Rodrigo Valenzuela'
+};
+
+function toggleUserSession() {
+  const chat = document.getElementById('ai-chat-messages');
+  const label = document.getElementById('user-session-label');
+  const badge = document.getElementById('ai-active-user-badge');
+  const indicator = document.getElementById('ai-typing-indicator');
+
+  if (currentActiveUser.id === 'rodrigo') {
+    currentActiveUser = {
+      id: 'claudia',
+      name: 'Directora Claudia',
+      role: 'Directora Ejecutiva • OTEC Ígneo',
+      displayLabel: '👩‍💼 Directora: Claudia (OTEC Ígneo)',
+      badgeText: '👩‍💼 Directora: Claudia'
+    };
+  } else {
+    currentActiveUser = {
+      id: 'rodrigo',
+      name: 'Rodrigo Valenzuela',
+      role: 'Alumno • División Minera',
+      displayLabel: '👤 Alumno: Rodrigo Valenzuela (División Minera)',
+      badgeText: '👤 Alumno: Rodrigo Valenzuela'
+    };
+  }
+
+  if (label) label.textContent = currentActiveUser.displayLabel;
+  if (badge) badge.textContent = currentActiveUser.badgeText;
+
+  // Anunciar cambio de sesión en el chat
+  if (chat) {
+    const sessionNotice = document.createElement('div');
+    sessionNotice.style.cssText = "font-size: 10px; color: #6b21a8; background: #ede9fe; padding: 4px 8px; border-radius: 8px; text-align: center; font-weight: 700; margin: 6px 0;";
+    sessionNotice.innerHTML = `🔄 Sesión activa cambiada a: <strong>${currentActiveUser.name}</strong> (${currentActiveUser.role})`;
+    chat.appendChild(sessionNotice);
+
+    // Saludo contextual de la IA
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'ai-bubble-a';
+    if (currentActiveUser.id === 'claudia') {
+      aiBubble.innerHTML = `<strong>Profesor Virtual:</strong> "¡Bienvenida <strong>Directora Claudia</strong>! Ha ingresado con perfil de <strong>Dirección Ejecutiva OTEC Ígneo</strong>. Como administradora institucional, puedo reportarle el cumplimiento SENCE de las brigadas mineras, el avance general de cursos o resolver consultas normativas NFPA. ¿Qué informe o gestión desea revisar hoy?"`;
+    } else {
+      aiBubble.innerHTML = `<strong>Profesor Virtual:</strong> "Hola <strong>Rodrigo</strong>, un gusto saludarte nuevamente. Continuamos en tu sesión de <strong>División Minera</strong> con 32 minutos de tiempo auditado SENCE en el Módulo 2. ¿En qué procedimiento o norma NFPA te puedo orientar?"`;
+    }
+    chat.appendChild(aiBubble);
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+
 let currentLesson = 2;
 let isPlaying = false;
 let playInterval = null;
@@ -1915,28 +1983,53 @@ const STUDENT_PREFIXES = [
 
 function getAiResponse(query) {
   const clean = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const isClaudia = (currentActiveUser.id === 'claudia');
+  const userName = currentActiveUser.name;
   
-  // Si saluda o pregunta quién es
+  // Saludos / Quién eres
   if (clean.includes('hola') || clean.includes('quien eres') || clean.includes('como te llamas') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes')) {
-    return "¡Hola <strong>Rodrigo</strong>! Qué gusto saludarte. Veo que estás activo cursando el Módulo 2 con un <strong>72% de avance</strong> en tu brigada de <strong>División Minera</strong>. Estoy conectado 24/7 para responder tus consultas sobre combate de incendios, rescate, normas NFPA o tu registro SENCE. ¿En qué te puedo orientar en este momento?";
+    if (isClaudia) {
+      return `¡Hola estimada <strong>Directora Claudia</strong>! Es un honor saludarle. Estoy conectado como su Asistente de Gestión Pedagógica e Inteligencia Normativa en OTEC Ígneo. Tengo acceso en tiempo real a las métricas de asistencia SENCE, calificaciones de brigadas corporativas y manuales técnicos NFPA. ¿En qué le puedo colaborar?`;
+    } else {
+      return `¡Hola <strong>Rodrigo</strong>! Qué gusto saludarte. Veo que estás activo cursando el Módulo 2 con un <strong>72% de avance</strong> en tu brigada de <strong>División Minera</strong>. Estoy conectado 24/7 para responder tus consultas sobre combate de incendios, rescate, normas NFPA o tu registro SENCE. ¿En qué te puedo orientar en este momento?`;
+    }
   }
 
-  // Si pregunta si lo conoce o cuál es su nombre
-  if (clean.includes('mi nombre') || clean.includes('me llamo') || clean.includes('sabes quien soy') || clean.includes('me reconoces') || clean.includes('rodrigo')) {
-    return "¡Por supuesto! Eres <strong>Rodrigo Valenzuela</strong>, brigadista registrado de la <strong>División Minera</strong> en este curso oficial de OTEC Ígneo (Fundación Bomberos Viña del Mar). Tienes acumulados <strong>32 minutos de tiempo auditado SENCE</strong> en la lección actual.";
+  // Si pregunta si lo reconoce
+  if (clean.includes('mi nombre') || clean.includes('me llamo') || clean.includes('sabes quien soy') || clean.includes('me reconoces') || clean.includes('rodrigo') || clean.includes('claudia')) {
+    if (isClaudia) {
+      return `¡Por supuesto! Usted es la <strong>Directora Claudia</strong>, autoridad ejecutiva de <strong>OTEC Ígneo (Fundación Bomberos Viña del Mar)</strong>. Su perfil tiene privilegios institucionales de auditoría, supervisión de docentes y control general de cursos y franquicias SENCE.`;
+    } else {
+      return `¡Por supuesto! Eres <strong>Rodrigo Valenzuela</strong>, brigadista registrado de la <strong>División Minera</strong> en este curso oficial de OTEC Ígneo. Tienes acumulados <strong>32 minutos de tiempo auditado SENCE</strong> en la lección actual.`;
+    }
   }
 
+  // Respuestas de la base de conocimiento
   for (const item of KNOWLEDGE_BASE) {
     for (const trigger of item.triggers) {
       const cleanTrigger = trigger.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (clean.includes(cleanTrigger)) {
-        const randPrefix = STUDENT_PREFIXES[Math.floor(Math.random() * STUDENT_PREFIXES.length)];
-        return `${randPrefix} ${item.response}`;
+        if (isClaudia) {
+          return `Estimada <strong>Directora Claudia</strong>, respecto a este protocolo normativo: ${item.response}`;
+        } else {
+          const prefixes = [
+            `Hola <strong>Rodrigo</strong>, excelente consulta técnica.`,
+            `Estimado <strong>Rodrigo</strong> (División Minera):`,
+            `Atento <strong>Rodrigo</strong>, según los manuales de tu brigada:`,
+            `Conforme a los protocolos de tu curso, <strong>Rodrigo</strong>:`
+          ];
+          const randPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+          return `${randPrefix} ${item.response}`;
+        }
       }
     }
   }
 
-  return `Estimado <strong>Rodrigo</strong>, respecto a tu consulta sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los manuales operacionales de OTEC Ígneo y normativas NFPA aplicables a tu faena minera, este procedimiento debe ejecutarse asegurando la línea de seguridad, la evaluación de riesgos del entorno y la coordinación radial con el puesto de mando. Puedes profundizar este punto en las guías técnicas descargables del aula o consultar directamente con el instructor del módulo (Cdte. Cristian Aránguiz).`;
+  if (isClaudia) {
+    return `Estimada <strong>Directora Claudia</strong>, respecto a su consulta sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los lineamientos institucionales de OTEC Ígneo y normativas técnicas NFPA, este módulo se encuentra parametrizado para responder a los estándares de fiscalización SENCE y de seguridad operacional. Puedo emitir un informe detallado sobre este contenido si lo requiere.`;
+  } else {
+    return `Estimado <strong>Rodrigo</strong>, respecto a tu consulta sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los manuales operacionales de OTEC Ígneo y normativas NFPA aplicables a tu faena minera, este procedimiento debe ejecutarse asegurando la línea de seguridad, la evaluación de riesgos del entorno y la coordinación radial con el puesto de mando. Puedes profundizar este punto en las guías técnicas descargables del aula o consultar directamente con el instructor del módulo (Cdte. Cristian Aránguiz).`;
+  }
 }
 
 let isAiResponding = false;
