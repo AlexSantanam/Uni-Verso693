@@ -1209,10 +1209,10 @@
               <!-- Stream de Mensajes -->
               <div class="ai-chat-messages" id="ai-chat-messages">
                 <div class="ai-bubble-q">
-                  "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?"
+                  "Profesor, ¿qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos en faena?"
                 </div>
                 <div class="ai-bubble-a">
-                  <strong>Profesor Virtual:</strong> "Según la Guía Técnica del Módulo 2 y norma NFPA 11, para líquidos Clase B no polares se aplica dosificación al <strong>3%</strong> mediante técnica de rebote contra pared del estanque para no romper el sello de vapor."
+                  <strong>Profesor Virtual:</strong> "Hola <strong>Rodrigo</strong>, un gusto saludarte. Para tus procedimientos en faena minera y según la Guía Técnica del Módulo 2 y norma NFPA 11, en líquidos Clase B no polares se aplica dosificación al <strong>3%</strong> mediante técnica de rebote contra pared del estanque para no romper el sello de vapor."
                 </div>
               </div>
 
@@ -1906,17 +1906,37 @@ const KNOWLEDGE_BASE = [
   }
 ];
 
+const STUDENT_PREFIXES = [
+  "Hola <strong>Rodrigo</strong>, excelente consulta técnica.",
+  "Estimado <strong>Rodrigo</strong> (División Minera):",
+  "Atento <strong>Rodrigo</strong>, según los manuales de tu brigada:",
+  "Conforme a los protocolos de tu curso, <strong>Rodrigo</strong>:"
+];
+
 function getAiResponse(query) {
-  const clean = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const clean = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  // Si saluda o pregunta quién es
+  if (clean.includes('hola') || clean.includes('quien eres') || clean.includes('como te llamas') || clean.includes('saludos') || clean.includes('buenos dias') || clean.includes('buenas tardes')) {
+    return "¡Hola <strong>Rodrigo</strong>! Qué gusto saludarte. Veo que estás activo cursando el Módulo 2 con un <strong>72% de avance</strong> en tu brigada de <strong>División Minera</strong>. Estoy conectado 24/7 para responder tus consultas sobre combate de incendios, rescate, normas NFPA o tu registro SENCE. ¿En qué te puedo orientar en este momento?";
+  }
+
+  // Si pregunta si lo conoce o cuál es su nombre
+  if (clean.includes('mi nombre') || clean.includes('me llamo') || clean.includes('sabes quien soy') || clean.includes('me reconoces') || clean.includes('rodrigo')) {
+    return "¡Por supuesto! Eres <strong>Rodrigo Valenzuela</strong>, brigadista registrado de la <strong>División Minera</strong> en este curso oficial de OTEC Ígneo (Fundación Bomberos Viña del Mar). Tienes acumulados <strong>32 minutos de tiempo auditado SENCE</strong> en la lección actual.";
+  }
+
   for (const item of KNOWLEDGE_BASE) {
     for (const trigger of item.triggers) {
-      const cleanTrigger = trigger.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const cleanTrigger = trigger.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (clean.includes(cleanTrigger)) {
-        return item.response;
+        const randPrefix = STUDENT_PREFIXES[Math.floor(Math.random() * STUDENT_PREFIXES.length)];
+        return `${randPrefix} ${item.response}`;
       }
     }
   }
-  return `Respecto a tu consulta técnica sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los manuales operacionales de OTEC Ígneo y normativas NFPA aplicables, este procedimiento debe ejecutarse asegurando la línea de seguridad, la evaluación de riesgos del entorno y la coordinación radial con el puesto de mando. Puedes profundizar este punto en las guías técnicas descargables del aula o consultar directamente con el instructor del módulo.`;
+
+  return `Estimado <strong>Rodrigo</strong>, respecto a tu consulta sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los manuales operacionales de OTEC Ígneo y normativas NFPA aplicables a tu faena minera, este procedimiento debe ejecutarse asegurando la línea de seguridad, la evaluación de riesgos del entorno y la coordinación radial con el puesto de mando. Puedes profundizar este punto en las guías técnicas descargables del aula o consultar directamente con el instructor del módulo (Cdte. Cristian Aránguiz).`;
 }
 
 let isAiResponding = false;
