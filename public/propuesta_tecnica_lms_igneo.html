@@ -1227,8 +1227,8 @@
 
               <!-- Chips de Preguntas Rápidas Dinámicas -->
               <div class="ai-quick-chips" id="dynamic-quick-chips">
-                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cómo fiscaliza SENCE el tiempo de permanencia?')">
-                  💡 ¿Cómo fiscaliza SENCE?
+                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cuál es la presión de trabajo recomendada en el pitón de espuma?')">
+                  💡 Presión en Pitón de Espuma
                 </button>
                 <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cuáles son las 3 tácticas de ventilación según NFPA?')">
                   💡 Ventilación táctica NFPA
@@ -1683,7 +1683,7 @@ const LESSON_DATA = {
     chips: [
       { text: "💡 ¿Distancia de aislamiento HazMat?", query: "¿Cuál es la distancia de aislamiento inicial mínima ante derrame químico desconocido?" },
       { text: "💡 ¿Zonificación caliente/tibia/fría?", query: "¿Cómo se define la zona caliente, tibia y fría en HazMat?" },
-      { text: "💡 ¿Cómo fiscaliza SENCE?", query: "¿Cómo fiscaliza SENCE el tiempo de permanencia?" }
+      { text: "💡 ¿Qué EPP se exige en zona caliente?", query: "¿Qué nivel de equipo de protección personal EPP se requiere en zona caliente según NFPA 472?" }
     ]
   },
   2: {
@@ -1698,7 +1698,7 @@ const LESSON_DATA = {
     chips: [
       { text: "💡 ¿Porcentaje de espuma AFFF?", query: "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?" },
       { text: "💡 Ventilación táctica NFPA", query: "¿Cuáles son las 3 tácticas de ventilación según NFPA?" },
-      { text: "💡 ¿Cómo fiscaliza SENCE?", query: "¿Cómo fiscaliza SENCE el tiempo de permanencia?" },
+      { text: "💡 ¿Qué EPP se exige en zona caliente?", query: "¿Qué nivel de equipo de protección personal EPP se requiere en zona caliente según NFPA 472?" },
       { text: "💡 O2 en Espacios Confinados", query: "¿Cuál es el límite seguro de oxígeno en espacios confinados (NFPA 350)?" }
     ]
   },
@@ -1924,6 +1924,14 @@ function togglePlayPause() {
 
 // Motor de IA Pedagógica
 const KNOWLEDGE_BASE = [
+  {
+    triggers: ['presion', 'piton', 'boquilla', 'psi', 'bar', 'alcance'],
+    response: "Para generadores y pitones de espuma de baja expansión según <strong>NFPA 11</strong>, la presión de trabajo óptima en boquilla se sitúa entre <strong>75 y 100 PSI (5 a 7 bar)</strong>. Una presión excesiva destruye la estructura de la burbuja y rompe el sello de vapor, mientras que una presión insuficiente reduce el alcance balístico del chorro e impide cubrir el líquido incendiado."
+  },
+  {
+    triggers: ['epp', 'proteccion personal', 'nivel a', 'nivel b', 'autonomo', 'traje', 'scba', 'era'],
+    response: "Conforme a <strong>NFPA 472 y NFPA 1971</strong>, el combate de fuego Clase B exige <strong>Equipo de Respiración Autónoma (ERA / SCBA)</strong> de presión positiva, traje estructural con barrera térmica y de humedad, guantes para hidrocarburos y esclavina nomex. Ante gases corrosivos o vapores tóxicos se escala a traje encapsulado hermético Nivel A con monitoreo constante de aire residual."
+  },
   {
     triggers: ['espuma', 'afff', 'clase b', 'hidrocarburo', 'estanque', 'liquidos inflamables', 'porcentaje', 'rebote'],
     response: "Según la <strong>Guía Técnica del Módulo 2 y norma NFPA 11</strong>, para líquidos Clase B no polares (gasolina, diésel) se aplica dosificación al <strong>3%</strong>. Para solventes polares (alcoholes, acetona) se requiere espuma AR-AFFF al <strong>6%</strong>. La aplicación debe realizarse mediante <strong>técnica de rebote suave</strong> contra pared o talud para consolidar la manta sellante sin romper el sello de vapor."
