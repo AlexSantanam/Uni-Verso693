@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -38,25 +38,41 @@
     .header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 3px solid var(--primary);
       padding-bottom: 20px;
       margin-bottom: 25px;
     }
-    .brand h1 { font-size: 22px; font-weight: 800; color: var(--navy); }
-    .brand p { font-size: 11.5px; color: #64748b; margin-top: 2px; }
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .logo-divider {
+      width: 1px;
+      height: 40px;
+      background: #cbd5e1;
+    }
+    .brand h1 { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .brand p { font-size: 11px; color: #64748b; margin-top: 1px; }
     .meta { text-align: right; }
     .badge-code {
       display: inline-block;
       background: #0f172a;
       color: white;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13.5px;
       padding: 4px 12px;
       border-radius: 6px;
       letter-spacing: 0.5px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
-    .meta div { font-size: 12px; color: #64748b; }
+    .meta div { font-size: 11.5px; color: #64748b; }
     .client-box {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -83,7 +99,7 @@
       font-weight: 700;
     }
     td {
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
@@ -158,17 +174,21 @@
     <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
   </div>
 
-  <!-- Header -->
+  <!-- Header with Dual Logos -->
   <div class="header">
-    <div class="brand">
-      <h1>UNIVERSO693 SpA</h1>
-      <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile &bull; contacto@universo693.com</p>
-      <p style="color: #dc2626; font-weight: 700;">Ingeniería de Software & Arquitectura E-Learning</p>
+    <div class="header-logos">
+      <img src="assets/logo_universo693.png" alt="UNIVERSO693" class="logo-img">
+      <div class="logo-divider"></div>
+      <img src="assets/igneo/logo-bomberos-vina.webp" alt="OTEC Ígneo" class="logo-img">
+      <div class="brand">
+        <h1>UNIVERSO693 SpA</h1>
+        <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile</p>
+        <p style="color: #dc2626; font-weight: 700;">Ingeniería de Software & E-Learning</p>
+      </div>
     </div>
     <div class="meta">
       <div class="badge-code">COT-2026-0007</div>
-      <div><strong>Fecha de Emisión:</strong> Octubre 2026</div>
-      <div><strong>Validez de Oferta:</strong> 30 días corridos</div>
+      <div><strong>Fecha:</strong> Octubre 2026 &bull; <strong>Validez:</strong> 30 días</div>
       <div><strong>Estado:</strong> Oficial / Lista para Firma</div>
     </div>
   </div>
@@ -182,7 +202,7 @@
       <p><strong>Ubicación:</strong> Viña del Mar, Región de Valparaíso</p>
     </div>
     <div>
-      <p><strong>Proyecto:</strong> Campus Virtual LMS Profesional & Motor Forense SENCE</p>
+      <p><strong>Proyecto:</strong> Campus Virtual LMS Profesional, Profesor IA & Motor SENCE</p>
       <p><strong>Modalidad:</strong> Llave en Mano con Soberanía Digital</p>
       <p><strong>Plazo de Entrega:</strong> 4 semanas</p>
       <p><strong>Garantía Técnica:</strong> 60 días corridos post-entrega</p>
@@ -202,13 +222,13 @@
       <tr>
         <td style="font-weight: bold;">01</td>
         <td>
-          <strong>Campus Virtual LMS Profesional (Roles Autónomos Separados)</strong><br>
+          <strong>Campus Virtual LMS Profesional (Roles Autónomos Separados PWA)</strong><br>
           • Portal Alumno con diseño React PWA optimizado para teléfonos móviles en terreno y PC.<br>
           • Portal Docente independiente: subida autónoma de lecciones, videos YouTube/MP4 propios, cuestionarios y calificaciones.<br>
           • Portal Administrador Institucional con métricas, control de matrículas y gestión centralizada.<br>
           • <em>Cursos Ilimitados y Alumnos Ilimitados sin cobros extras de licencias.</em>
         </td>
-        <td style="text-align: right; font-weight: bold;">$1.450.000</td>
+        <td style="text-align: right; font-weight: bold;">$1.200.000</td>
       </tr>
       <tr>
         <td style="font-weight: bold;">02</td>
@@ -224,24 +244,34 @@
       <tr>
         <td style="font-weight: bold;">03</td>
         <td>
-          <strong>Diplomas Digitales con Código QR y Validación en Terreno con Hash SHA-256</strong><br>
-          • Emisión automatizada de diplomas PDF oficiales con código QR único por alumno y curso.<br>
-          • Portal web de validación pública: permite a prevencionistas de riesgos o supervisores en faena minera escanear el diploma desde cualquier celular y confirmar su autenticidad instantánea.<br>
-          • Sistema criptográfico antifraude que previene adulteraciones de certificados.
+          <strong>Profesor Virtual con IA Especializada 24/7 (Tutor Pedagógico RAG)</strong><br>
+          • Asistente de inteligencia artificial integrado en cada curso, entrenado exclusivamente con el material oficial y guías técnicas de Ígneo.<br>
+          • Resuelve dudas técnicas a los alumnos en cualquier horario citando las normas y manuales del curso.<br>
+          • Alivia hasta el 85% de las consultas repetitivas a los instructores y relatores.
         </td>
         <td style="text-align: right; font-weight: bold;">$450.000</td>
       </tr>
       <tr>
         <td style="font-weight: bold;">04</td>
         <td>
+          <strong>Diplomas Digitales con Código QR y Validación en Terreno con Hash SHA-256</strong><br>
+          • Emisión automatizada de diplomas PDF oficiales con código QR único por alumno y curso.<br>
+          • Portal web de validación pública: permite a prevencionistas de riesgos o supervisores en faena minera escanear el diploma desde cualquier celular y confirmar su autenticidad instantánea.<br>
+          • Sistema criptográfico antifraude que previene adulteraciones de certificados.
+        </td>
+        <td style="text-align: right; font-weight: bold;">$350.000</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">05</td>
+        <td>
           <strong>Carga Masiva B2B de Alumnos & Gestor de Empresas Contratantes</strong><br>
           • Módulo para matricular hasta 500 trabajadores de empresas clientes mediante carga de archivo Excel en segundos.<br>
           • Generación automática y despacho de credenciales de acceso seguras a los correos de los trabajadores.
         </td>
-        <td style="text-align: right; font-weight: bold;">$450.000</td>
+        <td style="text-align: right; font-weight: bold;">$350.000</td>
       </tr>
       <tr>
-        <td style="font-weight: bold;">05</td>
+        <td style="font-weight: bold;">06</td>
         <td>
           <strong>Bóveda Digital de Credenciales & Soberanía Tecnológica</strong><br>
           • Entrega formal de Bóveda Cifrada con el 100% de accesos maestros, bases de datos y DNS a nombre de la Fundación.<br>
@@ -257,8 +287,9 @@
     <div class="callout-notes">
       <h4 style="font-size: 12px; color: var(--navy); margin-bottom: 6px;">Ventajas Exclusivas de esta Propuesta:</h4>
       <p>• <strong>Cursos y Administradores ILIMITADOS:</strong> Sin topes de 5 cursos ni cobros por licencias anuales.</p>
+      <p>• <strong>Profesor Virtual con IA 24/7 Incluido:</strong> Soporte pedagógico continuo para alumnos en faena o turnos.</p>
       <p>• <strong>Garantía de Soberanía Digital:</strong> Cero "secuestro de accesos"; la Fundación es dueña total de sus activos tecnológicos.</p>
-      <p>• <strong>Continuidad All-Inclusive OTEC:</strong> Plan mensual de \$190.000 + IVA que incluye servidores dedicados, base de datos, despacho masivo de correos y soporte continuo en una sola factura en pesos chilenos.</p>
+      <p>• <strong>Continuidad All-Inclusive OTEC:</strong> Plan mensual de \$190.000 + IVA con servidores cloud dedicados, base de datos, correos masivos, <strong>3 horas mensuales de ajustes/carga de cursos</strong> y acompañamiento técnico en auditorías SENCE.</p>
     </div>
     <div class="totals-box">
       <div class="totals-row">

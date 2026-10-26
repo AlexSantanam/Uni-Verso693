@@ -37,25 +37,41 @@
     .header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 3px solid var(--primary);
       padding-bottom: 20px;
       margin-bottom: 25px;
     }
-    .brand h1 { font-size: 22px; font-weight: 800; color: var(--navy); }
-    .brand p { font-size: 11.5px; color: #64748b; margin-top: 2px; }
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .logo-divider {
+      width: 1px;
+      height: 40px;
+      background: #cbd5e1;
+    }
+    .brand h1 { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .brand p { font-size: 11px; color: #64748b; margin-top: 1px; }
     .meta { text-align: right; }
     .badge-code {
       display: inline-block;
       background: #0f172a;
       color: white;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13.5px;
       padding: 4px 12px;
       border-radius: 6px;
       letter-spacing: 0.5px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
-    .meta div { font-size: 12px; color: #64748b; }
+    .meta div { font-size: 11.5px; color: #64748b; }
     .client-box {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -152,17 +168,21 @@
     <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
   </div>
 
-  <!-- Header -->
+  <!-- Header with Dual Logos -->
   <div class="header">
-    <div class="brand">
-      <h1>UNIVERSO693 SpA</h1>
-      <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile &bull; contacto@universo693.com</p>
-      <p style="color: #0284c7; font-weight: 700;">Ingeniería de Software & Arquitectura E-Learning</p>
+    <div class="header-logos">
+      <img src="assets/logo_universo693.png" alt="UNIVERSO693" class="logo-img">
+      <div class="logo-divider"></div>
+      <img src="assets/igneo/logo-bomberos-vina.webp" alt="OTEC Ígneo" class="logo-img">
+      <div class="brand">
+        <h1>UNIVERSO693 SpA</h1>
+        <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile</p>
+        <p style="color: #0284c7; font-weight: 700;">Ingeniería de Software & E-Learning</p>
+      </div>
     </div>
     <div class="meta">
       <div class="badge-code">COT-2026-0009</div>
-      <div><strong>Fecha de Emisión:</strong> Octubre 2026</div>
-      <div><strong>Validez de Oferta:</strong> 30 días corridos</div>
+      <div><strong>Fecha:</strong> Octubre 2026 &bull; <strong>Validez:</strong> 30 días</div>
       <div><strong>Estado:</strong> Oficial / Lista para Firma</div>
     </div>
   </div>
@@ -233,7 +253,7 @@
       <h4 style="font-size: 12px; color: var(--navy); margin-bottom: 6px;">Condiciones del Plan Esencial:</h4>
       <p>• <strong>Cursos y Alumnos Ilimitados:</strong> Sin topes de 5 cursos que restrinjan el crecimiento del OTEC.</p>
       <p>• <strong>Motor SENCE y Diplomas QR incluidos de entrada:</strong> Sin cobros sorpresa de licencias externas anuales.</p>
-      <p>• <strong>Continuidad All-Inclusive OTEC:</strong> Plan mensual de \$190.000 + IVA con servidores cloud dedicados, bases de datos y soporte técnico en una sola factura local.</p>
+      <p>• <strong>Continuidad All-Inclusive OTEC:</strong> Plan mensual de \$190.000 + IVA con servidores cloud dedicados, bases de datos, <strong>3 horas mensuales de ajustes/carga de cursos</strong> y acompañamiento técnico en auditorías SENCE.</p>
     </div>
     <div class="totals-box">
       <div class="totals-row">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -37,25 +37,41 @@
     .header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 3px solid var(--primary);
       padding-bottom: 20px;
       margin-bottom: 25px;
     }
-    .brand h1 { font-size: 22px; font-weight: 800; color: var(--navy); }
-    .brand p { font-size: 11.5px; color: #64748b; margin-top: 2px; }
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .logo-divider {
+      width: 1px;
+      height: 40px;
+      background: #cbd5e1;
+    }
+    .brand h1 { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .brand p { font-size: 11px; color: #64748b; margin-top: 1px; }
     .meta { text-align: right; }
     .badge-code {
       display: inline-block;
       background: #0f172a;
       color: white;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13.5px;
       padding: 4px 12px;
       border-radius: 6px;
       letter-spacing: 0.5px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
-    .meta div { font-size: 12px; color: #64748b; }
+    .meta div { font-size: 11.5px; color: #64748b; }
     .client-box {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -82,7 +98,7 @@
       font-weight: 700;
     }
     td {
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
@@ -152,17 +168,21 @@
     <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
   </div>
 
-  <!-- Header -->
+  <!-- Header with Dual Logos -->
   <div class="header">
-    <div class="brand">
-      <h1>UNIVERSO693 SpA</h1>
-      <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile &bull; contacto@universo693.com</p>
-      <p style="color: #0f172a; font-weight: 700;">Ingeniería de Software & Arquitectura E-Learning</p>
+    <div class="header-logos">
+      <img src="assets/logo_universo693.png" alt="UNIVERSO693" class="logo-img">
+      <div class="logo-divider"></div>
+      <img src="assets/igneo/logo-bomberos-vina.webp" alt="OTEC Ígneo" class="logo-img">
+      <div class="brand">
+        <h1>UNIVERSO693 SpA</h1>
+        <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile</p>
+        <p style="color: #0f172a; font-weight: 700;">Ingeniería de Software & E-Learning</p>
+      </div>
     </div>
     <div class="meta">
       <div class="badge-code">COT-2026-0010</div>
-      <div><strong>Fecha de Emisión:</strong> Octubre 2026</div>
-      <div><strong>Validez de Oferta:</strong> 30 días corridos</div>
+      <div><strong>Fecha:</strong> Octubre 2026 &bull; <strong>Validez:</strong> 30 días</div>
       <div><strong>Estado:</strong> Oficial / Lista para Firma</div>
     </div>
   </div>
@@ -176,9 +196,9 @@
       <p><strong>Ubicación:</strong> Viña del Mar, Región de Valparaíso</p>
     </div>
     <div>
-      <p><strong>Proyecto:</strong> Campus Virtual Enterprise (E-Commerce Webpay + Portal B2B)</p>
+      <p><strong>Proyecto:</strong> Campus Virtual Enterprise (E-Commerce Webpay + Portal B2B + Tutor IA)</p>
       <p><strong>Modalidad:</strong> Llave en Mano con Soberanía Digital</p>
-      <p><strong>Plazo de Entrega:</strong> 6 semanas</p>
+      <p><strong>Plazo de Entrega:</strong> 6 a 7 semanas</p>
       <p><strong>Garantía Técnica:</strong> 90 días corridos post-entrega</p>
     </div>
   </div>
@@ -196,9 +216,9 @@
       <tr>
         <td style="font-weight: bold;">01</td>
         <td>
-          <strong>Campus Virtual LMS Profesional Completo + Motor SENCE Forense</strong><br>
+          <strong>Campus Virtual LMS Profesional Completo + Motor SENCE Forense + Tutor IA</strong><br>
           • Incluye el 100% de las funcionalidades del Plan Profesional (COT-2026-0007).<br>
-          • Portal Alumno PWA, Portal Docente, Registro SENCE anti-bypass y Diplomas con QR antifraude.<br>
+          • Portal Alumno PWA, Portal Docente, Profesor Virtual IA 24/7, Registro SENCE anti-bypass y Diplomas con QR antifraude.<br>
           • <em>Cursos y Alumnos Ilimitados.</em>
         </td>
         <td style="text-align: right; font-weight: bold;">$2.930.000</td>
@@ -206,7 +226,7 @@
       <tr>
         <td style="font-weight: bold;">02</td>
         <td>
-          <strong>Pasarela de Pagos E-Commerce & Venta Online Automatizada</strong><br>
+          <strong>Pasarela de Pagos E-Commerce & Venta Online Automatizada (Webpay Plus)</strong><br>
           • Carrito de compras integrado con Webpay Plus (Transbank), Mercado Pago o Flow.<br>
           • Matrícula y habilitación inmediata del curso al confirmar el pago en línea.
         </td>
@@ -215,9 +235,10 @@
       <tr>
         <td style="font-weight: bold;">03</td>
         <td>
-          <strong>Portal Exclusivo para Empresas Clientes (Panel B2B para RRHH)</strong><br>
+          <strong>Portal Exclusivo para Empresas Clientes (Panel B2B para RRHH / Prevencionistas)</strong><br>
           • Acceso especial para jefes de capacitación de empresas clientes (mineras, industrias, mutuales).<br>
-          • Panel en tiempo real para monitorear el avance, notas y descargas de certificados de su personal.
+          • Panel en tiempo real para monitorear el avance, notas y descargas de certificados de su personal.<br>
+          • Carnet digital de acreditación para faenas mineras e industriales.
         </td>
         <td style="text-align: right; font-weight: bold;">$850.000</td>
       </tr>
@@ -229,7 +250,7 @@
     <div class="callout-notes">
       <h4 style="font-size: 12px; color: var(--navy); margin-bottom: 6px;">Condiciones del Plan Enterprise:</h4>
       <p>• <strong>Máxima Escala Comercial:</strong> Permite vender cursos abiertos al público con Webpay y fidelizar cuentas corporativas B2B.</p>
-      <p>• <strong>Continuidad Enterprise:</strong> Plan mensual de \$290.000 + IVA que incluye servidores redundantes de alta velocidad y 5 horas de desarrollo mensual incluidas.</p>
+      <p>• <strong>Continuidad Enterprise:</strong> Plan mensual de \$290.000 + IVA que incluye servidores redundantes de alta velocidad, <strong>6 horas mensuales de desarrollo incluidas</strong> y acompañamiento SENCE prioritario.</p>
     </div>
     <div class="totals-box">
       <div class="totals-row">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -71,39 +71,61 @@
       }
     }
 
-    /* Header */
+    /* Header with Dual Logos */
     .header {
       border-bottom: 3px solid var(--primary);
       padding-bottom: 25px;
       margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 20px;
     }
 
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo-img-universo {
+      height: 52px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .logo-img-igneo {
+      height: 54px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 44px;
+      background: #cbd5e1;
+    }
+
     .header-brand h1 {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--navy);
       letter-spacing: -0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .header-brand .subtitle {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--fire-red);
       text-transform: uppercase;
       letter-spacing: 1.5px;
       font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .meta-box {
       text-align: right;
-      font-size: 13px;
+      font-size: 12.5px;
       color: #64748b;
     }
 
@@ -112,15 +134,17 @@
     }
 
     .badge-client {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       background: #fef2f2;
       color: var(--fire-red);
       border: 1px solid #fecaca;
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     /* Typography & Sections */
@@ -434,6 +458,48 @@
       color: #166534;
     }
 
+    /* AI Professor Chat Box in Mockup */
+    .ai-tutor-box {
+      margin-top: 16px;
+      border: 1px solid #e9d5ff;
+      background: #faf5ff;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .ai-tutor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6b21a8;
+      margin-bottom: 8px;
+    }
+
+    .ai-bubble-q {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 7px 11px;
+      border-radius: 12px 12px 2px 12px;
+      font-size: 11px;
+      color: #334155;
+      margin-bottom: 6px;
+      text-align: right;
+      width: fit-content;
+      margin-left: auto;
+    }
+
+    .ai-bubble-a {
+      background: #f3e8ff;
+      border: 1px solid #d8b4fe;
+      padding: 7px 11px;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 11px;
+      color: #581c87;
+      line-height: 1.4;
+    }
+
     /* QR Certificate Verification Mockup */
     .qr-cert-box {
       border: 2px dashed #0284c7;
@@ -594,6 +660,15 @@
       margin-bottom: 5px;
     }
 
+    .callout-ia {
+      background: #faf5ff;
+      border-left: 4px solid #a855f7;
+    }
+
+    .callout-ia .callout-title {
+      color: #6b21a8;
+    }
+
     .callout-alert {
       background: #fff1f2;
       border-left: 4px solid var(--fire-red);
@@ -606,6 +681,15 @@
     .callout-vault {
       background: #f0fdf4;
       border-left: 4px solid #16a34a;
+    }
+
+    .callout-value-why {
+      background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #0284c7;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
     }
 
     /* Action Buttons */
@@ -740,18 +824,26 @@
 
 <div class="container">
 
-  <!-- Header -->
+  <!-- Header with Dual Logos -->
   <div class="header">
-    <div class="header-brand">
-      <h1>UNIVERSO693 SpA</h1>
-      <div class="subtitle">Ingeniería & Software de Alto Rendimiento</div>
-      <p style="font-size: 12px; color: #64748b; margin-top: 4px;">RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile &bull; contacto@universo693.com</p>
+    <div class="header-logos">
+      <img src="assets/logo_universo693.png" alt="UNIVERSO693" class="logo-img-universo">
+      <div class="logo-divider"></div>
+      <img src="assets/igneo/logo-bomberos-vina.webp" alt="OTEC Ígneo - Bomberos Viña" class="logo-img-igneo">
+      <div>
+        <div class="header-brand">
+          <h1>UNIVERSO693 SpA</h1>
+          <div class="subtitle">Ingeniería & Software de Alto Rendimiento</div>
+        </div>
+        <p style="font-size: 11.5px; color: #64748b; margin-top: 2px;">RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile</p>
+      </div>
     </div>
     <div class="meta-box">
       <div><strong>Propuesta:</strong> PROP-2026-LMS-IGNEO</div>
-      <div><strong>Fecha:</strong> Octubre 2026</div>
-      <div><strong>Validez:</strong> 30 días corridos</div>
-      <div class="badge-client">Cliente: OTEC Ígneo (Fundación Bomberos Viña)</div>
+      <div><strong>Fecha:</strong> Octubre 2026 &bull; <strong>Validez:</strong> 30 días</div>
+      <div class="badge-client">
+        🚒 Cliente: OTEC Ígneo (Fundación Bomberos Viña)
+      </div>
     </div>
   </div>
 
@@ -760,7 +852,7 @@
     <span class="hero-tag">Propuesta Técnica de Alto Rendimiento</span>
     <h3>Campus Virtual & Plataforma E-Learning OTEC Ígneo</h3>
     <p>
-      Diseñada para responder a la exigencia operativa de la Fundación Cuerpo de Bomberos de Viña del Mar y capacitaciones de alto estándar para la minería, industria y salud: <strong>Cursos Ilimitados</strong>, <strong>Administradores Ilimitados</strong>, <strong>Motor Forense SENCE Integrado</strong> y <strong>Soberanía Digital Absoluta (Bóveda Cifrada)</strong>.
+      Diseñada para responder a la exigencia operativa de la Fundación Cuerpo de Bomberos de Viña del Mar y capacitaciones de alto estándar para la minería, industria y salud: <strong>Cursos Ilimitados</strong>, <strong>Administradores Ilimitados</strong>, <strong>Profesor Virtual con IA Especializada 24/7</strong>, <strong>Motor Forense SENCE Integrado</strong> y <strong>Soberanía Digital Absoluta (Bóveda Cifrada)</strong>.
     </p>
   </div>
 
@@ -779,7 +871,7 @@
     A continuación se ilustra la arquitectura de interfaz personalizada que tendrá OTEC Ígneo, diseñada para funcionar a máxima velocidad en cualquier computador o smartphone sin requerir descargas pesadas:
   </p>
 
-  <!-- MOCKUP 1: Portal Alumno & Reproductor SENCE -->
+  <!-- MOCKUP 1: Portal Alumno, Reproductor SENCE & Profesor Virtual IA -->
   <div class="mockup-container avoid-break">
     <div class="mockup-header">
       <div class="mockup-dots">
@@ -788,7 +880,7 @@
         <div class="mockup-dot green"></div>
       </div>
       <div class="mockup-url">https://campus.otecigneo.cl/aula/combate-incendios-industriales</div>
-      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">VISTA DEL ESTUDIANTE</div>
+      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">AULA VIRTUAL ÍGNEO + PROFESOR IA</div>
     </div>
     <div class="mockup-body">
       <div class="app-screen">
@@ -825,8 +917,19 @@
                 </div>
               </div>
             </div>
-            <div style="margin-top: 10px; font-size: 11.5px; color: #64748b;">
-              🔒 <em>El reproductor impide adelantar el video antes de tiempo para garantizar el 100% de cumplimiento en auditorías de franquicia tributaria SENCE.</em>
+
+            <!-- Profesor Virtual IA Integrado en el Aula -->
+            <div class="ai-tutor-box">
+              <div class="ai-tutor-header">
+                <span>🤖 Profesor Virtual Ígneo (IA 24/7)</span>
+                <span style="font-size: 10px; background: #e9d5ff; color: #6b21a8; padding: 2px 7px; border-radius: 4px; font-weight: 700;">ACTIVO EN EL CURSO</span>
+              </div>
+              <div class="ai-bubble-q">
+                "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?"
+              </div>
+              <div class="ai-bubble-a">
+                <strong>Profesor Virtual:</strong> "Según la Guía Técnica del Módulo 2 y norma NFPA 11, para líquidos Clase B no polares se aplica dosificación al <strong>3%</strong> mediante técnica de rebote contra pared del estanque para no romper el sello de vapor."
+              </div>
             </div>
           </div>
 
@@ -873,7 +976,7 @@
   <div class="cards-grid">
     <div class="card">
       <h4>👥 Alumnos</h4>
-      <p>Acceso instantáneo en celulares o PC, control de tiempo real, guías descargables y diplomas automáticos con QR.</p>
+      <p>Acceso instantáneo en celulares o PC, control de tiempo real, tutor IA 24/7 y diplomas automáticos con QR.</p>
     </div>
     <div class="card">
       <h4>👨‍🏫 Docentes</h4>
@@ -887,6 +990,19 @@
       <h4 style="color: #166534;">🔐 Bóveda Digital</h4>
       <p><strong>Cero Secuestro:</strong> La Fundación posee desde el día 1 el 100% de contraseñas maestras, bases de datos y DNS.</p>
     </div>
+  </div>
+
+  <!-- Callout IA Especializada -->
+  <div class="callout callout-ia avoid-break">
+    <div class="callout-title">🤖 INNOVACIÓN EXCLUSIVA: PROFESOR VIRTUAL CON INTELIGENCIA ARTIFICIAL (INCLUIDO EN PLANES 2 Y 3)</div>
+    <p style="font-size: 13px; margin-bottom: 6px; color: #581c87;">
+      Los cursos e-learning tradicionales sufren de alta deserción porque los alumnos se quedan con dudas técnicas fuera de horario. En los Planes 2 (Profesional) y 3 (Enterprise), incorporamos un <strong>Profesor Virtual con IA Especializada</strong>:
+    </p>
+    <ul style="margin: 6px 0 6px 20px; font-size: 12.5px; color: #581c87;">
+      <li><strong>Entrenado con el material oficial de Ígneo:</strong> Aprende de los manuales, normas NFPA y guías PDF que los docentes suben al curso (arquitectura RAG con cero alucinaciones).</li>
+      <li><strong>Atención 24/7:</strong> Responde dudas a bomberos o trabajadores de faena en cualquier horario, citando la página y el módulo exacto del material.</li>
+      <li><strong>Alivio para los Instructores:</strong> Resuelve hasta el 85% de las preguntas frecuentes, permitiendo que los relatores se enfoquen en las evaluaciones prácticas y clases en vivo.</li>
+    </ul>
   </div>
 
   <!-- Callout Bóveda -->
@@ -957,7 +1073,7 @@
     <thead>
       <tr>
         <th style="width: 32%;">Módulo / Funcionalidad</th>
-        <th style="width: 21%;">Opción 1: Esencial<br><span style="font-weight: normal; font-size: 11px;">Arranque Rápido<br><b>COT-2026-0009</b></span></th>
+        <th style="width: 21%;">Opción 1: Esencial<br><span style="font-weight: normal; font-size: 11px;">Arranque Rápido con SENCE<br><b>COT-2026-0009</b></span></th>
         <th style="width: 27%;" class="col-highlight">Opción 2: Profesional ⭐<br><span class="badge-star">RECOMENDADA OTEC</span><br><span style="font-weight: 700; font-size: 11px;">COT-2026-0007</span></th>
         <th style="width: 20%;">Opción 3: Enterprise<br><span style="font-weight: normal; font-size: 11px;">Tiendas & B2B<br><b>COT-2026-0010</b></span></th>
       </tr>
@@ -971,9 +1087,15 @@
       </tr>
       <tr>
         <td><strong>Portal Alumnos + Portal Docentes</strong></td>
-        <td>Básico</td>
+        <td>Portal Alumnos + Admin Central</td>
         <td class="col-highlight"><strong>Roles Autónomos Separados</strong></td>
         <td>Roles Autónomos Separados</td>
+      </tr>
+      <tr>
+        <td><strong>Profesor Virtual con IA Especializada 24/7</strong></td>
+        <td>No disponible</td>
+        <td class="col-highlight"><strong style="color: #7e22ce;">✓ Tutor Virtual IA Incluido</strong></td>
+        <td><strong style="color: #7e22ce;">✓ Tutor IA Avanzado Multi-Curso</strong></td>
       </tr>
       <tr>
         <td><strong>Carga Docente de Material & Quizzes</strong></td>
@@ -983,25 +1105,25 @@
       </tr>
       <tr>
         <td><strong>Reproductor Híbrido de Video</strong></td>
-        <td>Solo YouTube / Enlaces</td>
+        <td>YouTube / Vimeo / Enlaces</td>
         <td class="col-highlight"><strong>YouTube + Videos Propios MP4</strong></td>
         <td>YouTube + Videos Propios MP4</td>
       </tr>
       <tr>
         <td><strong>Control Anti-Bypass Video (SENCE)</strong></td>
-        <td>Básico</td>
+        <td>Control SENCE Activo</td>
         <td class="col-highlight"><strong>Estricto Anti-Salto SENCE</strong></td>
         <td>Estricto Anti-Salto SENCE</td>
       </tr>
       <tr>
         <td><strong>Reporte Oficial Asistencia SENCE (Excel)</strong></td>
-        <td>Básico</td>
-        <td class="col-highlight"><strong>Cronológico Exacto SENCE</strong></td>
+        <td>Planilla Oficial SENCE</td>
+        <td class="col-highlight"><strong>Cronológico Forense en 1 clic</strong></td>
         <td>SENCE + Gráficos B2B</td>
       </tr>
       <tr>
         <td><strong>Diplomas con Código QR en Terreno</strong></td>
-        <td>PDF simple</td>
+        <td>PDF con QR Activo</td>
         <td class="col-highlight"><strong>Validación Web con Hash SHA-256</strong></td>
         <td>QR + Carnet Digital Faena</td>
       </tr>
@@ -1060,64 +1182,74 @@
   </table>
 
   <!-- 6. Continuidad Operativa -->
-  <h2>6. Planes Mensuales de Soporte, Servidores Cloud & SLA (Todo Incluido)</h2>
-  <p>
-    La mensualidad incluye la <strong>gestión, administración y pago del 100% de los servicios de infraestructura necesarios para que el sistema funcione</strong> (servidores cloud de alta velocidad, bases de datos dedicadas, almacenamiento de videos y plataforma de envío masivo de correos a alumnos). La Fundación recibe <strong>una sola factura local consolidada en pesos chilenos (+ IVA)</strong>, liberándola de pagos en dólares, cargos imprevistos en tarjetas de crédito o riesgos de suspensión de servicio:
-  </p>
+  <h2>6. Continuidad Operativa, Nube & Soporte Integral (Todo Incluido)</h2>
+  
+  <!-- Explicativo de Alto Valor -->
+  <div class="callout-value-why avoid-break">
+    <div style="font-weight: 800; font-size: 14px; color: #0369a1; margin-bottom: 6px;">
+      🛡️ Continuidad Operativa de Nivel Corporativo: Tranquilidad Absoluta para la Fundación
+    </div>
+    <p style="font-size: 12.5px; color: #334155; margin-bottom: 8px;">
+      A diferencia de los esquemas convencionales que solo ofrecen 1 o 2 horas de mesa de ayuda básica y obligan al cliente a contratar y configurar por su cuenta servidores compartidos de baja potencia (con riesgo de caídas en exámenes masivos), en <strong>UNIVERSO693 SpA</strong> entregamos una <strong>Solución Integral Todo Incluido</strong>.
+    </p>
+    <p style="font-size: 12.5px; color: #334155; margin: 0;">
+      La mensualidad cubre el <strong>100% de la infraestructura cloud dedicada</strong>, el servicio de correos transaccionales masivos, <strong>horas mensuales activas de desarrollo para cambios o subida de cursos nuevos (3 hrs en Plan Base / 6 hrs en Plan Pro)</strong>, y el <strong>acompañamiento técnico directo ante fiscalizaciones y auditorías SENCE</strong>, todo consolidado en una sola factura local en pesos chilenos (+ IVA) sin cargos en dólares ni tarjetas corporativas.
+    </p>
+  </div>
 
   <table>
     <thead>
       <tr>
-        <th style="width: 50%;">Servicio Incluido</th>
-        <th style="width: 25%;">Plan Base OTEC<br><span style="font-size: 11px; font-weight: normal;">(Recomendado Plan 1 y 2)</span></th>
-        <th style="width: 25%;">Plan Pro & Evolución<br><span style="font-size: 11px; font-weight: normal;">(Para Plan 3 o alto tráfico)</span></th>
+        <th style="width: 48%;">Servicio & Valor Entregado</th>
+        <th style="width: 26%;">Plan Base OTEC<br><span style="font-size: 11px; font-weight: normal;">(Recomendado Plan 1 y 2)</span></th>
+        <th style="width: 26%;">Plan Pro & Evolución<br><span style="font-size: 11px; font-weight: normal;">(Para Plan 3 o alta demanda)</span></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Pago y Gestión de Servidores Cloud de Alta Velocidad</strong></td>
+        <td><strong>Bolsa Mensual de Horas de Ajustes & Carga de Cursos</strong><br><span style="font-size: 10.5px; color: #64748b;">Subida y maquetación de cursos nuevos, quizzes, cambios de banners y diseño.</span></td>
+        <td><strong style="color: #15803d; font-size: 13.5px;">3 horas mensuales</strong></td>
+        <td><strong style="color: #15803d; font-size: 13.5px;">6 horas mensuales</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Acompañamiento Técnico en Auditorías SENCE</strong><br><span style="font-size: 10.5px; color: #64748b;">Asistencia directa en extracción, validación y certificación de reportes ante fiscalizadores.</span></td>
+        <td><strong>✓ Incluido y Garantizado</strong></td>
+        <td><strong>✓ Prioritario (&lt; 1 hora)</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Infraestructura Cloud Dedicada con CDN Anti-Caídas</strong><br><span style="font-size: 10.5px; color: #64748b;">Servidores de alta velocidad con red Cloudflare (cero caídas en exámenes sincrónicos).</span></td>
         <td><strong>100% Pagado e Incluido</strong></td>
         <td><strong>100% Pagado e Incluido</strong></td>
       </tr>
       <tr>
-        <td><strong>Pago y Gestión de Bases de Datos Cifradas</strong></td>
+        <td><strong>Bases de Datos Relacionales Cifradas (PostgreSQL 16)</strong><br><span style="font-size: 10.5px; color: #64748b;">Aislamiento estricto de notas y registros académicos bajo norma.</span></td>
         <td><strong>100% Pagado e Incluido</strong></td>
         <td><strong>100% Pagado e Incluido</strong></td>
       </tr>
       <tr>
-        <td><strong>Servicio de Envío Masivo de Correos y Credenciales</strong></td>
+        <td><strong>Servicio Transaccional de Correos Masivos</strong><br><span style="font-size: 10.5px; color: #64748b;">Despacho de credenciales y diplomas sin caer en bandeja de Spam.</span></td>
         <td><strong>100% Pagado e Incluido</strong></td>
         <td><strong>100% Pagado e Incluido</strong></td>
       </tr>
       <tr>
-        <td><strong>Almacenamiento de Videos Propios, PDFs y Diplomas</strong></td>
-        <td>50 GB SSD de alta velocidad</td>
+        <td><strong>Almacenamiento SSD para Videos Propios y PDFs</strong></td>
+        <td>50 GB SSD ultra rápido</td>
         <td>200 GB SSD dedicado</td>
       </tr>
       <tr>
-        <td><strong>Capacidad de Alumnos Concurrentes</strong></td>
+        <td><strong>Capacidad de Alumnos Concurrentes Simultáneos</strong></td>
         <td>Hasta 300 simultáneos</td>
         <td>Hasta 1.000 simultáneos</td>
       </tr>
       <tr>
         <td><strong>Copias de Seguridad (Backups de Notas)</strong></td>
         <td>Semanales automáticos</td>
-        <td>Diarios automáticos</td>
+        <td>Diarios automáticos externos</td>
       </tr>
       <tr>
-        <td><strong>Certificados de Seguridad SSL & Monitoreo 24/7</strong></td>
-        <td>✓ Incluido</td>
-        <td>✓ Incluido</td>
-      </tr>
-      <tr>
-        <td><strong>Soporte Técnico Especializado</strong></td>
-        <td>Email y WhatsApp directo</td>
-        <td>Prioritario (< 2 hrs de respuesta)</td>
-      </tr>
-      <tr>
-        <td><strong>Bolsa de Horas de Mejoras Continuas</strong></td>
-        <td>No</td>
-        <td><strong>5 horas mensuales</strong> de ajustes</td>
+        <td><strong>Soporte Técnico Directo</strong></td>
+        <td>WhatsApp y Email directo</td>
+        <td>Prioritario de emergencia</td>
       </tr>
       <tr style="border-top: 2px solid var(--navy);">
         <td><strong>VALOR MENSUAL CONSOLIDADO (CLP)</strong></td>
@@ -1169,6 +1301,4 @@
 </div>
 
 </body>
-</html>
-
 </html>
