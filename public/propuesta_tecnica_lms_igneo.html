@@ -263,6 +263,108 @@
       color: #15803d;
     }
 
+    /* Technical Specs Grid */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .tech-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 13px 15px;
+    }
+
+    .tech-box h4 {
+      font-size: 13px;
+      color: var(--navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tech-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 11.5px;
+      color: #334155;
+    }
+
+    .tech-list li {
+      margin-bottom: 5px;
+      line-height: 1.4;
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .tech-list li::before {
+      content: "▪";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    .tech-list strong {
+      color: var(--navy);
+    }
+
+    /* Quotes Attached Cards */
+    .quote-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .quote-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .quote-card.featured {
+      border: 2px solid #16a34a;
+      background: #f0fdf4;
+    }
+
+    .quote-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #e0f2fe;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .quote-card.featured .quote-code {
+      color: #166534;
+      background: #dcfce7;
+    }
+
     /* Signature & Footer */
     .footer-sign {
       margin-top: 35px;
@@ -356,9 +458,58 @@
     </p>
   </div>
 
-  <!-- 3. Matriz Comercial (3 Opciones) -->
+  <!-- 3. Ficha Técnica de Ingeniería -->
   <div class="page-break"></div>
-  <h2>3. Matriz de Propuestas Comerciales</h2>
+  <h2>3. Ficha Técnica de Ingeniería, Ciberseguridad & Motor SENCE</h2>
+  <p>
+    El Campus Virtual de OTEC Ígneo se construye bajo una arquitectura de software empresarial de alto estándar, diseñada para soportar alta concurrencia, garantizar auditorías sin observaciones y certificar la inviolabilidad de registros académicos:
+  </p>
+
+  <div class="tech-grid avoid-break">
+    <div class="tech-box">
+      <h4>⚡ Frontend React 19 & App PWA Móvil <span class="tech-tag">Ultra Velocidad</span></h4>
+      <ul class="tech-list">
+        <li><strong>Stack Base:</strong> React 19 + TypeScript 5.8 compilado con Vite 6 y diseño modular con Tailwind CSS.</li>
+        <li><strong>Arquitectura Móvil PWA:</strong> Progressive Web App conforme a Web App Manifest v2 y Service Workers con estrategia <em>CacheFirst</em> para lecciones y guías.</li>
+        <li><strong>Rendimiento Core Web Vitals:</strong> Primer render (FCP) inferior a 0.8s; optimizado para smartphones con redes móviles 3G/4G en terreno o faenas.</li>
+        <li><strong>Cero Comisiones de Tiendas:</strong> Acceso directo en pantalla de inicio de iOS y Android sin depender de aprobaciones de Apple ni Google Play.</li>
+      </ul>
+    </div>
+
+    <div class="tech-box">
+      <h4>🛡️ Ciberseguridad & Bóveda de Soberanía <span class="tech-tag">Zero Trust</span></h4>
+      <ul class="tech-list">
+        <li><strong>Motor de Base de Datos:</strong> PostgreSQL 16 con <em>Row-Level Security (RLS)</em>; segregación estricta a nivel de tablas por institución y rol.</li>
+        <li><strong>Cifrado Criptográfico:</strong> Algoritmo AES-256 en reposo (<em>Data-at-Rest</em>) y TLS 1.3 con directiva HSTS en tránsito (certificados RSA 4096-bit).</li>
+        <li><strong>Derivación de Claves:</strong> Cifrado de contraseñas mediante <em>Argon2id</em> con salting individual resistente a ataques de fuerza bruta por GPU.</li>
+        <li><strong>Bóveda Digital Soberana:</strong> Panel de control institucional con custodia 100% en manos de la Fundación de DNS, llaves maestras y backups JSON.</li>
+      </ul>
+    </div>
+
+    <div class="tech-box">
+      <h4>⏱️ Motor Forense SENCE / NCh 2728 <span class="tech-tag">Anti-Fraude</span></h4>
+      <ul class="tech-list">
+        <li><strong>Detección de Foco Activo:</strong> Sincronización con <em>Page Visibility API</em>; detiene el cómputo si el alumno minimiza la ventana o cambia de pestaña.</li>
+        <li><strong>Anti-Bypassing Multimedia:</strong> Intercepción de eventos HTML5 <code>seeking</code> y bloqueo estricto de aceleración (<code>playbackRate > 1.0x</code> deshabilitado).</li>
+        <li><strong>Heartbeat Criptográfico:</strong> Pulsos de presencia activa cada 30 segundos firmados con token efímero de sesión para anular inyecciones por script.</li>
+        <li><strong>Exportación Oficial SENCE:</strong> Generación nativa de planillas OpenXML (.xlsx) con marcas de tiempo UNIX, IP pública y segundos cronológicos netos.</li>
+      </ul>
+    </div>
+
+    <div class="tech-box">
+      <h4>📜 Certificados QR & Resiliencia Cloud <span class="tech-tag">Faena Segura</span></h4>
+      <ul class="tech-list">
+        <li><strong>Estándar Vectorial ISO 32000-1:</strong> Generación de diplomas PDF de alta fidelidad a 300+ DPI con firma digital institucional embebida.</li>
+        <li><strong>Resumen SHA-256 Inalterable:</strong> Cada diploma posee un hash criptográfico único que impide falsificaciones o alteraciones de notas.</li>
+        <li><strong>Validación Web en Faena (< 300ms):</strong> Código QR que resuelve inmediatamente en <code>campus.igneo.cl/validar/{hash}</code> para prevencionistas.</li>
+        <li><strong>CDN Perimetral Cloudflare:</strong> Mitigación de ataques DDoS de hasta 150 Tbps y almacenamiento de objetos S3 (Cloudflare R2) con <em>zero egress fees</em>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4. Matriz Comercial (3 Opciones) -->
+  <div class="page-break"></div>
+  <h2>4. Matriz Comparativa de Propuestas Comerciales</h2>
   <p>Presentamos 3 opciones escalables, destacando la <strong>Opción 2</strong> como la alternativa recomendada por cumplir el 100% de las exigencias técnicas y normativas levantadas:</p>
 
   <table>
@@ -412,6 +563,12 @@
         <td>✅ Incluido</td>
         <td class="col-highlight"><strong>✅ Incluido (Soberanía Total)</strong></td>
         <td>✅ Incluido (Soberanía Total)</td>
+      </tr>
+      <tr>
+        <td><strong>Aprovisionamiento Base de Datos Cloud (~30 USD)</strong></td>
+        <td>✅ Itemizado (Soberanía)</td>
+        <td class="col-highlight"><strong>✅ Itemizado (Soberanía)</strong></td>
+        <td>✅ Itemizado (Soberanía)</td>
       </tr>
       <tr>
         <td><strong>Auditoría & Evolución Tecnológica EBS 693</strong></td>
@@ -493,7 +650,7 @@
 
   <!-- 5. Metodología de Trabajo -->
   <div class="page-break"></div>
-  <h2>4. Metodología de Trabajo de Alto Impacto</h2>
+  <h2>5. Metodología de Trabajo de Alto Impacto</h2>
   <div class="cards-grid">
     <div class="card">
       <h4>⚡ Sprints Semanales</h4>
@@ -514,7 +671,7 @@
   </div>
 
   <!-- 6. Soporte y Servidores All-Inclusive -->
-  <h2>5. Planes Mensuales de Soporte, Servidores Cloud & SLA (Todo Incluido)</h2>
+  <h2>6. Planes Mensuales de Soporte, Servidores Cloud & SLA (Todo Incluido)</h2>
   <p>
     La mensualidad incluye la <strong>gestión, administración y pago del 100% de los planes de servicios de terceros necesarios para que el sistema funcione</strong> (servidores cloud, bases de datos dedicadas, almacenamiento de videos y plataforma de envío masivo de correos a alumnos). La Fundación recibe <strong>una sola factura local consolidada en pesos chilenos (+ IVA)</strong>, liberándola de pagos en dólares, cargos imprevistos en tarjetas de crédito o riesgos de suspensión de servicio:
   </p>
@@ -588,25 +745,54 @@
     </p>
   </div>
 
-  <!-- 7. Condiciones Comerciales -->
+  <!-- 7. Condiciones Comerciales & Cotizaciones Formales Adjuntas -->
   <div class="avoid-break">
-    <h2>6. Condiciones Comerciales, Cotizaciones Formales y Formas de Pago</h2>
-    <div style="background: var(--bg-gray); padding: 15px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px;">
-      <p style="margin-bottom: 8px;"><strong>Cotizaciones Oficiales Emitidas en Sistema:</strong></p>
-      <ul style="margin-bottom: 12px;">
-        <li><strong>Opción 1 (COT-2026-0009):</strong> Plan Esencial — $1.830.000 + IVA (3 semanas de desarrollo | 30 días de garantía).</li>
-        <li><strong>Opción 2 (COT-2026-0007) ⭐:</strong> Plan Profesional PWA — $2.930.000 + IVA (4 semanas de desarrollo | 60 días de garantía).</li>
-        <li><strong>Opción 3 (COT-2026-0010):</strong> Plan Enterprise & E-Commerce — $4.630.000 + IVA (6 a 7 semanas de desarrollo | 90 días de garantía).</li>
-      </ul>
+    <h2>7. Condiciones Comerciales & Cotizaciones Formales Adjuntas</h2>
+    <p style="font-size: 13px; color: #475569; margin-bottom: 12px;">
+      Esta propuesta técnica establece la arquitectura de ingeniería y alcance funcional. Cada alternativa cuenta con su respectiva <strong>Cotización Formal Membretada con desglose tributario y código correlativo oficial</strong>, lista para la aprobación de la directiva:
+    </p>
+
+    <!-- 3 Quote Cards Grid -->
+    <div class="quote-cards avoid-break">
+      <div class="quote-card">
+        <span class="quote-code">COT-2026-0009</span>
+        <h4 style="font-size: 13px; color: var(--navy); margin: 4px 0;">Opción 1: Esencial</h4>
+        <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Arranque Rápido</div>
+        <div style="font-size: 17px; font-weight: 800; color: var(--navy);">$1.830.000</div>
+        <div style="font-size: 10.5px; color: #64748b; margin-bottom: 8px;">+ IVA (Pago único)</div>
+        <p style="font-size: 11px; color: #475569; margin: 0; line-height: 1.4;">Aula Alumnos + Admin Central + Diplomas PDF (3 sem | 30d garantía)</p>
+      </div>
+
+      <div class="quote-card featured">
+        <span class="quote-code">COT-2026-0007</span>
+        <span class="badge-star" style="display: block; margin: 0 auto 4px auto; width: fit-content;">RECOMENDADA OTEC</span>
+        <h4 style="font-size: 13px; color: #166534; margin: 4px 0;">Opción 2: Profesional ⭐</h4>
+        <div style="font-size: 11px; color: #15803d; margin-bottom: 6px;">Plan PWA + Normativa SENCE</div>
+        <div style="font-size: 17px; font-weight: 800; color: #15803d;">$2.930.000</div>
+        <div style="font-size: 10.5px; color: #166534; margin-bottom: 8px;">(Desc. Bomberos Viña) + IVA</div>
+        <p style="font-size: 11px; color: #166534; margin: 0; line-height: 1.4;">Portal Alumno PWA + Portal Docente + SENCE + QR Terreno + B2B Excel (4 sem | 60d garantía)</p>
+      </div>
+
+      <div class="quote-card">
+        <span class="quote-code">COT-2026-0010</span>
+        <h4 style="font-size: 13px; color: var(--navy); margin: 4px 0;">Opción 3: Enterprise</h4>
+        <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">E-Commerce & Expansión</div>
+        <div style="font-size: 17px; font-weight: 800; color: var(--navy);">$4.630.000</div>
+        <div style="font-size: 10.5px; color: #64748b; margin-bottom: 8px;">+ IVA (Pago único)</div>
+        <p style="font-size: 11px; color: #475569; margin: 0; line-height: 1.4;">Plan Pro + Tienda Webpay Plus + Portal Empresas B2B + Carnet Wallet (6-7 sem | 90d garantía)</p>
+      </div>
+    </div>
+
+    <!-- Payment Terms Box -->
+    <div style="background: var(--bg-gray); padding: 15px 18px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; margin-top: 14px;">
       <p style="margin-bottom: 6px;"><strong>Hitos de Pago Estándar (Plan 2 Profesional):</strong></p>
       <ul style="margin-bottom: 10px;">
         <li><strong>50% al Inicio:</strong> A la firma del acuerdo y reunión de kickoff ($1.465.000 + IVA).</li>
-        <li><strong>25% al Hito Intermedio:</strong> A la entrega del prototipo funcional en Staging en la Semana 2 ($732.500 + IVA).</li>
+        <li><strong>25% al Hito Intermedio:</strong> A la entrega del prototipo funcional navegable en Staging en la Semana 2 ($732.500 + IVA).</li>
         <li><strong>25% contra Entrega Final:</strong> Al desplegar en <code>campus.igneo.cl</code>, entrega de la Bóveda de Credenciales y capacitación ($732.500 + IVA).</li>
-        <li><strong>Aprovisionamiento Base de Datos Cloud (~30 USD):</strong> Itemizado en la cotización formal ($30.000 CLP) para el encendido del proveedor cloud (Firebase / Supabase) bajo soberanía de la Fundación.</li>
       </ul>
       <p style="margin: 0; color: #166534; font-weight: 600;">
-        ✓ Garantía técnica total de 60 días sin costo ante cualquier corrección o afinamiento.
+        ✓ Garantía técnica total de 60 días sin costo ante cualquier afinamiento o ajuste post-lanzamiento.
       </p>
     </div>
   </div>
