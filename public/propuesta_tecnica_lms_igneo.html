@@ -459,12 +459,48 @@
     }
 
     /* AI Professor Chat Box in Mockup */
+    
+    /* Interactive Showcase Enhancements */
+    .lesson-item {
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .lesson-item:hover {
+      transform: translateX(3px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .lesson-item.active {
+      border-color: #ef4444 !important;
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    }
+    .lesson-item.active span:first-child {
+      font-weight: 800;
+    }
+
+    .play-btn-circle {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .play-btn-circle:hover {
+      transform: scale(1.1);
+      background: #dc2626;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+    }
+
+    /* AI Chat Widget */
     .ai-tutor-box {
-      margin-top: 16px;
-      border: 1px solid #e9d5ff;
+      margin-top: 14px;
+      border: 1px solid #d8b4fe;
       background: #faf5ff;
-      border-radius: 8px;
-      padding: 14px;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(147, 51, 234, 0.08);
+      position: relative;
     }
 
     .ai-tutor-header {
@@ -474,7 +510,44 @@
       font-size: 12px;
       font-weight: 800;
       color: #6b21a8;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ede9fe;
+    }
+
+    .ai-pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      margin-right: 5px;
+      box-shadow: 0 0 0 rgba(34, 197, 94, 0.5);
+      animation: pulseGreen 1.8s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .ai-chat-messages {
+      max-height: 200px;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+    }
+
+    .ai-chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+    .ai-chat-messages::-webkit-scrollbar-thumb {
+      background: #d8b4fe;
+      border-radius: 4px;
     }
 
     .ai-bubble-q {
@@ -483,21 +556,170 @@
       padding: 7px 11px;
       border-radius: 12px 12px 2px 12px;
       font-size: 11px;
-      color: #334155;
-      margin-bottom: 6px;
+      color: #1e293b;
       text-align: right;
       width: fit-content;
+      max-width: 85%;
       margin-left: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      animation: fadeInMsg 0.25s ease;
     }
 
     .ai-bubble-a {
       background: #f3e8ff;
       border: 1px solid #d8b4fe;
-      padding: 7px 11px;
+      padding: 8px 12px;
       border-radius: 12px 12px 12px 2px;
       font-size: 11px;
       color: #581c87;
-      line-height: 1.4;
+      line-height: 1.45;
+      width: fit-content;
+      max-width: 92%;
+      margin-right: auto;
+      box-shadow: 0 1px 3px rgba(107, 33, 168, 0.05);
+      animation: fadeInMsg 0.25s ease;
+    }
+
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      background: #f3e8ff;
+      border-radius: 10px;
+      width: fit-content;
+      font-size: 10.5px;
+      color: #7e22ce;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .ai-typing-dot {
+      width: 5px;
+      height: 5px;
+      background: #9333ea;
+      border-radius: 50%;
+      animation: typingBlink 1.4s infinite ease-in-out;
+    }
+    .ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBlink {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .ai-quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0 8px 0;
+    }
+
+    .ai-chip {
+      background: #ffffff;
+      border: 1px solid #d8b4fe;
+      color: #6b21a8;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .ai-chip:hover {
+      background: #7e22ce;
+      color: #ffffff;
+      border-color: #7e22ce;
+      transform: translateY(-1px);
+    }
+
+    .ai-input-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .ai-chat-input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 11px;
+      color: #0f172a;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .ai-chat-input:focus {
+      border-color: #7e22ce;
+      box-shadow: 0 0 0 2px rgba(126, 34, 206, 0.15);
+    }
+
+    .ai-btn-send {
+      background: #7e22ce;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .ai-btn-send:hover {
+      background: #6b21a8;
+      transform: translateY(-1px);
+    }
+
+    /* Quiz screen within player */
+    .quiz-sim-container {
+      background: #0f172a;
+      color: white;
+      padding: 16px;
+      border-radius: 8px 8px 0 0;
+      text-align: left;
+    }
+    .quiz-opt-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      padding: 7px 12px;
+      margin: 6px 0;
+      border-radius: 6px;
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .quiz-opt-btn:hover {
+      background: #334155;
+      border-color: #64748b;
+    }
+    .quiz-opt-btn.correct {
+      background: #15803d !important;
+      border-color: #22c55e !important;
+      color: white !important;
+      font-weight: bold;
+    }
+    .quiz-opt-btn.wrong {
+      background: #991b1b !important;
+      border-color: #ef4444 !important;
+      color: white !important;
     }
 
     /* QR Certificate Verification Mockup */
@@ -911,7 +1133,7 @@
     A continuación se ilustra la arquitectura de interfaz personalizada que tendrá OTEC Ígneo, diseñada para funcionar a máxima velocidad en cualquier computador o smartphone sin requerir descargas pesadas:
   </p>
 
-  <!-- MOCKUP 1: Portal Alumno, Reproductor SENCE & Profesor Virtual IA -->
+  <!-- MOCKUP 1: Portal Alumno, Reproductor SENCE & Profesor Virtual IA (Interactivo en Vivo) -->
   <div class="mockup-container avoid-break">
     <div class="mockup-header">
       <div class="mockup-dots">
@@ -919,8 +1141,10 @@
         <div class="mockup-dot yellow"></div>
         <div class="mockup-dot green"></div>
       </div>
-      <div class="mockup-url">https://campus.otecigneo.cl/aula/combate-incendios-industriales</div>
-      <div style="font-size: 11px; color: #38bdf8; font-weight: 700;">AULA VIRTUAL ÍGNEO + PROFESOR IA</div>
+      <div class="mockup-url" id="mockup-address-bar">https://campus.otecigneo.cl/aula/combate-incendios-industriales</div>
+      <div style="font-size: 11px; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+        <span class="ai-pulse-dot"></span> SIMULADOR EN VIVO
+      </div>
     </div>
     <div class="mockup-body">
       <div class="app-screen">
@@ -938,59 +1162,129 @@
         </div>
 
         <div class="grid-2col">
-          <!-- Reproductor -->
+          <!-- Reproductor Interactivo -->
           <div>
-            <div class="video-player-sim">
-              <div class="video-screen">
-                <div style="color: #ef4444; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Módulo 2: Control de Derrames Químicos</div>
-                <div class="video-title">Técnicas de Espuma para Líquidos Inflamables Clase B</div>
-                <div class="video-sub">Instructor: Cdte. Cristian Aránguiz &bull; Video 1080p HD</div>
-                <div class="play-btn-circle">▶</div>
+            <div class="video-player-sim" id="video-player-sim">
+              <!-- Pantalla de Video / Módulo Dinámico -->
+              <div class="video-screen" id="dynamic-video-screen">
+                <div id="video-module-tag" style="color: #ef4444; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                  Módulo 2: Control de Derrames Químicos
+                </div>
+                <div class="video-title" id="video-title-text">
+                  Técnicas de Espuma para Líquidos Inflamables Clase B
+                </div>
+                <div class="video-sub" id="video-sub-text">
+                  Instructor: Cdte. Cristian Aránguiz &bull; Video 1080p HD
+                </div>
+                <div class="play-btn-circle" id="play-btn-main" onclick="togglePlayPause()" title="Reproducir / Pausar">
+                  ▶
+                </div>
               </div>
+
+              <!-- Controles SENCE Dinámicos -->
               <div class="video-controls">
                 <div class="progress-bar-wrap">
-                  <div class="progress-fill"></div>
+                  <div class="progress-fill" id="dynamic-progress-fill" style="width: 72%;"></div>
                 </div>
                 <div class="sence-audit-tag">
-                  <span>⏱️ Tiempo SENCE acumulado: <strong>32m 40s / 45m 00s</strong></span>
-                  <span class="sence-badge-live">● AUDITADO EN VIVO</span>
+                  <span id="dynamic-sence-timer">⏱️ Tiempo SENCE acumulado: <strong>32m 40s / 45m 00s</strong></span>
+                  <span class="sence-badge-live" id="dynamic-sence-badge">● AUDITADO EN VIVO</span>
                 </div>
               </div>
             </div>
 
-            <!-- Profesor Virtual IA Integrado en el Aula -->
-            <div class="ai-tutor-box">
+            <!-- Profesor Virtual IA Integrado en el Aula (Interactivo) -->
+            <div class="ai-tutor-box" id="ai-interactive-widget">
               <div class="ai-tutor-header">
-                <span>🤖 Profesor Virtual Ígneo (IA 24/7)</span>
-                <span style="font-size: 10px; background: #e9d5ff; color: #6b21a8; padding: 2px 7px; border-radius: 4px; font-weight: 700;">ACTIVO EN EL CURSO</span>
+                <div>
+                  <span class="ai-pulse-dot"></span>
+                  <strong>Profesor Virtual Ígneo (IA 24/7)</strong>
+                  <span style="font-size: 10px; color: #16a34a; font-weight: 700; margin-left: 4px;">● EN LÍNEA</span>
+                </div>
+                <div style="font-size: 9.5px; background: #e9d5ff; color: #581c87; padding: 2px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 0.3px;">
+                  ✨ ¡CHATEA EN VIVO!
+                </div>
               </div>
-              <div class="ai-bubble-q">
-                "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?"
+
+              <!-- Stream de Mensajes -->
+              <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-bubble-q">
+                  "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?"
+                </div>
+                <div class="ai-bubble-a">
+                  <strong>Profesor Virtual:</strong> "Según la Guía Técnica del Módulo 2 y norma NFPA 11, para líquidos Clase B no polares se aplica dosificación al <strong>3%</strong> mediante técnica de rebote contra pared del estanque para no romper el sello de vapor."
+                </div>
               </div>
-              <div class="ai-bubble-a">
-                <strong>Profesor Virtual:</strong> "Según la Guía Técnica del Módulo 2 y norma NFPA 11, para líquidos Clase B no polares se aplica dosificación al <strong>3%</strong> mediante técnica de rebote contra pared del estanque para no romper el sello de vapor."
+
+              <!-- Indicador Escribiendo -->
+              <div class="ai-typing-indicator" id="ai-typing-indicator">
+                <span class="ai-typing-dot"></span>
+                <span class="ai-typing-dot"></span>
+                <span class="ai-typing-dot"></span>
+                <span style="margin-left: 3px;">Profesor Virtual consultando manuales NFPA y SENCE...</span>
+              </div>
+
+              <!-- Chips de Preguntas Rápidas Dinámicas -->
+              <div class="ai-quick-chips" id="dynamic-quick-chips">
+                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cómo fiscaliza SENCE el tiempo de permanencia?')">
+                  💡 ¿Cómo fiscaliza SENCE?
+                </button>
+                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cuáles son las 3 tácticas de ventilación según NFPA?')">
+                  💡 Ventilación táctica NFPA
+                </button>
+                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Cuál es el límite seguro de oxígeno en espacios confinados (NFPA 350)?')">
+                  💡 O2 en Espacios Confinados
+                </button>
+                <button type="button" class="ai-chip" onclick="handleQuickAsk('¿Qué tipo de extintor se utiliza en fuegos de cocina comercial?')">
+                  💡 Extintores en Cocinas
+                </button>
+              </div>
+
+              <!-- Barra de Entrada Interactiva -->
+              <div class="ai-input-bar">
+                <input 
+                  type="text" 
+                  id="ai-user-input" 
+                  class="ai-chat-input" 
+                  placeholder="Escribe tu consulta al Profesor Virtual (ej: normas NFPA, brigadas, SENCE)..." 
+                  onkeydown="if(event.key === 'Enter') handleUserAsk();"
+                />
+                <button type="button" class="ai-btn-send" onclick="handleUserAsk()">
+                  Preguntar ➔
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- Temario -->
+          <!-- Temario Interactivo (Botones Navegables) -->
           <div class="course-sidebar-sim">
-            <div style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Plan de Aprendizaje:</div>
-            <div class="lesson-item done">
-              <span>✓ 1. Protocolos de Evacuación y Zona Segura</span>
-              <span style="font-size: 10px; font-weight: 700;">100%</span>
+            <div style="font-size: 12px; font-weight: 800; color: #0f172a; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+              <span>Plan de Aprendizaje:</span>
+              <span style="font-size: 10px; color: #64748b; font-weight: normal;">(Haz clic para probar)</span>
             </div>
-            <div class="lesson-item active">
+
+            <div class="lesson-item done" id="lesson-tab-1" onclick="selectLesson(1)">
+              <span>✓ 1. Protocolos de Evacuación y Triaje</span>
+              <span style="font-size: 10px; font-weight: 700; color: #16a34a;">100%</span>
+            </div>
+
+            <div class="lesson-item active" id="lesson-tab-2" onclick="selectLesson(2)">
               <span>▶ 2. Control de Derrames y Líquidos Clase B</span>
-              <span style="font-size: 10px; font-weight: 700;">72%</span>
+              <span style="font-size: 10px; font-weight: 700; color: #b91c1c;">72%</span>
             </div>
-            <div class="lesson-item">
+
+            <div class="lesson-item" id="lesson-tab-3" onclick="selectLesson(3)">
               <span>🔒 3. Rescate en Espacios Confinados</span>
-              <span style="font-size: 10px; color: #94a3b8;">Pendiente</span>
+              <span style="font-size: 10px; color: #64748b; font-weight: 600;">Ver lección</span>
             </div>
-            <div class="lesson-item">
-              <span>🔒 4. Evaluación Final & Examen Teórico</span>
-              <span style="font-size: 10px; color: #94a3b8;">40 Preguntas</span>
+
+            <div class="lesson-item" id="lesson-tab-4" onclick="selectLesson(4)">
+              <span>📝 4. Examen Teórico & Auditoría SENCE</span>
+              <span style="font-size: 10px; color: #7e22ce; font-weight: 700;">Simular Test</span>
+            </div>
+
+            <div style="margin-top: 14px; padding: 10px 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; font-size: 11px; color: #475569; line-height: 1.45;">
+              <strong style="color: var(--navy);">💡 Experiencia Alumno:</strong> Los contenidos se desbloquean automáticamente al completar las horas SENCE requeridas, impidiendo que el alumno avance sin visualización real.
             </div>
           </div>
         </div>
@@ -1361,6 +1655,317 @@
   </div>
 
 </div>
+
+
+<script>
+// Showcase Interactivo: Navegación de Lecciones + IA Pedagógica (UNIVERSO693)
+const LESSON_DATA = {
+  1: {
+    tag: "Módulo 1: Protocolos de Evacuación y Zona Segura",
+    title: "Zonificación Operativa HazMat y Rutas de Escape",
+    sub: "Instructor: Tte. 1° Marcelo Muñoz • Video 1080p HD",
+    progress: "100%",
+    timer: "⏱️ Tiempo SENCE acumulado: <strong>45m 00s / 45m 00s</strong>",
+    badge: "✓ CUMPLIDO 100%",
+    badgeColor: "#15803d",
+    badgeBg: "#dcfce7",
+    chips: [
+      { text: "💡 ¿Distancia de aislamiento HazMat?", query: "¿Cuál es la distancia de aislamiento inicial mínima ante derrame químico desconocido?" },
+      { text: "💡 ¿Zonificación caliente/tibia/fría?", query: "¿Cómo se define la zona caliente, tibia y fría en HazMat?" },
+      { text: "💡 ¿Cómo fiscaliza SENCE?", query: "¿Cómo fiscaliza SENCE el tiempo de permanencia?" }
+    ]
+  },
+  2: {
+    tag: "Módulo 2: Control de Derrames Químicos",
+    title: "Técnicas de Espuma para Líquidos Inflamables Clase B",
+    sub: "Instructor: Cdte. Cristian Aránguiz • Video 1080p HD",
+    progress: "72%",
+    timer: "⏱️ Tiempo SENCE acumulado: <strong>32m 40s / 45m 00s</strong>",
+    badge: "● AUDITADO EN VIVO",
+    badgeColor: "#15803d",
+    badgeBg: "#dcfce7",
+    chips: [
+      { text: "💡 ¿Porcentaje de espuma AFFF?", query: "¿Qué porcentaje de espuma AFFF debo aplicar para hidrocarburos líquidos?" },
+      { text: "💡 Ventilación táctica NFPA", query: "¿Cuáles son las 3 tácticas de ventilación según NFPA?" },
+      { text: "💡 ¿Cómo fiscaliza SENCE?", query: "¿Cómo fiscaliza SENCE el tiempo de permanencia?" },
+      { text: "💡 O2 en Espacios Confinados", query: "¿Cuál es el límite seguro de oxígeno en espacios confinados (NFPA 350)?" }
+    ]
+  },
+  3: {
+    tag: "Módulo 3: Rescate en Altura y Subterráneo",
+    title: "Atmósferas Peligrosas y Ventilación en Espacios Confinados",
+    sub: "Instructor: Cap. Felipe San Martín • Video 1080p HD",
+    progress: "25%",
+    timer: "⏱️ Tiempo SENCE acumulado: <strong>11m 15s / 45m 00s</strong>",
+    badge: "● AUDITADO EN VIVO",
+    badgeColor: "#15803d",
+    badgeBg: "#dcfce7",
+    chips: [
+      { text: "💡 ¿Parámetros de O2 (NFPA 350)?", query: "¿Cuál es el rango seguro de oxígeno según NFPA 350 en espacios confinados?" },
+      { text: "💡 ¿Límite de gases LEL?", query: "¿Qué nivel de LEL permite autorizar el ingreso a un espacio confinado?" },
+      { text: "💡 Ventilación forzada PPV", query: "¿Cómo se ventila un pozo profundo antes de ingresar al rescate?" }
+    ]
+  },
+  4: {
+    tag: "Módulo 4: Evaluación Oficial & Examen Teórico",
+    title: "Examen de Certificación OTEC Ígneo (Control Anti-Fraude)",
+    sub: "Evaluación SENCE NCh 2728 • 20 Preguntas con Calificación Automática",
+    progress: "0%",
+    timer: "⏱️ Tiempo de Examen Restante: <strong>28m 45s</strong>",
+    badge: "🔒 CONTROL ANTI-SALTO ACTIVO",
+    badgeColor: "#b91c1c",
+    badgeBg: "#fee2e2",
+    isQuiz: true,
+    chips: [
+      { text: "💡 ¿Por qué se bloquea la IA?", query: "¿Por qué el profesor virtual se pausa durante el examen?" },
+      { text: "💡 ¿Cómo se valida el diploma QR?", query: "¿Cómo valida un prevencionista de faena el diploma con código QR?" }
+    ]
+  }
+};
+
+let currentLesson = 2;
+let isPlaying = false;
+let playInterval = null;
+let currentSeconds = 1960; // 32m 40s
+
+function selectLesson(num) {
+  currentLesson = num;
+  // Update sidebar active classes
+  for (let i = 1; i <= 4; i++) {
+    const tab = document.getElementById(`lesson-tab-${i}`);
+    if (tab) {
+      if (i === num) {
+        tab.className = "lesson-item active";
+      } else {
+        tab.className = (i < num) ? "lesson-item done" : "lesson-item";
+      }
+    }
+  }
+
+  const data = LESSON_DATA[num];
+  const screen = document.getElementById('dynamic-video-screen');
+  const tag = document.getElementById('video-module-tag');
+  const title = document.getElementById('video-title-text');
+  const sub = document.getElementById('video-sub-text');
+  const progress = document.getElementById('dynamic-progress-fill');
+  const timer = document.getElementById('dynamic-sence-timer');
+  const badge = document.getElementById('dynamic-sence-badge');
+  const playBtn = document.getElementById('play-btn-main');
+
+  // Handle Quiz Screen for lesson 4
+  if (data.isQuiz) {
+    screen.innerHTML = `
+      <div class="quiz-sim-container">
+        <div style="font-size: 10px; color: #f59e0b; font-weight: 800; letter-spacing: 0.8px; margin-bottom: 4px;">
+          PREGUNTA 14 DE 20 &bull; EVALUACIÓN FINAL SENCE
+        </div>
+        <div style="font-size: 12.5px; font-weight: 700; margin-bottom: 10px; color: #ffffff; line-height: 1.35;">
+          ¿Cuál es la concentración mínima reglamentaria de Oxígeno (O2) requerida para autorizar el ingreso seguro de brigadistas a un espacio confinado según norma NFPA 350?
+        </div>
+        <button type="button" class="quiz-opt-btn" onclick="handleQuizAnswer(this, false)">A) 16.0% con equipo autónomo ERA opcional</button>
+        <button type="button" class="quiz-opt-btn" onclick="handleQuizAnswer(this, true)">B) Mínimo 19.5% y máximo 23.5% en volumen atmosférico</button>
+        <button type="button" class="quiz-opt-btn" onclick="handleQuizAnswer(this, false)">C) Cualquier valor siempre que no supere 50 ppm de CO</button>
+        <div id="quiz-feedback" style="display: none; margin-top: 8px; font-size: 11px; padding: 6px 10px; border-radius: 6px;"></div>
+      </div>
+    `;
+    if (playBtn) playBtn.style.display = 'none';
+  } else {
+    // Normal Video Screen
+    screen.innerHTML = `
+      <div id="video-module-tag" style="color: #ef4444; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+        ${data.tag}
+      </div>
+      <div class="video-title" id="video-title-text">
+        ${data.title}
+      </div>
+      <div class="video-sub" id="video-sub-text">
+        ${data.sub}
+      </div>
+      <div class="play-btn-circle" id="play-btn-main" onclick="togglePlayPause()" title="Reproducir / Pausar">
+        ${isPlaying ? '⏸' : '▶'}
+      </div>
+    `;
+  }
+
+  // Update controls
+  if (progress) progress.style.width = data.progress;
+  if (timer) timer.innerHTML = data.timer;
+  if (badge) {
+    badge.textContent = data.badge;
+    badge.style.color = data.badgeColor;
+    badge.style.background = data.badgeBg;
+  }
+
+  // Update AI Chips for this lesson
+  const chipsContainer = document.getElementById('dynamic-quick-chips');
+  if (chipsContainer && data.chips) {
+    chipsContainer.innerHTML = data.chips.map(c => `
+      <button type="button" class="ai-chip" onclick="handleQuickAsk('${c.query.replace(/'/g, "\'")}')">
+        ${c.text}
+      </button>
+    `).join('');
+  }
+}
+
+function handleQuizAnswer(btn, isCorrect) {
+  const allBtns = document.querySelectorAll('.quiz-opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+  const fb = document.getElementById('quiz-feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    if (fb) {
+      fb.style.display = 'block';
+      fb.style.background = '#14532d';
+      fb.style.color = '#86efac';
+      fb.innerHTML = '<strong>✓ ¡Respuesta Correcta!</strong> Registrado en la planilla SENCE con marca de tiempo oficial.';
+    }
+  } else {
+    btn.classList.add('wrong');
+    if (fb) {
+      fb.style.display = 'block';
+      fb.style.background = '#7f1d1d';
+      fb.style.color = '#fca5a5';
+      fb.innerHTML = '<strong>✗ Incorrecto.</strong> La respuesta normativa es B (19.5% a 23.5% según NFPA 350).';
+    }
+  }
+}
+
+function togglePlayPause() {
+  const btn = document.getElementById('play-btn-main');
+  const timer = document.getElementById('dynamic-sence-timer');
+  const progress = document.getElementById('dynamic-progress-fill');
+  isPlaying = !isPlaying;
+
+  if (btn) btn.textContent = isPlaying ? '⏸' : '▶';
+
+  if (isPlaying) {
+    playInterval = setInterval(() => {
+      currentSeconds++;
+      const mins = Math.floor(currentSeconds / 60);
+      const secs = currentSeconds % 60;
+      if (timer) {
+        timer.innerHTML = `⏱️ Tiempo SENCE acumulado: <strong>${mins}m ${secs < 10 ? '0' : ''}${secs}s / 45m 00s</strong>`;
+      }
+      const pct = Math.min(100, (currentSeconds / 2700) * 100);
+      if (progress) progress.style.width = pct.toFixed(1) + '%';
+    }, 1000);
+  } else {
+    if (playInterval) clearInterval(playInterval);
+  }
+}
+
+// Motor de IA Pedagógica
+const KNOWLEDGE_BASE = [
+  {
+    triggers: ['espuma', 'afff', 'clase b', 'hidrocarburo', 'estanque', 'liquidos inflamables', 'porcentaje', 'rebote'],
+    response: "Según la <strong>Guía Técnica del Módulo 2 y norma NFPA 11</strong>, para líquidos Clase B no polares (gasolina, diésel) se aplica dosificación al <strong>3%</strong>. Para solventes polares (alcoholes, acetona) se requiere espuma AR-AFFF al <strong>6%</strong>. La aplicación debe realizarse mediante <strong>técnica de rebote suave</strong> contra pared o talud para consolidar la manta sellante sin romper el sello de vapor."
+  },
+  {
+    triggers: ['sence', 'asistencia', 'permanencia', 'fiscaliz', 'auditoria', 'tiempo', 'franquicia', 'banco', 'reloj', 'biometria'],
+    response: "El <strong>Motor SENCE Forense</strong> de la plataforma audita en tiempo real que el alumno cumpla con un mínimo de <strong>75% de permanencia activa efectiva</strong>. La plataforma registra el foco en pantalla, bloquea el salto de video (anti-bypass) y exporta automáticamente la <strong>Planilla Oficial en formato Excel</strong> con marcas de tiempo cronológicas segundo a segundo, lista para ser visada por auditores del SENCE sin observaciones."
+  },
+  {
+    triggers: ['ventilacion', 'tactica', 'ppv', 'presion positiva', 'humo', 'flashover', 'nfpa 1001', 'nfpa 1500', 'termica', 'pozo'],
+    response: "Conforme a <strong>NFPA 1001 y NFPA 1500</strong>, la ventilación táctica contempla 3 modalidades: <strong>1) Horizontal natural</strong>, <strong>2) Vertical por cubierta</strong> y <strong>3) Mecánica por Presión Positiva (PPV)</strong>. Es crítico que la apertura del punto de salida (exhaust) se realice <em>antes</em> de activar el forzador de aire y en estricta coordinación por radio con la línea de ataque, evitando acelerar una transición térmica o flashover."
+  },
+  {
+    triggers: ['confinado', 'espacio confinado', 'o2', 'oxigeno', 'gas', 'gases', 'lel', 'nfpa 350', 'rescate', 'atmosfera', 'rango'],
+    response: "Bajo la norma <strong>NFPA 350 (Entrada y Trabajo Seguro en Espacios Confinados)</strong>, los parámetros atmosféricos mandatorios son: Nivel de Oxígeno entre <strong>19.5% y 23.5%</strong>, y LEL (Límite Inferior de Explosividad) <strong>menor al 10%</strong>. Se exige monitoreo atmosférico continuo en 3 niveles (fondo, medio y superior), vigía de seguridad permanente y permiso formal de trabajo antes de autorizar el ingreso del rescatista."
+  },
+  {
+    triggers: ['cocina', 'cocinas', 'k', 'clase k', 'grasa', 'aceite', 'saponificacion', 'acetato'],
+    response: "Bajo la norma <strong>NFPA 10</strong>, los fuegos en cocinas comerciales clasifican como <strong>Fuegos Clase K</strong> (grasas y aceites vegetales o animales a alta temperatura). Se extinguen exclusivamente mediante agentes húmedos a base de <strong>Acetato de Potasio</strong>, los cuales provocan un efecto químico de <strong>saponificación</strong> que genera una densa capa jabonosa que enfría y sella el combustible sin salpicar."
+  },
+  {
+    triggers: ['hazmat', 'materiales peligrosos', 'sustancias peligrosas', 'gre', 'zona caliente', 'nfpa 472', '1072', 'decon', 'aislamiento'],
+    response: "Bajo <strong>NFPA 472 / NFPA 1072</strong> y la Guía de Respuesta a Emergencias (GRE), la zonificación operativa comprende: <strong>Zona Caliente (Área de Exclusión)</strong> para operadores con EPP nivel A/B, <strong>Zona Tibia (Reducción de Contaminación / Decon)</strong> y <strong>Zona Fría (Puesto de Comando y Soporte)</strong>. El aislamiento inicial mínimo ante sustancias desconocidas es de 100 metros en todas direcciones."
+  },
+  {
+    triggers: ['extintor', 'extintores', 'pqs', 'co2', 'clase a', 'clase c', 'nfpa 10', 'fuego'],
+    response: "Según <strong>NFPA 10</strong>, la selección del extintor depende del combustible: <strong>PQS ABC</strong> para sólidos, líquidos y equipos energizados (acción por sofocación y ruptura de reacción en cadena); <strong>CO2</strong> para equipos eléctricos sensibles sin dejar residuo; y <strong>Acetato de Potasio (Clase K)</strong> para grasas de cocina comercial mediante saponificación. La técnica de uso recomendada es PASS (Tire, Apunte, Apriete, Barra)."
+  },
+  {
+    triggers: ['hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'quien eres', 'como te llamas', 'saludos', 'hola profesor'],
+    response: "¡Hola! Soy el <strong>Profesor Virtual de OTEC Ígneo</strong> (Fundación Bomberos Viña del Mar). Estoy activo 24/7 en la plataforma para responder dudas técnicas sobre combate de incendios, rescate, normas NFPA y trámites SENCE. ¿En qué protocolo o procedimiento te puedo orientar hoy?"
+  },
+  {
+    triggers: ['boveda', 'soberania', 'credenciales', 'contraseñas', 'claves', 'seguridad', 'acceso'],
+    response: "La <strong>Bóveda Digital Cifrada</strong> de UNIVERSO693 entrega a la Fundación el 100% de propiedad tecnológica: contraseñas maestras de hosting, acceso raíz a bases de datos, control total de dominios DNS y código fuente. OTEC Ígneo tiene autonomía total y soberanía sobre sus datos para siempre."
+  },
+  {
+    triggers: ['brigada', 'brigadas', 'minera', 'faena', 'carnet', 'wallet', 'acreditacion'],
+    response: "Para brigadas de emergencia en faenas mineras e industriales, la plataforma permite generar un <strong>Carnet Digital de Operador de Emergencias</strong> compatible con Apple Wallet y Google Wallet, con código QR criptográfico SHA-256 para validación instantánea por supervisores y prevencionistas en garitas de acceso."
+  },
+  {
+    triggers: ['qr', 'diploma', 'certificado', 'validar', 'prevencionista', 'fraude'],
+    response: "Cada diploma cuenta con un <strong>código QR único vinculado a un Hash criptográfico SHA-256</strong>. Al ser escaneado con cualquier celular en faena minera o garita industrial, abre un portal seguro oficial que certifica al instante el nombre del brigadista, RUT, curso aprobado, fecha y validez legal, previniendo certificados falsificados."
+  },
+  {
+    triggers: ['pausa', 'examen', 'por que el profesor', 'bloqueado'],
+    response: "Durante los exámenes oficiales y controles SENCE, el Profesor Virtual se pausa temporalmente de forma automática para asegurar la integridad académica y el cumplimiento estricto de la evaluación individual del estudiante."
+  }
+];
+
+function getAiResponse(query) {
+  const clean = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  for (const item of KNOWLEDGE_BASE) {
+    for (const trigger of item.triggers) {
+      const cleanTrigger = trigger.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      if (clean.includes(cleanTrigger)) {
+        return item.response;
+      }
+    }
+  }
+  return `Respecto a tu consulta técnica sobre <em>"${query.slice(0, 45)}"</em>: De acuerdo a los manuales operacionales de OTEC Ígneo y normativas NFPA aplicables, este procedimiento debe ejecutarse asegurando la línea de seguridad, la evaluación de riesgos del entorno y la coordinación radial con el puesto de mando. Puedes profundizar este punto en las guías técnicas descargables del aula o consultar directamente con el instructor del módulo.`;
+}
+
+let isAiResponding = false;
+
+function handleQuickAsk(question) {
+  if (isAiResponding) return;
+  const input = document.getElementById('ai-user-input');
+  if (input) input.value = question;
+  handleUserAsk();
+}
+
+function handleUserAsk() {
+  if (isAiResponding) return;
+  const input = document.getElementById('ai-user-input');
+  const chat = document.getElementById('ai-chat-messages');
+  const indicator = document.getElementById('ai-typing-indicator');
+  if (!input || !chat) return;
+
+  const query = input.value.trim();
+  if (!query) return;
+
+  // Render user bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'ai-bubble-q';
+  userBubble.textContent = `"${query}"`;
+  chat.appendChild(userBubble);
+  input.value = '';
+  chat.scrollTop = chat.scrollHeight;
+
+  // Show typing
+  isAiResponding = true;
+  if (indicator) indicator.style.display = 'flex';
+  chat.scrollTop = chat.scrollHeight;
+
+  const responseHtml = getAiResponse(query);
+
+  // Simulate typing delay
+  setTimeout(() => {
+    if (indicator) indicator.style.display = 'none';
+
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'ai-bubble-a';
+    aiBubble.innerHTML = `<strong>Profesor Virtual:</strong> ` + responseHtml;
+    chat.appendChild(aiBubble);
+    chat.scrollTop = chat.scrollHeight;
+    isAiResponding = false;
+  }, 600);
+}
+</script>
 
 </body>
 </html>
