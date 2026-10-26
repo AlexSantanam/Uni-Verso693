@@ -3,6 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Open Graph / WhatsApp Social Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://universo693.com/propuesta_tecnica_lms_igneo.html">
+  <meta property="og:title" content="Propuesta Técnica LMS & E-Learning | UNIVERSO693 SpA">
+  <meta property="og:description" content="Propuesta Técnica Oficial para OTEC Ígneo (Fundación Cuerpo de Bomberos Viña del Mar). Campus Virtual, Motor SENCE y Tutor Virtual IA 24/7.">
+  <meta property="og:image" content="https://universo693.com/assets/og_universo693_igneo.png">
+  <meta property="og:image:secure_url" content="https://universo693.com/assets/og_universo693_igneo.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="UNIVERSO693 SpA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Propuesta Técnica LMS & E-Learning | UNIVERSO693 SpA">
+  <meta name="twitter:description" content="Propuesta Técnica Oficial para OTEC Ígneo (Fundación Cuerpo de Bomberos Viña del Mar).">
+  <meta name="twitter:image" content="https://universo693.com/assets/og_universo693_igneo.png">
+
   <title>Propuesta Técnica & Comercial - OTEC Ígneo | UNIVERSO693 SpA</title>
   <style>
     :root {
@@ -41,6 +57,134 @@
       padding: 50px 60px;
       border-radius: 16px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+
+    
+    /* Table Responsive Wrapper */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 20px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .table-responsive table {
+      margin: 0 !important;
+      min-width: 650px;
+    }
+
+    /* Mobile First & Responsive Adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 6px !important;
+      }
+      .container {
+        padding: 20px 14px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden;
+      }
+      .header {
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding-bottom: 18px !important;
+        margin-bottom: 20px !important;
+      }
+      .header-logos {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+      .logo-divider {
+        display: none !important;
+      }
+      .header-meta {
+        text-align: left !important;
+        width: 100% !important;
+      }
+      .meta-badge {
+        width: 100% !important;
+        display: block !important;
+        text-align: center !important;
+      }
+      .client-tag {
+        text-align: left !important;
+      }
+      .hero-box {
+        padding: 20px 14px !important;
+      }
+      .hero-box h2 {
+        font-size: 19px !important;
+      }
+      .grid-2col {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+      .tech-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .app-screen {
+        padding: 12px 10px !important;
+      }
+      .mockup-body {
+        padding: 10px 8px !important;
+      }
+      .mockup-header {
+        padding: 8px 10px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+      }
+      .mockup-url {
+        width: 100% !important;
+        order: 3 !important;
+        font-size: 9.5px !important;
+      }
+      .app-nav {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+      .user-pill {
+        width: 100% !important;
+        font-size: 10.5px !important;
+        text-align: center !important;
+      }
+      .diploma-footer {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        text-align: center !important;
+      }
+      .diploma-sign-col {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      .diploma-qr-col {
+        justify-content: center !important;
+      }
+      .diploma-inner-frame {
+        padding: 12px 8px !important;
+      }
+      .diploma-header {
+        flex-direction: column !important;
+        gap: 8px !important;
+        text-align: center !important;
+      }
+      .diploma-student-name {
+        font-size: 16px !important;
+      }
+      .signature-section {
+        flex-direction: column !important;
+        gap: 25px !important;
+      }
+      .signature-block {
+        text-align: left !important;
+      }
     }
 
     /* Print settings */
@@ -1809,7 +1953,7 @@
         </td>
       </tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 6. Continuidad Operativa -->
   <h2>6. Continuidad Operativa, Nube & Soporte Integral (Todo Incluido)</h2>
@@ -1827,7 +1971,7 @@
     </p>
   </div>
 
-  <table>
+  <div class="table-responsive"><table>
     <thead>
       <tr>
         <th style="width: 48%;">Servicio & Valor Entregado</th>
@@ -1887,7 +2031,7 @@
         <td><strong style="font-size: 14px; color: var(--navy);">$290.000 + IVA</strong></td>
       </tr>
     </tbody>
-  </table>
+  </table></div>
 
   <!-- 7. Cotizaciones Adjuntas -->
   <div class="avoid-break">
@@ -2205,12 +2349,7 @@ const KNOWLEDGE_BASE = [
   }
 ];
 
-const STUDENT_PREFIXES = [
-  "Hola <strong>Rodrigo</strong>, excelente consulta técnica.",
-  "Estimado <strong>Rodrigo</strong> (División Minera):",
-  "Atento <strong>Rodrigo</strong>, según los manuales de tu brigada:",
-  "Conforme a los protocolos de tu curso, <strong>Rodrigo</strong>:"
-];
+
 
 const STUDENT_PREFIXES = [
   "Hola <strong>Rodrigo</strong>, excelente consulta técnica.",
