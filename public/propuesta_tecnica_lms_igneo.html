@@ -118,65 +118,11 @@
       .hero-box h2 {
         font-size: 19px !important;
       }
-      .grid-2col {
-        grid-template-columns: 1fr !important;
-        gap: 16px !important;
-      }
       .tech-grid {
         grid-template-columns: 1fr !important;
       }
       .cards-grid {
         grid-template-columns: 1fr !important;
-      }
-      .app-screen {
-        padding: 12px 10px !important;
-      }
-      .mockup-body {
-        padding: 10px 8px !important;
-      }
-      .mockup-header {
-        padding: 8px 10px !important;
-        flex-wrap: wrap !important;
-        gap: 6px !important;
-      }
-      .mockup-url {
-        width: 100% !important;
-        order: 3 !important;
-        font-size: 9.5px !important;
-      }
-      .app-nav {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-      }
-      .user-pill {
-        width: 100% !important;
-        font-size: 10.5px !important;
-        text-align: center !important;
-      }
-      .diploma-footer {
-        grid-template-columns: 1fr !important;
-        gap: 14px !important;
-        text-align: center !important;
-      }
-      .diploma-sign-col {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-      }
-      .diploma-qr-col {
-        justify-content: center !important;
-      }
-      .diploma-inner-frame {
-        padding: 12px 8px !important;
-      }
-      .diploma-header {
-        flex-direction: column !important;
-        gap: 8px !important;
-        text-align: center !important;
-      }
-      .diploma-student-name {
-        font-size: 16px !important;
       }
       .signature-section {
         flex-direction: column !important;
@@ -374,6 +320,41 @@
     }
 
     /* Visual Mockups UI Showcases */
+    
+    /* Mockup Scroll Wrapper for Mobile Preservation */
+    .mockup-scroll-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 15px 0 25px 0;
+      border-radius: 12px;
+    }
+
+    .mockup-scroll-hint {
+      display: none;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    /* Keep mockup at crisp desktop resolution */
+    .mockup-container {
+      min-width: 820px;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .mockup-scroll-hint {
+        display: block !important;
+      }
+    }
+
     .mockup-container {
       margin: 25px 0 35px 0;
       border-radius: 12px;
@@ -1485,7 +1466,11 @@
   </p>
 
   <!-- MOCKUP 1: Portal Alumno, Reproductor SENCE & Profesor Virtual IA (Interactivo en Vivo) -->
-  <div class="mockup-container avoid-break">
+  <div class="mockup-scroll-hint no-print">
+    <span>📱 <strong>Simulador Interactivo de Aula Virtual & Diploma:</strong> Mantén o desliza horizontalmente con el dedo para explorar en resolución completa &rarr;</span>
+  </div>
+  <div class="mockup-scroll-wrapper">
+    <div class="mockup-container avoid-break">
     <div class="mockup-header">
       <div class="mockup-dots">
         <div class="mockup-dot red"></div>
@@ -2219,6 +2204,7 @@ function selectLesson(num) {
       <div class="play-btn-circle" id="play-btn-main" onclick="togglePlayPause()" title="Reproducir / Pausar">
         ${isPlaying ? '⏸' : '▶'}
       </div>
+  </div>
     `;
   }
 
