@@ -38,6 +38,44 @@ import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, 
 // Internal workspace (/interno). Spanish only, not indexed, not linked from the site.
 // Everything goes through api/admin.ts with a bearer token saved in this browser.
 
+export interface UserPermissions {
+  cotizaciones: boolean;
+  catalogo: boolean;
+  solicitudes: boolean;
+  whatsapp: boolean;
+  facturacion: boolean;
+  boveda: boolean;
+  ebs: boolean;
+  audit: boolean;
+  ajustes: boolean;
+  usuarios: boolean;
+}
+
+export interface AppUser {
+  id: string;
+  username: string;
+  name: string;
+  email?: string;
+  role: 'admin' | 'comercial' | 'tecnico' | 'custom';
+  active: boolean;
+  permissions: UserPermissions;
+  createdAt?: string;
+  lastLoginAt?: string;
+}
+
+const DEFAULT_USER_PERMISSIONS: UserPermissions = {
+  cotizaciones: true,
+  catalogo: true,
+  solicitudes: false,
+  whatsapp: false,
+  facturacion: false,
+  boveda: false,
+  ebs: false,
+  audit: false,
+  ajustes: false,
+  usuarios: false,
+};
+
 type Unit = 'proyecto' | 'mes' | 'hora' | 'unidad';
 type LeadStatus = 'nuevo' | 'contactado' | 'cotizado' | 'descartado';
 type QuoteStatus = 'borrador' | 'enviada' | 'aceptada' | 'rechazada';
@@ -327,16 +365,23 @@ const Badge = ({ className, children }: { className: string; children: React.Rea
 
 // ---------------------------------------------------------------- login
 const Login = ({ onToken }: { onToken: (t: string) => void }) => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isCollab, setIsCollab] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError(null);
     try {
-      const { token } = await call<{ token: string }>('login', { body: { password } });
+      const body = isCollab ? { username: username.trim(), password } : { password };
+      const { token, user } = await call<{ token: string; user?: AppUser }>('login', { body });
       writeToken(token);
+      if (user) {
+        try { localStorage.setItem('u693AdminUser', JSON.stringify(user)); } catch {}
+      }
       onToken(token);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo ingresar.');
@@ -344,18 +389,67 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
       setBusy(false);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+      <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-2xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl backdrop-blur">
         <div className="space-y-1">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Uni-Verso693</p>
-          <h1 className="text-2xl font-black text-white">Espacio interno</h1>
+          <h1 className="text-2xl font-black text-white">
+            {isCollab ? 'Acceso Colaborador' : 'Espacio interno'}
+          </h1>
+          <p className="text-xs text-slate-400">
+            {isCollab ? 'Ingresa con tu usuario y contraseña asignada' : 'Ingreso con contraseña maestra'}
+          </p>
         </div>
-        <input type="password" autoFocus autoComplete="current-password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} className={input} />
-        {error && <p className="text-sm text-red-300">{error}</p>}
-        <button type="submit" disabled={busy || !password} className={`${btnPrimary} w-full py-3`}>
+
+        {isCollab && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre de usuario</label>
+            <input
+              type="text"
+              autoFocus
+              autoComplete="username"
+              placeholder="Ej: matias"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={input}
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
+          <input
+            type="password"
+            autoFocus={!isCollab}
+            autoComplete="current-password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={input}
+          />
+        </div>
+
+        {error && <p className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={busy || !password || (isCollab && !username.trim())}
+          className={`${btnPrimary} w-full py-3`}
+        >
           {busy && <Loader2 className="w-4 h-4 animate-spin" />} Ingresar
         </button>
+
+        <div className="text-center pt-2 border-t border-white/10">
+          <button
+            type="button"
+            onClick={() => { setIsCollab(!isCollab); setError(null); }}
+            className="text-xs text-brand-400 hover:text-brand-300 underline font-medium cursor-pointer"
+          >
+            {isCollab ? '← Ingresar con Contraseña Maestra (Admin)' : '¿Eres colaborador? Ingresar con Usuario y Clave →'}
+          </button>
+        </div>
       </form>
     </div>
   );
@@ -3778,8 +3872,439 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
   );
 };
 
+// ---------------------------------------------------------------- usuarios & permisos (RBAC)
+const UsersAdmin = ({ api }: { api: Api }) => {
+  const [users, setUsers] = useState<AppUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<(Partial<AppUser> & { password?: string }) | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    api<{ users: AppUser[] }>('users')
+      .then((r) => setUsers(r.users ?? []))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [api]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    setSaving(true);
+    setError(null);
+    setSuccessMsg(null);
+    try {
+      await api('user-save', { body: { user: editing } });
+      setEditing(null);
+      setSuccessMsg('Colaborador guardado con éxito.');
+      setTimeout(() => setSuccessMsg(null), 4000);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar usuario.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: string, name: string) => {
+    if (!confirm(`¿Seguro que deseas eliminar al usuario "${name}"? Perderá el acceso de inmediato.`)) return;
+    try {
+      await api('user-delete', { body: { id } });
+      load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'No se pudo eliminar.');
+    }
+  };
+
+  const toggleActive = async (u: AppUser) => {
+    try {
+      await api('user-save', { body: { user: { ...u, active: !u.active } } });
+      load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'No se pudo cambiar el estado.');
+    }
+  };
+
+  const applyPreset = (preset: 'comercial' | 'tecnico' | 'admin') => {
+    if (!editing) return;
+    if (preset === 'comercial') {
+      setEditing({
+        ...editing,
+        role: 'comercial',
+        permissions: {
+          cotizaciones: true,
+          catalogo: true,
+          solicitudes: false,
+          whatsapp: false,
+          facturacion: false,
+          boveda: false,
+          ebs: false,
+          audit: false,
+          ajustes: false,
+          usuarios: false,
+        },
+      });
+    } else if (preset === 'tecnico') {
+      setEditing({
+        ...editing,
+        role: 'tecnico',
+        permissions: {
+          cotizaciones: true,
+          catalogo: true,
+          solicitudes: true,
+          whatsapp: false,
+          facturacion: false,
+          boveda: false,
+          ebs: true,
+          audit: true,
+          ajustes: false,
+          usuarios: false,
+        },
+      });
+    } else {
+      setEditing({
+        ...editing,
+        role: 'admin',
+        permissions: {
+          cotizaciones: true,
+          catalogo: true,
+          solicitudes: true,
+          whatsapp: true,
+          facturacion: true,
+          boveda: true,
+          ebs: true,
+          audit: true,
+          ajustes: true,
+          usuarios: true,
+        },
+      });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <h2 className="text-xl font-black text-white flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-brand-400" /> Gestión de Colaboradores & Permisos RBAC
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Crea cuentas para vendedores o técnicos y delimita exactamente a qué módulos de la empresa pueden ingresar.
+          </p>
+        </div>
+        <button
+          onClick={() =>
+            setEditing({
+              username: '',
+              name: '',
+              role: 'comercial',
+              active: true,
+              password: '',
+              permissions: { ...DEFAULT_USER_PERMISSIONS },
+            })
+          }
+          className={`${btnPrimary} text-xs`}
+        >
+          <Plus className="w-4 h-4" /> Nuevo Colaborador
+        </button>
+      </div>
+
+      {successMsg && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm px-4 py-2.5 rounded-lg flex items-center gap-2">
+          <Check className="w-4 h-4 text-emerald-400" /> {successMsg}
+        </div>
+      )}
+      {error && <p className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</p>}
+
+      {/* Editor Modal / Drawer */}
+      {editing && (
+        <div className="rounded-2xl border border-brand-500/30 bg-slate-900/95 p-6 shadow-2xl space-y-5">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 className="font-bold text-white text-base">
+              {editing.id ? `Editar Colaborador: ${editing.name || editing.username}` : 'Registrar Nuevo Colaborador'}
+            </h3>
+            <button onClick={() => setEditing(null)} className="text-slate-400 hover:text-white text-xs">✕ Cerrar</button>
+          </div>
+
+          <form onSubmit={save} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Matías (Ventas)"
+                  value={editing.name ?? ''}
+                  onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                  className={input}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Usuario de Acceso (Login)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: matias"
+                  value={editing.username ?? ''}
+                  onChange={(e) => setEditing({ ...editing, username: e.target.value })}
+                  className={input}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  {editing.id ? 'Nueva Contraseña (dejar en blanco para no cambiar)' : 'Contraseña Inicial'}
+                </label>
+                <input
+                  type="password"
+                  placeholder={editing.id ? '••••••••' : 'Mínimo 4 caracteres'}
+                  value={editing.password ?? ''}
+                  onChange={(e) => setEditing({ ...editing, password: e.target.value })}
+                  className={input}
+                  required={!editing.id}
+                />
+              </div>
+            </div>
+
+            {/* Presets Rápidos */}
+            <div className="bg-white/[0.02] border border-white/10 rounded-xl p-3.5 space-y-2">
+              <span className="text-xs font-bold text-slate-300">Configuración Rápida por Perfil:</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => applyPreset('comercial')}
+                  className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                    editing.role === 'comercial'
+                      ? 'bg-brand-600/30 border-brand-500 text-brand-200 font-bold'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                  }`}
+                >
+                  ⭐ Comercial / Cotizador (Recomendado para Vendedores)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset('tecnico')}
+                  className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                    editing.role === 'tecnico'
+                      ? 'bg-cyan-600/30 border-cyan-500 text-cyan-200 font-bold'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                  }`}
+                >
+                  🛠️ Técnico / Operaciones (Cotizaciones + Leads + EBS)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset('admin')}
+                  className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                    editing.role === 'admin'
+                      ? 'bg-emerald-600/30 border-emerald-500 text-emerald-200 font-bold'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                  }`}
+                >
+                  👑 Administrador Completo
+                </button>
+              </div>
+            </div>
+
+            {/* Matriz de Permisos */}
+            <div className="space-y-2 pt-1">
+              <span className="text-xs font-bold text-slate-300">Módulos y Permisos Habilitados:</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                {[
+                  { key: 'cotizaciones', label: 'Cotizador Oficial', desc: 'Crear, editar, enviar y descargar cotizaciones.' },
+                  { key: 'catalogo', label: 'Catálogo de Servicios', desc: 'Consultar módulos, precios y horas.' },
+                  { key: 'solicitudes', label: 'Solicitudes / Leads', desc: 'Bandeja de formularios de la web.' },
+                  { key: 'whatsapp', label: 'Bandeja WhatsApp', desc: 'Lectura y respuesta de mensajes.' },
+                  { key: 'facturacion', label: 'Facturación SII', desc: 'Emisión de facturas y boletas tributarias.' },
+                  { key: 'boveda', label: 'Bóveda de Claves', desc: 'Accesos a servidores, BD y credenciales.' },
+                  { key: 'ebs', label: 'EBS 693', desc: 'Arquitectura empresarial y soluciones.' },
+                  { key: 'audit', label: 'Audit PRO', desc: 'Auditorías técnicas y diagnósticos.' },
+                  { key: 'ajustes', label: 'Ajustes Generales', desc: 'Configuración tributaria y datos de empresa.' },
+                  { key: 'usuarios', label: 'Gestión de Usuarios', desc: 'Crear y cambiar permisos de usuarios.' },
+                ].map(({ key, label, desc }) => {
+                  const active = Boolean(editing.permissions?.[key as keyof UserPermissions]);
+                  return (
+                    <label
+                      key={key}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer select-none transition-all ${
+                        active
+                          ? 'bg-brand-500/10 border-brand-500/40 text-white'
+                          : 'bg-white/[0.02] border-white/5 text-slate-400 hover:bg-white/5'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={active}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            permissions: {
+                              ...(editing.permissions || DEFAULT_USER_PERMISSIONS),
+                              [key]: e.target.checked,
+                            },
+                          })
+                        }
+                        className="mt-1 rounded accent-brand-500"
+                      />
+                      <div>
+                        <div className="font-bold text-xs text-white">{label}</div>
+                        <div className="text-[11px] text-slate-400 leading-tight mt-0.5">{desc}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+              <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={editing.active !== false}
+                  onChange={(e) => setEditing({ ...editing, active: e.target.checked })}
+                  className="rounded accent-emerald-500"
+                />
+                <span>Cuenta Activa (con acceso permitido)</span>
+              </label>
+
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setEditing(null)} className={btnGhost}>
+                  Cancelar
+                </button>
+                <button type="submit" disabled={saving} className={btnPrimary}>
+                  {saving && <Loader2 className="w-4 h-4 animate-spin" />} Guardar Colaborador
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Users List */}
+      {loading ? (
+        <div className="flex items-center justify-center py-12 text-slate-400">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Cargando colaboradores...
+        </div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-12 rounded-2xl border border-dashed border-white/15 bg-white/[0.01] p-8">
+          <UserCheck className="w-10 h-10 mx-auto text-slate-600 mb-3" />
+          <p className="text-sm font-semibold text-slate-300">No hay colaboradores registrados todavía.</p>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4">
+            Puedes crear una cuenta para vendedores externos asignándoles únicamente acceso al Cotizador Oficial.
+          </p>
+          <button
+            onClick={() =>
+              setEditing({
+                username: '',
+                name: '',
+                role: 'comercial',
+                active: true,
+                password: '',
+                permissions: { ...DEFAULT_USER_PERMISSIONS },
+              })
+            }
+            className={btnPrimary}
+          >
+            <Plus className="w-4 h-4" /> Crear Primer Colaborador
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {users.map((u) => (
+            <div
+              key={u.id}
+              className={`rounded-2xl border p-5 transition-all space-y-4 ${
+                u.active
+                  ? 'border-white/10 bg-white/[0.02] hover:border-white/20'
+                  : 'border-red-500/20 bg-red-950/10 opacity-75'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white text-base">{u.name}</span>
+                    <span className="text-xs text-slate-500 font-mono">@{u.username}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full ${
+                        u.role === 'admin'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          : u.role === 'comercial'
+                          ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30'
+                          : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                      }`}
+                    >
+                      {u.role === 'admin' ? '👑 Administrador' : u.role === 'comercial' ? '💼 Comercial / Cotizador' : '🛠️ Técnico'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toggleActive(u)}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full cursor-pointer transition-all ${
+                        u.active
+                          ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                          : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                      }`}
+                    >
+                      {u.active ? '● Activo' : '○ Bloqueado'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setEditing({ ...u, password: '' })}
+                    className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs"
+                    title="Editar permisos"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => remove(u.id, u.name)}
+                    className="p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs"
+                    title="Eliminar usuario"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Permisos badges */}
+              <div className="space-y-1.5 pt-2 border-t border-white/5">
+                <span className="text-[11px] font-semibold text-slate-400">Módulos autorizados:</span>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(u.permissions || {})
+                    .filter(([_, enabled]) => Boolean(enabled))
+                    .map(([perm]) => (
+                      <span
+                        key={perm}
+                        className="text-[10px] font-medium bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded-md capitalize"
+                      >
+                        {perm === 'cotizaciones' ? '📄 Cotizador' : perm === 'catalogo' ? '📦 Catálogo' : perm}
+                      </span>
+                    ))}
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-500 flex justify-between pt-1">
+                <span>Registrado: {new Date(u.createdAt || '').toLocaleDateString('es-CL')}</span>
+                <span>{u.lastLoginAt ? `Último ingreso: ${new Date(u.lastLoginAt).toLocaleDateString('es-CL')}` : 'Sin ingresos aún'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- shell
-type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'ajustes';
+type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'usuarios' | 'ajustes';
 
 // EBS first: it's the main working tool, the rest supports it
 const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
@@ -3791,19 +4316,49 @@ const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[]
   { id: 'boveda', label: 'Bóveda', Icon: KeyRound },
   { id: 'audit', label: 'Audit PRO', Icon: Sparkles },
   { id: 'catalogo', label: 'Catálogo', Icon: Package },
+  { id: 'usuarios', label: 'Equipo & Permisos', Icon: UserCheck },
   { id: 'ajustes', label: 'Ajustes', Icon: SettingsIcon },
 ];
 
 const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void }) => {
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(() => {
+    try {
+      const saved = localStorage.getItem('u693AdminUser');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const isMaster = currentUser?.role === 'admin' || currentUser?.id === 'master' || !currentUser;
+  const userPerms = currentUser?.permissions;
+
+  const visibleTabs = useMemo(() => {
+    return TABS.filter((t) => {
+      if (isMaster) return true;
+      if (!userPerms) return t.id === 'cotizaciones';
+      if (t.id === 'usuarios') return Boolean(userPerms.usuarios);
+      return Boolean((userPerms as any)[t.id]);
+    });
+  }, [isMaster, userPerms]);
+
   // the tab lives in the URL hash (/interno#ebs), so it can be bookmarked and survives a reload
   const [tab, setTabState] = useState<Tab>(() => {
     const h = (typeof window === 'undefined' ? '' : window.location.hash.slice(1)) as Tab;
-    return TABS.some((t) => t.id === h) ? h : 'ebs';
+    return TABS.some((t) => t.id === h) ? h : 'cotizaciones';
   });
   const setTab = (t: Tab) => {
     setTabState(t);
     history.replaceState(null, '', `#${t}`);
   };
+
+  // If current tab is not allowed, redirect to first allowed tab
+  useEffect(() => {
+    if (visibleTabs.length && !visibleTabs.some((t) => t.id === tab)) {
+      setTab(visibleTabs[0].id);
+    }
+  }, [visibleTabs, tab]);
+
   const [catalog, setCatalog] = useState<Module[] | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [editing, setEditing] = useState<Quote | null>(null);
@@ -3825,6 +4380,15 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
   ) as Api;
 
   useEffect(() => {
+    api<{ user: AppUser }>('me', {})
+      .then((r) => {
+        if (r.user) {
+          setCurrentUser(r.user);
+          try { localStorage.setItem('u693AdminUser', JSON.stringify(r.user)); } catch {}
+        }
+      })
+      .catch(() => {});
+
     Promise.all([api<{ catalog: Module[] }>('catalog'), api<{ settings: Settings }>('settings')])
       .then(([c, s]) => {
         setCatalog(c.catalog);
@@ -3857,7 +4421,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
       <header className="border-b border-white/10 bg-[#050912]/90 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center gap-2 py-3">
           <span className="mr-4 font-black text-white">Uni-Verso<span className="text-brand-500">693</span> <span className="text-xs font-bold text-slate-500">interno</span></span>
-          {TABS.map(({ id, label, Icon }) => (
+          {visibleTabs.map(({ id, label, Icon }) => (
             <button
               key={id}
               onClick={() => {
@@ -3871,7 +4435,20 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
               {id === 'whatsapp' && waUnread > 0 && <span className="rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">{waUnread}</span>}
             </button>
           ))}
-          <button onClick={onLogout} className={`${btn} ml-auto text-slate-400 hover:text-white`}><LogOut className="w-4 h-4" /> Salir</button>
+          <div className="ml-auto flex items-center gap-3">
+            {currentUser && (
+              <span className="text-xs text-slate-400 border border-white/10 bg-white/[0.04] px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${currentUser.role === 'admin' ? 'bg-emerald-400' : 'bg-cyan-400'}`}></span>
+                <span className="font-semibold text-slate-200">{currentUser.name || currentUser.username}</span>
+                <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                  {currentUser.role === 'admin' ? 'Admin' : 'Comercial'}
+                </span>
+              </span>
+            )}
+            <button onClick={onLogout} className={`${btn} text-slate-400 hover:text-white`}>
+              <LogOut className="w-4 h-4" /> Salir
+            </button>
+          </div>
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -3913,6 +4490,8 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
           <Catalog api={api} catalog={catalog} onSaved={setCatalog} />
         ) : tab === 'boveda' ? (
           <BovedaAdmin api={api} />
+        ) : tab === 'usuarios' ? (
+          <UsersAdmin api={api} />
         ) : (
           <SettingsView api={api} settings={settings} onSaved={setSettings} />
         )}

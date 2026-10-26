@@ -42,6 +42,9 @@ const K = {
   vault: (id: string) => `u693:vault:${id}`,
   vaultByEmail: (email: string) => `u693:vault-by-email:${email.toLowerCase().trim()}`,
   vaultSession: (token: string) => `u693:vault-session:${token}`,
+  users: 'u693:users',
+  user: (id: string) => `u693:user:${id}`,
+  userByUsername: (u: string) => `u693:user-by-username:${u.toLowerCase().trim()}`,
 };
 
 const redis = Redis.fromEnv();
@@ -59,14 +62,115 @@ const safeEq = (a: string, b: string) => {
   const y = Buffer.from(b);
   return x.length === y.length && timingSafeEqual(x, y);
 };
-const makeToken = () => {
-  const exp = String(Date.now() + TOKEN_DAYS * 86_400_000);
-  return `${exp}.${sign(exp)}`;
+
+export interface UserPermissions {
+  cotizaciones: boolean;
+  catalogo: boolean;
+  solicitudes: boolean;
+  whatsapp: boolean;
+  facturacion: boolean;
+  boveda: boolean;
+  ebs: boolean;
+  audit: boolean;
+  ajustes: boolean;
+  usuarios: boolean;
+}
+
+export interface AppUser {
+  id: string;
+  username: string;
+  name: string;
+  email?: string;
+  passwordHash: string;
+  salt: string;
+  role: 'admin' | 'comercial' | 'tecnico' | 'custom';
+  active: boolean;
+  permissions: UserPermissions;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
+export interface AuthContext {
+  isMaster: boolean;
+  userId: string;
+  username: string;
+  name: string;
+  role: 'admin' | 'comercial' | 'tecnico' | 'custom';
+  permissions: UserPermissions;
+}
+
+const DEFAULT_ALL_PERMISSIONS: UserPermissions = {
+  cotizaciones: true,
+  catalogo: true,
+  solicitudes: true,
+  whatsapp: true,
+  facturacion: true,
+  boveda: true,
+  ebs: true,
+  audit: true,
+  ajustes: true,
+  usuarios: true,
 };
-const validToken = (token: string | undefined) => {
-  if (!token || !process.env.ADMIN_PASSWORD) return false;
-  const [exp, sig] = token.split('.');
-  return Boolean(exp && sig && Number(exp) > Date.now() && safeEq(sig, sign(exp)));
+
+const makeToken = (userId = 'master') => {
+  const exp = String(Date.now() + TOKEN_DAYS * 86_400_000);
+  return `${userId}.${exp}.${sign(`${userId}.${exp}`)}`;
+};
+
+const getAuthContext = async (token: string | undefined): Promise<AuthContext | null> => {
+  if (!token || !process.env.ADMIN_PASSWORD) return null;
+  const parts = token.split('.');
+  if (parts.length === 2) {
+    const [exp, sig] = parts;
+    if (Number(exp) > Date.now() && safeEq(sig, sign(exp))) {
+      return {
+        isMaster: true,
+        userId: 'master',
+        username: 'admin',
+        name: 'Administrador General',
+        role: 'admin',
+        permissions: DEFAULT_ALL_PERMISSIONS,
+      };
+    }
+    return null;
+  }
+  if (parts.length === 3) {
+    const [prefix, exp, sig] = parts;
+    if (Number(exp) <= Date.now()) return null;
+    if (!safeEq(sig, sign(`${prefix}.${exp}`))) return null;
+    if (prefix === 'master') {
+      return {
+        isMaster: true,
+        userId: 'master',
+        username: 'admin',
+        name: 'Administrador General',
+        role: 'admin',
+        permissions: DEFAULT_ALL_PERMISSIONS,
+      };
+    }
+    const user = await redis.get<AppUser>(K.user(prefix));
+    if (!user || user.active === false) return null;
+    return {
+      isMaster: false,
+      userId: user.id,
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      permissions: user.permissions || {
+        cotizaciones: true,
+        catalogo: true,
+        solicitudes: false,
+        whatsapp: false,
+        facturacion: false,
+        boveda: false,
+        ebs: false,
+        audit: false,
+        ajustes: false,
+        usuarios: false,
+      },
+    };
+  }
+  return null;
 };
 const bearer = (req: VercelRequest) => (req.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
 const clientKey = (req: VercelRequest) => {
@@ -2728,19 +2832,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(503).json({ error: 'Falta configurar ADMIN_PASSWORD en el servidor.' });
         return;
       }
-      // only failed attempts count: 5 wrong passwords lock this IP for 15 minutes
       const ip = clientKey(req);
       if ((await loginLimit.getRemaining(ip)).remaining <= 0) {
         res.status(429).json({ error: 'Demasiados intentos fallidos. Espera 15 minutos.' });
         return;
       }
-      if (!safeEq(str(body.password, 200), process.env.ADMIN_PASSWORD)) {
-        await loginLimit.limit(ip);
-        res.status(401).json({ error: 'Contraseña incorrecta.' });
+
+      const username = str(body.username, 80).trim().toLowerCase();
+      const password = str(body.password, 200);
+
+      // Case 1: Master Admin (username empty or "admin", and password matches ADMIN_PASSWORD)
+      if ((!username || username === 'admin') && safeEq(password, process.env.ADMIN_PASSWORD)) {
+        await loginLimit.resetUsedTokens(ip);
+        res.status(200).json({
+          token: makeToken('master'),
+          user: {
+            id: 'master',
+            username: 'admin',
+            name: 'Administrador General',
+            role: 'admin',
+            permissions: DEFAULT_ALL_PERMISSIONS,
+          },
+        });
         return;
       }
-      await loginLimit.resetUsedTokens(ip);
-      res.status(200).json({ token: makeToken() });
+
+      // Case 2: Sub-user login (by username)
+      if (username) {
+        const userId = await redis.get<string>(K.userByUsername(username));
+        const user = userId ? await redis.get<AppUser>(K.user(userId)) : null;
+        if (user && user.active && user.passwordHash && user.salt) {
+          const hash = scryptSync(password, user.salt, 64).toString('hex');
+          if (safeEq(hash, user.passwordHash)) {
+            await loginLimit.resetUsedTokens(ip);
+            await redis.set(K.user(user.id), { ...user, lastLoginAt: new Date().toISOString() });
+            res.status(200).json({
+              token: makeToken(user.id),
+              user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                role: user.role,
+                permissions: user.permissions,
+              },
+            });
+            return;
+          }
+        }
+      }
+
+      await loginLimit.limit(ip);
+      res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
       return;
     }
 
@@ -2940,9 +3082,50 @@ ${SITE_URL}/interno#ebs`);
       return;
     }
 
-    if (!validToken(bearer(req))) {
-      res.status(401).json({ error: 'Sesión vencida. Vuelve a ingresar.' });
+    const ctx = await getAuthContext(bearer(req));
+    if (!ctx) {
+      res.status(401).json({ error: 'Sesión no válida o vencida. Vuelve a ingresar.' });
       return;
+    }
+
+    // RBAC Permission Guards: protect sensitive modules from unauthorized sub-users
+    if (!ctx.isMaster) {
+      if (['leads', 'lead-status', 'lead-delete'].includes(action) && !ctx.permissions.solicitudes) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a Solicitudes / Leads.' });
+        return;
+      }
+      if (action.startsWith('whatsapp') && !ctx.permissions.whatsapp) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a la bandeja de WhatsApp.' });
+        return;
+      }
+      if ((action.startsWith('invoice') || action.startsWith('receipt') || action === 'invoices') && !ctx.permissions.facturacion) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a Facturación.' });
+        return;
+      }
+      if (action.startsWith('vault') && !ctx.permissions.boveda) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a la Bóveda de Claves.' });
+        return;
+      }
+      if (action.startsWith('ebs') && !ctx.permissions.ebs) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a soluciones EBS.' });
+        return;
+      }
+      if (action.startsWith('audit') && !ctx.permissions.audit) {
+        res.status(403).json({ error: 'No tienes permiso para acceder a Audit PRO.' });
+        return;
+      }
+      if (action === 'settings-save' && !ctx.permissions.ajustes) {
+        res.status(403).json({ error: 'No tienes permiso para modificar ajustes generales.' });
+        return;
+      }
+      if (action === 'catalog-save' && !ctx.permissions.catalogo) {
+        res.status(403).json({ error: 'No tienes permiso para editar el catálogo de módulos.' });
+        return;
+      }
+      if ((action.startsWith('quote') || action === 'quotes') && !ctx.permissions.cotizaciones) {
+        res.status(403).json({ error: 'No tienes permiso para gestionar cotizaciones.' });
+        return;
+      }
     }
 
     switch (action) {
@@ -3745,6 +3928,10 @@ ${SITE_URL}/interno#ebs`);
         return;
       }
       case 'vault-delete': {
+        if (!ctx.isMaster && !ctx.permissions.boveda) {
+          res.status(403).json({ error: 'No tienes permiso para modificar la Bóveda.' });
+          return;
+        }
         const id = str(body.id, 80);
         if (!id) break;
         const existing = await redis.get<ClientVault>(K.vault(id));
@@ -3754,6 +3941,126 @@ ${SITE_URL}/interno#ebs`);
         await redis.del(K.vault(id));
         const ids = (await redis.get<string[]>(K.vaults)) ?? [];
         await redis.set(K.vaults, ids.filter((x) => x !== id));
+        res.status(200).json({ ok: true });
+        return;
+      }
+      case 'me': {
+        res.status(200).json({
+          user: {
+            id: ctx.userId,
+            username: ctx.username,
+            name: ctx.name,
+            role: ctx.role,
+            permissions: ctx.permissions,
+          },
+        });
+        return;
+      }
+      case 'users': {
+        if (!ctx.isMaster && !ctx.permissions.usuarios) {
+          res.status(403).json({ error: 'No tienes permiso para gestionar usuarios.' });
+          return;
+        }
+        const ids = await redis.zrange<string[]>(K.users, 0, -1, { rev: true });
+        const users = ids.length ? await redis.mget<(AppUser | null)[]>(...ids.map(K.user)) : [];
+        const sanitized = users.filter(Boolean).map((u) => {
+          const { passwordHash, salt, ...rest } = u as AppUser;
+          return rest;
+        });
+        res.status(200).json({ users: sanitized });
+        return;
+      }
+      case 'user-save': {
+        if (!ctx.isMaster && !ctx.permissions.usuarios) {
+          res.status(403).json({ error: 'No tienes permiso para gestionar usuarios.' });
+          return;
+        }
+        const u = body.user ?? {};
+        const username = str(u.username, 60).trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '');
+        if (!username) {
+          res.status(400).json({ error: 'Ingresa un nombre de usuario válido (sin espacios).' });
+          return;
+        }
+        if (username === 'admin') {
+          res.status(400).json({ error: 'El nombre de usuario "admin" está reservado para el Administrador General.' });
+          return;
+        }
+        let id = str(u.id, 60);
+        let existing: AppUser | null = null;
+        if (id) {
+          existing = await redis.get<AppUser>(K.user(id));
+        } else {
+          const existingId = await redis.get<string>(K.userByUsername(username));
+          if (existingId) {
+            res.status(400).json({ error: `El usuario "${username}" ya existe.` });
+            return;
+          }
+          id = `usr_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+        }
+
+        let salt = existing?.salt ?? randomBytes(16).toString('hex');
+        let passwordHash = existing?.passwordHash;
+        if (u.password && typeof u.password === 'string' && u.password.length >= 4) {
+          salt = randomBytes(16).toString('hex');
+          passwordHash = scryptSync(u.password, salt, 64).toString('hex');
+        } else if (!existing) {
+          res.status(400).json({ error: 'Debes definir una contraseña de al menos 4 caracteres.' });
+          return;
+        }
+
+        const role = (['admin', 'comercial', 'tecnico', 'custom'].includes(u.role) ? u.role : 'comercial') as any;
+        const active = u.active !== false;
+        const permissions: UserPermissions = {
+          cotizaciones: Boolean(u.permissions?.cotizaciones ?? true),
+          catalogo: Boolean(u.permissions?.catalogo ?? true),
+          solicitudes: Boolean(u.permissions?.solicitudes),
+          whatsapp: Boolean(u.permissions?.whatsapp),
+          facturacion: Boolean(u.permissions?.facturacion),
+          boveda: Boolean(u.permissions?.boveda),
+          ebs: Boolean(u.permissions?.ebs),
+          audit: Boolean(u.permissions?.audit),
+          ajustes: Boolean(u.permissions?.ajustes),
+          usuarios: Boolean(u.permissions?.usuarios),
+        };
+
+        const updatedUser: AppUser = {
+          id,
+          username,
+          name: str(u.name, 100) || username,
+          email: str(u.email, 120),
+          passwordHash: passwordHash!,
+          salt,
+          role,
+          active,
+          permissions,
+          createdAt: existing?.createdAt ?? new Date().toISOString(),
+          lastLoginAt: existing?.lastLoginAt,
+        };
+
+        await redis.set(K.user(id), updatedUser);
+        await redis.set(K.userByUsername(username), id);
+        await redis.zadd(K.users, { score: Date.now(), member: id });
+
+        const { passwordHash: _, salt: __, ...sanitized } = updatedUser;
+        res.status(200).json({ user: sanitized });
+        return;
+      }
+      case 'user-delete': {
+        if (!ctx.isMaster && !ctx.permissions.usuarios) {
+          res.status(403).json({ error: 'No tienes permiso para gestionar usuarios.' });
+          return;
+        }
+        const id = str(body.id, 60);
+        if (!id) {
+          res.status(400).json({ error: 'ID de usuario no proporcionado.' });
+          return;
+        }
+        const user = await redis.get<AppUser>(K.user(id));
+        if (user) {
+          await redis.del(K.user(id));
+          await redis.del(K.userByUsername(user.username));
+          await redis.zrem(K.users, id);
+        }
         res.status(200).json({ ok: true });
         return;
       }
