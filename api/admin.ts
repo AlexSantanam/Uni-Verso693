@@ -332,6 +332,7 @@ const DEFAULT_CATALOG: Module[] = [
   { id: 'sitio', category: 'Web', name: 'Sitio corporativo', description: 'Sitio de varias páginas, bilingüe si se requiere, con SEO técnico.', price: 0, unit: 'proyecto' },
   { id: 'ecommerce', category: 'Web', name: 'Tienda e-commerce', description: 'Tienda en línea con pagos, catálogo y despacho.', price: 0, unit: 'proyecto' },
   { id: 'ux-ui', category: 'Diseño', name: 'Diseño UX/UI e identidad', description: 'Diseño de interfaces y lineamientos de marca.', price: 0, unit: 'proyecto' },
+  { id: 'setup-db-cloud', category: 'Infraestructura & Cloud', name: 'Aprovisionamiento Inicial & Fondo Base de Datos Cloud (Firebase / Supabase ~30 USD)', description: 'Configuración técnica en la nube, alta de proyecto y fondo/activación inicial obligatorio del proveedor cloud (~30 USD / $30.000 CLP aprox.) para base de datos y autenticación.', price: 30000, unit: 'proyecto' },
   { id: 'hosting-soporte', category: 'Soporte', name: 'Hosting, monitoreo y soporte', description: 'Infraestructura, respaldos y soporte técnico.', price: 0, unit: 'mes' },
   { id: 'hora-dev', category: 'Soporte', name: 'Hora de desarrollo adicional', description: 'Cambios o funcionalidades fuera del alcance.', price: 0, unit: 'hora' },
 ];
