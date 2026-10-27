@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plantilla de Correo Ejecutivo · OTEC Ígneo | UNIVERSO693 SpA</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .toolbar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+    }
+    .toolbar-info {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .toolbar-info strong {
+      color: #38bdf8;
+    }
+    .btn-copy {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
+    }
+    .btn-copy.copied {
+      background: #059669;
+    }
+    /* Email Preview Container (Simulates Gmail / Outlook) */
+    .email-wrapper {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="toolbar">
+      <div class="toolbar-info">
+        <strong>Plantilla Oficial para OTEC Ígneo</strong> · Lista para copiar y pegar en Gmail / Outlook.
+      </div>
+      <button id="copyBtn" class="btn-copy" onclick="copyEmailContent()">
+        📋 Copiar Correo Formateado
+      </button>
+    </div>
+
+    <!-- START OF EMAIL HTML (What gets copied and pasted into Gmail / Outlook) -->
+    <div id="emailContent" class="email-wrapper">
+      <div style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.6; color: #334155; background-color: #ffffff; padding: 35px 30px; max-width: 640px; margin: 0 auto;">
+        
+        <!-- HEADER WITH LOGOS -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+          <tr>
+            <td style="vertical-align: middle; text-align: left;">
+              <span style="font-size: 18px; font-weight: 800; color: #0284c7; letter-spacing: -0.5px;">UNI-VERSO<span style="color: #0f172a;">693</span></span>
+              <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Ingeniería de Software & IA</div>
+            </td>
+            <td style="vertical-align: middle; text-align: right;">
+              <span style="font-size: 13px; font-weight: 700; color: #dc2626;">OTEC ÍGNEO</span>
+              <div style="font-size: 10px; color: #64748b;">Fundación Bomberos Viña del Mar</div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="border-top: 1px solid #e2e8f0; margin-bottom: 25px;"></div>
+
+        <!-- SALUTATION -->
+        <p style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #0f172a;">
+          Estimada <strong>Claudia</strong> y <strong>Equipo Directivo de OTEC Ígneo</strong>,
+        </p>
+
+        <p style="margin-bottom: 20px; color: #475569;">
+          Junto con saludarles cordialmente desde <strong>UNIVERSO693 SpA</strong>, tenemos el agrado de presentarles nuestra <strong>Propuesta Técnica y Comercial Oficial</strong> para el desarrollo del nuevo <strong>Campus Virtual LMS y E-Learning Institucional de OTEC Ígneo</strong> (Fundación Cuerpo de Bomberos de Viña del Mar).
+        </p>
+
+        <!-- VISUAL CARD / BANNER WITH LINK -->
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="https://universo693.com/propuesta_tecnica_lms_igneo.html" target="_blank" style="text-decoration: none; display: block;">
+            <img src="https://universo693.com/assets/og_universo693_igneo.png" alt="Campus Virtual OTEC Ígneo - UNIVERSO693" style="width: 100%; max-width: 600px; height: auto; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: block; margin: 0 auto;">
+          </a>
+          <div style="font-size: 12px; color: #64748b; margin-top: 8px; font-style: italic;">
+            👆 Haz clic sobre la imagen para abrir la propuesta interactiva con simulador en vivo.
+          </div>
+        </div>
+
+        <!-- VALUE PROPOSITION HIGHLIGHTS -->
+        <p style="margin-bottom: 14px; color: #0f172a; font-weight: 600;">
+          Nuestra solución ha sido diseñada como una plataforma de alto estándar orientada a la capacitación corporativa e industrial, destacando:
+        </p>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+          <tr>
+            <td style="padding: 10px 14px; background: #f8fafc; border-left: 4px solid #0284c7; border-radius: 4px; margin-bottom: 10px;">
+              <strong style="color: #0f172a;">🛡️ Cumplimiento SENCE 100% Nativo:</strong>
+              <div style="font-size: 13.5px; color: #475569; margin-top: 3px;">
+                Trazabilidad segundo a segundo, control de avance mínimo por lección, prevención de saltos de video y generación automática de libros de asistencia y reportes de liquidación.
+              </div>
+            </td>
+          </tr>
+          <tr><td style="height: 10px;"></td></tr>
+          <tr>
+            <td style="padding: 10px 14px; background: #f8fafc; border-left: 4px solid #dc2626; border-radius: 4px; margin-bottom: 10px;">
+              <strong style="color: #0f172a;">🤖 Profesor Virtual con Inteligencia Artificial 24/7:</strong>
+              <div style="font-size: 13.5px; color: #475569; margin-top: 3px;">
+                Reconoce la identidad del alumno (ej. brigadista de división minera), responde dudas técnicas según la normativa NFPA del curso y asiste de forma ininterrumpida sin sobrecargar a los instructores.
+              </div>
+            </td>
+          </tr>
+          <tr><td style="height: 10px;"></td></tr>
+          <tr>
+            <td style="padding: 10px 14px; background: #f8fafc; border-left: 4px solid #059669; border-radius: 4px;">
+              <strong style="color: #0f172a;">🚀 Escalabilidad Sin Límites ni Multas:</strong>
+              <div style="font-size: 13.5px; color: #475569; margin-top: 3px;">
+                Creación ilimitada de cursos y módulos sin pagar cobros adicionales por ampliar la plataforma. Propiedad y autonomía total para Ígneo.
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- PRIMARY CALL TO ACTION BUTTON -->
+        <div style="text-align: center; margin: 32px 0 28px 0;">
+          <a href="https://universo693.com/propuesta_tecnica_lms_igneo.html" target="_blank" style="background-color: #0284c7; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; text-decoration: none; padding: 15px 32px; font-size: 15px; font-weight: bold; border-radius: 8px; display: inline-block; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); letter-spacing: 0.3px;">
+            VER PROPUESTA INTERACTIVA & DEMO →
+          </a>
+        </div>
+
+        <!-- QUOTATIONS ACCORDION / BOX -->
+        <div style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 28px;">
+          <div style="font-size: 14px; font-weight: bold; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+            📑 Cotizaciones Oficiales Adjuntas:
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 6px 0; color: #1e293b;">
+                <strong>⭐ Plan Profesional (Recomendado):</strong>
+              </td>
+              <td style="padding: 6px 0; text-align: right;">
+                <a href="https://universo693.com/cotizacion_0007_profesional_igneo.html" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">
+                  Ver Cotización COT-2026-0007
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">
+                • Plan Esencial (Entrada):
+              </td>
+              <td style="padding: 6px 0; text-align: right;">
+                <a href="https://universo693.com/cotizacion_0009_esencial_igneo.html" target="_blank" style="color: #64748b; text-decoration: underline;">
+                  Ver Cotización COT-2026-0009
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">
+                • Plan Enterprise (Corporativo):
+              </td>
+              <td style="padding: 6px 0; text-align: right;">
+                <a href="https://universo693.com/cotizacion_0010_enterprise_igneo.html" target="_blank" style="color: #64748b; text-decoration: underline;">
+                  Ver Cotización COT-2026-0010
+                </a>
+              </td>
+            </tr>
+          </table>
+          <div style="font-size: 12px; color: #64748b; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+            * Todas las cotizaciones cuentan con desglose detallado de hitos (50% anticipo, 25% staging y 25% entrega final) y garantía de continuidad operacional.
+          </div>
+        </div>
+
+        <p style="margin-bottom: 24px; color: #475569;">
+          Quedamos a su entera disposición para coordinar una breve reunión técnica o llamada para resolver dudas y revisar la maqueta interactiva en detalle.
+        </p>
+
+        <!-- SIGNATURE -->
+        <table style="width: 100%; border-collapse: collapse; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          <tr>
+            <td style="vertical-align: top;">
+              <div style="font-weight: bold; font-size: 16px; color: #0f172a;">Alexis Patricio Santana Miranda</div>
+              <div style="font-size: 13.5px; color: #0284c7; font-weight: 600;">Gerente General · UNIVERSO693 SpA</div>
+              <div style="font-size: 13px; color: #64748b; margin-top: 4px;">
+                📞 +56 9 9038 7414<br>
+                ✉️ <a href="mailto:alex@universo693.com" style="color: #0284c7; text-decoration: none;">alex@universo693.com</a> · <a href="mailto:contacto@universo693.com" style="color: #0284c7; text-decoration: none;">contacto@universo693.com</a><br>
+                🌐 <a href="https://universo693.com" style="color: #0284c7; text-decoration: none;">universo693.com</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+    <!-- END OF EMAIL HTML -->
+
+  </div>
+
+  <script>
+    function copyEmailContent() {
+      const emailDiv = document.getElementById('emailContent');
+      
+      // Select the email content
+      const range = document.createRange();
+      range.selectNode(emailDiv);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          const btn = document.getElementById('copyBtn');
+          btn.innerHTML = '✅ ¡Copiado con Éxito!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = '📋 Copiar Correo Formateado';
+            btn.classList.remove('copied');
+          }, 3000);
+        }
+      } catch (err) {
+        alert('Por favor selecciona el contenido manualmente con Ctrl+A y copia con Ctrl+C.');
+      }
+      selection.removeAllRanges();
+    }
+  </script>
+</body>
+</html>
