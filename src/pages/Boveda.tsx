@@ -88,10 +88,18 @@ const IGNEO_VAULT: ClientVaultData = {
     {
       id: 'cred-github',
       category: 'admin',
-      title: 'Repositorio de Código Fuente Privado (GitHub)',
-      url: 'https://github.com/universo693/otec-igneo-campus',
-      username: 'contacto@cuerpo-bomberos.cl',
-      notes: 'Soberanía total: acceso al código fuente completo (React, TypeScript, Node.js, PostgreSQL).',
+      title: 'Repositorio de Código Fuente Soberano (GitHub)',
+      url: 'https://github.com/aulaigneouv693-wq/aula.Igneo',
+      username: 'aulaigneouv693-wq',
+      notes: 'Soberanía total: acceso al código fuente completo (React, TypeScript, PWA, Node.js, PostgreSQL).',
+    },
+    {
+      id: 'cred-groq-ai',
+      category: 'api',
+      title: 'Groq Cloud LPU (Inferencia Ultra Rápida Tutor IA 24/7)',
+      url: 'https://console.groq.com',
+      tokenOrKey: 'gsk_egxZ...itmK',
+      notes: 'Motor de inferencia ultra rápida (~800 tok/s) con Llama 3.3 70B para el Tutor Pedagógico NFPA.',
     },
     {
       id: 'cred-db',

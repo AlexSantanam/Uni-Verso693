@@ -91,6 +91,16 @@ El proyecto se rige por la **Cotización Oficial COT-2026-0007**:
   - **Contraseña:** `Igneo2026`
   - **Rol:** Cuenta raíz para consolas cloud, YouTube (videos de lecciones privadas), Google Drive (respaldos de actas SENCE) y vinculación de infraestructura.
 
+
+- **Repositorio Oficial de Código Fuente (GitHub):**
+  - **URL:** `https://github.com/aulaigneouv693-wq/aula.Igneo`
+  - **Organización / Usuario:** `aulaigneouv693-wq`
+  - **Notas:** Repositorio soberano de código fuente del Campus Virtual (React, TypeScript, PWA, Node.js).
+- **Inferencia de Inteligencia Artificial (Groq Cloud LPU):**
+  - **Consola:** `https://console.groq.com`
+  - **API Key:** `gsk_egxZ...itmK`
+  - **Modelo:** `llama-3.3-70b-versatile` (Inferencia ultra veloz a ~800 tokens/s para el Tutor IA NFPA 24/7).
+
 ## 5. TAREA INMEDIATA: MAQUETACIÓN INTERACTIVA DEL PRESUPUESTO 2
 El siguiente hito es construir una maqueta/prototipo funcional interactivo en la ruta **`/campus-igneo`** (`src/pages/CampusIgneoDemo.tsx`) que permita demostrar y probar en vivo:
 1. **Vista Alumno (PWA Mobile/Desktop):** Aula virtual con lección en video, candado anti-bypass SENCE (bloqueo de salto rápido y cronómetro de permanencia activa).

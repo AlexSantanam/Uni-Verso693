@@ -3506,6 +3506,22 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
         notes: 'Control total de matrículas, cursos, evaluaciones y reportes SENCE.',
       },
       {
+        id: 'c-github',
+        category: 'admin',
+        title: 'Repositorio de Código Fuente Soberano (GitHub)',
+        url: 'https://github.com/aulaigneouv693-wq/aula.Igneo',
+        username: 'aulaigneouv693-wq',
+        notes: 'Soberanía digital: repositorio oficial de código fuente del Campus Virtual.',
+      },
+      {
+        id: 'c-groq-ai',
+        category: 'api',
+        title: 'Groq Cloud LPU (Inferencia Ultra Rápida Tutor IA 24/7)',
+        url: 'https://console.groq.com',
+        tokenOrKey: 'gsk_egxZ...itmK',
+        notes: 'Motor de inferencia ultra rápida con Llama 3.3 70B para el Tutor Pedagógico NFPA.',
+      },
+      {
         id: 'c-5',
         category: 'api',
         title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
