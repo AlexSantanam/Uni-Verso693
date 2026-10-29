@@ -1232,6 +1232,25 @@
       color: #9f1239;
     }
 
+    
+    .callout-sence {
+      background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+      border: 1px solid #7dd3fc;
+      border-left: 5px solid #0284c7;
+      padding: 20px 24px;
+      border-radius: 10px;
+      margin: 24px 0;
+    }
+    .callout-sence .callout-title {
+      color: #0369a1;
+      font-weight: 800;
+      font-size: 14.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .callout-vault {
       background: #f0fdf4;
       border-left: 4px solid #16a34a;
@@ -1492,7 +1511,7 @@
               <div class="brand-text-sub">Fundación Bomberos Viña del Mar &bull; OTEC NCh 2728</div>
             </div>
           </div>
-          <div class="user-pill">👤 Sesión: Rodrigo Valenzuela (División Minera)</div>
+          <div class="user-pill" style="display: flex; align-items: center; gap: 8px;"><span style="background: #0284c7; color: white; padding: 2px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.5px;">✓ CLAVEÚNICA SENCE</span><span>👤 Rodrigo Valenzuela (RUT: 16.482.910-K)</span></div>
         </div>
 
         <div class="grid-2col">
@@ -1767,6 +1786,20 @@
   </div>
 
   <!-- 4. Ficha Técnica de Ingeniería -->
+    <!-- Callout Oficial SENCE & ClaveÚnica -->
+  <div class="callout callout-sence avoid-break">
+    <div class="callout-title">🏛️ INTEGRACIÓN OFICIAL SENCE & CLAVEÚNICA (ESTADO DE CHILE)</div>
+    <p style="font-size: 13.5px; margin-bottom: 8px; color: #0369a1; line-height: 1.5;">
+      Para garantizar la aprobación y liquidación inmediata de los cursos ante el <strong>SENCE</strong> sin observaciones ni riesgos de multas para la Fundación, la plataforma incorpora de forma nativa:
+    </p>
+    <ul style="margin: 6px 0 6px 20px; font-size: 13px; color: #0c4a6e; line-height: 1.6;">
+      <li><strong>Autenticación Oficial ClaveÚnica (Gobierno Digital / Segpres):</strong> Conexión mediante protocolo seguro OAuth2 / OpenID Connect para validar la identidad biométrica y personal del alumno antes de iniciar cada sesión y evaluación reglamentaria SENCE.</li>
+      <li><strong>Interoperabilidad con Web Services / API SENCE en Tiempo Real:</strong> Envío telemático automático de asistencia, inicio, término y permanencia cronológica a los servidores centrales de SENCE (Resolución Exenta N° 3505). <em>(Los reportes Excel son solo una herramienta administrativa interna de respaldo adicional).</em></li>
+      <li><strong>Perfil Normativo del Relator Humano Acreditado:</strong> Módulo para docentes oficiales de la Fundación con libro de clases digital, foros y calificaciones requeridas por SENCE. El <strong>Tutor Virtual con IA</strong> actúa exclusivamente como apoyo de estudio 24/7 fuera del horario habitual, sin sustituir al relator humano.</li>
+      <li><strong>Entrega de Código Fuente & Repositorio GitHub a Nombre de la Fundación:</strong> La Fundación Bomberos Viña del Mar recibe el código fuente completo (TypeScript / React / Node / PostgreSQL), documentación y accesos maestros en su propio repositorio oficial. Cero código cautivo, cero secuestro tecnológico y total libertad a perpetuidad.</li>
+    </ul>
+  </div>
+
   <div class="page-break"></div>
   <h2>4. Ficha Técnica de Ingeniería, Ciberseguridad & Motor SENCE</h2>
   <p>
@@ -1869,10 +1902,10 @@
         <td><strong>Estricto Anti-Salto SENCE + Monitoreo de Foco</strong></td>
       </tr>
       <tr>
-        <td><strong>Reporte Oficial Asistencia SENCE (Excel)</strong></td>
-        <td>Planilla Oficial SENCE</td>
-        <td class="col-highlight"><strong>Cronológico Forense en 1 clic</strong></td>
-        <td><strong>Cronológico SENCE + Dashboard de Cumplimiento B2B</strong></td>
+        <td><strong>Cumplimiento Normativo SENCE & ClaveÚnica</strong></td>
+        <td>Autenticación ClaveÚnica + Registro Forense SENCE</td>
+        <td class="col-highlight"><strong>Conexión API/Web Services SENCE en Tiempo Real + ClaveÚnica Oficial + Reportes Excel</strong></td>
+        <td><strong>Conexión API SENCE en Vivo + ClaveÚnica + Trazabilidad Forense B2B</strong></td>
       </tr>
       <tr>
         <td><strong>Acreditación & Diplomas con Código QR</strong></td>
