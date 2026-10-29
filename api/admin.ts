@@ -3868,10 +3868,87 @@ ${SITE_URL}/interno#ebs`);
         return;
       }
       case 'vault-list': {
-        const ids = (await redis.get<string[]>(K.vaults)) ?? [];
+        let ids = (await redis.get<string[]>(K.vaults)) ?? [];
         if (!ids.length) {
-          res.status(200).json({ vaults: [] });
-          return;
+          // Auto-sembrar bóveda oficial de OTEC Ígneo si la BD está limpia
+          const seedId = 'vlt-otec-igneo';
+          const seedSalt = randomBytes(16).toString('hex');
+          const seedHash = scryptSync('Bomberos2026!', seedSalt, 64).toString('hex');
+          const now = new Date().toISOString();
+          const seedVault: ClientVault = {
+            id: seedId,
+            clientName: 'OTEC Ígneo (Fundación Cuerpo de Bomberos de Viña del Mar)',
+            project: 'Campus Virtual LMS & App PWA SENCE',
+            clientEmail: 'contacto@bomberosvinadelmar.cl',
+            passwordHash: seedHash,
+            salt: seedSalt,
+            createdAt: now,
+            updatedAt: now,
+            credentials: [
+              {
+                id: 'c-1',
+                category: 'dominio',
+                title: 'NIC Chile (Dominio igneo.cl)',
+                url: 'https://www.nic.cl',
+                username: 'contacto@bomberosvinadelmar.cl',
+                password: 'PasswordSegura2026!',
+                notes: 'Administración del nombre de dominio institucional.',
+              },
+              {
+                id: 'c-2',
+                category: 'dominio',
+                title: 'Subdominio Campus Virtual (campus.otecigneo.cl)',
+                url: 'https://campus.otecigneo.cl',
+                username: 'CNAME campus apuntando a cname.vercel-dns.com',
+                notes: 'Registro DNS configurado en infraestructura cloud de alta disponibilidad.',
+              },
+              {
+                id: 'c-3',
+                category: 'servidor',
+                title: 'Servidor Cloud de Alta Concurrencia (Campus LMS)',
+                url: 'https://cloud.universo693.com',
+                username: 'server-admin-igneo',
+                password: 'ServerPass_Igneo#2026',
+                notes: 'Docker / Next.js / PostgreSQL 16 con capacidad para 300 alumnos concurrentes y backups diarios.',
+              },
+              {
+                id: 'c-4',
+                category: 'admin',
+                title: 'Superadministrador Campus LMS',
+                url: 'https://campus.otecigneo.cl/login',
+                username: 'admin@otecigneo.cl',
+                password: 'CampusAdmin2026*!',
+                notes: 'Gestión total de cursos, módulos, estudiantes y actas SENCE.',
+              },
+              {
+                id: 'c-5',
+                category: 'api',
+                title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
+                url: 'https://sence.gob.cl',
+                username: 'OTEC-76.XXX.XXX-X',
+                tokenOrKey: 'sence_token_prod_987213897129837198237',
+                notes: 'Sincronización en tiempo real de asistencia biométrica y ClaveÚnica.',
+              },
+              {
+                id: 'c-6',
+                category: 'base-datos',
+                title: 'Base de Datos PostgreSQL 16 & pgvector (Tutor IA)',
+                url: 'https://postgres.universo693.com',
+                username: 'pg_igneo_prod',
+                password: 'PgPass_Igneo_AI_2026!',
+                notes: 'Almacena vectores de conocimiento para el Tutor IA NFPA y auditoría.',
+              },
+            ],
+          };
+          try {
+            await redis.set(K.vault(seedId), seedVault);
+            await redis.set(K.vaults, [seedId]);
+            await redis.set(K.vaultByEmail('contacto@bomberosvinadelmar.cl'), seedId);
+            await redis.set(K.vaultByEmail('contacto@igneo.cl'), seedId);
+            ids = [seedId];
+          } catch (seedErr) {
+            console.error('Error auto-seeding default vault', seedErr);
+          }
         }
         const rows = await redis.mget<(ClientVault | null)[]>(...ids.map(K.vault));
         const vaults = rows.filter(Boolean).map((v) => ({

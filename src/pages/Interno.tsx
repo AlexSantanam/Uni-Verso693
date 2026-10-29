@@ -3444,63 +3444,96 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     setNewPassword('');
   };
 
+  const defaultIgneoData: AdminVault = {
+    id: 'vlt-otec-igneo',
+    clientName: 'OTEC Ígneo (Fundación Cuerpo de Bomberos de Viña del Mar)',
+    project: 'Campus Virtual LMS & App PWA SENCE',
+    clientEmail: 'contacto@bomberosvinadelmar.cl',
+    updatedAt: new Date().toISOString(),
+    credentials: [
+      {
+        id: 'c-1',
+        category: 'dominio',
+        title: 'NIC Chile (Dominio igneo.cl)',
+        url: 'https://www.nic.cl',
+        username: 'contacto@bomberosvinadelmar.cl',
+        password: 'PasswordSegura2026!',
+        notes: 'Administración del nombre de dominio institucional.',
+      },
+      {
+        id: 'c-2',
+        category: 'dominio',
+        title: 'Subdominio Campus Virtual (campus.otecigneo.cl)',
+        url: 'https://campus.otecigneo.cl',
+        username: 'CNAME campus apuntando a cname.vercel-dns.com',
+        notes: 'Registro DNS configurado en servidores cloud de alta disponibilidad.',
+      },
+      {
+        id: 'c-3',
+        category: 'servidor',
+        title: 'Servidor Cloud de Alta Concurrencia (Campus LMS)',
+        url: 'https://cloud.universo693.com',
+        username: 'server-admin-igneo',
+        password: 'ServerPass_Igneo#2026',
+        notes: 'Docker / Next.js / PostgreSQL 16 con capacidad para 300 alumnos concurrentes y backups diarios.',
+      },
+      {
+        id: 'c-4',
+        category: 'admin',
+        title: 'Superadministrador Campus LMS',
+        url: 'https://campus.otecigneo.cl/login',
+        username: 'admin@otecigneo.cl',
+        password: 'CampusAdmin2026*!',
+        notes: 'Control total de matrículas, cursos, evaluaciones y reportes SENCE.',
+      },
+      {
+        id: 'c-5',
+        category: 'api',
+        title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
+        url: 'https://sence.gob.cl',
+        username: 'OTEC-76.XXX.XXX-X',
+        tokenOrKey: 'sence_token_prod_987213897129837198237',
+        notes: 'Sincronización en tiempo real de asistencia biométrica y ClaveÚnica.',
+      },
+      {
+        id: 'c-6',
+        category: 'base-datos',
+        title: 'Base de Datos PostgreSQL 16 & pgvector (Tutor IA)',
+        url: 'https://postgres.universo693.com',
+        username: 'pg_igneo_prod',
+        password: 'PgPass_Igneo_AI_2026!',
+        notes: 'Almacena base vectorial de conocimientos para el Tutor IA NFPA 24/7.',
+      },
+    ],
+  };
+
   const handlePreloadIgneo = () => {
     setEditing({
-      id: `vlt-igneo-${Date.now()}`,
-      clientName: 'OTEC Ígneo (Fundación Cuerpo de Bomberos de Viña del Mar)',
-      project: 'Campus Virtual LMS & App PWA',
-      clientEmail: 'contacto@igneo.cl',
+      ...defaultIgneoData,
+      id: 'vlt-otec-igneo',
       updatedAt: new Date().toISOString(),
-      credentials: [
-        {
-          id: `c-1`,
-          category: 'dominio',
-          title: 'NIC Chile (Dominio igneo.cl)',
-          url: 'https://www.nic.cl',
-          username: 'contacto@bomberosvinadelmar.cl',
-          password: 'PasswordSegura2026!',
-          notes: 'Administración del nombre de dominio oficial.',
-        },
-        {
-          id: `c-2`,
-          category: 'dominio',
-          title: 'Subdominio Campus Virtual (campus.igneo.cl)',
-          url: 'https://campus.igneo.cl',
-          username: 'CNAME campus apuntando a cname.universo693.com',
-          notes: 'Registro DNS configurado en servidores cloud.',
-        },
-        {
-          id: `c-3`,
-          category: 'servidor',
-          title: 'Servidor Cloud de Alta Concurrencia (Campus LMS)',
-          url: 'https://cloud.universo693.com',
-          username: 'server-admin-igneo',
-          password: 'ServerPass_Igneo#2026',
-          notes: 'Capacidad para 300 alumnos concurrentes y backups automáticos.',
-        },
-        {
-          id: `c-4`,
-          category: 'admin',
-          title: 'Acceso Superadministrador (Campus LMS)',
-          url: 'https://campus.igneo.cl/login',
-          username: 'admin@igneo.cl',
-          password: 'CampusAdmin2026*!',
-          notes: 'Control total de matrículas, cursos y reportes SENCE.',
-        },
-        {
-          id: `c-5`,
-          category: 'api',
-          title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
-          url: 'https://sence.gob.cl',
-          username: 'OTEC-76.XXX.XXX-X',
-          tokenOrKey: 'sence_token_prod_987213897129837198237',
-          notes: 'Token de sincronización de asistencia y horas en tiempo real.',
-        },
-      ],
     });
     setNewPassword('Bomberos2026!');
   };
 
+  const handleQuickActivateIgneo = async () => {
+    setSaving(true);
+    try {
+      await api('/api/admin?action=vault-save', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...defaultIgneoData,
+          newPassword: 'Bomberos2026!',
+        }),
+      });
+      await loadVaults();
+      alert('¡Bóveda Oficial de OTEC Ígneo activada exitosamente!');
+    } catch (err: any) {
+      alert(err.message || 'Error al activar bóveda.');
+    } finally {
+      setSaving(false);
+    }
+  };
   const handleGeneratePassword = () => {
     const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*';
     let p = '';
@@ -3602,9 +3635,19 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
             {copiedLink ? '¡Enlace copiado!' : 'Copiar link /boveda'}
           </button>
           {!editing && (
-            <button onClick={handleNew} className={btnPrimary}>
-              <Plus className="w-4 h-4" /> Nueva Bóveda
-            </button>
+            <>
+              <button
+                onClick={handlePreloadIgneo}
+                className={`${btnGhost} text-amber-300 hover:text-amber-200 border-amber-500/30 hover:border-amber-500/60`}
+                title="Cargar o editar datos de OTEC Ígneo"
+              >
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                Precargar OTEC Ígneo
+              </button>
+              <button onClick={handleNew} className={btnPrimary}>
+                <Plus className="w-4 h-4" /> Nueva Bóveda
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -3816,18 +3859,32 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           ) : vaults.length === 0 ? (
-            <div className="text-center py-16 border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-              <KeyRound className="w-10 h-10 text-slate-500 mx-auto mb-3" />
-              <h3 className="text-sm font-bold text-white">Aún no hay bóvedas de clientes creadas</h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                Crea una bóveda para OTEC Ígneo u otros clientes para centralizar sus contraseñas y garantizarles
-                soberanía tecnológica.
+            <div className="text-center py-14 px-6 border border-dashed border-amber-500/20 rounded-2xl bg-amber-500/[0.02] max-w-xl mx-auto my-4">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4 text-amber-400">
+                <KeyRound className="w-7 h-7" />
+              </div>
+              <h3 className="text-base font-bold text-white">Bóvedas Centrales de Clientes</h3>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                Aquí se listan y gestionan los repositorios soberanos de credenciales para tus clientes. 
+                Puedes inicializar de inmediato la bóveda oficial de <strong className="text-amber-300">OTEC Ígneo</strong> (Cuerpo de Bomberos de Viña del Mar) con un solo clic, o crear una nueva en blanco.
               </p>
-              <button onClick={handleNew} className={`${btnPrimary} mt-4`}>
-                <Plus className="w-4 h-4" /> Crear Primera Bóveda
-              </button>
-            </div>
-          ) : (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+                <button
+                  onClick={handleQuickActivateIgneo}
+                  disabled={saving}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:scale-[1.02] transition-all cursor-pointer"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin text-slate-950" /> : <Sparkles className="w-4 h-4 text-slate-950" />}
+                  ¡Activar Bóveda OTEC Ígneo (1-Clic)!
+                </button>
+                <button
+                  onClick={handlePreloadIgneo}
+                  className={`${btnGhost} w-full sm:w-auto text-xs`}
+                >
+                  Revisar y Editar antes de guardar
+                </button>
+              </div>
+            </div>) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {vaults.map((v) => (
                 <div
