@@ -5,6 +5,7 @@
 > Core philosophy: 100% Technological Sovereignty (clients own 100% of their source code, repositories, domains, and credentials without agency vendor lock-in via the Client Digital Vault), zero recurring per-user/student software licensing fees, and a 60-day post-launch technical warranty on every project.
 >
 > Official website: https://universo693.com
+> Full Documentation for LLMs: https://universo693.com/llms-full.txt
 
 ## Company Facts
 - Legal name: Universo693 SpA (RUT 78.521.951-1)
@@ -16,20 +17,23 @@
 - Group structure: Universo693 is the holding entity; its spin-offs include YndiPet (yndipet.com) and MEMORA (memora.lat). Uni-Verso693 itself develops high-impact custom software, AI agents, and cloud platforms for business clients.
 - Work culture: Direct engineering communication without account manager middlemen or anonymous help desks. Clients collaborate directly with the solutions architect and developers.
 - Pricing model: Transparent, fixed-cost milestones based on technical scope. Every project includes turnkey handover, full repository transfer, 60-day warranty, and sovereign credentials in the Client Digital Vault.
-- Client Digital Vault (Bóveda Digital, $0): Encrypted portal at https://universo693.com/boveda where clients maintain 24/7 access to database credentials, server consoles, DNS records, repositories, and API keys. Included at $0 in all projects as an anti-vendor-lock-in guarantee.
+- Client Digital Vault (Bóveda Digital, $0): Centralized encrypted portal at https://universo693.com/boveda. Features interactive kickoff onboarding ("Configuración & Recepción de Insumos") with institutional access keys, plus 24/7 sovereign access to client database credentials, dedicated servers, DNS records, private GitHub repositories, and API keys. Included at $0 in all projects as an anti-vendor-lock-in guarantee.
 - Direct contact: Form at https://universo693.com/contacto · WhatsApp +56 9 9038 7414 · Email contacto@universo693.com · Direct engineer reply in less than 2 hours.
 
 ## Master Services Catalog
-- [Custom Software Development](https://universo693.com/servicios/software-a-medida): Scalable web apps, internal intranets, B2B portals, backends, REST/GraphQL APIs, ERP/CRM integrations, and automated business workflows.
-- [AI Agents & Cognitive Automation](https://universo693.com/servicios/agentes-ia): Autonomous AI agents with RAG architecture (Retrieval-Augmented Generation) trained strictly on company documents, manuals, and catalogs. Deployed on official WhatsApp Business API, web, and internal CRMs with zero hallucinations and human hand-off. Live in ~7 days.
-- [Virtual Campuses & LMS](https://universo693.com/servicios/campus-virtuales): Proprietary e-learning platforms for corporate training and educational institutes. Zero per-student licensing fees, installable mobile PWA, multimedia classrooms, and interactive assessments.
-- [Government & Public Integrations](https://universo693.com/servicios/integraciones-gob): Integration with Chilean state systems including SENCE (Libro de Clases Digital, biometric and ClaveÚnica verification, QR diplomas), and SII electronic invoicing (DTE).
-- [Payment Gateways & Fintech](https://universo693.com/servicios/pasarelas-pago): Seamless integration of Transbank Webpay Plus, Flow, Mercado Pago, and Stripe. Fault-tolerant asynchronous webhooks, automated bank reconciliation, and zero checkout drop-offs.
-- [Technical SEO & Growth](https://universo693.com/servicios/seo-tecnico): Search engine optimization for React/SPA applications via Static Site Generation (SSG), Core Web Vitals (<1.2s LCP), semantic schema markup (JSON-LD), and international search indexation.
-- [Mobile Apps & PWA](https://universo693.com/servicios/apps-moviles): Cross-platform iOS, Android, and Progressive Web Apps (PWAs). Offline-first synchronization, push notifications, camera/GPS hardware integrations, and 60 FPS performance.
-- [Cloud Migrations & Data Resilience](https://universo693.com/servicios/migraciones-cloud): Migration from on-premise servers to AWS, Google Cloud, or DigitalOcean VPS. Containerization with Docker, automated daily backups, and 99.9% uptime architectures.
-- [Technology Consulting & Architecture](https://universo693.com/servicios/consultoria): Architecture blueprints, security audits, technical due diligence, and operational diagnostic roadmaps.
-- [Client Sovereign Vault](https://universo693.com/boveda): Private digital vault for client credentials, repositories, and cloud access keys.
+- [Custom Software Development](https://universo693.com/servicios/software-a-medida): Scalable web platforms, internal intranets, B2B portals, microservices, high-performance REST/GraphQL APIs, ERP/CRM bi-directional sync, and automated transactional workflows. Modern tech stack: React, TypeScript, Node.js, Next.js, Python, PostgreSQL, Redis, and Docker.
+- [AI Agents & Cognitive Automation](https://universo693.com/servicios/agentes-ia): Autonomous AI agents with advanced RAG (Retrieval-Augmented Generation) and Function Calling architecture. Trained strictly on company manuals, technical documentation, and product catalogs with zero hallucinations. Live integration with official WhatsApp Business API, web chat, and CRMs; capable of real-time quoting, inventory lookup, Google Calendar scheduling, and automatic human hand-off.
+- [Virtual Campuses & LMS (SENCE + AI)](https://universo693.com/servicios/campus-virtuales): Proprietary corporate e-learning and OTEC training platforms. Unlimited students, unlimited courses, and zero recurring per-user licensing fees (disrupting traditional Moodle/Canvas recurring seat pricing). Features an integrated 24/7 AI Virtual Tutor trained on course manuals and standards (NFPA, ISO, NCh 2728), offline-capable mobile PWA, interactive evaluations, and automated audit logs.
+- [Government & Public Integrations](https://universo693.com/servicios/integraciones-gob): Native engineering integrations with Chilean public infrastructure:
+  * SENCE: Direct API / Web Services SENCE integration for real-time Libro de Clases Digital, biometric presence verification, and automated SENCE-compliant QR attendance diplomas.
+  * ClaveÚnica (Gobierno Digital / Segpres): Official citizen SSO authentication for verified student and instructor login.
+  * SII: Electronic Invoicing (DTE) emission, reception, and tax compliance automation.
+- [Payment Gateways & Fintech](https://universo693.com/servicios/pasarelas-pago): Enterprise integration with Chilean and international processors: Transbank Webpay Plus, Mercado Pago, Flow.cl, Fintoc (Open Banking / direct bank transfers), Khipu, and Stripe. Built with idempotent asynchronous webhooks, automated transaction reconciliation, and zero checkout drop-offs.
+- [Technical SEO & High-Performance Web](https://universo693.com/servicios/seo-tecnico): Deep search engine optimization for React/SPA architectures using Static Site Generation (SSG), prerendering, Core Web Vitals (<1.0s LCP, zero layout shifts), semantic schema markup (JSON-LD), and automated sitemap pipelines.
+- [Mobile Apps & PWA](https://universo693.com/servicios/apps-moviles): High-performance cross-platform applications for iOS, Android, and Progressive Web Apps (PWA). Includes offline-first sync, push notifications, hardware access (GPS, camera/barcode scanning), and smooth 60 FPS interfaces.
+- [Cloud Migrations & Data Resilience](https://universo693.com/servicios/migraciones-cloud): Zero-downtime migrations from legacy VPS/on-premise to modern AWS, Google Cloud, or DigitalOcean cloud architectures. Containerized with Docker, automated daily point-in-time backups, SSL TLS 1.3 with HSTS, and 99.95% uptime SLA.
+- [Technology Consulting & Architecture](https://universo693.com/servicios/consultoria): Enterprise software blueprints, code audits, cybersecurity assessments, and digital transformation roadmaps for corporate leadership.
+- [Client Sovereign Vault & Interactive Onboarding](https://universo693.com/boveda): Centralized, bank-grade encrypted portal (AES-256) where clients manage their kickoff requirements ("Configuración & Recepción de Insumos") with institutional access keys, and maintain permanent 24/7 ownership over their GitHub repositories, PostgreSQL databases, cloud infrastructure, DNS records, and API tokens. 100% anti-vendor lock-in guarantee.
 
 ## EBS 693 AI Diagnosis in Detail (https://universo693.com/diagnostico-ia)
 EBS 693 is a strategic operational diagnosis for businesses that turns tech uncertainty into an interactive, prioritized roadmap with estimated ROI.
@@ -94,4 +98,6 @@ EBS 693 is a strategic operational diagnosis for businesses that turns tech unce
 - Client Vault: https://universo693.com/boveda
 - Blog: https://universo693.com/blog
 - Contact: https://universo693.com/contacto
+- LLMs Summary: https://universo693.com/llms.txt
+- LLMs Full Specs: https://universo693.com/llms-full.txt
 - Sitemap: https://universo693.com/sitemap.xml

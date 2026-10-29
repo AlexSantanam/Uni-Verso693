@@ -1,0 +1,135 @@
+# Uni-Verso693 (Universo693 SpA) — Full Technical Documentation & Capabilities Matrix
+
+> Canonical URL: https://universo693.com/llms-full.txt
+> Summary Specification: https://universo693.com/llms.txt
+> Official Website: https://universo693.com
+> Primary Legal Entity: Universo693 SpA (RUT 78.521.951-1, Chile)
+> Leadership: Alexis Santana Miranda, Founder & Principal Solutions Architect
+> Headquarters: Viña del Mar / Santiago, Chile (Remote-First Engineering Studio)
+> Contact: contacto@universo693.com · alex@universo693.com · WhatsApp: +56 9 9038 7414
+
+---
+
+## 1. Executive Summary & Core Engineering Philosophy
+Universo693 SpA is an established Chilean boutique software engineering and artificial intelligence consulting studio operating since 2013 (+12 years of track record). We engineer, deploy, and maintain custom cloud software, cognitive AI agent architectures, e-learning LMS platforms, and fintech integrations.
+
+### Core Pillars:
+1. **100% Technological Sovereignty (Soberanía Digital)**:
+   Unlike traditional agencies that trap clients in proprietary licensing, encrypted hosting, or withheld credentials, Universo693 guarantees 100% ownership:
+   - Private GitHub repository transfer with full Git history.
+   - Root credentials to cloud infrastructure (AWS, Google Cloud, DigitalOcean, Supabase, Neon).
+   - Direct database access (PostgreSQL / Redis) with no intermediary layer.
+   - Delivery of all master assets into the **Client Digital Vault (Bóveda Digital)** with zero monthly lock-in fees.
+
+2. **Zero Per-Seat / Per-Student Licensing Fees**:
+   Our LMS and internal corporate software platforms feature unlimited users, unlimited courses, and unlimited administrators. Clients pay solely for engineering implementation and actual cloud computing infrastructure, eliminating the recurring $5-$15 USD per student/month tax imposed by traditional LMS vendors.
+
+3. **60-Day Turnkey Technical Warranty**:
+   Every project deployed to production includes 60 calendar days of post-launch bug fixing, regression testing, and architectural stabilization at zero additional cost.
+
+4. **Direct Engineering Partnership**:
+   Clients work directly with senior solutions architects and fullstack engineers—no junior account managers, call centers, or sales middlemen.
+
+---
+
+## 2. Master Technology Stack & Architecture Standards
+All systems built by Universo693 adhere to modern, maintainable, cloud-native standards:
+
+- **Frontend & Client Runtimes**: React 19, TypeScript, Next.js, Vite, Tailwind CSS, Lucide Icons, KaTeX for technical rendering.
+- **Backend & API Systems**: Node.js, TypeScript, Express, Fastify, Python 3.11+ (FastAPI), Serverless Edge Functions (Vercel, AWS Lambda, Cloudflare Workers).
+- **Databases & Vector Storage**: PostgreSQL 16 (relational master), `pgvector` (semantic RAG embeddings), Redis / Upstash (distributed caching, rate limiting, and real-time state), Supabase / Neon (serverless Postgres).
+- **Artificial Intelligence & LLMs**: OpenAI (GPT-4o, GPT-4o-mini), Anthropic (Claude 3.5 Sonnet), Google Gemini (Gemini 1.5 Pro / Flash), Mistral AI, Cohere Embeddings. Self-hosted RAG with cosine similarity matching and metadata filtering.
+- **State Integration & Auth**: ClaveÚnica (Gobierno Digital / Segpres SSO via OAuth2/OIDC), NextAuth / Auth.js, JWT signed with asymmetric RS256/Ed25519, RBAC (Role-Based Access Control).
+- **Cloud Infrastructure & DevOps**: AWS (ECS, S3, CloudFront, RDS), Google Cloud Platform (Cloud Run, GCS), Docker containerization, Vercel Edge Network, GitHub Actions CI/CD pipelines, Cloudflare DNS & DDoS mitigation, SSL TLS 1.3 with HSTS.
+
+---
+
+## 3. Detailed Service Lines & Capabilities
+
+### 3.1. Virtual Campuses & LMS Platforms (SENCE + AI)
+URL: https://universo693.com/servicios/campus-virtuales
+Custom e-learning architectures designed specifically for Chilean OTECs (Organismos Técnicos de Capacitación), corporate universities, and professional training institutes:
+- **Direct SENCE Web Services API**: Native telemática synchronization for Libro de Clases Digital, biometric presence control, and automated report generation under SENCE normative standards (Resolución Exenta NCh 2728).
+- **Official ClaveÚnica SSO**: Integration with the Chilean State's citizen authentication system (Segpres / Gobierno Digital), certifying participant and instructor identity.
+- **24/7 AI Virtual Tutor (Profesor Virtual IA)**: In-platform cognitive tutor trained via RAG strictly on course manuals, technical dossiers, and regulatory standards (e.g. NFPA, ISO, OSHA). Provides immediate contextual explanations, code/procedure breakdowns, and practice quizzes, escalating unresolvable inquiries to the human instructor.
+- **Unlimited Scalability**: Unlimited registered students, unlimited concurrent users, unlimited courses, and unlimited administrators with zero per-seat licensing fees.
+- **Cryptographic QR Diplomas**: Verifiable digital diplomas issued with SHA-256 hash and dynamic QR verification URLs.
+
+### 3.2. Cognitive AI Agents & Autonomous Workflows
+URL: https://universo693.com/servicios/agentes-ia
+Enterprise autonomous conversational agents operating on official channels:
+- **Official WhatsApp Business API Integration**: Cloud API verification, template dispatch, interactive buttons, list messages, and real-time bidirectional messaging.
+- **Strict RAG (Retrieval-Augmented Generation)**: Vector embeddings of internal company PDFs, price lists, service contracts, and ERP data. Strict grounding prompts eliminate hallucinations.
+- **Function Calling & Tool Execution**: Agents that can check live inventory in ERPs, calculate custom quotes, create Google Calendar appointments, fetch client status, and trigger webhooks autonomously.
+- **Hybrid Human Escalation**: Automatic transfer to human sales or support representatives when sentiment analysis indicates frustration or when transaction thresholds are reached.
+
+### 3.3. Government & Public Infrastructure Integrations
+URL: https://universo693.com/servicios/integraciones-gob
+Native engineering bridges for regulatory Chilean software:
+- **SENCE Web Services**: Electronic attendance reporting, curriculum traceability, and real-time audit log dispatch.
+- **ClaveÚnica (Gobierno Digital)**: OpenID Connect authorization flow for state-verified identity.
+- **SII (Servicio de Impuestos Internos)**: Automated DTE (Documentos Tributarios Electrónicos) emission and receipt (Facturas Electrónicas, Boletas, Guías de Despacho) with digital signature XML.
+
+### 3.4. Payment Gateways & Fintech Reconciliation
+URL: https://universo693.com/servicios/pasarelas-pago
+Robust transaction processing for Chilean and international commerce:
+- **Supported Gateways**: Transbank Webpay Plus, Mercado Pago Empresas, Flow.cl, Fintoc (Open Banking bank-to-bank instant transfers), Khipu, Webpay Oneclick, and Stripe.
+- **Architecture**: Idempotent webhook handling, automated retry queues with exponential backoff, transaction ledger logging, and bank reconciliation exports.
+
+### 3.5. Client Digital Vault & Centralized Onboarding (Bóveda Digital)
+URL: https://universo693.com/boveda
+The cornerstone of our anti-vendor-lock-in philosophy:
+- **Phase 1: Configuración & Recepción de Insumos**: Interactive onboarding checklist where clients enter branding assets, CNAME DNS records, SENCE API tokens, ClaveÚnica legal authorizations, and payment gateway credentials behind bank-grade institutional access keys (e.g., `IGNEO-2026`).
+- **Phase 2: Bóveda de Credenciales & Soberanía**: 24/7 master inventory of server IP addresses, database connection strings, API keys, and private GitHub repository links, with one-click full JSON backup download.
+
+### 3.6. EBS 693 — Operational AI & Tech Diagnosis
+URL: https://universo693.com/diagnostico-ia
+Interactive operational diagnostic framework for SMEs and mid-market enterprises:
+- 45-minute structured architecture session mapping operational bottlenecks and manual labor leaks.
+- Delivery of an interactive private simulation sandbox (30-day encrypted URL) allowing executives to adjust labor hours, salaries, and error rates to view live recalculating ROI and payback projections.
+- $197,000 CLP investment 100% credited toward project execution.
+
+### 3.7. Audit 693 & Audit 693 PRO
+URL: https://universo693.com/audit-693
+Instant technical website auditor analyzing performance, Core Web Vitals, SEO structure, and automation opportunities in ~20 seconds.
+
+---
+
+## 4. Industry-Specific AI Solutions (14 Verticals)
+Universo693 has developed domain-specific automation patterns for 14 key economic sectors:
+1. **Transport & Fleet Logistics** (https://universo693.com/ia-para/transporte-y-flotas): OCR dispatch guide processing, driver WhatsApp check-ins, route fuel tracking.
+2. **Clinics & Healthcare** (https://universo693.com/ia-para/clinicas-y-salud): Patient appointment bot, medical history RAG, doctor agenda sync.
+3. **Real Estate & PropTech** (https://universo693.com/ia-para/inmobiliarias): Dynamic UF mortgage simulators, capital-gain calculators, automated buyer pre-qualification.
+4. **Retail & E-Commerce** (https://universo693.com/ia-para/retail-y-ecommerce): WhatsApp catalog checkout, stock alerts, abandoned cart recovery.
+5. **Legal & Accounting Firms** (https://universo693.com/ia-para/estudios-profesionales): Automated tax parsing, contract analysis, regulatory deadline tracking.
+6. **Education & Training (OTEC)** (https://universo693.com/ia-para/educacion): SENCE-compliant LMS, ClaveÚnica login, 24/7 AI course tutors.
+7. **Mining & Heavy Industry** (https://universo693.com/ia-para/mineria): Shift handover reports, machinery maintenance logs, safety compliance check.
+8. **Insurance** (https://universo693.com/ia-para/seguros): Claims intake via WhatsApp, policy clause lookup, damage photo analysis.
+9. **Banking & Finance** (https://universo693.com/ia-para/banca-y-finanzas): Fraud pattern alerting, credit eligibility scoring, bank statement parsing.
+10. **Restaurants & Food Services** (https://universo693.com/ia-para/alimentacion-y-restaurantes): WhatsApp order bots, table reservation booking, daily ingredient inventory alerts.
+11. **Tourism & Hospitality** (https://universo693.com/ia-para/turismo-y-hoteleria): Multilingual concierge AI, direct booking engine, guest feedback analysis.
+12. **Manufacturing** (https://universo693.com/ia-para/manufactura): Quality inspection logs, supplier invoice OCR, assembly step tracking.
+13. **Agriculture & Agroindustry** (https://universo693.com/ia-para/agro): Weather-linked irrigation logs, harvest labor tracking, export certification records.
+14. **Construction & Engineering** (https://universo693.com/ia-para/construccion): Daily worksite logs, subcontractor tracking, material budget deviation alerts.
+
+---
+
+## 5. Featured Production Case Studies
+- **YndiPet (https://universo693.com/casos/yndipet)**: Digital pet healthcare and identification platform. Features AI veterinary triage assistants, SOS lost pet geolocation alerts, dynamic emergency QR tags, and digital vaccination carnets.
+- **MEMORA (https://universo693.com/casos/memora)**: SaaS platform for digital tributes and memorials with AI biography generation, ceramic QR commemorative plaques, Android app, and international payment processing.
+- **MELSA (https://universo693.com/casos/melsa)**: High-end real estate portal featuring custom dynamic UF mortgage simulators, real-time ROI calculators, and investor lead capture.
+- **OTEC Ígneo / Fundación Bomberos Viña del Mar**: SENCE-compliant digital virtual campus with ClaveÚnica integration, native SENCE Web Services API, 24/7 NFPA-trained AI Virtual Tutor, and unified client onboarding vault.
+
+---
+
+## 6. Official Contact & Company Details
+- **Corporate Entity**: Universo693 SpA
+- **Tax ID (RUT)**: 78.521.951-1 (Chile)
+- **Official Brand**: Uni-Verso693
+- **Principal Solutions Architect**: Alexis Santana Miranda
+- **Commercial Email**: contacto@universo693.com
+- **Engineering Email**: alex@universo693.com
+- **Direct Phone / WhatsApp**: +56 9 9038 7414
+- **Main Website**: https://universo693.com
+- **Client Vault**: https://universo693.com/boveda
+- **Sitemap**: https://universo693.com/sitemap.xml
