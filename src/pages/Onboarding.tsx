@@ -128,7 +128,7 @@ export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
         }
         setAuthError(null);
       } else {
-        setAuthError('Clave de seguridad incorrecta. Verifique la clave provista por UNIVERSO693 o contacte a soporte (alex@universo693.com).');
+        setAuthError('Clave de seguridad incorrecta. Verifique sus credenciales institucionales o contacte a soporte (contacto@universo693.com).');
       }
       setIsVerifying(false);
     }, 450);
@@ -285,7 +285,7 @@ export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
         </main>
 
         <footer className="border-t border-white/10 py-4 text-center text-xs text-slate-500 bg-[#0a1420]">
-          UNIVERSO693 SpA • Soporte confidencial: alex@universo693.com • +56 9 9038 7414
+          UNIVERSO693 SpA • Soporte institucional: contacto@universo693.com • +56 9 9038 7414
         </footer>
       </div>
     );
@@ -669,7 +669,7 @@ export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
                   <input
                     type="text"
                     disabled
-                    value="UNIVERSO693 SpA — alex@universo693.com"
+                    value="UNIVERSO693 SpA — Equipo de Ingeniería (contacto@universo693.com)"
                     className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 font-mono cursor-not-allowed"
                   />
                   <span className="text-[11px] text-slate-500 mt-1 block">Esto autoriza a nuestro equipo a recibir las llaves técnicas.</span>
@@ -853,7 +853,7 @@ export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500 bg-[#08101a]">
-        UNIVERSO693 SpA • RUT 78.521.951-1 • Villa Alemana, Región de Valparaíso • Soporte: alex@universo693.com
+        UNIVERSO693 SpA • RUT 78.521.951-1 • Villa Alemana, Región de Valparaíso • Soporte: contacto@universo693.com
       </footer>
     </div>
   );
