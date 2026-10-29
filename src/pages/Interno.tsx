@@ -3439,7 +3439,17 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       project: '',
       clientEmail: '',
       updatedAt: new Date().toISOString(),
-      credentials: [],
+      credentials: [
+        {
+          id: `c-root-${Date.now()}`,
+          category: 'admin',
+          title: 'Cuenta Matriz Google / Infraestructura Cloud',
+          url: 'https://accounts.google.com',
+          username: '',
+          password: '',
+          notes: 'Cuenta base para servicios cloud, YouTube para videos del Campus, Google Drive para actas SENCE y consolas técnicas.',
+        },
+      ],
     });
     setNewPassword('');
   };
@@ -3451,6 +3461,15 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     clientEmail: 'contacto@bomberosvinadelmar.cl',
     updatedAt: new Date().toISOString(),
     credentials: [
+      {
+        id: 'c-root',
+        category: 'admin',
+        title: 'Cuenta Matriz Google / Infraestructura Cloud',
+        url: 'https://accounts.google.com',
+        username: 'aula.igneo.uv693@gmail.com',
+        password: 'Igneo2026',
+        notes: 'Cuenta base para servicios cloud, YouTube para videos del Campus, Google Drive para actas SENCE y consolas técnicas.',
+      },
       {
         id: 'c-1',
         category: 'dominio',
@@ -3578,6 +3597,70 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       await loadVaults();
     } catch (err: any) {
       alert(err.message || 'Error al eliminar.');
+    }
+  };
+
+  const handleAddPreset = (type: 'google' | 'dns' | 'server' | 'db' | 'admin' | 'sence') => {
+    if (!editing) return;
+    const presets: Record<string, AdminVaultCred> = {
+      google: {
+        id: `c-google-${Date.now()}`,
+        category: 'admin',
+        title: 'Cuenta Matriz Google / Infraestructura Cloud',
+        url: 'https://accounts.google.com',
+        username: '',
+        password: '',
+        notes: 'Cuenta base vinculada a consolas cloud, YouTube, Google Drive y servicios centrales.',
+      },
+      dns: {
+        id: `c-dns-${Date.now()}`,
+        category: 'dominio',
+        title: 'NIC Chile / DNS Oficial',
+        url: 'https://www.nic.cl',
+        username: '',
+        password: '',
+        notes: 'Administración del nombre de dominio institucional y registros DNS.',
+      },
+      server: {
+        id: `c-server-${Date.now()}`,
+        category: 'servidor',
+        title: 'Servidor Cloud de Alta Disponibilidad',
+        url: 'https://cloud.universo693.com',
+        username: '',
+        password: '',
+        notes: 'Instancia dedicada de cómputo y aplicaciones web con balanceo de carga.',
+      },
+      db: {
+        id: `c-db-${Date.now()}`,
+        category: 'base-datos',
+        title: 'Base de Datos Dedicada (PostgreSQL 16)',
+        url: '',
+        username: '',
+        password: '',
+        notes: 'Instancia cloud dedicada con cifrado en reposo y backups continuos.',
+      },
+      admin: {
+        id: `c-admin-${Date.now()}`,
+        category: 'admin',
+        title: 'Superadministrador Campus LMS',
+        url: '',
+        username: '',
+        password: '',
+        notes: 'Control total de matrículas, cursos, evaluaciones y reportes.',
+      },
+      sence: {
+        id: `c-sence-${Date.now()}`,
+        category: 'api',
+        title: 'Integración SENCE LCE (Libro de Clases Electrónico)',
+        url: 'https://sence.gob.cl',
+        username: '',
+        tokenOrKey: '',
+        notes: 'Token de sincronización telemática de asistencia y trazabilidad NCh 2728.',
+      },
+    };
+    const chosen = presets[type];
+    if (chosen) {
+      setEditing({ ...editing, credentials: [...(editing.credentials || []), chosen] });
     }
   };
 
@@ -3743,8 +3826,58 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
                 <h3 className="text-sm font-bold text-white">Credenciales y Activos Registrados ({editing.credentials?.length || 0})</h3>
                 <p className="text-xs text-slate-400">Agrega todos los accesos: hosting, DNS, bases de datos, contraseñas de admin y APIs.</p>
               </div>
-              <button onClick={handleAddCred} className={`${btnGhost} text-xs`}>
-                <Plus className="w-3.5 h-3.5 text-cyan-400" /> Agregar Credencial
+              <div className="flex items-center gap-2">
+                <button onClick={handleAddCred} className={`${btnGhost} text-xs`}>
+                  <Plus className="w-3.5 h-3.5 text-cyan-400" /> Credencial en Blanco
+                </button>
+              </div>
+            </div>
+
+            {/* Presets de 1-clic */}
+            <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[11px] text-slate-400 font-semibold px-1">Plantillas rápidas:</span>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('google')}
+                className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-[11px] font-medium transition-colors"
+                title="Agregar cuenta raíz Google para servicios del proyecto"
+              >
+                + Matriz Google / Cloud
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('dns')}
+                className="px-2 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 text-[11px] font-medium transition-colors"
+              >
+                + NIC Chile / DNS
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('server')}
+                className="px-2 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 text-[11px] font-medium transition-colors"
+              >
+                + Servidor Cloud
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('db')}
+                className="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 text-[11px] font-medium transition-colors"
+              >
+                + Base de Datos
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('admin')}
+                className="px-2 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/20 text-[11px] font-medium transition-colors"
+              >
+                + Superadmin LMS
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddPreset('sence')}
+                className="px-2 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-[11px] font-medium transition-colors"
+              >
+                + API SENCE
               </button>
             </div>
 

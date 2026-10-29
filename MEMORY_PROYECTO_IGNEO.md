@@ -84,6 +84,13 @@ El proyecto se rige por la **Cotización Oficial COT-2026-0007**:
 
 ---
 
+
+- **Cuenta Matriz de Infraestructura Cloud & Google (Base):**
+  - **Servicio:** `https://accounts.google.com`
+  - **Usuario:** `aula.igneo.uv693@gmail.com`
+  - **Contraseña:** `Igneo2026`
+  - **Rol:** Cuenta raíz para consolas cloud, YouTube (videos de lecciones privadas), Google Drive (respaldos de actas SENCE) y vinculación de infraestructura.
+
 ## 5. TAREA INMEDIATA: MAQUETACIÓN INTERACTIVA DEL PRESUPUESTO 2
 El siguiente hito es construir una maqueta/prototipo funcional interactivo en la ruta **`/campus-igneo`** (`src/pages/CampusIgneoDemo.tsx`) que permita demostrar y probar en vivo:
 1. **Vista Alumno (PWA Mobile/Desktop):** Aula virtual con lección en video, candado anti-bypass SENCE (bloqueo de salto rápido y cronómetro de permanencia activa).
@@ -102,3 +109,4 @@ Actúa como parte del Equipo de Ingeniería & Arquitectura de Software de UNIVER
 Conoces todo el contexto del cliente OTEC Ígneo (Fundación Bomberos Viña del Mar), el Presupuesto 2 (Plan Profesional COT-2026-0007), la Bóveda en `/boveda`, el panel `/interno` y las reglas de marca 100% institucional.
 Nuestra tarea actual es maquetar el Campus Virtual interactivo en `/campus-igneo`. Por favor confirma que leíste la memoria y dime cómo empezamos.
 ```
+

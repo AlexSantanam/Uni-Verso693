@@ -54,6 +54,15 @@ const IGNEO_VAULT: ClientVaultData = {
   updatedAt: new Date().toISOString(),
   credentials: [
     {
+      id: 'cred-google-matriz',
+      category: 'admin',
+      title: 'Cuenta Matriz Google / Infraestructura Cloud',
+      url: 'https://accounts.google.com',
+      username: 'aula.igneo.uv693@gmail.com',
+      password: 'Igneo2026',
+      notes: 'Cuenta raíz para gestión de servicios cloud, YouTube para videos de lecciones, Google Drive de actas SENCE y vinculación de infraestructura.',
+    },
+    {
       id: 'cred-dns',
       category: 'dominio',
       title: 'Subdominio Campus Virtual',

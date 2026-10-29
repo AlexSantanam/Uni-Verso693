@@ -3886,6 +3886,15 @@ ${SITE_URL}/interno#ebs`);
             updatedAt: now,
             credentials: [
               {
+                id: 'c-root',
+                category: 'admin',
+                title: 'Cuenta Matriz Google / Infraestructura Cloud',
+                url: 'https://accounts.google.com',
+                username: 'aula.igneo.uv693@gmail.com',
+                password: 'Igneo2026',
+                notes: 'Cuenta base para servicios cloud, YouTube para videos del Campus, Google Drive para actas SENCE y consolas técnicas.',
+              },
+              {
                 id: 'c-1',
                 category: 'dominio',
                 title: 'NIC Chile (Dominio igneo.cl)',
