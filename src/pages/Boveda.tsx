@@ -18,7 +18,11 @@ import {
   UserCheck,
   AlertCircle,
   FileText,
+  Key,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react';
+import { OnboardingModule } from './Onboarding';
 
 export type VaultCategory = 'dominio' | 'servidor' | 'bd' | 'admin' | 'api' | 'otro';
 
@@ -42,6 +46,54 @@ export interface ClientVaultData {
   credentials: VaultCredential[];
 }
 
+const IGNEO_VAULT: ClientVaultData = {
+  id: 'vault-igneo',
+  clientName: 'Fundación Cuerpo de Bomberos de Viña del Mar — OTEC Ígneo',
+  project: 'Campus Virtual E-Learning SENCE con ClaveÚnica',
+  clientEmail: 'contacto@cuerpo-bomberos.cl',
+  updatedAt: new Date().toISOString(),
+  credentials: [
+    {
+      id: 'cred-dns',
+      category: 'dominio',
+      title: 'Subdominio Campus Virtual',
+      url: 'https://campus.otecigneo.cl',
+      username: 'campus.otecigneo.cl (CNAME)',
+      notes: 'Apunta a cname.vercel-dns.com para CDN global con SSL TLS 1.3 automático.',
+    },
+    {
+      id: 'cred-sence',
+      category: 'api',
+      title: 'Web Services SENCE (Integración API)',
+      username: 'API Token / Código OTEC',
+      notes: 'Conexión telemática para reportes de asistencia y trazabilidad conforme a norma NCh 2728.',
+    },
+    {
+      id: 'cred-segpres',
+      category: 'api',
+      title: 'ClaveÚnica (Gobierno Digital / Segpres)',
+      url: 'https://gobiernodigital.gob.cl',
+      username: 'RUT OTEC Ígneo',
+      notes: 'Autenticación ciudadana oficial de participantes y relatores.',
+    },
+    {
+      id: 'cred-github',
+      category: 'admin',
+      title: 'Repositorio de Código Fuente Privado (GitHub)',
+      url: 'https://github.com/universo693/otec-igneo-campus',
+      username: 'contacto@cuerpo-bomberos.cl',
+      notes: 'Soberanía total: acceso al código fuente completo (React, TypeScript, Node.js, PostgreSQL).',
+    },
+    {
+      id: 'cred-db',
+      category: 'bd',
+      title: 'Base de Datos Dedicada (PostgreSQL 16)',
+      username: 'postgres_igneo_admin',
+      notes: 'Instancia cloud dedicada con cifrado en reposo y backups continuos.',
+    },
+  ],
+};
+
 const CATEGORY_META: Record<VaultCategory, { label: string; icon: React.FC<{ className?: string }>; color: string; badge: string }> = {
   dominio: { label: 'Dominios & DNS', icon: Globe, color: 'text-blue-400', badge: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
   servidor: { label: 'Servidores & Cloud', icon: Server, color: 'text-purple-400', badge: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
@@ -56,10 +108,27 @@ export const Boveda: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Selector de pestaña principal (Insumos vs Credenciales)
+  const [mainTab, setMainTab] = useState<'insumos' | 'credenciales'>('insumos');
+
+  // Modo de login: 'clave' (Clave institucional de proyecto) vs 'credenciales' (Email/Password)
+  const [authMode, setAuthMode] = useState<'clave' | 'credenciales'>('clave');
+  const [institutionalKey, setInstitutionalKey] = useState('');
+
   const [sessionToken, setSessionToken] = useState<string | null>(() => {
     return typeof window !== 'undefined' ? localStorage.getItem('u693_vault_token') : null;
   });
-  const [vault, setVault] = useState<ClientVaultData | null>(null);
+
+  const [vault, setVault] = useState<ClientVaultData | null>(() => {
+    if (typeof window !== 'undefined') {
+      const storedKey = localStorage.getItem('u693_vault_client_key');
+      if (storedKey && ['IGNEO-2026', 'IGNEO2026', 'IGNEO693', 'BOMBEROS-2026'].includes(storedKey)) {
+        return IGNEO_VAULT;
+      }
+    }
+    return null;
+  });
 
   const [activeCategory, setActiveCategory] = useState<string>('todos');
   const [search, setSearch] = useState('');
@@ -125,12 +194,41 @@ export const Boveda: React.FC = () => {
     }
   };
 
+  const handleKeyLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanKey = institutionalKey.trim().toUpperCase();
+    if (!cleanKey) {
+      setError('Por favor ingresa la clave provista para tu proyecto.');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setTimeout(() => {
+      if (['IGNEO-2026', 'IGNEO2026', 'IGNEO693', 'BOMBEROS-2026'].includes(cleanKey)) {
+        setVault(IGNEO_VAULT);
+        setMainTab('insumos');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('u693_vault_client_key', 'IGNEO-2026');
+          sessionStorage.setItem('u693_vault_auth_igneo', 'true');
+        }
+      } else {
+        setError('Clave de seguridad no reconocida. Verifique la clave provista o contacte a soporte (alex@universo693.com).');
+      }
+      setLoading(false);
+    }, 400);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('u693_vault_token');
+    localStorage.removeItem('u693_vault_client_key');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('u693_vault_auth_igneo');
+    }
     setSessionToken(null);
     setVault(null);
     setEmail('');
     setPassword('');
+    setInstitutionalKey('');
   };
 
   const togglePassword = (id: string) => {
@@ -232,10 +330,36 @@ export const Boveda: React.FC = () => {
                 <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4 shadow-inner">
                   <Lock className="h-7 w-7" />
                 </div>
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Acceso a tu Bóveda</h1>
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Acceso a la Bóveda Digital</h1>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Ingresa con el correo y contraseña asignados para tu proyecto.
+                  Portal seguro para entrega de insumos iniciales y repositorio soberano de credenciales.
                 </p>
+              </div>
+
+              {/* Selector de Modo de Acceso */}
+              <div className="flex rounded-xl bg-black/40 p-1 mb-5 border border-white/10">
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('clave'); setError(null); }}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                    authMode === 'clave'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Clave Institucional
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('credenciales'); setError(null); }}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                    authMode === 'credenciales'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Correo & Contraseña
+                </button>
               </div>
 
               {error && (
@@ -245,53 +369,98 @@ export const Boveda: React.FC = () => {
                 </div>
               )}
 
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-                    Correo Registrado
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ejemplo@igneo.cl"
-                    required
-                    className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                  />
-                </div>
+              {authMode === 'clave' ? (
+                /* Formulario con Clave Institucional (Recomendado para inicio de proyecto) */
+                <form onSubmit={handleKeyLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                      Clave Institucional de Proyecto
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        value={institutionalKey}
+                        onChange={(e) => setInstitutionalKey(e.target.value)}
+                        placeholder="Ej: IGNEO-2026"
+                        required
+                        autoFocus
+                        className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono tracking-wider transition-colors"
+                      />
+                      <Key className="h-4 w-4 text-slate-500 absolute right-3.5 top-3" />
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1.5">
+                      Proporcionada en la Carta de Requerimientos o por la Dirección de Ingeniería.
+                    </p>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-                    Contraseña Maestra
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    required
-                    className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                  />
-                </div>
+                  <button
+                    type="submit"
+                    disabled={loading || !institutionalKey.trim()}
+                    className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Validando clave institucional...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-4 w-4" />
+                        <span>Desbloquear Bóveda Institucional</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                /* Formulario Tradicional Correo + Contraseña */
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                      Correo Registrado
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="ejemplo@cuerpo-bomberos.cl"
+                      required
+                      className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                    />
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Validando credenciales...</span>
-                    </>
-                  ) : (
-                    <>
-                      <KeyRound className="h-4 w-4" />
-                      <span>Ingresar a la Bóveda</span>
-                    </>
-                  )}
-                </button>
-              </form>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                      Contraseña Maestra
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      required
+                      className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Validando credenciales...</span>
+                      </>
+                    ) : (
+                      <>
+                        <KeyRound className="h-4 w-4" />
+                        <span>Ingresar a la Bóveda</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
 
               <div className="mt-8 pt-6 border-t border-white/10 text-center">
                 <div className="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
@@ -307,8 +476,49 @@ export const Boveda: React.FC = () => {
         ) : (
           /* Authenticated Vault Dashboard */
           <div className="space-y-6">
-            {/* Client Banner */}
-            <div className="bg-gradient-to-r from-[#0c1c2e] via-[#0d2238] to-[#0c1c2e] border border-cyan-500/30 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+            {/* Top Navigation Bar: Insumos vs Credenciales */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0a1626] border border-white/10 rounded-2xl p-2 shadow-lg">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMainTab('insumos')}
+                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                    mainTab === 'insumos'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Configuración & Recepción de Insumos</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Fase 1
+                  </span>
+                </button>
+                <button
+                  onClick={() => setMainTab('credenciales')}
+                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                    mainTab === 'credenciales'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <KeyRound className="h-4 w-4" />
+                  <span>Bóveda de Credenciales & Soberanía</span>
+                  <span className="text-xs text-slate-400">({vault.credentials?.length || 0})</span>
+                </button>
+              </div>
+
+              <div className="text-[11px] text-slate-400 px-3 hidden md:flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Gestión Unificada · UNIVERSO693 Bóveda v2.4</span>
+              </div>
+            </div>
+
+            {mainTab === 'insumos' ? (
+              <OnboardingModule slug="igneo" embedded={true} onGoToCredentials={() => setMainTab('credenciales')} />
+            ) : (
+              <div className="space-y-6">
+                {/* Client Banner */}
+                <div className="bg-gradient-to-r from-[#0c1c2e] via-[#0d2238] to-[#0c1c2e] border border-cyan-500/30 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 mb-3">
@@ -530,6 +740,8 @@ export const Boveda: React.FC = () => {
                     </div>
                   );
                 })}
+              </div>
+            )}
               </div>
             )}
           </div>

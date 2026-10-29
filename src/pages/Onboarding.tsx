@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -15,6 +15,9 @@ import {
   Lock,
   ArrowRight,
   Sparkles,
+  LogOut,
+  AlertCircle,
+  Key,
 } from 'lucide-react';
 
 interface OnboardingData {
@@ -23,6 +26,9 @@ interface OnboardingData {
   subdomain: string;
   dnsMethod: string;
   dnsProvider: string;
+  dnsStatus?: string;
+  dnsConfiguredValue?: string;
+  dnsNameservers?: string;
   senceCode: string;
   senceToken: string;
   senceContact: string;
@@ -36,11 +42,40 @@ interface OnboardingData {
   updatedAt?: string;
 }
 
-export const Onboarding: React.FC = () => {
-  const { slug } = useParams<{ slug?: string }>();
-  const isIgneo = !slug || slug.toLowerCase() === 'igneo';
+export interface OnboardingModuleProps {
+  slug?: string;
+  embedded?: boolean;
+  onGoToCredentials?: () => void;
+}
 
-  const storageKey = `u693_onboarding_${isIgneo ? 'igneo' : slug}`;
+export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
+  slug: propSlug,
+  embedded = false,
+  onGoToCredentials,
+}) => {
+  const { slug: routeSlug } = useParams<{ slug?: string }>();
+  const activeSlug = propSlug || routeSlug;
+  const isIgneo = !activeSlug || activeSlug.toLowerCase() === 'igneo';
+
+  const storageKey = `u693_onboarding_${isIgneo ? 'igneo' : activeSlug}`;
+  const authSessionKey = `u693_vault_auth_${isIgneo ? 'igneo' : activeSlug}`;
+
+  // Clave autorizada para Ígneo (flexible: con o sin guion, mayúsculas o minúsculas)
+  const VALID_KEYS = isIgneo
+    ? ['IGNEO-2026', 'IGNEO2026', 'IGNEO693', 'BOMBEROS-2026']
+    : ['U693-CLIENTE', 'UNIVERSO2026'];
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    if (embedded) return true; // Ya autenticado en Bóveda
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(authSessionKey) === 'true';
+    }
+    return false;
+  });
+
+  const [inputKey, setInputKey] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const [data, setData] = useState<OnboardingData>(() => {
     if (typeof window !== 'undefined') {
@@ -57,6 +92,9 @@ export const Onboarding: React.FC = () => {
       subdomain: isIgneo ? 'campus.otecigneo.cl' : '',
       dnsMethod: 'cname',
       dnsProvider: '',
+      dnsStatus: 'pendiente',
+      dnsConfiguredValue: 'cname.vercel-dns.com',
+      dnsNameservers: '',
       senceCode: '',
       senceToken: '',
       senceContact: '',
@@ -75,7 +113,35 @@ export const Onboarding: React.FC = () => {
   const [copiedJustification, setCopiedJustification] = useState(false);
   const [activeTab, setActiveTab] = useState<number>(1);
 
-  // Auto-calculate completion
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    setIsVerifying(true);
+
+    const cleanInput = inputKey.trim().toUpperCase();
+
+    setTimeout(() => {
+      if (VALID_KEYS.includes(cleanInput)) {
+        setIsAuthenticated(true);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(authSessionKey, 'true');
+        }
+        setAuthError(null);
+      } else {
+        setAuthError('Clave de seguridad incorrecta. Verifique la clave provista por UNIVERSO693 o contacte a soporte (alex@universo693.com).');
+      }
+      setIsVerifying(false);
+    }, 450);
+  };
+
+  const handleLock = () => {
+    setIsAuthenticated(false);
+    setInputKey('');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(authSessionKey);
+    }
+  };
+
   const calculateProgress = () => {
     let score = 0;
     if (data.primaryColor) score += 1;
@@ -126,110 +192,193 @@ export const Onboarding: React.FC = () => {
     setTimeout(() => setCopiedJustification(false), 3000);
   };
 
-  return (
-    <div className="min-h-screen bg-[#070f19] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
-      {/* Header Bar */}
-      <header className="border-b border-white/10 bg-[#0a1420]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-white text-base sm:text-lg tracking-tight">UNIVERSO693</span>
-                <span className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                  Bóveda Cifrada
-                </span>
+  // =========================================================================
+  // PANTALLA DE BLOQUEO / ACCESO CON CLAVE (BANK-GRADE GATEWAY)
+  // =========================================================================
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#070f19] text-slate-100 flex flex-col justify-between font-sans selection:bg-cyan-500/30">
+        <header className="border-b border-white/10 bg-[#0a1420]/80 backdrop-blur-md">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <ShieldCheck className="h-5 w-5 text-white" />
               </div>
-              <p className="text-xs text-slate-400">Portal de Recepción Técnica & Onboarding</p>
+              <span className="font-extrabold text-white text-base tracking-tight">UNIVERSO693 SpA</span>
             </div>
+            <span className="text-[11px] text-slate-400 font-mono">Bóveda Cifrada v2.4</span>
           </div>
+        </header>
 
-          <div className="flex items-center gap-2">
-            <Link
-              to="/boveda"
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
-            >
-              Ir a Bóveda
-            </Link>
-          </div>
-        </div>
-      </header>
+        <main className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-md bg-gradient-to-b from-[#0d1a2d] to-[#091322] border border-cyan-500/30 rounded-2xl p-8 shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-emerald-500"></div>
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
-        {/* Banner Institucional */}
-        <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-[#0e1e33] via-[#091524] to-[#070f19] p-6 sm:p-8 shadow-2xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Fase 1: Configuración & Recepción de Insumos
+            <div className="text-center space-y-2">
+              <div className="h-14 w-14 mx-auto rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-inner">
+                <Lock className="h-7 w-7" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                {data.project}
+              <h1 className="text-xl font-bold text-white tracking-tight">
+                Bóveda Cifrada de Onboarding
               </h1>
-              <p className="text-sm text-slate-300 max-w-2xl">
-                Espacio digital seguro para que el equipo de la <strong>{data.clientName}</strong> entregue los insumos, accesos y configuraciones requeridas para el despliegue del Campus Virtual.
+              <p className="text-xs text-slate-400">
+                Acceso restringido para el equipo directivo y técnico de la{' '}
+                <strong className="text-slate-200">{data.clientName}</strong>.
               </p>
             </div>
 
-            {/* Progress Card */}
-            <div className="bg-[#0b1726]/80 border border-white/10 rounded-xl p-4 min-w-[220px] text-center space-y-2">
-              <div className="text-xs uppercase tracking-wider font-bold text-slate-400">Progreso de Entrega</div>
-              <div className="text-3xl font-black text-cyan-400">{progress}%</div>
-              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                ></div>
+            {authError && (
+              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2.5">
+                <AlertCircle className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
+                <span>{authError}</span>
               </div>
-              <div className="text-[11px] text-slate-400">6 frentes normativos evaluados</div>
+            )}
+
+            <form onSubmit={handleUnlock} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>Clave Institucional de Seguridad</span>
+                  <span className="text-[10px] text-cyan-400 font-mono">Cifrado AES-256</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    value={inputKey}
+                    onChange={(e) => setInputKey(e.target.value)}
+                    placeholder="Ingrese la clave provista por UNIVERSO693"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono tracking-wider"
+                    autoFocus
+                  />
+                  <Key className="h-4 w-4 text-slate-500 absolute right-3.5 top-3" />
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1.5">
+                  Proporcionada en su carta de inicio o por la dirección de ingeniería.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isVerifying || !inputKey.trim()}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 inline-flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              >
+                {isVerifying ? (
+                  <>
+                    <div className="h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                    <span>Verificando credenciales...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-3.5 w-3.5" />
+                    <span>Desbloquear Bóveda Institucional</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="pt-4 border-t border-white/5 text-center">
+              <span className="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                Conexión segura TLS 1.3 con HSTS & Verificación Criptográfica
+              </span>
             </div>
           </div>
-        </div>
+        </main>
 
-        {/* Success Alert */}
-        {successMsg && (
-          <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center gap-3 animate-in fade-in duration-300">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-            <div className="text-sm">
-              <strong>¡Insumos sincronizados exitosamente!</strong> Los datos han sido encriptados en la Bóveda y nuestro equipo de ingeniería fue notificado para continuar el despliegue.
+        <footer className="border-t border-white/10 py-4 text-center text-xs text-slate-500 bg-[#0a1420]">
+          UNIVERSO693 SpA • Soporte confidencial: alex@universo693.com • +56 9 9038 7414
+        </footer>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // PANTALLA PRINCIPAL DE ONBOARDING (UNA VEZ AUTENTICADO)
+  // =========================================================================
+  const mainContent = (
+    <div className="space-y-6 w-full">
+      {/* Banner Institucional */}
+      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-[#0e1e33] via-[#091524] to-[#070f19] p-6 sm:p-8 shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Fase 1: Configuración & Recepción de Insumos
+              </span>
+              {onGoToCredentials && (
+                <button
+                  type="button"
+                  onClick={onGoToCredentials}
+                  className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 text-cyan-300 border border-white/10 inline-flex items-center gap-1 transition-colors"
+                >
+                  <KeyRound className="h-3 w-3" />
+                  <span>Ver Bóveda de Credenciales</span>
+                </button>
+              )}
             </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              {data.project}
+            </h1>
+            <p className="text-sm text-slate-300 max-w-2xl">
+              Espacio digital seguro para que el equipo de la <strong>{data.clientName}</strong> entregue los insumos, accesos y configuraciones requeridas para el despliegue del Campus Virtual.
+            </p>
           </div>
-        )}
 
-        {/* 6 Category Tabs / Modules */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {[
-            { id: 1, title: '1. Identidad & Branding', icon: Upload, color: 'text-amber-400' },
-            { id: 2, title: '2. Dominio & DNS', icon: Globe, color: 'text-blue-400' },
-            { id: 3, title: '3. Integración SENCE', icon: Award, color: 'text-emerald-400' },
-            { id: 4, title: '4. ClaveÚnica (Gob. Digital)', icon: KeyRound, color: 'text-cyan-400' },
-            { id: 5, title: '5. Pagos & Transbank', icon: CreditCard, color: 'text-purple-400' },
-            { id: 6, title: '6. Curso Piloto & IA', icon: BookOpen, color: 'text-red-400' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`p-3.5 rounded-xl border text-left transition-all flex items-center justify-between ${
-                activeTab === tab.id
-                  ? 'bg-cyan-500/10 border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
-                  : 'bg-[#0a1524] border-white/5 text-slate-400 hover:border-white/20 hover:text-slate-200'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <tab.icon className={`h-4 w-4 ${tab.color}`} />
-                <span className="text-xs font-bold">{tab.title}</span>
-              </div>
-              <ArrowRight className={`h-3.5 w-3.5 transition-transform ${activeTab === tab.id ? 'translate-x-1 text-cyan-400' : 'opacity-40'}`} />
-            </button>
-          ))}
+          {/* Progress Card */}
+          <div className="bg-[#0b1726]/80 border border-white/10 rounded-xl p-4 min-w-[220px] text-center space-y-2">
+            <div className="text-xs uppercase tracking-wider font-bold text-slate-400">Progreso de Entrega</div>
+            <div className="text-3xl font-black text-cyan-400">{progress}%</div>
+            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <div className="text-[11px] text-slate-400">6 frentes normativos evaluados</div>
+          </div>
         </div>
+      </div>
 
-        {/* Form Panel */}
-        <form onSubmit={handleSave} className="bg-[#0b1728] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+      {/* Success Alert */}
+      {successMsg && (
+        <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center gap-3 animate-in fade-in duration-300">
+          <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+          <div className="text-sm">
+            <strong>¡Insumos sincronizados exitosamente!</strong> Los datos han sido encriptados en la Bóveda y nuestro equipo de ingeniería fue notificado para continuar el despliegue.
+          </div>
+        </div>
+      )}
+
+      {/* 6 Category Tabs / Modules */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {[
+          { id: 1, title: '1. Identidad & Branding', icon: Upload, color: 'text-amber-400' },
+          { id: 2, title: '2. Dominio & DNS', icon: Globe, color: 'text-blue-400' },
+          { id: 3, title: '3. Integración SENCE', icon: Award, color: 'text-emerald-400' },
+          { id: 4, title: '4. ClaveÚnica (Gob. Digital)', icon: KeyRound, color: 'text-cyan-400' },
+          { id: 5, title: '5. Pagos & Recaudación', icon: CreditCard, color: 'text-purple-400' },
+          { id: 6, title: '6. Curso Piloto & IA', icon: BookOpen, color: 'text-red-400' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`p-3.5 rounded-xl border text-left transition-all flex items-center justify-between ${
+              activeTab === tab.id
+                ? 'bg-cyan-500/10 border-cyan-500/50 text-white shadow-lg shadow-cyan-500/10'
+                : 'bg-[#0a1524] border-white/5 text-slate-400 hover:border-white/20 hover:text-slate-200'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <tab.icon className={`h-4 w-4 ${tab.color}`} />
+              <span className="text-xs font-bold">{tab.title}</span>
+            </div>
+            <ArrowRight className={`h-3.5 w-3.5 transition-transform ${activeTab === tab.id ? 'translate-x-1 text-cyan-400' : 'opacity-40'}`} />
+          </button>
+        ))}
+      </div>
+
+      {/* Form Panel */}
+      <form onSubmit={handleSave} className="bg-[#0b1728] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
           {/* TAB 1: IDENTIDAD Y BRANDING */}
           {activeTab === 1 && (
             <div className="space-y-5 animate-in fade-in duration-200">
@@ -285,10 +434,10 @@ export const Onboarding: React.FC = () => {
               <div className="border-b border-white/10 pb-3">
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Globe className="h-5 w-5 text-blue-400" />
-                  2. Infraestructura Web, Subdominio Institucional & DNS
+                  2. Infraestructura Web, Subdominio Institucional & Registros DNS
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  Definición del enlace web seguro donde residirá el Campus Virtual.
+                  Definición y validación técnica del enlace seguro donde residirá el Campus Virtual.
                 </p>
               </div>
 
@@ -314,17 +463,100 @@ export const Onboarding: React.FC = () => {
                     className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
                     placeholder="NIC Chile / Cloudflare / cPanel / Hosting actual"
                   />
+                  <span className="text-[11px] text-slate-500 mt-1 block">Indique dónde administran los DNS de otecigneo.cl</span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200 space-y-1">
-                <strong>💡 Instrucción Técnica para su Informático / Hosting:</strong>
-                <p className="font-mono text-cyan-300 mt-1">
-                  Tipo: CNAME &nbsp;|&nbsp; Host: campus &nbsp;|&nbsp; Valor de Destino: cname.vercel-dns.com
+              {/* Parámetros Técnicos Oficiales para el Informático */}
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs text-blue-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <strong className="text-white flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 text-cyan-400" />
+                    Parámetros exactos a entregar a su Informático / Hosting:
+                  </strong>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText('Tipo: CNAME | Host/Nombre: campus | Valor Destino: cname.vercel-dns.com | TTL: 3600 (1 hora)');
+                      alert('¡Parámetros DNS copiados al portapapeles!');
+                    }}
+                    className="px-2 py-1 rounded bg-blue-500/20 hover:bg-blue-500/30 text-cyan-300 font-semibold inline-flex items-center gap-1 transition-colors text-[11px]"
+                  >
+                    <Copy className="h-3 w-3" />
+                    Copiar Parámetros
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11.5px] bg-black/40 p-2.5 rounded border border-white/10">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase">Tipo de Registro</span>
+                    <span className="text-emerald-400 font-bold">CNAME</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase">Host / Nombre</span>
+                    <span className="text-cyan-300 font-bold">campus</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase">Valor Destino</span>
+                    <span className="text-cyan-300 font-bold">cname.vercel-dns.com</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase">TTL / Tiempo</span>
+                    <span className="text-slate-300">3600 (Automático)</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  🛡️ <em>Garantía de aislamiento:</em> Este registro solo redirige el subdominio virtual y no altera en lo absoluto sus correos corporativos, registros MX ni el sitio web principal.
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Esto solo apunta el subdominio del aula virtual y no altera en lo absoluto sus correos institucionales ni su sitio web principal.
-                </p>
+              </div>
+
+              {/* Campos de reporte de DNS por parte del cliente */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Valor o Registro Configurado por su Informático
+                  </label>
+                  <input
+                    type="text"
+                    value={data.dnsConfiguredValue || ''}
+                    onChange={(e) => setData({ ...data, dnsConfiguredValue: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 font-mono"
+                    placeholder="Ej: campus.otecigneo.cl CNAME cname.vercel-dns.com"
+                  />
+                  <span className="text-[11px] text-slate-500 mt-1 block">
+                    Pegue aquí la confirmación o valor que su informático o hosting configuró.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Servidores de Nombre (NameServers) Actuales
+                  </label>
+                  <input
+                    type="text"
+                    value={data.dnsNameservers || ''}
+                    onChange={(e) => setData({ ...data, dnsNameservers: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 font-mono"
+                    placeholder="Ej: ns1.hosting.cl, ns2.hosting.cl o Cloudflare"
+                  />
+                  <span className="text-[11px] text-slate-500 mt-1 block">
+                    Nos permite verificar la propagación y emisión del certificado SSL TLS 1.3.
+                  </span>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Estado de la Gestión DNS
+                  </label>
+                  <select
+                    value={data.dnsStatus || 'pendiente'}
+                    onChange={(e) => setData({ ...data, dnsStatus: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value="pendiente">Pendiente de gestión con informático / hosting</option>
+                    <option value="configurado">Registro CNAME ya creado (en espera de propagación)</option>
+                    <option value="asistencia">Solicitamos asistencia directa de UNIVERSO693 para configurarlo</option>
+                  </select>
+                </div>
               </div>
             </div>
           )}
@@ -446,42 +678,62 @@ export const Onboarding: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 5: PAGOS Y TRANSBANK */}
+          {/* TAB 5: PAGOS Y PASARELA */}
           {activeTab === 5 && (
             <div className="space-y-5 animate-in fade-in duration-200">
               <div className="border-b border-white/10 pb-3">
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-purple-400" />
-                  5. Pasarela de Pagos & Recaudación Online (Webpay Plus)
+                  5. Pasarela de Pagos & Recaudación Online
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  Configuración para que las matrículas y pagos de cursos ingresen directamente a la cuenta de la Fundación.
+                  Configuración para que las matrículas y pagos de cursos ingresen directamente a la cuenta bancaria de la Fundación.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Pasarela de Preferencia</label>
-                  <select
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Pasarela de Preferencia de la Institución
+                  </label>
+                  <input
+                    type="text"
                     value={data.paymentGateway}
                     onChange={(e) => setData({ ...data, paymentGateway: e.target.value })}
+                    list="gateway-options"
+                    placeholder="Ej: Transbank Webpay, Mercado Pago, Flow, Fintoc..."
                     className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
-                  >
-                    <option value="transbank">Transbank Webpay Plus Oficial</option>
-                    <option value="flow">Flow.cl (Activación Rápida en 24 hrs)</option>
-                    <option value="mercadopago">MercadoPago Empresas</option>
-                  </select>
+                  />
+                  <datalist id="gateway-options">
+                    <option value="Transbank Webpay Plus Oficial" />
+                    <option value="Mercado Pago Empresas" />
+                    <option value="Flow.cl" />
+                    <option value="Fintoc (Transferencias Directas)" />
+                    <option value="Getnet (Banco Santander)" />
+                    <option value="Khipu" />
+                    <option value="Webpay Oneclick" />
+                    <option value="Transferencia Bancaria Directa (Manual o con Conciliación)" />
+                    <option value="Otra pasarela institucional" />
+                  </datalist>
+                  <span className="text-[11px] text-slate-500 mt-1 block">
+                    Indique la pasarela o procesador con el que su institución opera actualmente.
+                  </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Código de Comercio (Si ya disponen de contrato Transbank)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Código de Comercio, Identificador o API Key
+                  </label>
                   <input
                     type="text"
                     value={data.transbankCode}
                     onChange={(e) => setData({ ...data, transbankCode: e.target.value })}
                     className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 font-mono"
-                    placeholder="5970xxxxxxxx"
+                    placeholder="Código de comercio, ID de cuenta o correo de facturación"
                   />
+                  <span className="text-[11px] text-slate-500 mt-1 block">
+                    Permite enlazar la pasarela para que la recaudación ingrese 100% directa a su cuenta.
+                  </span>
                 </div>
               </div>
             </div>
@@ -553,6 +805,50 @@ export const Onboarding: React.FC = () => {
             </button>
           </div>
         </form>
+      </div>
+    );
+
+  if (embedded) {
+    return mainContent;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#070f19] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
+      {/* Header Bar con Botón de Bloquear */}
+      <header className="border-b border-white/10 bg-[#0a1420]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              <ShieldCheck className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-white text-base sm:text-lg tracking-tight">UNIVERSO693</span>
+                <span className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Bóveda Desbloqueada
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">{data.clientName}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleLock}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/20 transition-colors inline-flex items-center gap-1.5"
+              title="Cerrar y bloquear acceso"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Bloquear Bóveda</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+        {mainContent}
       </main>
 
       {/* Footer */}
@@ -561,6 +857,10 @@ export const Onboarding: React.FC = () => {
       </footer>
     </div>
   );
+};
+
+export const Onboarding: React.FC = () => {
+  return <OnboardingModule />;
 };
 
 export default Onboarding;
