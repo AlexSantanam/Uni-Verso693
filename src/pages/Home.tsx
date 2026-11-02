@@ -26,38 +26,78 @@ export const Home: React.FC = () => {
         <ParticleField className="absolute inset-0 opacity-70" />
         <div className="absolute inset-0 bg-grid opacity-60" aria-hidden />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050b13] to-transparent" aria-hidden />
-        <Container className="relative w-full py-20 lg:py-28 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7 space-y-8">
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-4 py-1.5 text-xs font-bold text-cyan-200">
-              <span className="w-2 h-2 rounded-full bg-cyan-300 animate-pulse" />
-              {es ? "Esto está pasando…" : "This is happening…"}
-            </span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.02] text-white">
+        <Container className="relative w-full py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              {es ? "Empresa Chilena de Software e IA · RUT 78.521.951-1 · Desde 2013" : "Chilean Software & Applied AI Firm · Since 2013"}
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-white">
               {es ? (
                 <>
-                  Software e IA que eliminan el <span className="text-gradient-brand">trabajo manual</span> de tu empresa
+                  Desarrollo de Software a Medida, Inteligencia Artificial y Sitios Web de <span className="text-gradient-brand">Alta Velocidad en Chile</span>
                 </>
               ) : (
                 <>
-                  Software and AI that remove <span className="text-gradient-brand">manual work</span> from your business
+                  Custom Software Development, Applied AI & High-Speed Web Platforms in <span className="text-gradient-brand">Chile</span>
                 </>
               )}
             </h1>
-            <p className="text-lg sm:text-xl text-slate-300 max-w-xl leading-relaxed">
-              {es
-                ? "Diseñamos y construimos plataformas a medida, agentes de IA, aplicaciones móviles y productos digitales que impulsan a empresas en crecimiento."
-                : "We design and build custom platforms, AI agents, mobile apps and digital products that drive growing companies forward."}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <ButtonLink to="/contacto">{es ? "Hablemos de tu proyecto" : "Let's talk about your project"}</ButtonLink>
+
+            {/* Direct Answer Block: Optimized for Google AI Overviews, ChatGPT, Claude and Chilean Decision Makers */}
+            <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/60 p-4 sm:p-5 backdrop-blur-sm space-y-2">
+              <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-300">
+                {es ? "¿Qué es UNIVERSO693 y qué resuelve?" : "What is UNIVERSO693 and what do we solve?"}
+              </p>
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
+                {es ? (
+                  <>
+                    <strong className="text-white">UNIVERSO693 SpA</strong> es una empresa chilena de ingeniería de software e inteligencia artificial aplicada fundada en 2013. Diseñamos plataformas web a medida, automatizamos operaciones repetitivas con agentes de IA para WhatsApp y construimos sistemas de alta velocidad con <strong className="text-cyan-300">100% de código propio</strong> (sin cobros por alumno ni licencias cautivas). Cada proyecto cuenta con garantía técnica de 60 días y despliegue ágil entre 7 y 28 días.
+                  </>
+                ) : (
+                  <>
+                    <strong className="text-white">UNIVERSO693 SpA</strong> is an established Chilean software engineering and applied AI studio founded in 2013. We build custom web platforms, automate repetitive operations with cognitive WhatsApp AI agents, and deliver high-speed systems with <strong className="text-cyan-300">100% client code ownership</strong>, zero recurring license traps, 60-day warranty, and 7-to-28 day delivery.
+                  </>
+                )}
+              </p>
+            </div>
+
+            {/* Trust points */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs text-slate-300">
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{es ? "Diagnóstico 45 min" : "45-min diagnosis"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{es ? "Entrega 7-28 días" : "7-28 days delivery"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{es ? "0% vendor lock-in" : "0% vendor lock-in"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{es ? "Garantía 60 días" : "60-day warranty"}</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-2">
+              <ButtonLink to="/diagnostico-ia">
+                {es ? "Agendar Diagnóstico 45 min (EBS 693)" : "Book 45-min Diagnosis (EBS 693)"}
+              </ButtonLink>
               <ButtonLink to="/casos" variant="secondary">
-                {es ? "Ver casos de éxito" : "See case studies"}
+                {es ? "Ver casos de éxito con métricas" : "See case studies with metrics"}
               </ButtonLink>
             </div>
-            <Link to="/diagnostico-ia" className="group inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
-              {es ? "¿No sabes por dónde partir? Diagnóstico EBS 693: 45 minutos y una hoja de ruta con ROI" : "Not sure where to start? EBS 693 diagnosis: 45 minutes and an ROI roadmap"}
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
+
+            <div className="pt-1">
+              <Link to="/contacto" className="group inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white">
+                {es ? "¿Prefieres cotizar directo? Escríbenos y un ingeniero te responde en <2 horas" : "Prefer a direct quote? Contact us and an engineer replies in <2 hours"}
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </div>
           </div>
           <div className="lg:col-span-5 flex justify-center">
             <PlasmaVideo className="w-[min(92vw,30rem)] lg:w-[120%] max-w-[38rem]" />

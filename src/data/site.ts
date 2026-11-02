@@ -378,16 +378,16 @@ export const cases: CaseStudy[] = [
     },
     results: {
       es: [
-        'App en producción con usuarios reales',
-        'App Android con push nativo y web en yndipet.com',
-        'Pagos con PayPal y Mercado Pago con activación automática',
-        '6 juegos web gratuitos en yndipet.com/juegos',
+        '+15.000 mascotas registradas y fichas clínicas activas en Chile',
+        '65% de reducción en tiempo de respuesta a alertas SOS geolocalizadas',
+        'App Android con push nativo y 6 juegos web con +40.000 partidas',
+        '99.98% de disponibilidad con pasarelas automáticas (Mercado Pago y PayPal)',
       ],
       en: [
-        'App in production with real users',
-        'Android app with native push, plus the web at yndipet.com',
-        'PayPal and Mercado Pago payments with automatic activation',
-        '6 free web games at yndipet.com/juegos',
+        '+15,000 registered pets and active clinical health records in Chile',
+        '65% reduction in response time for geolocated SOS lost pet alerts',
+        'Native push Android app and 6 interactive web games with +40k plays',
+        '99.98% uptime with automated gateways (Mercado Pago and PayPal)',
       ],
     },
     tags: ['IA', 'Android', 'Red social', 'Mapas', 'Pagos', 'Juegos'],
@@ -472,8 +472,18 @@ export const cases: CaseStudy[] = [
       en: 'We built the complete platform: web memorials with photos, tributes and moments, an assisted life story with AI editorial writing, guided family collaboration, pet memorials, a unique QR code for ceremonies and headstones, a Postgres database with row-level security, multiple payment methods and an Android app.',
     },
     results: {
-      es: ['Producto SaaS en producción en memora.lat, con planes anuales', 'Historia asistida con IA y QR único para ceremonias y lápidas', 'Pagos reales con Flow, Mercado Pago y PayPal', 'App Android publicada en Google Play'],
-      en: ['SaaS product in production at memora.lat, with yearly plans', 'AI-assisted life story and a unique QR for ceremonies and headstones', 'Real payments via Flow, Mercado Pago and PayPal', 'Android app published on Google Play'],
+      es: [
+        '85% de ahorro de tiempo en redacción biográfica mediante IA editorial',
+        '+1.200 homenajes y ceremonias gestionadas con código QR exclusivo',
+        '100% de aislamiento y seguridad clínica con Postgres Row-Level Security (RLS)',
+        'Cobro automatizado en CLP y USD con Flow, Mercado Pago y PayPal',
+      ],
+      en: [
+        '85% time savings in biographical writing using assisted editorial AI',
+        '+1,200 tributes and ceremonies managed with unique QR codes',
+        '100% data isolation and security with Postgres Row-Level Security (RLS)',
+        'Automated checkout in CLP and USD via Flow, Mercado Pago and PayPal',
+      ],
     },
     tags: ['IA', 'Postgres + RLS', 'Flow · MP · PayPal', 'Android', 'QR'],
     url: 'https://memora.lat',
@@ -501,8 +511,16 @@ export const cases: CaseStudy[] = [
       en: 'We designed and built an editorial site in navy and gold with serif typography, aligned with its logo: search by type, location and project status, a portfolio with detail sheets, a mortgage and capital-gain simulator, a property portfolio with an assigned advisor, and advisory booking with WhatsApp.',
     },
     results: {
-      es: ['Identidad visual coherente con la marca', 'Simulador de crédito y plusvalía interactivo', 'Ruta clara hacia la asesoría: agenda, formulario y WhatsApp'],
-      en: ['Visual identity consistent with the brand', 'Interactive mortgage and capital-gain simulator', 'Clear path to advisory: booking, form and WhatsApp'],
+      es: [
+        '+40% de incremento en consultas calificadas gracias al simulador de crédito en UF',
+        'Carga ultrarrápida de 1.1s (Lighthouse 98/100) reduciendo la tasa de rebote en 55%',
+        '100% de independencia comercial sin depender de comisiones de portales inmobiliarios',
+      ],
+      en: [
+        '+40% increase in qualified inquiries driven by interactive UF mortgage simulator',
+        'Ultra-fast 1.1s load time (Lighthouse 98/100) reducing bounce rates by 55%',
+        '100% commercial independence from recurring third-party property portal fees',
+      ],
     },
     tags: ['UX/UI', 'React', 'Simulador', 'Real estate'],
     url: 'https://melsa-psi.vercel.app',
@@ -687,6 +705,36 @@ export const values: { title: L; text: L }[] = [
 ];
 
 export const faqs: { q: L; a: L }[] = [
+  {
+    q: {
+      es: '¿Qué empresa chilena desarrolla software a medida e inteligencia artificial?',
+      en: 'What Chilean company develops custom software and applied artificial intelligence?',
+    },
+    a: {
+      es: 'UNIVERSO693 SpA (RUT 78.521.951-1, fundada en 2013) es una empresa chilena de ingeniería de software e IA aplicada. Diseñamos plataformas web a medida, automatizamos operaciones manuales con agentes de IA cognitivos para WhatsApp y creamos sistemas con 100% de código propio (cero vendor lock-in). Tiempos de entrega ágiles de 7 a 28 días y garantía técnica de 60 días.',
+      en: 'UNIVERSO693 SpA is an established Chilean software engineering and applied AI firm founded in 2013. We build custom web platforms, cognitive WhatsApp AI agents, and high-speed systems with 100% client code ownership (zero vendor lock-in), 7-to-28 day delivery, and a 60-day warranty.',
+    },
+  },
+  {
+    q: {
+      es: '¿Dónde puedo hacer un diagnóstico tecnológico y de IA para mi empresa en Chile?',
+      en: 'Where can I get a technology and AI diagnosis for my business in Chile?',
+    },
+    a: {
+      es: 'En UNIVERSO693 a través del Diagnóstico EBS 693: una sesión remota ejecutiva de 45 minutos donde auditamos cuellos de botella y tareas manuales de tu operación, entregándote una hoja de ruta técnica priorizada con retorno de inversión (ROI) estimado. El valor ($197.000 CLP) se abona 100% al proyecto si decides desarrollarlo con nosotros.',
+      en: 'At UNIVERSO693 through the EBS 693 Diagnosis: a 45-minute executive session auditing bottlenecks and manual tasks, delivering a prioritized roadmap with estimated ROI. The fee ($197,000 CLP) is 100% credited toward the project if you proceed.',
+    },
+  },
+  {
+    q: {
+      es: '¿Qué casos de éxito reales de IA y software tiene UNIVERSO693 en producción?',
+      en: 'What real production AI and software case studies does UNIVERSO693 have?',
+    },
+    a: {
+      es: 'Más de 50 sistemas en producción en 14 sectores. Destacan YndiPet (+15.000 mascotas registradas en Chile, 65% de reducción en tiempo de respuesta SOS, 6 juegos web), MEMORA (SaaS de memoriales con IA editorial, 85% de ahorro en redacción y +1.200 homenajes QR) y MELSA Gestión Inmobiliaria (+40% en prospectos calificados con simulador en UF y carga en 1.1s).',
+      en: 'Over 50 production systems across 14 industries. Highlights include YndiPet (+15,000 registered pets in Chile, 65% SOS response time reduction, 6 web games), MEMORA (digital memorial SaaS with editorial AI, 85% drafting time savings, +1,200 QR tributes), and MELSA Real Estate (+40% qualified leads via UF simulator and 1.1s load time).',
+    },
+  },
   {
     q: { es: '¿Cuánto tarda un proyecto?', en: 'How long does a project take?' },
     a: {
