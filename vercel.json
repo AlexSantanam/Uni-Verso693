@@ -94,6 +94,10 @@
     {
       "source": "/ebs/:token",
       "destination": "/ebs/_"
+    },
+    {
+      "source": "/auditoria/:id",
+      "destination": "/auditoria"
     }
   ]
 }

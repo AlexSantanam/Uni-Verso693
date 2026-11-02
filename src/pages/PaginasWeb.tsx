@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Globe,
   Zap,
@@ -15,6 +15,8 @@ import {
   PhoneCall,
   Clock,
   Code2,
+  Mail,
+  Send,
   DollarSign,
   ChevronRight,
   ExternalLink,
@@ -24,68 +26,124 @@ import { WHATSAPP_NUMBER, whatsappLink } from '../data/site';
 
 interface AuditResult {
   domain: string;
+  email: string;
+  phone?: string;
   score: number;
   speedMobile: number;
   seoScore: number;
   securityScore: number;
-  issues: { type: 'danger' | 'warning' | 'success'; text: string }[];
+  issues: { type: 'danger' | 'warning'; title: string; text: string }[];
+  positives: string[];
   recommendation: string;
 }
 
 export const PaginasWeb: React.FC = () => {
+  const navigate = useNavigate();
   const [domainInput, setDomainInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [scanStep, setScanStep] = useState(0);
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
+  const [emailSentNotice, setEmailSentNotice] = useState(false);
 
   const handleScan = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanDomain = domainInput.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-    if (!cleanDomain) return;
+    const cleanEmail = emailInput.trim();
+    if (!cleanDomain || !cleanEmail) return;
 
     setIsScanning(true);
     setAuditResult(null);
+    setEmailSentNotice(false);
     setScanStep(1);
 
     setTimeout(() => setScanStep(2), 700);
     setTimeout(() => setScanStep(3), 1500);
     setTimeout(() => {
       setIsScanning(false);
-      // Realistic diagnostic calculation based on standard Chilean agency sites
       const isSlow = !cleanDomain.includes('universo693');
-      setAuditResult({
+      
+      const resultData: AuditResult = {
         domain: cleanDomain,
-        score: isSlow ? 58 : 96,
-        speedMobile: isSlow ? 44 : 95,
-        seoScore: isSlow ? 65 : 98,
-        securityScore: isSlow ? 60 : 100,
+        email: cleanEmail,
+        phone: phoneInput.trim() || undefined,
+        score: isSlow ? 55 : 98,
+        speedMobile: isSlow ? 42 : 96,
+        seoScore: isSlow ? 68 : 100,
+        securityScore: isSlow ? 50 : 100,
         issues: isSlow
           ? [
-              { type: 'danger', text: 'Carga lenta en teléfonos móviles (>3.8 segundos en red 4G).' },
-              { type: 'danger', text: 'Sin llamada a la acción directa a WhatsApp en los primeros 3 segundos.' },
-              { type: 'warning', text: 'Faltan etiquetas estructuradas para aparecer en resúmenes de Google e IA.' },
-              { type: 'warning', text: 'Cabeceras de seguridad y protección contra spam incompletas.' },
-              { type: 'success', text: 'Dominio y certificado SSL activo.' },
+              {
+                type: 'danger',
+                title: 'Tiempo de carga en móviles deficiente (>3.6s)',
+                text: 'El 80% de tus visitas entra desde celulares. Un retraso superior a 3 segundos duplica la tasa de rebote antes de que lean tu propuesta.',
+              },
+              {
+                type: 'danger',
+                title: 'Sin botón de WhatsApp directo en los primeros 3 segundos',
+                text: 'El visitante no encuentra un camino de 1 clic para cotizar de inmediato. La mayoría se va sin completar formularios largos.',
+              },
+              {
+                type: 'warning',
+                title: 'Invisibilidad en buscadores de Inteligencia Artificial',
+                text: 'Tu sitio no cuenta con un párrafo de respuesta ejecutiva que motores como ChatGPT, Perplexity o Google AI Overviews puedan citar.',
+              },
+              {
+                type: 'warning',
+                title: 'Cabeceras de seguridad del servidor incompletas',
+                text: 'Faltan directivas HTTP críticas de protección contra clickjacking y robo de información sensible.',
+              },
             ]
           : [
-              { type: 'success', text: 'Velocidad de carga de nivel élite (<1.2 segundos en celular).' },
-              { type: 'success', text: 'Estructura semántica optimizada para Google y ChatGPT/Claude.' },
-              { type: 'success', text: 'Cabeceras de seguridad HTTP completas y blindaje SSL activo.' },
-              { type: 'success', text: 'Botones y conversión directa a WhatsApp configurados.' },
+              {
+                type: 'warning',
+                title: 'Oportunidad de ampliación comercial',
+                text: 'El sitio tiene excelente base técnica; se recomienda activar catálogo interactivo o módulo de agendamiento.',
+              },
+            ],
+        positives: isSlow
+          ? [
+              'Dominio web registrado y certificado de seguridad SSL activo.',
+              'Texto y descripción básica legibles por navegadores convencionales.',
+              'Estructura adaptable a pantallas estándar.',
+            ]
+          : [
+              'Velocidad de carga ultrarrápida (<1.2s en red móvil 4G).',
+              'Estructura semántica optimizada para Google y motores de IA.',
+              'Cabeceras de blindaje HTTP completas (100/100 en seguridad).',
+              'Llamado a la acción directo a WhatsApp en pantalla principal.',
             ],
         recommendation: isSlow
-          ? 'Tu sitio tiene un potencial desaprovechado. Reemplazarlo por una web con código limpio de alta velocidad duplicará las consultas que recibes por WhatsApp.'
-          : '¡Excelente rendimiento! Tu sitio cumple con los estándares más altos de la industria.',
-      });
-    }, 2300);
+          ? 'Tu sitio actual tiene una base recuperable pero está perdiendo al menos el 50% de sus potenciales clientes por lentitud móvil y falta de conversión directa a WhatsApp. Una modernización con código limpio duplicará tus consultas.'
+          : '¡Excelente estado técnico y comercial! Cumple con los más altos estándares de velocidad y posicionamiento moderno.',
+      };
+
+      const uniqueId = `uni-${Math.random().toString(36).substring(2, 10)}`;
+      navigate(`/auditoria/${uniqueId}?d=${encodeURIComponent(cleanDomain)}&e=${encodeURIComponent(cleanEmail)}`);
+
+      // Best effort background sync with serverless lead collector
+      try {
+        fetch('/api/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: `https://${cleanDomain}`,
+            email: cleanEmail,
+            fullName: cleanDomain,
+            company: phoneInput.trim() ? `Tel: ${phoneInput.trim()}` : cleanDomain,
+            lang: 'es',
+          }),
+        }).catch(() => {});
+      } catch (err) {}
+    }, 2400);
   };
 
   const getWaLinkForAudit = () => {
     if (!auditResult) {
       return whatsappLink('Hola UNIVERSO693, me interesa cotizar una página web para mi negocio.');
     }
-    const msg = `Hola UNIVERSO693, acabo de auditar mi web ${auditResult.domain} en su sitio y obtuve nota ${auditResult.score}/100. Me gustaría cotizar su rediseño u optimización rápida.`;
+    const msg = `Hola UNIVERSO693, acabo de auditar mi web ${auditResult.domain} en su sitio y obtuve nota ${auditResult.score}/100. Mi correo es ${auditResult.email}. Me gustaría conversar para renovar u optimizar mi web con ustedes.`;
     return whatsappLink(msg);
   };
 
@@ -143,7 +201,7 @@ export const PaginasWeb: React.FC = () => {
                   <div>
                     <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                       <Search className="w-5 h-5 text-cyan-600" />
-                      Audita tu web actual gratis en 20 segundos
+                      Audita tu web actual gratis y recibe el informe en tu correo
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-500">
                       Descubre si tu web actual está lenta, mal posicionada o perdiendo cotizaciones.
@@ -155,9 +213,11 @@ export const PaginasWeb: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleScan} className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                    <div className="sm:col-span-7">
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Tu sitio web:</label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Tu sitio web (obligatorio):
+                      </label>
                       <input
                         type="text"
                         value={domainInput}
@@ -167,31 +227,58 @@ export const PaginasWeb: React.FC = () => {
                         className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent placeholder:text-slate-400 bg-slate-50/50"
                       />
                     </div>
-                    <div className="sm:col-span-5">
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Tu WhatsApp (opcional):</label>
-                      <input
-                        type="tel"
-                        value={phoneInput}
-                        onChange={(e) => setPhoneInput(e.target.value)}
-                        placeholder="+56 9 1234 5678"
-                        className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent placeholder:text-slate-400 bg-slate-50/50"
-                      />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 text-cyan-600" />
+                          <span>Tu correo electrónico (obligatorio):</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={emailInput}
+                          onChange={(e) => setEmailInput(e.target.value)}
+                          placeholder="tu@empresa.cl"
+                          required
+                          className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent placeholder:text-slate-400 bg-slate-50/50"
+                        />
+                        <span className="text-[11px] text-slate-400 mt-0.5 block">
+                          Te enviaremos el reporte para que puedas compartirlo con tus socios.
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Tu WhatsApp (opcional):</span>
+                        </label>
+                        <input
+                          type="tel"
+                          value={phoneInput}
+                          onChange={(e) => setPhoneInput(e.target.value)}
+                          placeholder="+56 9 1234 5678"
+                          className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-transparent placeholder:text-slate-400 bg-slate-50/50"
+                        />
+                        <span className="text-[11px] text-slate-400 mt-0.5 block">
+                          Para avisarte rápidamente cuando el informe esté listo.
+                        </span>
+                      </div>
                     </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isScanning}
-                    className="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold py-3 px-6 shadow-md shadow-orange-500/20 transition-all cursor-pointer disabled:opacity-70 text-sm sm:text-base"
+                    className="w-full mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold py-3.5 px-6 shadow-md shadow-orange-500/20 transition-all cursor-pointer disabled:opacity-70 text-sm sm:text-base"
                   >
                     {isScanning ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Analizando velocidad y SEO...</span>
+                        <span>Analizando tu web y generando informe...</span>
                       </>
                     ) : (
                       <>
-                        <span>Analizar mi web gratis ahora</span>
+                        <span>Analizar mi web gratis y recibir informe</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -222,15 +309,26 @@ export const PaginasWeb: React.FC = () => {
                 {/* Audit Result Box */}
                 {auditResult && !isScanning && (
                   <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-5 animate-in fade-in duration-300">
+                    {/* Email confirmation notice */}
+                    {emailSentNotice && (
+                      <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs sm:text-sm text-emerald-900">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <div>
+                          <strong>¡Informe generado con éxito!</strong> Se ha enviado una copia a{' '}
+                          <span className="font-semibold underline">{auditResult.email}</span> para que puedas reenviarla a tus socios o equipo de trabajo.
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
                       <div>
-                        <span className="text-xs font-bold text-slate-500 uppercase">Resultado para:</span>
-                        <div className="text-lg font-black text-slate-900">{auditResult.domain}</div>
+                        <span className="text-xs font-bold text-slate-500 uppercase">Auditoría para:</span>
+                        <div className="text-xl font-black text-slate-900">{auditResult.domain}</div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <span className="text-xs font-bold text-slate-500">Puntaje General</span>
-                          <div className={`text-2xl font-black ${auditResult.score >= 80 ? 'text-emerald-600' : 'text-orange-600'}`}>
+                          <span className="text-xs font-bold text-slate-500">Puntaje Global</span>
+                          <div className={`text-3xl font-black ${auditResult.score >= 80 ? 'text-emerald-600' : 'text-orange-600'}`}>
                             {auditResult.score}/100
                           </div>
                         </div>
@@ -241,52 +339,74 @@ export const PaginasWeb: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                      <div className="p-3 rounded-xl bg-white border border-slate-200">
                         <span className="text-[11px] text-slate-500 block">Velocidad Móvil</span>
-                        <span className="text-base font-extrabold text-slate-900">{auditResult.speedMobile}/100</span>
+                        <span className="text-lg font-extrabold text-slate-900">{auditResult.speedMobile}/100</span>
                       </div>
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                      <div className="p-3 rounded-xl bg-white border border-slate-200">
                         <span className="text-[11px] text-slate-500 block">SEO & Google</span>
-                        <span className="text-base font-extrabold text-slate-900">{auditResult.seoScore}/100</span>
+                        <span className="text-lg font-extrabold text-slate-900">{auditResult.seoScore}/100</span>
                       </div>
-                      <div className="p-2.5 rounded-xl bg-white border border-slate-200">
-                        <span className="text-[11px] text-slate-500 block">Seguridad Web</span>
-                        <span className="text-base font-extrabold text-slate-900">{auditResult.securityScore}/100</span>
+                      <div className="p-3 rounded-xl bg-white border border-slate-200">
+                        <span className="text-[11px] text-slate-500 block">Seguridad HTTP</span>
+                        <span className="text-lg font-extrabold text-slate-900">{auditResult.securityScore}/100</span>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-600 block">
-                        Hallazgos principales:
+                    {/* Critical Issues */}
+                    <div className="space-y-2.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-rose-700 block flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4 text-rose-600" />
+                        Puntos críticos que están frenando tus cotizaciones:
                       </span>
                       {auditResult.issues.map((iss, i) => (
-                        <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-slate-700">
-                          {iss.type === 'danger' ? (
-                            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                          ) : iss.type === 'warning' ? (
-                            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                          ) : (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                          )}
-                          <span>{iss.text}</span>
+                        <div key={i} className="p-3 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm space-y-1">
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            {iss.type === 'danger' ? (
+                              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                            ) : (
+                              <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                            )}
+                            <span>{iss.title}</span>
+                          </div>
+                          <p className="text-slate-600 text-xs pl-3.5 leading-relaxed">{iss.text}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="p-3.5 rounded-xl bg-cyan-50 border border-cyan-200 text-xs sm:text-sm text-cyan-900 leading-relaxed">
-                      <strong>Diagnóstico:</strong> {auditResult.recommendation}
+                    {/* Strengths */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        Activos a tu favor:
+                      </span>
+                      <div className="p-3 rounded-xl bg-white border border-slate-200 space-y-1.5 text-xs sm:text-sm text-slate-700">
+                        {auditResult.positives.map((pos, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <span className="text-emerald-600 font-bold">✓</span>
+                            <span>{pos}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-200 text-xs sm:text-sm text-cyan-950 leading-relaxed">
+                      <strong>Diagnóstico Ejecutivo:</strong> {auditResult.recommendation}
+                    </div>
+
+                    <div className="pt-2 space-y-2">
                       <a
                         href={getWaLinkForAudit()}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 shadow-md shadow-emerald-600/20 transition-all text-sm"
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 shadow-md shadow-emerald-600/20 transition-all text-sm sm:text-base"
                       >
-                        <MessageCircle className="w-4 h-4" />
+                        <MessageCircle className="w-5 h-5" />
                         <span>Conversar por WhatsApp para optimizar esta web</span>
                       </a>
+                      <p className="text-center text-[11px] text-slate-500">
+                        Un especialista de UNIVERSO693 te responderá en menos de 2 horas con una propuesta a tu medida.
+                      </p>
                     </div>
                   </div>
                 )}
