@@ -125,6 +125,52 @@ const home: PageSeo = {
   }),
 };
 
+
+const paginasWebPage: PageSeo = {
+  path: '/paginas-web',
+  title: `Diseño y Desarrollo de Páginas Web en Chile | ${SITE_NAME}`,
+  description: clip(
+    'Páginas web profesionales y landing pages con código propio en Chile. Carga en 1 segundo, optimizadas para Google e IA, sin mensualidades cautivas. Entrega en 5 a 10 días.',
+  ),
+  priority: 0.95,
+  jsonLd: graph(
+    breadcrumb([{ name: 'Páginas Web', path: '/paginas-web' }]),
+    {
+      '@type': 'Service',
+      name: 'Desarrollo de Páginas Web y Landing Pages de Alta Velocidad',
+      serviceType: 'Diseño y desarrollo web profesional',
+      description:
+        'Desarrollo de páginas web y landing pages de alta velocidad con código limpio en Chile. Sin plantillas pesadas de WordPress, sin cobros mensuales forzosos, con optimización para Google e IA y botón directo a WhatsApp.',
+      url: url('/paginas-web'),
+      provider: { '@id': `${SITE_URL}/#org` },
+      areaServed: [{ '@type': 'Country', name: 'Chile' }],
+      offers: [
+        {
+          '@type': 'Offer',
+          name: 'Plan Landing Express',
+          price: '380000',
+          priceCurrency: 'CLP',
+          url: url('/paginas-web'),
+        },
+        {
+          '@type': 'Offer',
+          name: 'Plan Web Corporativa Pro',
+          price: '580000',
+          priceCurrency: 'CLP',
+          url: url('/paginas-web'),
+        },
+        {
+          '@type': 'Offer',
+          name: 'Plan Catálogo Interactivo PWA',
+          price: '680000',
+          priceCurrency: 'CLP',
+          url: url('/paginas-web'),
+        },
+      ],
+    },
+  ),
+};
+
 const servicesPage: PageSeo = {
   path: '/servicios',
   title: `Servicios de software, IA y apps móviles | ${SITE_NAME}`,
@@ -461,7 +507,7 @@ const industryPages: PageSeo[] = industries.map((i) => ({
   ),
 }));
 
-export const allPages: PageSeo[] = [home, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage];
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

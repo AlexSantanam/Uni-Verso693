@@ -12,6 +12,7 @@ import { Blog, BlogPost } from './pages/Blog';
 import { Audit } from './pages/Audit';
 import { Diagnostico } from './pages/Diagnostico';
 import { Industry } from './pages/Industry';
+import { PaginasWeb } from './pages/PaginasWeb';
 import { Container } from './components/ui';
 
 // Internal workspace: separate chunk, outside the public layout, noindex (see src/seo.ts).
@@ -76,6 +77,7 @@ export const AppRoutes: React.FC = () => (
           />
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="paginas-web" element={<PaginasWeb />} />
             <Route path="servicios" element={<Services />} />
             <Route path="servicios/:slug" element={<ServiceDetail />} />
             <Route path="casos" element={<Cases />} />

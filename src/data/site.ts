@@ -25,6 +25,7 @@ export const ebs = {
 };
 
 export const navItems: { to: string; label: L }[] = [
+  { to: '/paginas-web', label: { es: 'Páginas Web', en: 'Websites' } },
   { to: '/servicios', label: { es: 'Servicios', en: 'Services' } },
   { to: '/diagnostico-ia', label: { es: 'Diagnóstico EBS', en: 'EBS diagnosis' } },
   { to: '/casos', label: { es: 'Casos de éxito', en: 'Case studies' } },
