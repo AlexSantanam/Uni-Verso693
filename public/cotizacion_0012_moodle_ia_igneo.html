@@ -197,12 +197,73 @@
       text-transform: uppercase;
     }
 
+    /* Maintenance Selector Box */
+    .maint-selector-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .maint-selector-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .maint-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .maint-option-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .maint-option-card:hover {
+      border-color: #94a3b8;
+    }
+    .maint-option-card.selected {
+      border-color: #7c3aed;
+      background: #faf5ff;
+    }
+    .maint-option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .maint-name {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .maint-price {
+      font-size: 13px;
+      font-weight: 900;
+      color: #7c3aed;
+    }
+    .maint-desc {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
     /* Totals Section */
     .totals-grid {
       display: grid;
       grid-template-columns: 1.15fr 1fr;
       gap: 20px;
-      margin-top: 20px;
+      margin-top: 15px;
     }
     .totals-box {
       background: #f8fafc;
@@ -235,17 +296,17 @@
     }
 
     /* Analysis callouts */
-    .arl-comparison-box {
-      background: #fffbeb;
-      border: 1px solid #fde68a;
+    .market-comparison-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
       border-radius: 8px;
       padding: 12px 14px;
       font-size: 11.5px;
-      color: #92400e;
+      color: #166534;
       line-height: 1.45;
       margin-bottom: 15px;
     }
-    .arl-comparison-box strong { color: #78350f; }
+    .market-comparison-box strong { color: #14532d; }
 
     .callout-notes {
       font-size: 11px;
@@ -370,9 +431,8 @@
     <thead>
       <tr>
         <th style="width: 6%;">Sel.</th>
-        <th style="width: 60%;">Descripción del Módulo y Entregables de Ingeniería</th>
-        <th style="width: 17%; text-align: right;">Setup (Neto)</th>
-        <th style="width: 17%; text-align: right;">Mant. / Mes</th>
+        <th style="width: 68%;">Descripción del Módulo y Entregables de Ingeniería</th>
+        <th style="width: 26%; text-align: right;">Inversión Setup (Neto)</th>
       </tr>
     </thead>
     <tbody>
@@ -384,20 +444,18 @@
         </td>
         <td>
           <span class="badge-base">ÍTEM BASE INICIAL</span>
-          <strong style="color: var(--navy); display: block; font-size: 13px;">Campus Moodle Cloud Dedicado (Equivalente Técnico Completo ARL)</strong>
+          <strong style="color: var(--navy); display: block; font-size: 13px;">Campus Moodle Cloud Dedicado (Plan Estándar de Entrada)</strong>
           <span style="color: #475569; font-size: 11.5px; display: block; margin-top: 3px;">
-            • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, MariaDB, Redis OPcache y SSL TLS 1.3 Let's Encrypt).<br>
-            • Capacidad para evaluaciones masivas de 100+ alumnos concurrentes sin caídas (superando los hostings compartidos lentos).<br>
+            • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, MariaDB optimizada, Redis OPcache y certificado SSL TLS 1.3 Let's Encrypt automático).<br>
+            • Capacidad para evaluaciones masivas de 100+ alumnos concurrentes sin caídas ni lentitud.<br>
             • Estructura académica base para <strong>hasta 5 cursos iniciales</strong>.<br>
             • Roles de usuario (Administrador, Relator/Docente, Alumno), foros, cuestionarios con tiempo y entrega de tareas.<br>
+            • <strong>Diplomas Digitales PDF incluidos:</strong> Emisión automática de certificados nativos al completar cada curso con datos dinámicos del alumno.<br>
             • <strong>Entrega de Bóveda Soberana:</strong> Claves SSH root del servidor y base de datos a nombre de la Fundación (0% secuestro tecnológico). Capacitación de 2 horas a Claudia y equipo.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: var(--navy); font-size: 13px;">
-          $600.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #7c3aed; font-size: 12px;">
-          $35.000<br><span style="font-size: 10px; color: #64748b;">+ IVA / mes</span>
+          $600.000 CLP
         </td>
       </tr>
 
@@ -415,14 +473,11 @@
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
             • Tutor de IA integrado dentro de las aulas virtuales de Moodle, entrenado exclusivamente con los manuales de Bomberos de Viña del Mar y normas NFPA aplicables.<br>
             • Resuelve dudas a los alumnos día y noche citando fuentes oficiales. Alivia hasta el 85% de consultas repetitivas a los instructores.<br>
-            • Incluye bolsa garantizada de hasta 15.000 consultas interactivas mensuales de alumnos.
+            • Incluye bolsa mensual garantizada de hasta 15.000 consultas interactivas de alumnos.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #4c1d95;">
-          +$390.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #7c3aed;">
-          +$30.000<br><span style="font-size: 10px; color: #64748b;">+ IVA / mes</span>
+          +$390.000 CLP
         </td>
       </tr>
 
@@ -438,15 +493,12 @@
             <strong style="color: #0f172a; font-size: 12.5px;">Pack de Expansión Masiva: Carga & Estructuración de hasta 50 Cursos</strong>
           </label>
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • ARL limita la plataforma a solo 5 cursos. Con este pack, dejamos estructurados y migrados hasta 50 programas de capacitación completos.<br>
+            • El plan estándar incluye hasta 5 cursos. Con este pack, dejamos estructurados y migrados hasta 50 programas de capacitación completos.<br>
             • Creación de categorías (Rescate Vehicular, Materiales Peligrosos, Fuego Estructural, Prevención de Riesgos Industriales, etc.) con sus bancos de preguntas y cuestionarios listos para operar.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$200.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #64748b;">
-          +$0<br><span style="font-size: 10px; color: #94a3b8;">Sin cargo mensual</span>
+          +$200.000 CLP
         </td>
       </tr>
 
@@ -467,10 +519,7 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$160.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #64748b;">
-          +$0<br><span style="font-size: 10px; color: #94a3b8;">Sin cargo mensual</span>
+          +$160.000 CLP
         </td>
       </tr>
 
@@ -481,7 +530,7 @@
           <span class="print-only-status" id="print-sence">[NO]</span>
         </td>
         <td>
-          <span class="badge-optional">OPCIONAL AUDITORÍA</span>
+          <span class="badge-optional">OPCIONAL AUDITORÍA SENCE</span>
           <label for="chk-sence" class="switch-label">
             <strong style="color: #0f172a; font-size: 12.5px;">Motor Forense de Asistencia y Auditoría SENCE / NCh 2728</strong>
           </label>
@@ -491,34 +540,27 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$290.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #7c3aed;">
-          +$15.000<br><span style="font-size: 10px; color: #64748b;">+ IVA / mes</span>
+          +$290.000 CLP
         </td>
       </tr>
 
-      <!-- OPTION 5: DIPLOMAS QR -->
+      <!-- OPTION 5: ZONA PUBLICA QR (DIPLOMAS YA INCLUIDOS EN BASE) -->
       <tr class="optional-item" id="row-qr">
         <td style="text-align: center;">
           <input type="checkbox" id="chk-qr" class="custom-checkbox" onchange="recalculate()">
           <span class="print-only-status" id="print-qr">[NO]</span>
         </td>
         <td>
-          <span class="badge-optional">OPCIONAL CERTIFICACIÓN</span>
+          <span class="badge-optional">OPCIONAL EMPRESAS & FAENAS</span>
           <label for="chk-qr" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Diplomas Digitales con Código QR y Validación Antifraude SHA-256</strong>
+            <strong style="color: #0f172a; font-size: 12.5px;">Portal Público de Verificación de Diplomas con Código QR & Antifraude SHA-256</strong>
           </label>
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Emisión automatizada de certificados oficiales en PDF con código QR único por alumno y curso.<br>
-            • Portal web de validación pública: permite a supervisores mineros o prevencionistas de riesgos escanear el diploma desde cualquier celular y confirmar su autenticidad instantáneamente.
+            • <em>(Los diplomas PDF ya están incluidos en el plan base)</em>. Este módulo añade el <strong>portal web público de validación criptográfica</strong>: permite a prevencionistas de riesgos o supervisores en faena minera escanear el QR del diploma desde cualquier celular y confirmar su autenticidad instantáneamente sin ingresar al campus.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$180.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #64748b;">
-          +$0<br><span style="font-size: 10px; color: #94a3b8;">Sin cargo mensual</span>
+          +$180.000 CLP
         </td>
       </tr>
 
@@ -539,24 +581,62 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$140.000
-        </td>
-        <td style="text-align: right; font-weight: 600; color: #64748b;">
-          +$0<br><span style="font-size: 10px; color: #94a3b8;">Sin cargo mensual</span>
+          +$140.000 CLP
         </td>
       </tr>
     </tbody>
   </table>
   </div>
 
+  <!-- Maintenance Tier Selector -->
+  <div class="maint-selector-box">
+    <div class="maint-selector-title">
+      <span>🛡️ Nivel de Mantención Cloud & Continuidad Operativa OTEC</span>
+      <span style="font-size: 11px; color: #64748b; font-weight: 500;">Selecciona el esquema de soporte mensual deseado:</span>
+    </div>
+    <div class="maint-options-grid">
+      <!-- Tier 1: Cloud Esencial + IA -->
+      <label class="maint-option-card selected" id="card-maint-1">
+        <div class="maint-option-header">
+          <span class="maint-name">
+            <input type="radio" name="maintTier" id="maint-tier-1" value="68000" checked onchange="onMaintTierChange()">
+            Cloud Dedicado + Bolsa Docente IA
+          </span>
+          <span class="maint-price">$68.000 / mes</span>
+        </div>
+        <p class="maint-desc">
+          • Cobertura de <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu, Nginx, PHP, MariaDB, SSL) + Backups diarios.<br>
+          • <strong>Bolsa mensual garantizada de 15.000 consultas de IA</strong> para alumnos en cursos activos.<br>
+          • Monitoreo de disponibilidad 99.9% y soporte técnico a incidencias del servidor.
+        </p>
+      </label>
+
+      <!-- Tier 2: Continuidad Pro OTEC + IA -->
+      <label class="maint-option-card" id="card-maint-2">
+        <div class="maint-option-header">
+          <span class="maint-name">
+            <input type="radio" name="maintTier" id="maint-tier-2" value="98000" onchange="onMaintTierChange()">
+            Continuidad Pro OTEC + Docente IA All-Inclusive
+          </span>
+          <span class="maint-price" style="color: #7c3aed;">$98.000 / mes</span>
+        </div>
+        <p class="maint-desc">
+          • Todo lo anterior (Servidor Dedicado + Bolsa de consultas IA ampliada a 25.000 consultas/mes).<br>
+          • <strong>4 horas mensuales de soporte técnico y pedagógico prioritario</strong> para Claudia y relatores.<br>
+          • Acompañamiento en fiscalizaciones SENCE, parches de seguridad Moodle y SLA de respuesta &lt;2 hrs.
+        </p>
+      </label>
+    </div>
+  </div>
+
   <!-- Totals Section -->
   <div class="totals-grid">
     <div>
-      <div class="arl-comparison-box">
-        <strong>⚖️ Análisis Comparativo frente a ARL / Norteduc:</strong><br>
-        • ARL cobra <strong>$1.160.000 + IVA</strong> solo por instalar Moodle en un hosting compartido sin IA.<br>
-        • Con UNIVERSO693, por <strong>$990.000 + IVA</strong> (Ahorras $170.000 de entrada) obtienes <strong>Servidor VPS Dedicado + Docente Virtual con IA 24/7</strong> con manuales NFPA.<br>
-        • ARL no es desarrollador de IA y no puede ofrecer este nivel de innovación pedagógica.
+      <div class="market-comparison-box">
+        <strong>⚖️ Transparencia de Costos frente al Mercado Tradicional:</strong><br>
+        • En el mercado, las implementaciones Moodle estándar en hostings compartidos rondan los <strong>$1.150.000 + IVA</strong> sin incluir módulos de Inteligencia Artificial.<br>
+        • Con UNIVERSO693, por <strong>$990.000 + IVA</strong> la Fundación accede a un <strong>Servidor VPS Cloud Dedicado + Docente Virtual con IA 24/7</strong> entrenado con normativas NFPA.<br>
+        • Representa un salto tecnológico cualitativo que posiciona a OTEC Ígneo como referente de innovación en capacitación técnica.
       </div>
 
       <div class="callout-notes">
@@ -582,15 +662,15 @@
       </div>
 
       <div class="totals-row monthly-total">
-        <span>Mantención Cloud & Bolsa IA:</span>
-        <span id="txt-mensual-total">$65.000 + IVA / mes</span>
+        <span>Mantención Mensual Cloud & IA:</span>
+        <span id="txt-mensual-total">$68.000 + IVA / mes</span>
       </div>
       <div style="font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.4;">
         <span id="txt-mensual-desc">• Servidor Cloud VPS Dedicado, bolsa mensual garantizada de 15.000 consultas IA para alumnos, respaldos diarios y soporte continuo.</span>
       </div>
 
       <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11.5px; color: #166534; font-weight: 700; text-align: center;" id="txt-ahorro-tag">
-        🎉 ¡Ahorras $170.000 frente a la base de ARL e incluye Docente IA 24/7!
+        🎉 Plan con Docente IA: Alta innovación pedagógica con Servidor Dedicado.
       </div>
     </div>
   </div>
@@ -599,7 +679,7 @@
   <div class="actions-panel no-print">
     <div>
       <span style="font-size: 13px; font-weight: 800; color: var(--navy); display: block;">¿Conforme con la selección de módulos?</span>
-      <span style="font-size: 11.5px; color: #64748b;">Puedes formalizar la orden directamente por WhatsApp o guardar el PDF de respaldo.</span>
+      <span style="font-size: 11.5px; color: #64748b;">Puedes formalizar la orden directamente o guardar el PDF oficial de respaldo.</span>
     </div>
     <div style="display: flex; gap: 10px;">
       <button class="btn-action btn-accept" onclick="enviarCotizacionWhatsApp()">
@@ -629,25 +709,45 @@
 
 <script>
   const BASE_SETUP = 600000;
-  const BASE_MONTHLY = 35000;
-  const ARL_BASE = 1160000;
+  const MERCADO_BASE = 1160000;
 
   const ITEMS = {
-    ia: { name: 'Docente Virtual con IA 24/7', setup: 390000, monthly: 30000 },
-    cursos: { name: 'Pack Expansión 50 Cursos', setup: 200000, monthly: 0 },
-    diseno: { name: 'Rediseño Visual Premium', setup: 160000, monthly: 0 },
-    sence: { name: 'Motor Asistencia SENCE / NCh 2728', setup: 290000, monthly: 15000 },
-    qr: { name: 'Diplomas con Código QR SHA-256', setup: 180000, monthly: 0 },
-    b2b: { name: 'Módulo B2B Carga Masiva Alumnos', setup: 140000, monthly: 0 }
+    ia: { name: 'Docente Virtual con IA 24/7', setup: 390000, extraMonthly: 30000 },
+    cursos: { name: 'Pack Expansión 50 Cursos', setup: 200000, extraMonthly: 0 },
+    diseno: { name: 'Rediseño Visual Premium', setup: 160000, extraMonthly: 0 },
+    sence: { name: 'Motor Asistencia SENCE / NCh 2728', setup: 290000, extraMonthly: 15000 },
+    qr: { name: 'Portal Público Verificación QR SHA-256', setup: 180000, extraMonthly: 0 },
+    b2b: { name: 'Módulo B2B Carga Masiva Alumnos', setup: 140000, extraMonthly: 0 }
   };
 
   function fmtCLP(n) {
     return '$' + n.toLocaleString('es-CL');
   }
 
+  function getSelectedMaintBase() {
+    const r2 = document.getElementById('maint-tier-2');
+    if (r2 && r2.checked) return 98000;
+    return 68000;
+  }
+
+  function onMaintTierChange() {
+    const isTier2 = document.getElementById('maint-tier-2').checked;
+    const card1 = document.getElementById('card-maint-1');
+    const card2 = document.getElementById('card-maint-2');
+    
+    if (isTier2) {
+      card1.classList.remove('selected');
+      card2.classList.add('selected');
+    } else {
+      card2.classList.remove('selected');
+      card1.classList.add('selected');
+    }
+    recalculate();
+  }
+
   function recalculate() {
     let currentSetup = BASE_SETUP;
-    let currentMonthly = BASE_MONTHLY;
+    let currentMonthly = getSelectedMaintBase();
 
     for (let key in ITEMS) {
       const chk = document.getElementById('chk-' + key);
@@ -656,7 +756,9 @@
       
       if (chk && chk.checked) {
         currentSetup += ITEMS[key].setup;
-        currentMonthly += ITEMS[key].monthly;
+        if (key !== 'ia') { // IA is already factored into the base monthly for COT-0012
+          currentMonthly += ITEMS[key].extraMonthly;
+        }
         if (row) row.classList.add('active');
         if (printSpan) {
           printSpan.innerText = '[SELECCIONADO]';
@@ -679,32 +781,43 @@
     document.getElementById('txt-total-bruto').innerText = fmtCLP(totalBruto) + ' CLP';
     document.getElementById('txt-mensual-total').innerText = fmtCLP(currentMonthly) + ' + IVA / mes';
 
+    // Description text for monthly maintenance
+    const isTier2 = document.getElementById('maint-tier-2').checked;
+    let desc = isTier2 
+      ? '• Continuidad Pro OTEC: Servidor Cloud Dedicado, bolsa ampliada de 25.000 consultas IA, 4 horas mensuales de soporte técnico y asesoría SENCE.'
+      : '• Cloud Dedicado + Docente IA: Servidor Cloud VPS Dedicado, bolsa mensual garantizada de 15.000 consultas IA y respaldos diarios.';
+    
+    document.getElementById('txt-mensual-desc').innerText = desc;
+
     // Ahorro tag analysis
     const ahorroTag = document.getElementById('txt-ahorro-tag');
-    if (currentSetup < ARL_BASE) {
-      const ahorro = ARL_BASE - currentSetup;
-      ahorroTag.innerText = '🎉 ¡Estás ahorrando ' + fmtCLP(ahorro) + ' frente a la cotización base de ARL e incluye Docente IA!';
+    if (currentSetup < MERCADO_BASE) {
+      const ahorro = MERCADO_BASE - currentSetup;
+      ahorroTag.innerText = '🎉 ¡Ahorro de ' + fmtCLP(ahorro) + ' frente a cotizaciones estándar e incluye Docente IA!';
       ahorroTag.style.color = '#166534';
-    } else if (currentSetup === ARL_BASE) {
-      ahorroTag.innerText = '⚖️ Mismo valor que la base de ARL, pero con Docente IA y Servidor VPS Dedicado.';
+    } else if (currentSetup === MERCADO_BASE) {
+      ahorroTag.innerText = '⚖️ Mismo valor que el mercado tradicional, pero con Docente IA y Servidor VPS Dedicado.';
       ahorroTag.style.color = '#0284c7';
     } else {
-      const diff = currentSetup - ARL_BASE;
-      ahorroTag.innerText = '🚀 Incluye tecnología de vanguardia e IA que ARL no posee (+ ' + fmtCLP(diff) + ' sobre la base simple de ARL).';
+      const diff = currentSetup - MERCADO_BASE;
+      ahorroTag.innerText = '🚀 Configuración de alta gama pedagógica (+ ' + fmtCLP(diff) + ' sobre la base estándar).';
       ahorroTag.style.color = '#7c3aed';
     }
   }
 
   function enviarCotizacionWhatsApp() {
     let currentSetup = BASE_SETUP;
-    let currentMonthly = BASE_MONTHLY;
+    let currentMonthly = getSelectedMaintBase();
     let extrasList = [];
+    const isTier2 = document.getElementById('maint-tier-2').checked;
 
     for (let key in ITEMS) {
       const chk = document.getElementById('chk-' + key);
       if (chk && chk.checked) {
         currentSetup += ITEMS[key].setup;
-        currentMonthly += ITEMS[key].monthly;
+        if (key !== 'ia') {
+          currentMonthly += ITEMS[key].extraMonthly;
+        }
         extrasList.push(ITEMS[key].name);
       }
     }
@@ -713,19 +826,20 @@
     const totalBruto = currentSetup + iva;
 
     let mensaje = "Hola equipo UNIVERSO693 SpA, soy Claudia Araya de OTEC Ígneo (Fundación Bomberos Viña).\n\n";
-    mensaje += "He revisado la Propuesta Inteligente COT-2026-0012 y hemos configurado la siguiente propuesta:\n\n";
-    mensaje += "• Base: Campus Moodle Cloud Dedicado ($600.000 + IVA)\n";
+    mensaje += "He revisado la Propuesta Inteligente COT-2026-0012 y hemos seleccionado la siguiente configuración:\n\n";
+    mensaje += "• Base: Campus Moodle Cloud Dedicado (hasta 5 cursos y diplomas PDF incluidos) -> $600.000 + IVA\n";
     
     if (extrasList.length > 0) {
-      mensaje += "• Módulos Seleccionados:\n";
+      mensaje += "• Módulos Adicionales Seleccionados:\n";
       extrasList.forEach(item => {
-        mensaje += "  - " + item + "\n";
+        mensaje += "  + " + item + "\n";
       });
     }
 
+    mensaje += "\n• Nivel de Mantención: " + (isTier2 ? "Continuidad Pro OTEC + IA All-Inclusive ($98.000 + IVA/mes)" : "Cloud Dedicado + Bolsa IA ($68.000 + IVA/mes)") + "\n";
     mensaje += "\n💰 TOTAL SETUP NETO: " + fmtCLP(currentSetup) + " CLP (+ IVA: " + fmtCLP(totalBruto) + " CLP)\n";
-    mensaje += "🛠️ MANTENCIÓN CLOUD: " + fmtCLP(currentMonthly) + " CLP + IVA / mes\n\n";
-    mensaje += "Por favor indíquenos los pasos para formalizar la orden de trabajo y comenzar con el despliegue.";
+    mensaje += "🛠️ MANTENCIÓN MENSUAL: " + fmtCLP(currentMonthly) + " CLP + IVA / mes\n\n";
+    mensaje += "Por favor indíquenos los pasos para formalizar la orden de trabajo.";
 
     const url = "https://wa.me/56990387414?text=" + encodeURIComponent(mensaje);
     window.open(url, '_blank');
