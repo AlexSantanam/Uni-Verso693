@@ -448,6 +448,7 @@
           <strong style="color: var(--navy); display: block; font-size: 13px;">Campus Moodle Cloud Dedicado (Plan Estándar de Entrada)</strong>
           <span style="color: #475569; font-size: 11.5px; display: block; margin-top: 3px;">
             • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, MariaDB optimizada, Redis OPcache y certificado SSL TLS 1.3 Let's Encrypt automático).<br>
+            • Acceso web estándar responsive (navegación vía navegador web en computadores y teléfonos móviles).<br>
             • Capacidad para evaluaciones masivas de 100+ alumnos concurrentes sin caídas ni lentitud.<br>
             • Estructura académica base para <strong>hasta 5 cursos iniciales</strong> con configuración de contenidos.<br>
             • Roles de usuario (Administrador, Relator/Docente, Alumno), foros de consulta, cuestionarios con tiempo y entrega de tareas.<br>
@@ -479,6 +480,27 @@
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
           +$390.000 CLP
+        </td>
+      </tr>
+
+      <!-- OPTION PWA: APLICACION MOVIL PWA -->
+      <tr class="optional-item" id="row-pwa">
+        <td style="text-align: center;">
+          <input type="checkbox" id="chk-pwa" class="custom-checkbox" onchange="recalculate()">
+          <span class="print-only-status" id="print-pwa">[NO]</span>
+        </td>
+        <td>
+          <span class="badge-optional">OPCIONAL EXPERIENCIA MÓVIL</span>
+          <label for="chk-pwa" class="switch-label">
+            <strong style="color: #0f172a; font-size: 12.5px;">Aplicación Móvil PWA Instalable (Android & iOS) con Acceso en Terreno</strong>
+          </label>
+          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
+            • Convierte el campus web en una <strong>App Móvil PWA instalable en smartphones y tablets</strong> de bomberos y alumnos (sin pasar por tiendas de apps ni pagos de comisiones).<br>
+            • Icono corporativo en la pantalla de inicio del celular, pantalla de bienvenida institucional, inicio de sesión persistente y acceso ágil a cursos desde terreno.
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: #0f172a;">
+          +$190.000 CLP
         </td>
       </tr>
 
@@ -645,6 +667,13 @@
         <p>• <strong>Plazo de Entrega:</strong> 10 a 14 días hábiles para plan base (+3 a 5 días según módulos opcionales seleccionados).</p>
         <p>• <strong>Hitos de Pago Acordados:</strong> 50% al inicio contra orden de trabajo / 50% contra entrega final funcional y recepción en Bóveda Digital.</p>
       </div>
+
+      <div style="margin-top: 12px; padding: 12px 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 11px; color: #475569; line-height: 1.45;">
+        <strong style="color: #0f172a; display: block; margin-bottom: 4px;">📌 Transparencia Financiera, Consumos de Terceros & Reajustabilidad IPC:</strong>
+        • <strong>Servicios Cloud & Consumos Variables:</strong> Las tarifas mensuales cubren el Servidor Cloud VPS Dedicado y la cuota estipulada. Si la OTEC supera la bolsa mensual de consultas IA (15.000 consultas) o requiere almacenamiento masivo externo adicional, el excedente se liquida a costo directo de proveedor (Groq/AWS/Cloudflare) sin recargos.<br>
+        • <strong>Reajuste Anual por IPC:</strong> Los planes mensuales de mantención y continuidad se reajustarán anualmente en enero según la variación acumulada del IPC (INE).<br>
+        • <strong>Opción Facturación Directa:</strong> Ígneo puede vincular su tarjeta institucional directamente a la consola cloud del servidor si desea pagar la infraestructura de forma autónoma.
+      </div>
     </div>
 
     <!-- Live Totals Box -->
@@ -714,6 +743,7 @@
 
   const ITEMS = {
     ia: { name: 'Docente Virtual con IA 24/7', setup: 390000, extraMonthly: 30000 },
+    pwa: { name: 'App Móvil PWA Instalable (Android & iOS)', setup: 190000, extraMonthly: 0 },
     cursos: { name: 'Pack Expansión 50 Cursos', setup: 200000, extraMonthly: 0 },
     diseno: { name: 'Rediseño Visual Premium', setup: 160000, extraMonthly: 0 },
     sence: { name: 'Motor Asistencia SENCE / NCh 2728', setup: 290000, extraMonthly: 15000 },
