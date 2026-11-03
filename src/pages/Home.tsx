@@ -36,11 +36,11 @@ export const Home: React.FC = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-white">
               {es ? (
                 <>
-                  Desarrollo de Software a Medida, Inteligencia Artificial y Sitios Web de <span className="text-gradient-brand">Alta Velocidad en Chile</span>
+                  Desarrollo de Software a Medida, Apps Móviles, Inteligencia Artificial y Sistemas de <span className="text-gradient-brand">Alta Velocidad en Chile</span>
                 </>
               ) : (
                 <>
-                  Custom Software Development, Applied AI & High-Speed Web Platforms in <span className="text-gradient-brand">Chile</span>
+                  Custom Software Engineering, Mobile Apps, Applied AI & High-Speed Cloud Systems in <span className="text-gradient-brand">Chile</span>
                 </>
               )}
             </h1>
@@ -53,11 +53,11 @@ export const Home: React.FC = () => {
               <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
                 {es ? (
                   <>
-                    <strong className="text-white">UNIVERSO693 SpA</strong> es una empresa chilena de ingeniería de software e inteligencia artificial aplicada fundada en 2013. Diseñamos plataformas web a medida, automatizamos operaciones repetitivas con agentes de IA para WhatsApp y construimos sistemas de alta velocidad con <strong className="text-cyan-300">100% de código propio</strong> (sin cobros por alumno ni licencias cautivas). Cada proyecto cuenta con garantía técnica de 60 días y despliegue ágil entre 7 y 28 días.
+                    <strong className="text-white">UNIVERSO693 SpA</strong> es una firma chilena de ingeniería de software e inteligencia artificial aplicada fundada en 2013. Diseñamos y programamos <strong className="text-white">aplicaciones web, apps móviles nativas (iOS en Apple App Store y Android en Google Play)</strong>, plataformas SaaS y <strong className="text-cyan-300">sistemas de automatización integral con agentes autónomos de IA</strong> integrados a ERPs, CRMs y flujos operativos de negocio. Construimos tecnología de vanguardia con latencia sub-segundo, arquitectura cloud resiliente y <strong className="text-cyan-300">100% de propiedad del código fuente</strong> entregado al cliente en su Bóveda Soberana (cero costo de licencias cautivas y 0% vendor lock-in). Cada desarrollo cuenta con garantía técnica de 60 días y entrega ágil en 7 a 28 días.
                   </>
                 ) : (
                   <>
-                    <strong className="text-white">UNIVERSO693 SpA</strong> is an established Chilean software engineering and applied AI studio founded in 2013. We build custom web platforms, automate repetitive operations with cognitive WhatsApp AI agents, and deliver high-speed systems with <strong className="text-cyan-300">100% client code ownership</strong>, zero recurring license traps, 60-day warranty, and 7-to-28 day delivery.
+                    <strong className="text-white">UNIVERSO693 SpA</strong> is an established Chilean software engineering and applied AI firm founded in 2013. We architect and engineer <strong className="text-white">enterprise web platforms, native mobile applications (iOS & Android)</strong>, scalable SaaS products, and <strong className="text-cyan-300">end-to-end cognitive automation systems powered by autonomous AI agents</strong> deeply connected to ERPs, CRMs, and core business workflows. We engineer bleeding-edge cloud architectures with sub-second latency, bank-grade security, and <strong className="text-cyan-300">100% client code ownership</strong> deposited in their Sovereign Vault (zero recurring license lock-ins). Every project includes a 60-day technical warranty and 7-to-28 day agile delivery.
                   </>
                 )}
               </p>
@@ -67,7 +67,7 @@ export const Home: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs text-slate-300">
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{es ? "Diagnóstico 45 min" : "45-min diagnosis"}</span>
+                <span>{es ? "iOS, Android y Web" : "iOS, Android & Web"}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0" />

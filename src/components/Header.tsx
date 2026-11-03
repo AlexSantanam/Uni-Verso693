@@ -16,12 +16,12 @@ export const Header: React.FC = () => {
   }, [location.pathname]);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `text-sm font-semibold transition-colors ${isActive ? 'text-cyan-300' : 'text-slate-300 hover:text-cyan-300'}`;
+    `text-[13px] 2xl:text-sm font-semibold transition-colors ${isActive ? 'text-cyan-300' : 'text-slate-300 hover:text-cyan-300'}`;
 
   return (
     <header className="sticky top-0 z-50 bg-[#050b13]/80 backdrop-blur-xl border-b border-white/10">
-      <Container className="h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
+      <div className="max-w-[92rem] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        <Link to="/" className="flex items-center gap-3 group shrink-0">
           <img
             src={logo}
             alt="Uni-Verso693"
@@ -32,38 +32,40 @@ export const Header: React.FC = () => {
           </span>
         </Link>
 
-        <nav className="hidden xl:flex items-center gap-7 whitespace-nowrap">
-          {navItems.map((item) =>
-            item.to === '/servicios' ? (
-              <div key={item.to} className="relative group">
-                <NavLink to={item.to} className={(s) => `${linkClass(s)} inline-flex items-center gap-1 py-7`}>
-                  {tr(item.label)}
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </NavLink>
-                <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all absolute left-1/2 -translate-x-1/2 top-full w-[38rem]">
-                  <div className="rounded-2xl bg-[#0a1420]/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/60 p-3 grid grid-cols-2 gap-1.5">
-                    {services.map((s) => (
-                      <Link
-                        key={s.slug}
-                        to={`/servicios/${s.slug}`}
-                        className="block rounded-xl px-3.5 py-2.5 hover:bg-brand-500/10 transition-colors"
-                      >
-                        <span className="block text-xs font-bold text-white truncate">{tr(s.title)}</span>
-                        <span className="block text-[11px] text-slate-400 mt-0.5 truncate">{tr(s.tagline)}</span>
-                      </Link>
-                    ))}
+        <nav className="hidden xl:flex items-center gap-3.5 2xl:gap-5 whitespace-nowrap">
+          {navItems
+            .filter((item) => item.to !== '/contacto')
+            .map((item) =>
+              item.to === '/servicios' ? (
+                <div key={item.to} className="relative group">
+                  <NavLink to={item.to} className={(s) => `${linkClass(s)} inline-flex items-center gap-1 py-7`}>
+                    {tr(item.label)}
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </NavLink>
+                  <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all absolute left-1/2 -translate-x-1/2 top-full w-[38rem]">
+                    <div className="rounded-2xl bg-[#0a1420]/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/60 p-3 grid grid-cols-2 gap-1.5">
+                      {services.map((s) => (
+                        <Link
+                          key={s.slug}
+                          to={`/servicios/${s.slug}`}
+                          className="block rounded-xl px-3.5 py-2.5 hover:bg-brand-500/10 transition-colors"
+                        >
+                          <span className="block text-xs font-bold text-white truncate">{tr(s.title)}</span>
+                          <span className="block text-[11px] text-slate-400 mt-0.5 truncate">{tr(s.tagline)}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <NavLink key={item.to} to={item.to} className={linkClass}>
-                {tr(item.label)}
-              </NavLink>
-            ),
-          )}
+              ) : (
+                <NavLink key={item.to} to={item.to} className={linkClass}>
+                  {tr(item.label)}
+                </NavLink>
+              ),
+            )}
         </nav>
 
-        <div className="hidden xl:flex items-center gap-3 whitespace-nowrap">
+        <div className="hidden xl:flex items-center gap-3 whitespace-nowrap shrink-0">
           <Link
             to="/boveda"
             className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-3.5 py-2 text-xs font-bold text-cyan-200 hover:border-cyan-300 hover:bg-cyan-400/10 transition-colors"
@@ -88,7 +90,7 @@ export const Header: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 xl:hidden">
+        <div className="flex items-center gap-2 xl:hidden shrink-0">
           <Link
             to="/boveda"
             className="inline-flex items-center gap-1 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-2.5 py-1.5 text-xs font-bold text-cyan-200"
@@ -111,7 +113,7 @@ export const Header: React.FC = () => {
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
-      </Container>
+      </div>
 
       {open && (
         <div className="xl:hidden border-t border-white/10 bg-[#050b13]">

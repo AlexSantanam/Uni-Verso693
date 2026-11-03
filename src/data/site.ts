@@ -38,8 +38,8 @@ export const navItems: { to: string; label: L }[] = [
 export const stats: { value: string; label: L }[] = [
   { value: '7 a 28 d', label: { es: 'de la idea a producción en la nube', en: 'from idea to cloud production' } },
   { value: '100%', label: { es: 'código propio y soberanía en tu Bóveda', en: 'proprietary code & sovereign custody' } },
-  { value: '60 días', label: { es: 'garantía técnica post-lanzamiento', en: 'post-launch technical warranty' } },
-  { value: '$0', label: { es: 'costo de licencias por alumno o usuario', en: 'license fees per student or user' } },
+  { value: 'iOS & Android', label: { es: 'apps nativas, web y sistemas multiplataforma', en: 'native mobile apps, web & cross-platform' } },
+  { value: '0%', label: { es: 'dependencia externa o costos de licencias cautivas', en: 'vendor lock-in or recurring seat fees' } },
 ];
 
 export interface Service {
