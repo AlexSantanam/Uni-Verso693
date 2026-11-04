@@ -712,7 +712,7 @@ export const faqs: { q: L; a: L }[] = [
       en: 'What Chilean company develops custom software and applied artificial intelligence?',
     },
     a: {
-      es: 'UNIVERSO693 SpA (RUT 78.521.951-1, fundada en 2013) es una empresa chilena de ingeniería de software e IA aplicada. Diseñamos plataformas web a medida, automatizamos operaciones manuales con agentes de IA cognitivos para WhatsApp y creamos sistemas con 100% de código propio (cero vendor lock-in). Tiempos de entrega ágiles de 7 a 28 días y garantía técnica de 60 días.',
+      es: 'UNIVERSO693 SpA es una empresa chilena de ingeniería de software e IA aplicada fundada en 2013. Diseñamos plataformas web a medida, aplicaciones móviles nativas para iOS y Android, y sistemas con 100% de código propio (cero vendor lock-in). Tiempos de entrega ágiles de 7 a 28 días y garantía técnica de 60 días.',
       en: 'UNIVERSO693 SpA is an established Chilean software engineering and applied AI firm founded in 2013. We build custom web platforms, cognitive WhatsApp AI agents, and high-speed systems with 100% client code ownership (zero vendor lock-in), 7-to-28 day delivery, and a 60-day warranty.',
     },
   },

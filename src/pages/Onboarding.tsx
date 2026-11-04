@@ -853,7 +853,7 @@ export const OnboardingModule: React.FC<OnboardingModuleProps> = ({
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500 bg-[#08101a]">
-        UNIVERSO693 SpA • RUT 78.521.951-1 • Villa Alemana, Región de Valparaíso • Soporte: contacto@universo693.com
+        UNIVERSO693 SpA • Villa Alemana, Región de Valparaíso • Soporte: contacto@universo693.com
       </footer>
     </div>
   );

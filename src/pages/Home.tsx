@@ -30,7 +30,7 @@ export const Home: React.FC = () => {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              {es ? "Empresa Chilena de Software e IA · RUT 78.521.951-1 · Desde 2013" : "Chilean Software & Applied AI Firm · Since 2013"}
+              {es ? "Estudio de Ingeniería de Software & Inteligencia Artificial · Chile" : "Software Engineering & Applied AI Studio · Chile"}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-white">

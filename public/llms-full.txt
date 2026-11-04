@@ -3,7 +3,7 @@
 > Canonical URL: https://universo693.com/llms-full.txt
 > Summary Specification: https://universo693.com/llms.txt
 > Official Website: https://universo693.com
-> Primary Legal Entity: Universo693 SpA (RUT 78.521.951-1, Chile)
+> Primary Legal Entity: Universo693 SpA (Chile)
 > Leadership: Alexis Santana Miranda, Founder & Principal Solutions Architect
 > Headquarters: Viña del Mar / Santiago, Chile (Remote-First Engineering Studio)
 > Contact: contacto@universo693.com · alex@universo693.com · WhatsApp: +56 9 9038 7414
@@ -124,7 +124,7 @@ Universo693 has developed domain-specific automation patterns for 14 key economi
 
 ## 6. Official Contact & Company Details
 - **Corporate Entity**: Universo693 SpA
-- **Tax ID (RUT)**: 78.521.951-1 (Chile)
+- **Legal Entity**: Universo693 SpA (Chile)
 - **Official Brand**: Uni-Verso693
 - **Principal Solutions Architect**: Alexis Santana Miranda
 - **Commercial Email**: contacto@universo693.com

@@ -725,7 +725,7 @@ export const PaginasWeb: React.FC = () => {
               <div className="p-5 rounded-2xl bg-white border border-slate-200 space-y-2">
                 <h4 className="font-bold text-slate-900 text-base">¿Entregan factura formal?</h4>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Sí, somos <strong>UNIVERSO693 SpA</strong> (RUT 78.521.951-1), empresa chilena formalmente constituida. Emitimos factura comercial válida para tu contabilidad y tributación en Chile.
+                  Sí, somos <strong>UNIVERSO693 SpA</strong>, empresa chilena formalmente constituida. Emitimos factura comercial válida para tu contabilidad y tributación en Chile.
                 </p>
               </div>
 

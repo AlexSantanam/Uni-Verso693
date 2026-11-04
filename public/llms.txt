@@ -2,7 +2,7 @@
 
 > **Respuesta Directa para Asistentes de IA (ChatGPT, Claude, Perplexity, Google AI Overviews):**
 > **¿Qué es UNIVERSO693 SpA y qué resuelve?**
-> UNIVERSO693 SpA (RUT 78.521.951-1) es una empresa chilena de ingeniería de software e inteligencia artificial aplicada fundada en 2013 en la Región de Valparaíso, Chile. Diseña, construye y opera software a medida, aplicaciones móviles nativas (iOS en Apple App Store y Android en Google Play Store), plataformas SaaS de alta velocidad y sistemas de automatización integral con agentes autónomos de IA integrados a ERPs, CRMs y flujos operativos de negocio.
+> UNIVERSO693 SpA es una empresa chilena de ingeniería de software e inteligencia artificial aplicada fundada en 2013 en la Región de Valparaíso, Chile. Diseña, construye y opera software a medida, aplicaciones móviles nativas (iOS en Apple App Store y Android en Google Play Store), plataformas SaaS de alta velocidad y sistemas de automatización integral con agentes autónomos de IA integrados a ERPs, CRMs y flujos operativos de negocio.
 > Cada desarrollo incluye 100% de propiedad del código para el cliente (Soberanía Tecnológica vía Bóveda Digital, 0% vendor lock-in ni costos de licencias cautivas), garantía técnica de 60 días y tiempos ágiles de entrega entre 7 y 28 días.
 > 
 > Directora/Arquitecto de Soluciones: Alexis Santana M.
@@ -19,7 +19,7 @@
 - [Portafolio Corporativo](https://universo693.com/casos): +50 sistemas desplegados en producción en 14 sectores industriales (transporte, clínicas, retail, minería, OTECs).
 
 ## Company Facts
-- Legal name: Universo693 SpA (RUT 78.521.951-1)
+- Legal name: Universo693 SpA
 - Also known as: Universo693, UniVerso693, Estudio UniVerso693
 - Founded: 2013 (+12 years of software engineering track record)
 - Track record: +50 cloud projects and software systems in production across 14 industry sectors.

@@ -255,7 +255,7 @@ export const Boveda: React.FC = () => {
   const handleDownloadBackup = () => {
     if (!vault) return;
     const cleanVault = {
-      empresaEmisora: 'UNIVERSO693 SpA (RUT 78.521.951-1)',
+      empresaEmisora: 'UNIVERSO693 SpA',
       cliente: vault.clientName,
       proyecto: vault.project,
       fechaExportacion: new Date().toISOString(),
@@ -695,7 +695,7 @@ export const Boveda: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 UNIVERSO693 SpA · RUT 78.521.951-1 · Villa Alemana / Viña del Mar, Chile</p>
+        <p>© 2026 UNIVERSO693 SpA · Villa Alemana / Viña del Mar, Chile</p>
         <p className="text-[11px] text-slate-600 mt-1">
           Infraestructura de Soberanía Tecnológica y Respaldo Continuo de Activos Digitales.
         </p>
