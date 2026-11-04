@@ -131,14 +131,15 @@
     /* 3 Plans Grid (Rental SaaS cards) */
     .plans-grid {
       display: grid;
-      grid-template-columns: 1fr 1.08fr 1fr;
-      gap: 14px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
       margin-bottom: 24px;
+      align-items: stretch;
     }
     .plan-card {
       border: 2px solid #e2e8f0;
       border-radius: 12px;
-      padding: 20px 18px;
+      padding: 22px 20px;
       background: #ffffff;
       cursor: pointer;
       transition: all 0.25s ease;
@@ -149,36 +150,17 @@
     }
     .plan-card:hover {
       border-color: #94a3b8;
-      transform: translateY(-2px);
     }
     .plan-card.selected {
       border-color: var(--purple);
       background: #faf5ff;
-      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
-    }
-    .plan-card.recommended {
-      border-color: #6366f1;
-    }
-    .plan-tag-recom {
-      position: absolute;
-      top: -11px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(135deg, #6366f1, #7c3aed);
-      color: white;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 12px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.12);
     }
     .plan-header {
       margin-bottom: 12px;
     }
     .plan-title {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 800;
       color: var(--navy);
       display: flex;
@@ -186,9 +168,10 @@
       gap: 8px;
     }
     .plan-subtitle {
-      font-size: 10.5px;
+      font-size: 11px;
       color: #64748b;
-      margin-top: 2px;
+      margin-top: 3px;
+      line-height: 1.35;
     }
     .plan-price-box {
       margin: 14px 0 16px 0;
@@ -202,9 +185,10 @@
       display: block;
       margin-bottom: 2px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .plan-price-num {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
       color: var(--navy);
     }
@@ -215,23 +199,34 @@
     }
     .plan-features {
       list-style: none;
+      padding: 0;
+      margin: 0 0 18px 0;
       font-size: 11.5px;
       color: #475569;
-      line-height: 1.55;
-      margin-bottom: 15px;
+      line-height: 1.5;
     }
     .plan-features li {
-      margin-bottom: 6px;
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .plan-features li::before {
+      content: "•";
+      position: absolute;
+      left: 4px;
+      top: -1px;
+      color: var(--purple);
+      font-size: 14px;
+      font-weight: bold;
     }
     .plan-features li strong {
       color: var(--navy);
+      font-weight: 700;
     }
     .plan-select-btn {
       width: 100%;
-      padding: 9px;
+      padding: 10px;
       border-radius: 8px;
       border: 2px solid #cbd5e1;
       background: white;
@@ -439,50 +434,47 @@
           <div class="plan-subtitle">Puesta en marcha estándar y cumplimiento normativo</div>
         </div>
         <div class="plan-price-box">
-          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <span class="plan-setup-zero">✓ Setup Inicial: $0 CLP</span>
           <div>
             <span class="plan-price-num">$99.000</span>
             <span class="plan-price-period">+ IVA / mes</span>
           </div>
         </div>
         <ul class="plan-features">
-          <li>✓ <strong>Servidor Cloud VPS Dedicado:</strong> 100 alumnos simultáneos sin caídas.</li>
-          <li>✓ <strong>Hasta 5 Cursos Activos:</strong> Estructuración inicial completa.</li>
-          <li>✓ <strong>Mecanismo SENCE Estándar:</strong> Asistencia y nóminas oficiales.</li>
-          <li>✓ <strong>Diplomas Digitales PDF:</strong> Emisión automática nativa.</li>
-          <li>✓ <strong>Respaldos Diarios Externos:</strong> Uptime 99.9% monitoreado 24/7.</li>
-          <li>✓ <strong>4.5h Inducción Inicial:</strong> Acompañamiento a Claudia y equipo.</li>
-          <li style="color: #94a3b8;">✕ Sin Docente Virtual con IA.</li>
-          <li style="color: #94a3b8;">✕ Soporte pedagógico mensual no incluido.</li>
+          <li><strong>Servidor Cloud VPS Dedicado:</strong> Recursos exclusivos para 100 alumnos simultáneos sin caídas.</li>
+          <li><strong>Catálogo base de hasta 5 cursos:</strong> Estructuración inicial completa de contenidos y módulos.</li>
+          <li><strong>Cumplimiento SENCE estándar:</strong> Registro de asistencia por lección y exportación de nóminas.</li>
+          <li><strong>Diplomas Digitales PDF:</strong> Emisión automática nativa al completar cada curso con firma institucional.</li>
+          <li><strong>Respaldos diarios externos:</strong> Copias de seguridad automáticas con monitoreo de disponibilidad 24/7.</li>
+          <li><strong>4.5 horas de inducción directiva:</strong> Capacitación inicial y acompañamiento continuo a Claudia y equipo.</li>
         </ul>
       </div>
       <button class="plan-select-btn" type="button">Seleccionar Plan Esencial</button>
     </div>
 
-    <!-- PLAN 2: PRO & DOCENTE IA (RECOMMENDED) -->
-    <div class="plan-card recommended selected" id="card-plan-2" onclick="selectPlan(2)">
-      <div class="plan-tag-recom">⭐ MÁS ELEGIDO & RECOMENDADO</div>
+    <!-- PLAN 2: PRO & DOCENTE IA -->
+    <div class="plan-card selected" id="card-plan-2" onclick="selectPlan(2)">
       <div>
         <div class="plan-header">
           <div class="plan-title">
             <input type="radio" name="rentalPlan" id="radio-plan-2" value="159000" checked onchange="selectPlan(2)">
             Plan 2: Pro & Docente IA
           </div>
-          <div class="plan-subtitle">Tutor inteligente 24/7 + Soporte prioritario</div>
+          <div class="plan-subtitle">Tutor inteligente 24/7 + Soporte técnico prioritario</div>
         </div>
         <div class="plan-price-box">
-          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <span class="plan-setup-zero">✓ Setup Inicial: $0 CLP</span>
           <div>
             <span class="plan-price-num" style="color: #7c3aed;">$159.000</span>
             <span class="plan-price-period">+ IVA / mes</span>
           </div>
         </div>
         <ul class="plan-features">
-          <li>✓ <strong>Todo lo del Plan Esencial:</strong> Servidor VPS + SENCE + Diplomas.</li>
-          <li>✓ <strong>Hasta 10 Cursos Activos:</strong> Catálogo ampliado.</li>
-          <li>🤖 <strong>DOCENTE VIRTUAL IA 24/7:</strong> Tutor con IA contextualizado con los manuales de Bomberos de Viña del Mar y normas NFPA. Resuelve dudas a alumnos día y noche <em>(equivale a un profesor auxiliar por solo $60.000/mes)</em>.</li>
-          <li>✓ <strong>Tokens & Cómputo RAG Incluido:</strong> Bolsa mensual garantizada de consultas IA sin costos extras a fin de mes.</li>
-          <li>🧑‍💻 <strong>4 Horas/mes Soporte Prioritario:</strong> Acompañamiento directo a Claudia en cursos, reportes y fiscalizaciones.</li>
+          <li><strong>Todo lo del Plan Esencial:</strong> Servidor VPS Dedicado + SENCE + Diplomas PDF nativos.</li>
+          <li><strong>Catálogo ampliado:</strong> Capacidad para hasta 10 cursos activos simultáneos.</li>
+          <li><strong>Docente Virtual con IA 24/7:</strong> Tutor pedagógico cognitivo RAG entrenado exclusivamente con manuales de Bomberos de Viña del Mar y normas NFPA.</li>
+          <li><strong>Infraestructura & Tokens IA incluidos:</strong> Procesamiento semántico y bolsa garantizada de consultas sin cobros variables a fin de mes.</li>
+          <li><strong>4 horas mensuales de soporte prioritario:</strong> Acompañamiento directo a Claudia en gestión de cursos, reportes y fiscalizaciones.</li>
         </ul>
       </div>
       <button class="plan-select-btn" type="button">Seleccionar Plan Pro & IA</button>
@@ -496,23 +488,22 @@
             <input type="radio" name="rentalPlan" id="radio-plan-3" value="199000" onchange="selectPlan(3)">
             Plan 3: Enterprise Faenas
           </div>
-          <div class="plan-subtitle">Para licitaciones mineras y grandes empresas</div>
+          <div class="plan-subtitle">Para licitaciones mineras, empresas y faenas</div>
         </div>
         <div class="plan-price-box">
-          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <span class="plan-setup-zero">✓ Setup Inicial: $0 CLP</span>
           <div>
             <span class="plan-price-num">$199.000</span>
             <span class="plan-price-period">+ IVA / mes</span>
           </div>
         </div>
         <ul class="plan-features">
-          <li>✓ <strong>Todo lo del Plan Pro & IA:</strong> Docente IA 24/7 incluido.</li>
-          <li>✓ <strong>Hasta 50 Cursos Activos:</strong> Catálogo masivo OTEC.</li>
-          <li>🚀 <strong>Alta Concurrencia:</strong> Hasta 200 alumnos simultáneos.</li>
-          <li>🔒 <strong>Motor Forense SENCE / NCh 2728:</strong> Candado anti-bypass de video y trazabilidad al segundo.</li>
-          <li>🌐 <strong>Portal Público Verificación QR SHA-256:</strong> Para supervisores de faenas y empresas mineras.</li>
-          <li>📱 <strong>App Móvil PWA Instalable:</strong> En celulares iOS y Android.</li>
-          <li>🧑‍💻 <strong>8 Horas/mes Soporte + Carga Masiva B2B:</strong> Matrícula ágil de contratistas en Excel.</li>
+          <li><strong>Todo lo del Plan Pro & IA:</strong> Servidor dedicado + Docente IA 24/7 integrado.</li>
+          <li><strong>Catálogo y concurrencia masiva:</strong> Hasta 50 cursos activos y 200 alumnos simultáneos.</li>
+          <li><strong>Motor Forense SENCE / NCh 2728:</strong> Candado anti-bypass de video y trazabilidad al segundo.</li>
+          <li><strong>Portal Público Verificación QR SHA-256:</strong> Validación criptográfica de diplomas para contratistas y minería.</li>
+          <li><strong>Aplicación Móvil PWA instalable:</strong> Acceso ágil en terreno en celulares y tablets (iOS / Android).</li>
+          <li><strong>8 horas mensuales de soporte:</strong> Asistencia prioritaria y carga masiva B2B de nóminas en Excel.</li>
         </ul>
       </div>
       <button class="plan-select-btn" type="button">Seleccionar Enterprise</button>
@@ -534,7 +525,7 @@
         <tr>
           <th style="width: 46%;">Módulo / Característica Técnica</th>
           <th style="width: 18%; text-align: center;">Plan 1: Esencial</th>
-          <th style="width: 18%; text-align: center; background: #6366f1;">Plan 2: Pro & IA ⭐</th>
+          <th style="width: 18%; text-align: center; background: #6366f1;">Plan 2: Pro & Docente IA</th>
           <th style="width: 18%; text-align: center;">Plan 3: Enterprise</th>
         </tr>
       </thead>
