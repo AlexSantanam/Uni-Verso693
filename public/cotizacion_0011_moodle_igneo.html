@@ -447,13 +447,14 @@
           <span class="badge-base">ÍTEM BASE INICIAL</span>
           <strong style="color: var(--navy); display: block; font-size: 13px;">Campus Moodle Cloud Dedicado (Plan Estándar de Entrada)</strong>
           <span style="color: #475569; font-size: 11.5px; display: block; margin-top: 3px;">
-            • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, MariaDB optimizada, Redis OPcache y certificado SSL TLS 1.3 Let's Encrypt automático).<br>
+            • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, PostgreSQL/MariaDB optimizada, Redis OPcache y certificado SSL TLS 1.3 Let's Encrypt automático).<br>
             • Acceso web estándar responsive (navegación vía navegador web en computadores y teléfonos móviles).<br>
-            • Capacidad para evaluaciones masivas de 100+ alumnos concurrentes sin caídas ni lentitud.<br>
-            • Estructura académica base para <strong>hasta 5 cursos iniciales</strong> con configuración de contenidos.<br>
-            • Roles de usuario (Administrador, Relator/Docente, Alumno), foros de consulta, cuestionarios con tiempo y entrega de tareas.<br>
-            • <strong>Diplomas Digitales PDF incluidos:</strong> Emisión automática de certificados nativos al completar cada curso con datos dinámicos del alumno.<br>
-            • <strong>Entrega de Bóveda Soberana:</strong> Claves SSH root del servidor y base de datos a nombre de la Fundación (0% secuestro tecnológico). Capacitación inicial de 2 horas a Claudia y equipo.
+            • <strong>Capacidad de alta concurrencia:</strong> Soporte para evaluaciones simultáneas de <strong>hasta 100 alumnos al mismo tiempo</strong> sin caídas ni lentitud.<br>
+            • <strong>Catálogo académico base:</strong> Configuración completa y estructuración pedagógica de <strong>hasta 5 cursos activos iniciales</strong>.<br>
+            • <strong>Mecanismo y Registro de Asistencia Estándar SENCE incluido:</strong> Gestión de nóminas, control de asistencia por lección y exportación para reportes normativos SENCE. <em>(Para candado anti-bypass de video y trazabilidad al segundo para fiscalizadores exigentes, ver Motor Forense NCh 2728 opcional).</em><br>
+            • <strong>Diplomas Digitales PDF incluidos:</strong> Emisión automática de certificados nativos al completar cada curso con datos dinámicos del alumno y firma digital.<br>
+            • <strong>4.5 horas de inducción directiva y acompañamiento continuo:</strong> 2 sesiones de 90 min de capacitación intensiva a Claudia y equipo directivo + 2 sesiones de seguimiento y resolución de dudas de 45 min a los 15 y 30 días de operación.<br>
+            • <strong>Entrega de Bóveda Soberana:</strong> Claves SSH root del servidor y base de datos a nombre de la Fundación (0% secuestro tecnológico).
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: var(--navy); font-size: 13px;">
@@ -475,11 +476,11 @@
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
             • Tutor de IA integrado dentro de las aulas virtuales de Moodle, entrenado exclusivamente con los manuales de Bomberos de Viña del Mar y normas NFPA aplicables.<br>
             • Resuelve dudas a los alumnos día y noche citando fuentes oficiales. Alivia hasta el 85% de consultas repetitivas a los instructores.<br>
-            • <em>Nota:</em> Este módulo requiere el plan de mantención con soporte IA para solventar la bolsa de consultas mensuales.
+            • <em>Nota mensual:</em> Suma $30.000 + IVA/mes a la mantención — cubre, a costo real de API sin margen, la bolsa de ~15.000 consultas IA mensuales para alumnos.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$390.000 CLP
+          +$390.000 CLP setup<br><span style="font-size: 10px; color: #0284c7; font-weight: 700;">+ $30.000/mes</span>
         </td>
       </tr>
 
@@ -495,33 +496,54 @@
             <strong style="color: #0f172a; font-size: 12.5px;">Aplicación Móvil PWA Instalable (Android & iOS) con Acceso en Terreno</strong>
           </label>
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Convierte el campus web en una <strong>App Móvil PWA instalable en smartphones y tablets</strong> de bomberos y alumnos (sin pasar por tiendas de apps ni pagos de comisiones).<br>
+            • Convierte el campus web en una <strong>App Móvil PWA instalable en smartphones y tablets</strong> de bomberos y alumnos (sin pasar por tiendas de apps ni pagos de comisiones a Apple/Google).<br>
             • Icono corporativo en la pantalla de inicio del celular, pantalla de bienvenida institucional, inicio de sesión persistente y acceso ágil a cursos desde terreno.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$190.000 CLP
+          +$190.000 CLP setup<br><span style="font-size: 10px; color: #16a34a; font-weight: 600;">+ $0/mes</span>
         </td>
       </tr>
 
-      <!-- OPTION 2: 50 CURSOS PACK -->
+      <!-- ESCALABILIDAD 1: 50 CURSOS PACK VIA MANTENCION -->
       <tr class="optional-item" id="row-cursos">
         <td style="text-align: center;">
           <input type="checkbox" id="chk-cursos" class="custom-checkbox" onchange="recalculate()">
           <span class="print-only-status" id="print-cursos">[NO]</span>
         </td>
         <td>
-          <span class="badge-optional">OPCIONAL EXPANSION</span>
+          <span class="badge-optional" style="background: #fef3c7; color: #92400e;">ESCALABILIDAD DE BBDD</span>
           <label for="chk-cursos" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Pack de Expansión Masiva: Carga & Estructuración de hasta 50 Cursos</strong>
+            <strong style="color: #0f172a; font-size: 12.5px;">Tramo Escala de Catálogo: Capacidad para +50 Cursos Activos & BBDD NVMe Ampliada</strong>
           </label>
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • El plan estándar incluye hasta 5 cursos. Con este pack, dejamos estructurados y migrados hasta 50 programas de capacitación completos.<br>
-            • Creación de categorías (Rescate Vehicular, Materiales Peligrosos, Fuego Estructural, Prevención de Riesgos Industriales, etc.) con sus bancos de preguntas y cuestionarios listos para operar.
+            • <em>Explicado con peras y manzanas:</em> El plan base incluye capacidad para hasta 5 cursos simultáneos. Si la institución amplía su oferta formativa a empresas o faenas mineras, este tramo habilita el espacio de almacenamiento de alta velocidad (NVMe), optimización de índices de base de datos y respaldos diarios de volumen extendido <strong>sin cobrar costos de instalación inicial</strong>.<br>
+            • <strong>Inversión Setup Inicial:</strong> $0 CLP (Bonificado al 100%). Solo suma $25.000 + IVA/mes por concepto de recursos de almacenamiento e infraestructura.
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$200.000 CLP
+          <span style="color: #16a34a; font-size: 12px;">$0 Setup</span><br><span style="font-size: 10px; color: #0284c7; font-weight: 700;">+ $25.000/mes</span>
+        </td>
+      </tr>
+
+      <!-- ESCALABILIDAD 2: ALTA CONCURRENCIA (+100 ALUMNOS EXTRA) -->
+      <tr class="optional-item" id="row-concurrencia">
+        <td style="text-align: center;">
+          <input type="checkbox" id="chk-concurrencia" class="custom-checkbox" onchange="recalculate()">
+          <span class="print-only-status" id="print-concurrencia">[NO]</span>
+        </td>
+        <td>
+          <span class="badge-optional" style="background: #fef3c7; color: #92400e;">ESCALABILIDAD DE SERVIDOR</span>
+          <label for="chk-concurrencia" class="switch-label">
+            <strong style="color: #0f172a; font-size: 12.5px;">Tramo Alta Concurrencia: +100 Alumnos Simultáneos Adicionales (Total 200 Concurrentes)</strong>
+          </label>
+          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
+            • <em>Explicado con peras y manzanas:</em> La base soporta holgadamente hasta 100 alumnos evaluándose a la misma hora. Si OTEC Ígneo realiza jornadas masivas de evaluación para empresas contratistas o brigadas de emergencia completas, este tramo escala la memoria RAM y núcleos de CPU del servidor en tiempo real para garantizar cero caídas y velocidad instantánea durante exámenes críticos.<br>
+            • <strong>Inversión Setup Inicial:</strong> $0 CLP (Bonificado al 100%). Solo suma $25.000 + IVA/mes por asignación de memoria RAM dedicada adicional.
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: #0f172a;">
+          <span style="color: #16a34a; font-size: 12px;">$0 Setup</span><br><span style="font-size: 10px; color: #0284c7; font-weight: 700;">+ $25.000/mes</span>
         </td>
       </tr>
 
@@ -542,28 +564,29 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$160.000 CLP
+          +$160.000 CLP setup<br><span style="font-size: 10px; color: #16a34a; font-weight: 600;">+ $0/mes</span>
         </td>
       </tr>
 
-      <!-- OPTION 4: MOTOR SENCE -->
+      <!-- OPTION 4: MOTOR SENCE FORENSE -->
       <tr class="optional-item" id="row-sence">
         <td style="text-align: center;">
           <input type="checkbox" id="chk-sence" class="custom-checkbox" onchange="recalculate()">
           <span class="print-only-status" id="print-sence">[NO]</span>
         </td>
         <td>
-          <span class="badge-optional">OPCIONAL AUDITORÍA SENCE</span>
+          <span class="badge-optional">OPCIONAL AUDITORÍA ESTRICTA</span>
           <label for="chk-sence" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Motor Forense de Asistencia y Auditoría SENCE / NCh 2728</strong>
+            <strong style="color: #0f172a; font-size: 12.5px;">Motor Forense Avanzado & Auditoría Anti-Bypass NCh 2728 (Upgrade sobre SENCE Base)</strong>
           </label>
           <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Candado en reproductor de video (evita que el alumno adelante el contenido sin visualización real).<br>
-            • Registro cronológico al segundo de permanencia activa y generador oficial en 1 clic de planillas Excel exigidas por fiscalizadores SENCE.
+            • Candado en reproductor de video (evita que el alumno adelante el video o abra pestañas en paralelo sin visualización real comprobada).<br>
+            • Registro cronológico al segundo de permanencia activa y generador oficial en 1 clic de planillas Excel exigidas por fiscalizadores SENCE en auditorías estrictas.<br>
+            • <em>Nota mensual:</em> Suma $15.000 + IVA/mes a la mantención (almacenamiento extendido de trazas y procesamiento de logs de auditoría).
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$290.000 CLP
+          +$290.000 CLP setup<br><span style="font-size: 10px; color: #0284c7; font-weight: 700;">+ $15.000/mes</span>
         </td>
       </tr>
 
@@ -583,7 +606,7 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$180.000 CLP
+          +$180.000 CLP setup<br><span style="font-size: 10px; color: #16a34a; font-weight: 600;">+ $0/mes</span>
         </td>
       </tr>
 
@@ -604,7 +627,7 @@
           </span>
         </td>
         <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$140.000 CLP
+          +$140.000 CLP setup<br><span style="font-size: 10px; color: #16a34a; font-weight: 600;">+ $0/mes</span>
         </td>
       </tr>
     </tbody>
@@ -622,10 +645,10 @@
       <label class="maint-option-card selected" id="card-maint-1">
         <div class="maint-option-header">
           <span class="maint-name">
-            <input type="radio" name="maintTier" id="maint-tier-1" value="38000" checked onchange="onMaintTierChange()">
+            <input type="radio" name="maintTier" id="maint-tier-1" value="45000" checked onchange="onMaintTierChange()">
             Nivel Cloud Esencial
           </span>
-          <span class="maint-price">$38.000 / mes</span>
+          <span class="maint-price">$45.000 / mes</span>
         </div>
         <p class="maint-desc">
           • Cobertura directa de <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu, Nginx, PHP, MariaDB, SSL).<br>
@@ -638,10 +661,10 @@
       <label class="maint-option-card" id="card-maint-2">
         <div class="maint-option-header">
           <span class="maint-name">
-            <input type="radio" name="maintTier" id="maint-tier-2" value="78000" onchange="onMaintTierChange()">
+            <input type="radio" name="maintTier" id="maint-tier-2" value="85000" onchange="onMaintTierChange()">
             Nivel Continuidad Pro & Soporte OTEC
           </span>
-          <span class="maint-price" style="color: #16a34a;">$78.000 / mes</span>
+          <span class="maint-price" style="color: #16a34a;">$85.000 / mes</span>
         </div>
         <p class="maint-desc">
           • Todo lo del Nivel Esencial (Servidor Cloud Dedicado + Backups diarios).<br>
@@ -650,16 +673,72 @@
         </p>
       </label>
     </div>
+
+    <!-- Item-by-item diff so the $40.000/mes gap is self-explanatory -->
+    <div style="margin-top: 14px; overflow-x: auto;">
+      <table style="margin-bottom: 0; font-size: 11px;">
+        <thead>
+          <tr>
+            <th style="width: 52%;">Qué incluye cada nivel</th>
+            <th style="width: 24%; text-align: center;">Cloud Esencial</th>
+            <th style="width: 24%; text-align: center;">Continuidad Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Servidor Cloud VPS Dedicado + SSL</td>
+            <td style="text-align: center;">✅</td>
+            <td style="text-align: center;">✅</td>
+          </tr>
+          <tr>
+            <td>Respaldos diarios automáticos externos</td>
+            <td style="text-align: center;">✅</td>
+            <td style="text-align: center;">✅</td>
+          </tr>
+          <tr>
+            <td>Monitoreo de uptime</td>
+            <td style="text-align: center;">Pasivo (alerta reactiva)</td>
+            <td style="text-align: center;">Activo (seguimiento prioritario)</td>
+          </tr>
+          <tr>
+            <td>Horas de soporte técnico/pedagógico a Claudia y equipo</td>
+            <td style="text-align: center; color: #94a3b8;">0h (solo incidencias de servidor)</td>
+            <td style="text-align: center; font-weight: 700; color: #15803d;">4h / mes</td>
+          </tr>
+          <tr>
+            <td>Parches de seguridad y actualizaciones menores de Moodle</td>
+            <td style="text-align: center;">—</td>
+            <td style="text-align: center;">✅</td>
+          </tr>
+          <tr>
+            <td>Asesoría en reportes y fiscalizaciones SENCE</td>
+            <td style="text-align: center;">—</td>
+            <td style="text-align: center;">✅</td>
+          </tr>
+          <tr>
+            <td>Tiempo de restauración garantizado ante caída</td>
+            <td style="text-align: center;">Según disponibilidad</td>
+            <td style="text-align: center; font-weight: 700; color: #15803d;">&lt; 2 horas</td>
+          </tr>
+          <tr>
+            <td>Prioridad de respuesta</td>
+            <td style="text-align: center;">Estándar (1 día hábil)</td>
+            <td style="text-align: center; font-weight: 700; color: #15803d;">Prioritaria</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Totals Section -->
   <div class="totals-grid">
     <div>
       <div class="market-comparison-box">
-        <strong>⚖️ Transparencia de Costos frente al Mercado Tradicional:</strong><br>
-        • En el mercado, la habilitación de un campus Moodle estándar en hostings compartidos suele cotizarse sobre <strong>$1.150.000 + IVA</strong>.<br>
-        • Con la propuesta base de UNIVERSO693 de <strong>$600.000 + IVA</strong>, OTEC Ígneo obtiene un <strong>Servidor Cloud VPS Dedicado</strong> (recursos exclusivos para Bomberos) con un ahorro inicial significativo.<br>
-        • Cada módulo opcional representa desarrollo de ingeniería especializada, permitiendo a la mesa directiva armar la plataforma exacta que se adapte a su presupuesto.
+        <strong style="color: #14532d; font-size: 12.5px; display: block; margin-bottom: 6px;">⚖️ Análisis Factual vs. Cotización de Proveedor Tradicional recibida por la Institución:</strong>
+        • <strong>Cotización de Proveedor Tradicional:</strong> $1.168.067 CLP + IVA ($990.000 instalación en hosting compartido + $178.067 anual por hosting/dominio en Norteduc con límites estrictos).<br>
+        • <strong>Propuesta Base UNIVERSO693:</strong> $600.000 CLP + IVA en <strong>Servidor Cloud VPS Dedicado</strong> (recursos exclusivos de alta velocidad para Bomberos).<br>
+        • <strong>Ahorro Real Inmediato en Setup:</strong> <strong>$568.067 CLP + IVA (48.6% de ahorro directo)</strong> con tecnología superior, sin servidores compartidos ni riesgo de caídas.<br>
+        • <strong>Transparencia Radical:</strong> La base ya incluye Diplomas PDF, Registro SENCE estándar, 4.5 horas de inducción/acompañamiento y Bóveda Soberana de claves SSH (0% retención tecnológica). Cada módulo adicional se activa solo si la institución lo necesita.
       </div>
 
       <div class="callout-notes">
@@ -693,14 +772,14 @@
 
       <div class="totals-row monthly-total">
         <span>Mantención Mensual Cloud:</span>
-        <span id="txt-mensual-total">$38.000 + IVA / mes</span>
+        <span id="txt-mensual-total">$45.000 + IVA / mes</span>
       </div>
       <div style="font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.4;">
         <span id="txt-mensual-desc">• Servidor Cloud VPS Dedicado de alta velocidad, respaldos diarios externos y monitoreo de disponibilidad.</span>
       </div>
 
-      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11.5px; color: #166534; font-weight: 700; text-align: center;" id="txt-ahorro-tag">
-        🎉 Plan Base Optimizado: Excelente relación precio/calidad con Servidor Dedicado.
+      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11.5px; color: #0284c7; font-weight: 700; text-align: center;" id="txt-ahorro-tag">
+        🛠️ Plataforma propia, sin contratos forzados ni dependencias cautivas.
       </div>
     </div>
   </div>
@@ -739,14 +818,14 @@
 
 <script>
   const BASE_SETUP = 600000;
-  const MERCADO_BASE = 1160000;
 
   const ITEMS = {
     ia: { name: 'Docente Virtual con IA 24/7', setup: 390000, extraMonthly: 30000 },
     pwa: { name: 'App Móvil PWA Instalable (Android & iOS)', setup: 190000, extraMonthly: 0 },
-    cursos: { name: 'Pack Expansión 50 Cursos', setup: 200000, extraMonthly: 0 },
-    diseno: { name: 'Rediseño Visual Premium', setup: 160000, extraMonthly: 0 },
-    sence: { name: 'Motor Asistencia SENCE / NCh 2728', setup: 290000, extraMonthly: 15000 },
+    cursos: { name: 'Tramo Escala: +50 Cursos Activos & BBDD NVMe', setup: 0, extraMonthly: 25000 },
+    concurrencia: { name: 'Tramo Escala: +100 Alumnos Concurrentes (Total 200)', setup: 0, extraMonthly: 25000 },
+    diseno: { name: 'Rediseño Visual Premium (Theme Ígneo)', setup: 160000, extraMonthly: 0 },
+    sence: { name: 'Motor Forense SENCE / NCh 2728 Anti-Bypass', setup: 290000, extraMonthly: 15000 },
     qr: { name: 'Portal Público Verificación QR SHA-256', setup: 180000, extraMonthly: 0 },
     b2b: { name: 'Módulo B2B Carga Masiva Alumnos', setup: 140000, extraMonthly: 0 }
   };
@@ -757,8 +836,8 @@
 
   function getSelectedMaintBase() {
     const r2 = document.getElementById('maint-tier-2');
-    if (r2 && r2.checked) return 78000;
-    return 38000;
+    if (r2 && r2.checked) return 85000;
+    return 45000;
   }
 
   function onMaintTierChange() {
@@ -780,6 +859,8 @@
     let currentSetup = BASE_SETUP;
     let currentMonthly = getSelectedMaintBase();
     let hasIA = false;
+    let extraCourses = false;
+    let extraConcurrent = false;
 
     for (let key in ITEMS) {
       const chk = document.getElementById('chk-' + key);
@@ -790,6 +871,8 @@
         currentSetup += ITEMS[key].setup;
         currentMonthly += ITEMS[key].extraMonthly;
         if (key === 'ia') hasIA = true;
+        if (key === 'cursos') extraCourses = true;
+        if (key === 'concurrencia') extraConcurrent = true;
         if (row) row.classList.add('active');
         if (printSpan) {
           printSpan.innerText = '[SELECCIONADO]';
@@ -815,26 +898,30 @@
     // Description text for monthly maintenance
     const isTier2 = document.getElementById('maint-tier-2').checked;
     let desc = isTier2 
-      ? '• Incluye Servidor Cloud VPS Dedicado, backups diarios y 4 horas mensuales de soporte técnico prioritario para Claudia.'
-      : '• Incluye Servidor Cloud VPS Dedicado, base de datos MariaDB y respaldos diarios automáticos externos.';
+      ? '• Incluye Servidor Cloud VPS Dedicado, backups diarios y 4 horas mensuales de soporte técnico y pedagógico prioritario para Claudia.'
+      : '• Incluye Servidor Cloud VPS Dedicado, base de datos optimizada y respaldos diarios automáticos externos.';
     
-    if (hasIA) {
-      desc += ' (+ Bolsa mensual garantizada de 15.000 consultas IA para alumnos).';
+    let addOnsDesc = [];
+    if (extraCourses) addOnsDesc.push('+50 Cursos y BBDD NVMe');
+    if (extraConcurrent) addOnsDesc.push('200 alumnos concurrentes');
+    if (hasIA) addOnsDesc.push('Bolsa 15.000 consultas IA');
+
+    if (addOnsDesc.length > 0) {
+      desc += ' (' + addOnsDesc.join(', ') + ').';
     }
     document.getElementById('txt-mensual-desc').innerText = desc;
 
-    // Ahorro tag analysis
+    // Status tag
     const ahorroTag = document.getElementById('txt-ahorro-tag');
-    if (currentSetup < MERCADO_BASE) {
-      const ahorro = MERCADO_BASE - currentSetup;
-      ahorroTag.innerText = '🎉 ¡Ahorro de ' + fmtCLP(ahorro) + ' frente a cotizaciones estándar de mercado!';
-      ahorroTag.style.color = '#166534';
-    } else if (currentSetup === MERCADO_BASE) {
-      ahorroTag.innerText = '⚖️ Mismo valor que el mercado tradicional, pero con Servidor Dedicado y módulos a medida.';
+    const selectedCount = Object.keys(ITEMS).filter(k => {
+      const chk = document.getElementById('chk-' + k);
+      return chk && chk.checked;
+    }).length;
+    if (selectedCount === 0) {
+      ahorroTag.innerText = '🛡️ Plan Base Inicial: $600.000 + IVA (Ahorro de $568.067 vs proveedor tradicional).';
       ahorroTag.style.color = '#0284c7';
     } else {
-      const diff = currentSetup - MERCADO_BASE;
-      ahorroTag.innerText = '🚀 Configuración de alta gama con módulos avanzados (+ ' + fmtCLP(diff) + ' sobre la base estándar).';
+      ahorroTag.innerText = '🚀 Configuración a la medida de OTEC Ígneo (' + selectedCount + ' módulo' + (selectedCount > 1 ? 's' : '') + ' adicional' + (selectedCount > 1 ? 'es' : '') + ' seleccionado' + (selectedCount > 1 ? 's' : '') + ').';
       ahorroTag.style.color = '#7c3aed';
     }
   }
@@ -858,11 +945,11 @@
     const totalBruto = currentSetup + iva;
 
     let mensaje = "Hola equipo UNIVERSO693 SpA, soy Claudia Araya de OTEC Ígneo (Fundación Bomberos Viña).\n\n";
-    mensaje += "He revisado la Propuesta Modular COT-2026-0011 y hemos seleccionado la siguiente configuración:\n\n";
-    mensaje += "• Base: Campus Moodle Cloud Dedicado (hasta 5 cursos y diplomas PDF incluidos) -> $600.000 + IVA\n";
+    mensaje += "He revisado la Propuesta Modular COT-2026-0011 y hemos configurado la siguiente selección para el Directorio:\n\n";
+    mensaje += "• Base: Campus Moodle Cloud Dedicado (5 cursos, 100 alumnos concurrentes, diplomas PDF, SENCE estándar y 4.5h capacitación) -> $600.000 + IVA\n";
     
     if (extrasList.length > 0) {
-      mensaje += "• Módulos Adicionales Seleccionados:\n";
+      mensaje += "• Módulos y Tramos Adicionales Seleccionados:\n";
       extrasList.forEach(item => {
         mensaje += "  + " + item + "\n";
       });
@@ -870,7 +957,7 @@
       mensaje += "• Sin módulos opcionales extras (Plan Base Inicial)\n";
     }
 
-    mensaje += "\n• Nivel de Mantención: " + (isTier2 ? "Continuidad Pro OTEC ($78.000 + IVA/mes)" : "Cloud Esencial ($38.000 + IVA/mes)") + "\n";
+    mensaje += "\n• Nivel de Mantención: " + (isTier2 ? "Continuidad Pro OTEC ($85.000 + IVA/mes)" : "Cloud Esencial ($45.000 + IVA/mes)") + "\n";
     mensaje += "\n💰 TOTAL SETUP NETO: " + fmtCLP(currentSetup) + " CLP (+ IVA: " + fmtCLP(totalBruto) + " CLP)\n";
     mensaje += "🛠️ MANTENCIÓN MENSUAL: " + fmtCLP(currentMonthly) + " CLP + IVA / mes\n\n";
     mensaje += "Por favor indíquenos los pasos para formalizar la orden de trabajo.";

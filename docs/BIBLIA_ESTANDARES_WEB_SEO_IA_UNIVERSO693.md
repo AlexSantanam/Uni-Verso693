@@ -111,3 +111,4 @@ Asegurar que **ningún sitio web o plataforma** desarrollado por UNIVERSO693 (se
 | **WhatsApp**| ¿El botón de WhatsApp abre con mensaje pre-cargado? | Frontend | [ ] |
 | **SEO** | ¿Tiene Title, Description, Canonical, robots.txt y sitemap? | SEO | [ ] |
 | **Legal** | ¿Se emitirá factura legal y se entregará garantía escrita? | Administración | [ ] |
+
