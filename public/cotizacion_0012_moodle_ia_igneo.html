@@ -6,8 +6,8 @@
   <!-- Open Graph / WhatsApp Social Preview -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://universo693.com/cotizacion_0012_moodle_ia_igneo.html">
-  <meta property="og:title" content="Cotización COT-2026-0012 | Moodle Inteligente con IA 24/7 | UNIVERSO693 SpA">
-  <meta property="og:description" content="Propuesta Oficial para OTEC Ígneo (Fundación Bomberos Viña del Mar). Moodle en Cloud Dedicado con Tutor de IA 24/7 entrenado con manuales NFPA.">
+  <meta property="og:title" content="Propuesta Modalidad Arriendo Cloud & Docente IA | OTEC Ígneo - UNIVERSO693 SpA">
+  <meta property="og:description" content="Modalidad Arriendo Operacional $0 Inversión Inicial para OTEC Ígneo (Fundación Bomberos Viña del Mar). Planes desde $99.000/mes con Servidor Cloud Dedicado y Docente IA 24/7.">
   <meta property="og:image" content="https://universo693.com/assets/og_universo693_igneo.png">
   <meta property="og:image:secure_url" content="https://universo693.com/assets/og_universo693_igneo.png">
   <meta property="og:image:type" content="image/png">
@@ -15,13 +15,15 @@
   <meta property="og:image:height" content="630">
   <meta property="og:site_name" content="UNIVERSO693 SpA">
 
-  <title>Cotización COT-2026-0012 | Moodle Inteligente con IA | OTEC Ígneo - UNIVERSO693 SpA</title>
+  <title>Modalidad Arriendo Cloud & Docente IA | OTEC Ígneo - UNIVERSO693 SpA</title>
   <style>
     :root {
-      --primary: #7c3aed;
+      --primary: #0284c7;
       --navy: #0f172a;
       --fire-red: #dc2626;
       --emerald: #16a34a;
+      --amber: #d97706;
+      --purple: #7c3aed;
       --border: #e2e8f0;
       --text: #334155;
     }
@@ -55,7 +57,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 3px solid var(--primary);
+      border-bottom: 3px solid var(--purple);
       padding-bottom: 18px;
       margin-bottom: 20px;
     }
@@ -79,7 +81,7 @@
     .meta { text-align: right; }
     .badge-code {
       display: inline-block;
-      background: #7c3aed;
+      background: var(--purple);
       color: white;
       font-weight: 800;
       font-size: 13px;
@@ -106,157 +108,184 @@
     .configurator-banner {
       background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
       color: white;
-      padding: 16px 20px;
+      padding: 18px 22px;
       border-radius: 10px;
-      margin-bottom: 22px;
+      margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 15px;
     }
     .configurator-banner h3 {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 800;
-      color: #c4b5fd;
-      margin-bottom: 3px;
+      color: #a5b4fc;
+      margin-bottom: 4px;
     }
     .configurator-banner p {
       font-size: 11.5px;
       color: #e0e7ff;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
-    /* Items table */
+    /* 3 Plans Grid (Rental SaaS cards) */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.08fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .plan-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 18px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .plan-card:hover {
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+    }
+    .plan-card.selected {
+      border-color: var(--purple);
+      background: #faf5ff;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
+    }
+    .plan-card.recommended {
+      border-color: #6366f1;
+    }
+    .plan-tag-recom {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    .plan-header {
+      margin-bottom: 12px;
+    }
+    .plan-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .plan-subtitle {
+      font-size: 10.5px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .plan-price-box {
+      margin: 14px 0 16px 0;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .plan-setup-zero {
+      font-size: 11px;
+      font-weight: 800;
+      color: #16a34a;
+      display: block;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+    .plan-price-num {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--navy);
+    }
+    .plan-price-period {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .plan-features {
+      list-style: none;
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.55;
+      margin-bottom: 15px;
+    }
+    .plan-features li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .plan-features li strong {
+      color: var(--navy);
+    }
+    .plan-select-btn {
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      border: 2px solid #cbd5e1;
+      background: white;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .plan-card.selected .plan-select-btn {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: white;
+    }
+
+    /* Comparison Table */
+    .table-responsive {
+      overflow-x: auto;
+      margin-bottom: 22px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
-      font-size: 12px;
+      font-size: 11.5px;
     }
     th {
       background: var(--navy);
       color: white;
       text-align: left;
-      padding: 10px 12px;
+      padding: 9px 12px;
       font-weight: 700;
     }
     td {
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
-    tr.base-item {
-      background-color: #f0fdf4;
-    }
-    tr.optional-item {
-      transition: background-color 0.2s ease;
-    }
-    tr.optional-item.active {
-      background-color: #f5f3ff;
-    }
-    tr.optional-item:hover {
+    tr:nth-child(even) td {
       background-color: #f8fafc;
     }
 
-    /* Checkbox & Switch */
-    .switch-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .custom-checkbox {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: #7c3aed;
-    }
-
-    /* Badges */
-    .badge-base {
-      display: inline-block;
-      background: #dcfce7;
-      color: #15803d;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-    .badge-optional {
-      display: inline-block;
-      background: #ede9fe;
-      color: #6d28d9;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    /* Maintenance Selector Box */
-    .maint-selector-box {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
+    /* Condition Callout Box */
+    .activation-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
       border-radius: 10px;
-      padding: 16px 18px;
-      margin-top: 20px;
+      padding: 15px 18px;
       margin-bottom: 20px;
+      font-size: 12px;
+      color: #166534;
+      line-height: 1.5;
     }
-    .maint-selector-title {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .maint-options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .maint-option-card {
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px 14px;
-      background: #ffffff;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
-    }
-    .maint-option-card:hover {
-      border-color: #94a3b8;
-    }
-    .maint-option-card.selected {
-      border-color: #7c3aed;
-      background: #faf5ff;
-    }
-    .maint-option-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .maint-name {
-      font-size: 12.5px;
-      font-weight: 800;
-      color: var(--navy);
-    }
-    .maint-price {
-      font-size: 13px;
-      font-weight: 900;
-      color: #7c3aed;
-    }
-    .maint-desc {
-      font-size: 11px;
-      color: #64748b;
-      line-height: 1.4;
-    }
+    .activation-box strong { color: #14532d; }
 
     /* Totals Section */
     .totals-grid {
@@ -266,8 +295,8 @@
       margin-top: 15px;
     }
     .totals-box {
-      background: #f8fafc;
-      border: 2px solid #cbd5e1;
+      background: #faf5ff;
+      border: 2px solid #e9d5ff;
       border-radius: 10px;
       padding: 18px 20px;
     }
@@ -279,41 +308,13 @@
       color: #475569;
     }
     .totals-row.grand-total {
-      border-top: 2px solid var(--navy);
+      border-top: 2px solid var(--purple);
       padding-top: 8px;
       margin-top: 8px;
       font-size: 18px;
       font-weight: 900;
-      color: var(--navy);
+      color: var(--purple);
     }
-    .totals-row.monthly-total {
-      border-top: 1px dashed #cbd5e1;
-      padding-top: 8px;
-      margin-top: 8px;
-      font-size: 13.5px;
-      font-weight: 800;
-      color: #7c3aed;
-    }
-
-    /* Analysis callouts */
-    .market-comparison-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 11.5px;
-      color: #166534;
-      line-height: 1.45;
-      margin-bottom: 15px;
-    }
-    .market-comparison-box strong { color: #14532d; }
-
-    .callout-notes {
-      font-size: 11px;
-      color: #64748b;
-      line-height: 1.5;
-    }
-    .callout-notes strong { color: #334155; }
 
     /* Actions */
     .actions-panel {
@@ -340,11 +341,11 @@
       transition: all 0.2s;
     }
     .btn-accept {
-      background: #16a34a;
+      background: var(--purple);
       color: white;
     }
     .btn-accept:hover {
-      background: #15803d;
+      background: #6d28d9;
       transform: translateY(-1px);
     }
     .btn-print {
@@ -371,10 +372,10 @@
 <div class="cotizacion-sheet">
   <!-- Bar actions -->
   <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <a href="https://universo693.com" style="font-size: 12.5px; color: #7c3aed; text-decoration: none; font-weight: bold;">← universo693.com</a>
+    <a href="https://universo693.com" style="font-size: 12.5px; color: #0284c7; text-decoration: none; font-weight: bold;">← universo693.com</a>
     <div style="display: flex; gap: 10px; align-items: center;">
-      <a href="cotizacion_0011_moodle_igneo.html" style="font-size: 12px; color: #0284c7; text-decoration: none; font-weight: bold; background: #f0f9ff; border: 1px solid #bae6fd; padding: 7px 12px; border-radius: 6px;">Ver Opción Base $600k (Sin IA) →</a>
-      <button class="btn-action btn-print" onclick="window.print()">🖨️ Imprimir / Guardar Selección en PDF</button>
+      <a href="cotizacion_0011_moodle_igneo.html" style="font-size: 12px; color: #0284c7; text-decoration: none; font-weight: bold;">Ver Modalidad 1: Compra ($600k Setup) →</a>
+      <button class="btn-action btn-print" onclick="window.print()">🖨️ Guardar Selección en PDF</button>
     </div>
   </div>
 
@@ -387,12 +388,12 @@
       <div class="brand">
         <h1>UNIVERSO693 SpA</h1>
         <p>RUT: 78.521.951-1 &bull; Villa Alemana / Viña del Mar, Chile</p>
-        <p style="color: #7c3aed; font-weight: 700;">Ingeniería de Software & Docencia con Inteligencia Artificial</p>
+        <p style="color: #7c3aed; font-weight: 700;">Modalidad Arriendo Operacional Cloud ($0 Inversión Inicial)</p>
       </div>
     </div>
     <div class="meta">
       <div class="badge-code">COT-2026-0012</div>
-      <div><strong>Formato:</strong> Campus Moodle con Docente IA 24/7</div>
+      <div><strong>Formato:</strong> Suscripción Cloud 24 Meses</div>
       <div><strong>Validez:</strong> 30 días &bull; Noviembre 2026</div>
     </div>
   </div>
@@ -406,312 +407,267 @@
       <p><strong>Dirección Ejecutiva:</strong> Martín Romero &bull; Director Ejecutivo</p>
     </div>
     <div>
-      <p><strong>Proyecto:</strong> Campus Moodle Inteligente en Cloud Dedicado</p>
-      <p><strong>Modalidad:</strong> Moodle Optimizado con Docente IA y Soberanía Digital</p>
-      <p><strong>Garantía Técnica:</strong> 60 días corridos post-entrega</p>
-      <p><strong>Portal de Credenciales:</strong> Bóveda Digital Soberana de la Fundación</p>
+      <p><strong>Proyecto:</strong> Campus Moodle Cloud Dedicado & Docente IA 24/7</p>
+      <p><strong>Modalidad:</strong> Arriendo Operacional Todo Incluido ($0 Setup)</p>
+      <p><strong>Plazo Contractual:</strong> 24 meses renovables (reajuste anual IPC)</p>
+      <p><strong>Condición de Inicio:</strong> Facturación anticipada (Mes 1 al emitir OC)</p>
     </div>
   </div>
 
   <!-- Interactive Banner -->
   <div class="configurator-banner no-print">
     <div>
-      <h3>🤖 Campus Inteligente con Tutor Virtual de IA Integrado 24/7</h3>
-      <p>Esta configuración incluye la base de Moodle en Servidor Cloud VPS Dedicado más el <strong>Docente Virtual con IA</strong> entrenado con los manuales de Bomberos de Viña del Mar y normas NFPA. Puedes añadir o retirar módulos opcionales a continuación.</p>
+      <h3>🚀 Cero Costo de Instalación Inicial ($0 Setup)</h3>
+      <p>Financiamiento 100% como gasto operacional mensual (OPEX). Sin desembolsos de capital de entrada: la institución solo paga una cuota mensual predecible que incluye servidor dedicado, mantención, actualizaciones y soporte continuo.</p>
     </div>
     <div style="text-align: right; white-space: nowrap;">
-      <span style="font-size: 11px; color: #c7d2fe; display: block;">Setup con IA:</span>
-      <span style="font-size: 16px; font-weight: 900; color: #a78bfa;">$990.000 + IVA</span>
+      <span style="font-size: 11px; color: #cbd5e1; display: block;">Setup Inicial:</span>
+      <span style="font-size: 18px; font-weight: 900; color: #4ade80;">$0 CLP (Bonificado)</span>
     </div>
   </div>
 
-  <!-- Items table -->
+  <!-- 3 Plans Cards -->
+  <div class="plans-grid">
+    <!-- PLAN 1: ESENCIAL -->
+    <div class="plan-card" id="card-plan-1" onclick="selectPlan(1)">
+      <div>
+        <div class="plan-header">
+          <div class="plan-title">
+            <input type="radio" name="rentalPlan" id="radio-plan-1" value="99000" onchange="selectPlan(1)">
+            Plan 1: Esencial OTEC
+          </div>
+          <div class="plan-subtitle">Puesta en marcha estándar y cumplimiento normativo</div>
+        </div>
+        <div class="plan-price-box">
+          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <div>
+            <span class="plan-price-num">$99.000</span>
+            <span class="plan-price-period">+ IVA / mes</span>
+          </div>
+        </div>
+        <ul class="plan-features">
+          <li>✓ <strong>Servidor Cloud VPS Dedicado:</strong> 100 alumnos simultáneos sin caídas.</li>
+          <li>✓ <strong>Hasta 5 Cursos Activos:</strong> Estructuración inicial completa.</li>
+          <li>✓ <strong>Mecanismo SENCE Estándar:</strong> Asistencia y nóminas oficiales.</li>
+          <li>✓ <strong>Diplomas Digitales PDF:</strong> Emisión automática nativa.</li>
+          <li>✓ <strong>Respaldos Diarios Externos:</strong> Uptime 99.9% monitoreado 24/7.</li>
+          <li>✓ <strong>4.5h Inducción Inicial:</strong> Acompañamiento a Claudia y equipo.</li>
+          <li style="color: #94a3b8;">✕ Sin Docente Virtual con IA.</li>
+          <li style="color: #94a3b8;">✕ Soporte pedagógico mensual no incluido.</li>
+        </ul>
+      </div>
+      <button class="plan-select-btn" type="button">Seleccionar Plan Esencial</button>
+    </div>
+
+    <!-- PLAN 2: PRO & DOCENTE IA (RECOMMENDED) -->
+    <div class="plan-card recommended selected" id="card-plan-2" onclick="selectPlan(2)">
+      <div class="plan-tag-recom">⭐ MÁS ELEGIDO & RECOMENDADO</div>
+      <div>
+        <div class="plan-header">
+          <div class="plan-title">
+            <input type="radio" name="rentalPlan" id="radio-plan-2" value="159000" checked onchange="selectPlan(2)">
+            Plan 2: Pro & Docente IA
+          </div>
+          <div class="plan-subtitle">Tutor inteligente 24/7 + Soporte prioritario</div>
+        </div>
+        <div class="plan-price-box">
+          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <div>
+            <span class="plan-price-num" style="color: #7c3aed;">$159.000</span>
+            <span class="plan-price-period">+ IVA / mes</span>
+          </div>
+        </div>
+        <ul class="plan-features">
+          <li>✓ <strong>Todo lo del Plan Esencial:</strong> Servidor VPS + SENCE + Diplomas.</li>
+          <li>✓ <strong>Hasta 10 Cursos Activos:</strong> Catálogo ampliado.</li>
+          <li>🤖 <strong>DOCENTE VIRTUAL IA 24/7:</strong> Tutor con IA contextualizado con los manuales de Bomberos de Viña del Mar y normas NFPA. Resuelve dudas a alumnos día y noche <em>(equivale a un profesor auxiliar por solo $60.000/mes)</em>.</li>
+          <li>✓ <strong>Tokens & Cómputo RAG Incluido:</strong> Bolsa mensual garantizada de consultas IA sin costos extras a fin de mes.</li>
+          <li>🧑‍💻 <strong>4 Horas/mes Soporte Prioritario:</strong> Acompañamiento directo a Claudia en cursos, reportes y fiscalizaciones.</li>
+        </ul>
+      </div>
+      <button class="plan-select-btn" type="button">Seleccionar Plan Pro & IA</button>
+    </div>
+
+    <!-- PLAN 3: ENTERPRISE & FAENAS -->
+    <div class="plan-card" id="card-plan-3" onclick="selectPlan(3)">
+      <div>
+        <div class="plan-header">
+          <div class="plan-title">
+            <input type="radio" name="rentalPlan" id="radio-plan-3" value="199000" onchange="selectPlan(3)">
+            Plan 3: Enterprise Faenas
+          </div>
+          <div class="plan-subtitle">Para licitaciones mineras y grandes empresas</div>
+        </div>
+        <div class="plan-price-box">
+          <span class="plan-setup-zero">✓ Setup: $0 CLP</span>
+          <div>
+            <span class="plan-price-num">$199.000</span>
+            <span class="plan-price-period">+ IVA / mes</span>
+          </div>
+        </div>
+        <ul class="plan-features">
+          <li>✓ <strong>Todo lo del Plan Pro & IA:</strong> Docente IA 24/7 incluido.</li>
+          <li>✓ <strong>Hasta 50 Cursos Activos:</strong> Catálogo masivo OTEC.</li>
+          <li>🚀 <strong>Alta Concurrencia:</strong> Hasta 200 alumnos simultáneos.</li>
+          <li>🔒 <strong>Motor Forense SENCE / NCh 2728:</strong> Candado anti-bypass de video y trazabilidad al segundo.</li>
+          <li>🌐 <strong>Portal Público Verificación QR SHA-256:</strong> Para supervisores de faenas y empresas mineras.</li>
+          <li>📱 <strong>App Móvil PWA Instalable:</strong> En celulares iOS y Android.</li>
+          <li>🧑‍💻 <strong>8 Horas/mes Soporte + Carga Masiva B2B:</strong> Matrícula ágil de contratistas en Excel.</li>
+        </ul>
+      </div>
+      <button class="plan-select-btn" type="button">Seleccionar Enterprise</button>
+    </div>
+  </div>
+
+  <!-- Key Activation Condition (Peras y Manzanas) -->
+  <div class="activation-box">
+    <strong>🔑 Condiciones de Activación y Pago (Modalidad Arriendo Operacional):</strong><br>
+    • <strong>Mes 1 Anticipado (Cero Riesgo):</strong> Al igual que en el arriendo de un inmueble o servicio corporativo, el primer mes se cancela contra emisión de la Orden de Trabajo para la provisión inmediata de infraestructura Cloud y configuración inicial. Los meses siguientes se facturan los primeros 5 días de cada mes calendario.<br>
+    • <strong>Plazo Contractual:</strong> 24 meses corridos renovables, con reajustabilidad anual según la variación acumulada del IPC (INE).<br>
+    • <strong>Ahorro Real Institucional:</strong> La Fundación no desembolsa costos de desarrollo ($0 Setup), permitiendo que la plataforma se autofinancie con la matrícula de apenas 1 o 2 alumnos mensuales.
+  </div>
+
+  <!-- Comparison Matrix Table -->
   <div class="table-responsive">
-  <table id="quoteTable">
-    <thead>
-      <tr>
-        <th style="width: 6%;">Sel.</th>
-        <th style="width: 68%;">Descripción del Módulo y Entregables de Ingeniería</th>
-        <th style="width: 26%; text-align: right;">Inversión Setup (Neto)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- BASE ITEM (Locked) -->
-      <tr class="base-item">
-        <td style="text-align: center;">
-          <input type="checkbox" checked disabled class="custom-checkbox" title="Ítem base obligatorio">
-          <span class="print-only-status">[INCLUIDO]</span>
-        </td>
-        <td>
-          <span class="badge-base">ÍTEM BASE INICIAL</span>
-          <strong style="color: var(--navy); display: block; font-size: 13px;">Campus Moodle Cloud Dedicado (Plan Estándar de Entrada)</strong>
-          <span style="color: #475569; font-size: 11.5px; display: block; margin-top: 3px;">
-            • Instalación y optimización de Moodle LMS autogestionado oficial (5.3+) en <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu 24.04, Nginx HTTP/2, PHP 8.3-FPM, MariaDB optimizada, Redis OPcache y certificado SSL TLS 1.3 Let's Encrypt automático).<br>
-            • Acceso web estándar responsive (navegación vía navegador web en computadores y teléfonos móviles).<br>
-            • Capacidad para evaluaciones masivas de 100+ alumnos concurrentes sin caídas ni lentitud.<br>
-            • Estructura académica base para <strong>hasta 5 cursos iniciales</strong>.<br>
-            • Roles de usuario (Administrador, Relator/Docente, Alumno), foros, cuestionarios con tiempo y entrega de tareas.<br>
-            • <strong>Diplomas Digitales PDF incluidos:</strong> Emisión automática de certificados nativos al completar cada curso con datos dinámicos del alumno.<br>
-            • <strong>Entrega de Bóveda Soberana:</strong> Claves SSH root del servidor y base de datos a nombre de la Fundación (0% secuestro tecnológico). Capacitación de 2 horas a Claudia y equipo.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: var(--navy); font-size: 13px;">
-          $600.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 1: IA (Checked by default in COT-0012) -->
-      <tr class="optional-item active" id="row-ia">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-ia" checked class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-ia">[SELECCIONADO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">INCLUIDO EN COT-0012</span>
-          <label for="chk-ia" class="switch-label">
-            <strong style="color: #4c1d95; font-size: 12.5px;">Docente Virtual con Inteligencia Artificial 24/7 (Tutor Pedagógico RAG)</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Tutor de IA integrado dentro de las aulas virtuales de Moodle, entrenado exclusivamente con los manuales de Bomberos de Viña del Mar y normas NFPA aplicables.<br>
-            • Resuelve dudas a los alumnos día y noche citando fuentes oficiales. Alivia hasta el 85% de consultas repetitivas a los instructores.<br>
-            • Incluye bolsa mensual garantizada de hasta 15.000 consultas interactivas de alumnos.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #4c1d95;">
-          +$390.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION PWA: APLICACION MOVIL PWA -->
-      <tr class="optional-item" id="row-pwa">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-pwa" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-pwa">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL EXPERIENCIA MÓVIL</span>
-          <label for="chk-pwa" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Aplicación Móvil PWA Instalable (Android & iOS) con Acceso en Terreno</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Convierte el campus web en una <strong>App Móvil PWA instalable en smartphones y tablets</strong> de bomberos y alumnos (sin pasar por tiendas de apps ni pagos de comisiones).<br>
-            • Icono corporativo en la pantalla de inicio del celular, pantalla de bienvenida institucional, inicio de sesión persistente y acceso ágil a cursos desde terreno.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$190.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 2: 50 CURSOS PACK -->
-      <tr class="optional-item" id="row-cursos">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-cursos" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-cursos">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL EXPANSION</span>
-          <label for="chk-cursos" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Pack de Expansión Masiva: Carga & Estructuración de hasta 50 Cursos</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • El plan estándar incluye hasta 5 cursos. Con este pack, dejamos estructurados y migrados hasta 50 programas de capacitación completos.<br>
-            • Creación de categorías (Rescate Vehicular, Materiales Peligrosos, Fuego Estructural, Prevención de Riesgos Industriales, etc.) con sus bancos de preguntas y cuestionarios listos para operar.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$200.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 3: REDISEÑO PREMIUM -->
-      <tr class="optional-item" id="row-diseno">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-diseno" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-diseno">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL IMAGEN CORPORATIVA</span>
-          <label for="chk-diseno" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Rediseño Visual & Branding Corporativo Premium (Theme Ígneo / Bomberos)</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Eliminación total de la apariencia tosca y anticuada por defecto de Moodle.<br>
-            • Adaptación visual a la paleta institucional de Bomberos de Viña del Mar y OTEC Ígneo (logos vectoriales, tipografía moderna, banners de alta definición y tarjetas de curso limpias e intuitivas).
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$160.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 4: MOTOR SENCE -->
-      <tr class="optional-item" id="row-sence">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-sence" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-sence">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL AUDITORÍA SENCE</span>
-          <label for="chk-sence" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Motor Forense de Asistencia y Auditoría SENCE / NCh 2728</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Candado en reproductor de video (evita que el alumno adelante el contenido sin visualización real).<br>
-            • Registro cronológico al segundo de permanencia activa y generador oficial en 1 clic de planillas Excel exigidas por fiscalizadores SENCE.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$290.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 5: ZONA PUBLICA QR (DIPLOMAS YA INCLUIDOS EN BASE) -->
-      <tr class="optional-item" id="row-qr">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-qr" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-qr">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL EMPRESAS & FAENAS</span>
-          <label for="chk-qr" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Portal Público de Verificación de Diplomas con Código QR & Antifraude SHA-256</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • <em>(Los diplomas PDF ya están incluidos en el plan base)</em>. Este módulo añade el <strong>portal web público de validación criptográfica</strong>: permite a prevencionistas de riesgos o supervisores en faena minera escanear el QR del diploma desde cualquier celular y confirmar su autenticidad instantáneamente sin ingresar al campus.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$180.000 CLP
-        </td>
-      </tr>
-
-      <!-- OPTION 6: CARGA MASIVA B2B -->
-      <tr class="optional-item" id="row-b2b">
-        <td style="text-align: center;">
-          <input type="checkbox" id="chk-b2b" class="custom-checkbox" onchange="recalculate()">
-          <span class="print-only-status" id="print-b2b">[NO]</span>
-        </td>
-        <td>
-          <span class="badge-optional">OPCIONAL EMPRESAS B2B</span>
-          <label for="chk-b2b" class="switch-label">
-            <strong style="color: #0f172a; font-size: 12.5px;">Módulo B2B de Carga Masiva de Alumnos en Excel & Despacho Automático</strong>
-          </label>
-          <span style="color: #475569; font-size: 11px; display: block; margin-top: 2px;">
-            • Módulo para matricular hasta 500 trabajadores de empresas clientes mediante planilla Excel en segundos.<br>
-            • Generación y despacho automático de correos con credenciales de acceso seguras a cada alumno.
-          </span>
-        </td>
-        <td style="text-align: right; font-weight: bold; color: #0f172a;">
-          +$140.000 CLP
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-
-  <!-- Maintenance Tier Selector -->
-  <div class="maint-selector-box">
-    <div class="maint-selector-title">
-      <span>🛡️ Nivel de Mantención Cloud & Continuidad Operativa OTEC</span>
-      <span style="font-size: 11px; color: #64748b; font-weight: 500;">Selecciona el esquema de soporte mensual deseado:</span>
-    </div>
-    <div class="maint-options-grid">
-      <!-- Tier 1: Cloud Esencial + IA -->
-      <label class="maint-option-card selected" id="card-maint-1">
-        <div class="maint-option-header">
-          <span class="maint-name">
-            <input type="radio" name="maintTier" id="maint-tier-1" value="68000" checked onchange="onMaintTierChange()">
-            Cloud Dedicado + Bolsa Docente IA
-          </span>
-          <span class="maint-price">$68.000 / mes</span>
-        </div>
-        <p class="maint-desc">
-          • Cobertura de <strong>Servidor Cloud VPS Dedicado</strong> (Ubuntu, Nginx, PHP, MariaDB, SSL) + Backups diarios.<br>
-          • <strong>Bolsa mensual garantizada de 15.000 consultas de IA</strong> para alumnos en cursos activos.<br>
-          • Monitoreo de disponibilidad 99.9% y soporte técnico a incidencias del servidor.
-        </p>
-      </label>
-
-      <!-- Tier 2: Continuidad Pro OTEC + IA -->
-      <label class="maint-option-card" id="card-maint-2">
-        <div class="maint-option-header">
-          <span class="maint-name">
-            <input type="radio" name="maintTier" id="maint-tier-2" value="98000" onchange="onMaintTierChange()">
-            Continuidad Pro OTEC + Docente IA All-Inclusive
-          </span>
-          <span class="maint-price" style="color: #7c3aed;">$98.000 / mes</span>
-        </div>
-        <p class="maint-desc">
-          • Todo lo anterior (Servidor Dedicado + Bolsa de consultas IA ampliada a 25.000 consultas/mes).<br>
-          • <strong>4 horas mensuales de soporte técnico y pedagógico prioritario</strong> para Claudia y relatores.<br>
-          • Acompañamiento en fiscalizaciones SENCE, parches de seguridad Moodle y SLA de respuesta &lt;2 hrs.
-        </p>
-      </label>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 46%;">Módulo / Característica Técnica</th>
+          <th style="width: 18%; text-align: center;">Plan 1: Esencial</th>
+          <th style="width: 18%; text-align: center; background: #6366f1;">Plan 2: Pro & IA ⭐</th>
+          <th style="width: 18%; text-align: center;">Plan 3: Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Inversión Inicial (Setup)</strong></td>
+          <td style="text-align: center; font-weight: bold; color: #16a34a;">$0 CLP</td>
+          <td style="text-align: center; font-weight: bold; color: #16a34a; background: #faf5ff;">$0 CLP</td>
+          <td style="text-align: center; font-weight: bold; color: #16a34a;">$0 CLP</td>
+        </tr>
+        <tr>
+          <td><strong>Cuota Mensual Neta (+ IVA)</strong></td>
+          <td style="text-align: center; font-weight: bold;">$99.000 / mes</td>
+          <td style="text-align: center; font-weight: bold; color: #7c3aed; background: #faf5ff;">$159.000 / mes</td>
+          <td style="text-align: center; font-weight: bold;">$199.000 / mes</td>
+        </tr>
+        <tr>
+          <td>Servidor Cloud VPS Dedicado (Ubuntu, Nginx, PostgreSQL)</td>
+          <td style="text-align: center;">✅ (100 alumnos)</td>
+          <td style="text-align: center; background: #faf5ff;">✅ (100 alumnos)</td>
+          <td style="text-align: center;">🚀 (200 alumnos)</td>
+        </tr>
+        <tr>
+          <td>Catálogo de cursos incluidos</td>
+          <td style="text-align: center;">Hasta 5 cursos</td>
+          <td style="text-align: center; background: #faf5ff;">Hasta 10 cursos</td>
+          <td style="text-align: center;">Hasta 50 cursos</td>
+        </tr>
+        <tr>
+          <td>Mecanismo SENCE estándar (asistencia y nóminas)</td>
+          <td style="text-align: center;">✅</td>
+          <td style="text-align: center; background: #faf5ff;">✅</td>
+          <td style="text-align: center;">✅</td>
+        </tr>
+        <tr>
+          <td>Diplomas Digitales PDF nativos con firma</td>
+          <td style="text-align: center;">✅</td>
+          <td style="text-align: center; background: #faf5ff;">✅</td>
+          <td style="text-align: center;">✅</td>
+        </tr>
+        <tr>
+          <td><strong>Docente Virtual con IA 24/7 (RAG Bomberos)</strong></td>
+          <td style="text-align: center; color: #94a3b8;">—</td>
+          <td style="text-align: center; font-weight: bold; color: #7c3aed; background: #faf5ff;">🤖 INCLUIDO</td>
+          <td style="text-align: center; font-weight: bold; color: #7c3aed;">🤖 INCLUIDO</td>
+        </tr>
+        <tr>
+          <td>Bolsa mensual de consultas IA y tokens</td>
+          <td style="text-align: center; color: #94a3b8;">—</td>
+          <td style="text-align: center; background: #faf5ff;">15.000 consultas/mes</td>
+          <td style="text-align: center;">30.000 consultas/mes</td>
+        </tr>
+        <tr>
+          <td>Horas mensuales de soporte técnico y pedagógico</td>
+          <td style="text-align: center; color: #94a3b8;">0h (solo servidor)</td>
+          <td style="text-align: center; font-weight: bold; color: #16a34a; background: #faf5ff;">4 Horas / mes</td>
+          <td style="text-align: center; font-weight: bold; color: #16a34a;">8 Horas / mes</td>
+        </tr>
+        <tr>
+          <td>Motor Forense SENCE Anti-Bypass (candado video)</td>
+          <td style="text-align: center; color: #94a3b8;">—</td>
+          <td style="text-align: center; color: #94a3b8; background: #faf5ff;">—</td>
+          <td style="text-align: center;">🔒 INCLUIDO</td>
+        </tr>
+        <tr>
+          <td>Portal Público de Verificación QR Antifraude SHA-256</td>
+          <td style="text-align: center; color: #94a3b8;">—</td>
+          <td style="text-align: center; color: #94a3b8; background: #faf5ff;">—</td>
+          <td style="text-align: center;">🌐 INCLUIDO</td>
+        </tr>
+        <tr>
+          <td>Aplicación Móvil PWA instalable (iOS / Android)</td>
+          <td style="text-align: center;">Web Responsive</td>
+          <td style="text-align: center; background: #faf5ff;">Web Responsive</td>
+          <td style="text-align: center;">📱 INCLUIDA</td>
+        </tr>
+        <tr>
+          <td>Respaldos diarios automáticos externos</td>
+          <td style="text-align: center;">✅</td>
+          <td style="text-align: center; background: #faf5ff;">✅</td>
+          <td style="text-align: center;">✅</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Totals Section -->
   <div class="totals-grid">
     <div>
-      <div class="market-comparison-box">
-        <strong>⚖️ Transparencia de Costos frente al Mercado Tradicional:</strong><br>
-        • En el mercado, las implementaciones Moodle estándar en hostings compartidos rondan los <strong>$1.150.000 + IVA</strong> sin incluir módulos de Inteligencia Artificial.<br>
-        • Con UNIVERSO693, por <strong>$990.000 + IVA</strong> la Fundación accede a un <strong>Servidor VPS Cloud Dedicado + Docente Virtual con IA 24/7</strong> entrenado con normativas NFPA.<br>
-        • Representa un salto tecnológico cualitativo que posiciona a OTEC Ígneo como referente de innovación en capacitación técnica.
-      </div>
-
-      <div class="callout-notes">
-        <p>• <strong>Garantía de Soberanía Absoluta (0% Vendor Lock-In):</strong> La Fundación recibe las llaves maestras de su servidor y base de datos en su Bóveda Digital. Cero contratos forzados ni dependencias cautivas.</p>
-        <p>• <strong>Plazo de Entrega:</strong> 14 a 21 días hábiles con Docente IA integrado y entrenado con los manuales.</p>
-        <p>• <strong>Hitos de Pago Acordados:</strong> 50% al inicio contra orden de trabajo ($495.000 + IVA) / 50% contra entrega final funcional y recepción en Bóveda Digital ($495.000 + IVA).</p>
-      </div>
-
-      <div style="margin-top: 12px; padding: 12px 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 11px; color: #475569; line-height: 1.45;">
-        <strong style="color: #0f172a; display: block; margin-bottom: 4px;">📌 Transparencia Financiera, Consumos de Terceros & Reajustabilidad IPC:</strong>
-        • <strong>Servicios Cloud & Consumos Variables:</strong> Las tarifas mensuales cubren el Servidor Cloud VPS Dedicado y la cuota estipulada. Si la OTEC supera la bolsa mensual de consultas IA (15.000 consultas) o requiere almacenamiento masivo externo adicional, el excedente se liquida a costo directo de proveedor (Groq/AWS/Cloudflare) sin recargos.<br>
-        • <strong>Reajuste Anual por IPC:</strong> Los planes mensuales de mantención y continuidad se reajustarán anualmente en enero según la variación acumulada del IPC (INE).<br>
-        • <strong>Opción Facturación Directa:</strong> Ígneo puede vincular su tarjeta institucional directamente a la consola cloud del servidor si desea pagar la infraestructura de forma autónoma.
+      <div style="font-size: 11.5px; color: #475569; line-height: 1.5; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+        <strong style="color: var(--navy); display: block; margin-bottom: 4px;">⚖️ ¿Por qué Arriendo en vez de Compra?</strong>
+        • <strong>Financiamiento 100% como gasto operacional (OPEX):</strong> No requiere inmovilizar capital ni licitar compras de desarrollo.<br>
+        • <strong>Tranquilidad Absoluta:</strong> UNIVERSO693 asume el costo de infraestructura, parches de seguridad de Moodle, copias de seguridad diarias y mantenimiento del Docente IA.<br>
+        • Si en el futuro la Fundación desea adquirir la propiedad total de la plataforma, el contrato contempla opción preferente de compra del desarrollo.
       </div>
     </div>
 
     <!-- Live Totals Box -->
     <div class="totals-box">
       <div class="totals-row">
-        <span>Subtotal Setup Inicial:</span>
-        <span id="txt-subtotal-neto" style="font-weight: 700;">$990.000</span>
+        <span>Inversión Setup Inicial:</span>
+        <span style="font-weight: 800; color: #16a34a;">$0 CLP (Bonificado)</span>
       </div>
       <div class="totals-row">
-        <span>IVA (19%):</span>
-        <span id="txt-iva" style="font-weight: 600;">$188.100</span>
+        <span>Plan Seleccionado:</span>
+        <span id="txt-plan-name" style="font-weight: 700; color: var(--navy);">Plan 2: Pro & Docente IA</span>
+      </div>
+      <div class="totals-row">
+        <span>Cuota Mensual Neta:</span>
+        <span id="txt-cuota-neta" style="font-weight: 700;">$159.000 CLP</span>
+      </div>
+      <div class="totals-row">
+        <span>IVA Mensual (19%):</span>
+        <span id="txt-cuota-iva" style="font-weight: 600;">$30.210 CLP</span>
       </div>
       <div class="totals-row grand-total">
-        <span>TOTAL SETUP A PAGAR:</span>
-        <span id="txt-total-bruto" style="color: #7c3aed;">$1.178.100 CLP</span>
+        <span>TOTAL MENSUAL BRUTO:</span>
+        <span id="txt-cuota-bruto">$189.210 CLP</span>
       </div>
-
-      <div class="totals-row monthly-total">
-        <span>Mantención Mensual Cloud & IA:</span>
-        <span id="txt-mensual-total">$68.000 + IVA / mes</span>
-      </div>
-      <div style="font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.4;">
-        <span id="txt-mensual-desc">• Servidor Cloud VPS Dedicado, bolsa mensual garantizada de 15.000 consultas IA para alumnos, respaldos diarios y soporte continuo.</span>
-      </div>
-
-      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11.5px; color: #166534; font-weight: 700; text-align: center;" id="txt-ahorro-tag">
-        🎉 Plan con Docente IA: Alta innovación pedagógica con Servidor Dedicado.
+      <div style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+        • Primer mes ($189.210 con IVA) facturado contra Orden de Trabajo para provisión inmediata. Meses 2 a 24 pagaderos del 1 al 5 de cada mes.
       </div>
     </div>
   </div>
 
-  <!-- Interactive Action Buttons -->
+  <!-- Actions -->
   <div class="actions-panel no-print">
     <div>
-      <span style="font-size: 13px; font-weight: 800; color: var(--navy); display: block;">¿Conforme con la selección de módulos?</span>
-      <span style="font-size: 11.5px; color: #64748b;">Puedes formalizar la orden directamente o guardar el PDF oficial de respaldo.</span>
+      <span style="font-size: 13px; font-weight: 800; color: var(--navy); display: block;">¿Conforme con el plan de arriendo seleccionado?</span>
+      <span style="font-size: 11.5px; color: #64748b;">Puedes formalizar la orden directamente vía WhatsApp o guardar el PDF oficial.</span>
     </div>
     <div style="display: flex; gap: 10px;">
-      <button class="btn-action btn-accept" onclick="enviarCotizacionWhatsApp()">
+      <button class="btn-action btn-accept" onclick="enviarArriendoWhatsApp()">
         📲 Aceptar y Enviar esta Selección
       </button>
       <button class="btn-action btn-print" onclick="window.print()">
@@ -730,152 +686,72 @@
     </div>
     <div style="text-align: right;">
       <p><strong>OTEC Ígneo &bull; Fundación Bomberos Viña</strong></p>
-      <p>Aceptación de Propuesta con IA (COT-2026-0012)</p>
+      <p>Aceptación Propuesta Modalidad Arriendo (COT-2026-0012)</p>
       <p>Firma / Timbre Institucional</p>
     </div>
   </div>
 </div>
 
 <script>
-  const BASE_SETUP = 600000;
-  const MERCADO_BASE = 1160000;
-
-  const ITEMS = {
-    ia: { name: 'Docente Virtual con IA 24/7', setup: 390000, extraMonthly: 30000 },
-    cursos: { name: 'Pack Expansión 50 Cursos', setup: 200000, extraMonthly: 0 },
-    diseno: { name: 'Rediseño Visual Premium', setup: 160000, extraMonthly: 0 },
-    sence: { name: 'Motor Asistencia SENCE / NCh 2728', setup: 290000, extraMonthly: 15000 },
-    qr: { name: 'Portal Público Verificación QR SHA-256', setup: 180000, extraMonthly: 0 },
-    b2b: { name: 'Módulo B2B Carga Masiva Alumnos', setup: 140000, extraMonthly: 0 }
+  const PLANS = {
+    1: { name: 'Plan 1: Esencial OTEC', price: 99000, desc: 'Puesta en marcha estándar en Servidor Cloud VPS Dedicado (hasta 5 cursos, 100 alumnos, SENCE estándar y diplomas PDF).' },
+    2: { name: 'Plan 2: Pro & Docente IA 24/7', price: 159000, desc: 'Servidor Dedicado Cloud + Docente IA 24/7 integrado (manuales Bomberos) + 4 horas mensuales de soporte prioritario.' },
+    3: { name: 'Plan 3: Enterprise & Faenas Mineras', price: 199000, desc: 'Todo lo anterior + 50 cursos + 200 alumnos + SENCE Forense Anti-Bypass + Portal Público QR + App Móvil PWA + 8h soporte.' }
   };
+
+  let currentPlanId = 2;
 
   function fmtCLP(n) {
     return '$' + n.toLocaleString('es-CL');
   }
 
-  function getSelectedMaintBase() {
-    const r2 = document.getElementById('maint-tier-2');
-    if (r2 && r2.checked) return 98000;
-    return 68000;
-  }
-
-  function onMaintTierChange() {
-    const isTier2 = document.getElementById('maint-tier-2').checked;
-    const card1 = document.getElementById('card-maint-1');
-    const card2 = document.getElementById('card-maint-2');
+  function selectPlan(id) {
+    currentPlanId = id;
     
-    if (isTier2) {
-      card1.classList.remove('selected');
-      card2.classList.add('selected');
-    } else {
-      card2.classList.remove('selected');
-      card1.classList.add('selected');
-    }
-    recalculate();
-  }
-
-  function recalculate() {
-    let currentSetup = BASE_SETUP;
-    let currentMonthly = getSelectedMaintBase();
-
-    for (let key in ITEMS) {
-      const chk = document.getElementById('chk-' + key);
-      const row = document.getElementById('row-' + key);
-      const printSpan = document.getElementById('print-' + key);
-      
-      if (chk && chk.checked) {
-        currentSetup += ITEMS[key].setup;
-        if (key !== 'ia') { // IA is already factored into the base monthly for COT-0012
-          currentMonthly += ITEMS[key].extraMonthly;
-        }
-        if (row) row.classList.add('active');
-        if (printSpan) {
-          printSpan.innerText = '[SELECCIONADO]';
-          printSpan.style.color = '#16a34a';
-        }
+    // Update cards UI
+    for (let i = 1; i <= 3; i++) {
+      const card = document.getElementById('card-plan-' + i);
+      const radio = document.getElementById('radio-plan-' + i);
+      if (i === id) {
+        card.classList.add('selected');
+        radio.checked = true;
       } else {
-        if (row) row.classList.remove('active');
-        if (printSpan) {
-          printSpan.innerText = '[NO INCLUIDO]';
-          printSpan.style.color = '#94a3b8';
-        }
+        card.classList.remove('selected');
       }
     }
 
-    const iva = Math.round(currentSetup * 0.19);
-    const totalBruto = currentSetup + iva;
+    // Update numbers
+    const plan = PLANS[id];
+    const iva = Math.round(plan.price * 0.19);
+    const bruto = plan.price + iva;
 
-    document.getElementById('txt-subtotal-neto').innerText = fmtCLP(currentSetup);
-    document.getElementById('txt-iva').innerText = fmtCLP(iva);
-    document.getElementById('txt-total-bruto').innerText = fmtCLP(totalBruto) + ' CLP';
-    document.getElementById('txt-mensual-total').innerText = fmtCLP(currentMonthly) + ' + IVA / mes';
-
-    // Description text for monthly maintenance
-    const isTier2 = document.getElementById('maint-tier-2').checked;
-    let desc = isTier2 
-      ? '• Continuidad Pro OTEC: Servidor Cloud Dedicado, bolsa ampliada de 25.000 consultas IA, 4 horas mensuales de soporte técnico y asesoría SENCE.'
-      : '• Cloud Dedicado + Docente IA: Servidor Cloud VPS Dedicado, bolsa mensual garantizada de 15.000 consultas IA y respaldos diarios.';
-    
-    document.getElementById('txt-mensual-desc').innerText = desc;
-
-    // Ahorro tag analysis
-    const ahorroTag = document.getElementById('txt-ahorro-tag');
-    if (currentSetup < MERCADO_BASE) {
-      const ahorro = MERCADO_BASE - currentSetup;
-      ahorroTag.innerText = '🎉 ¡Ahorro de ' + fmtCLP(ahorro) + ' frente a cotizaciones estándar e incluye Docente IA!';
-      ahorroTag.style.color = '#166534';
-    } else if (currentSetup === MERCADO_BASE) {
-      ahorroTag.innerText = '⚖️ Mismo valor que el mercado tradicional, pero con Docente IA y Servidor VPS Dedicado.';
-      ahorroTag.style.color = '#0284c7';
-    } else {
-      const diff = currentSetup - MERCADO_BASE;
-      ahorroTag.innerText = '🚀 Configuración de alta gama pedagógica (+ ' + fmtCLP(diff) + ' sobre la base estándar).';
-      ahorroTag.style.color = '#7c3aed';
-    }
+    document.getElementById('txt-plan-name').innerText = plan.name;
+    document.getElementById('txt-cuota-neta').innerText = fmtCLP(plan.price) + ' CLP';
+    document.getElementById('txt-cuota-iva').innerText = fmtCLP(iva) + ' CLP';
+    document.getElementById('txt-cuota-bruto').innerText = fmtCLP(bruto) + ' CLP';
   }
 
-  function enviarCotizacionWhatsApp() {
-    let currentSetup = BASE_SETUP;
-    let currentMonthly = getSelectedMaintBase();
-    let extrasList = [];
-    const isTier2 = document.getElementById('maint-tier-2').checked;
-
-    for (let key in ITEMS) {
-      const chk = document.getElementById('chk-' + key);
-      if (chk && chk.checked) {
-        currentSetup += ITEMS[key].setup;
-        if (key !== 'ia') {
-          currentMonthly += ITEMS[key].extraMonthly;
-        }
-        extrasList.push(ITEMS[key].name);
-      }
-    }
-
-    const iva = Math.round(currentSetup * 0.19);
-    const totalBruto = currentSetup + iva;
+  function enviarArriendoWhatsApp() {
+    const plan = PLANS[currentPlanId];
+    const iva = Math.round(plan.price * 0.19);
+    const bruto = plan.price + iva;
 
     let mensaje = "Hola equipo UNIVERSO693 SpA, soy Claudia Araya de OTEC Ígneo (Fundación Bomberos Viña).\n\n";
-    mensaje += "He revisado la Propuesta Inteligente COT-2026-0012 y hemos seleccionado la siguiente configuración:\n\n";
-    mensaje += "• Base: Campus Moodle Cloud Dedicado (hasta 5 cursos y diplomas PDF incluidos) -> $600.000 + IVA\n";
-    
-    if (extrasList.length > 0) {
-      mensaje += "• Módulos Adicionales Seleccionados:\n";
-      extrasList.forEach(item => {
-        mensaje += "  + " + item + "\n";
-      });
-    }
-
-    mensaje += "\n• Nivel de Mantención: " + (isTier2 ? "Continuidad Pro OTEC + IA All-Inclusive ($98.000 + IVA/mes)" : "Cloud Dedicado + Bolsa IA ($68.000 + IVA/mes)") + "\n";
-    mensaje += "\n💰 TOTAL SETUP NETO: " + fmtCLP(currentSetup) + " CLP (+ IVA: " + fmtCLP(totalBruto) + " CLP)\n";
-    mensaje += "🛠️ MANTENCIÓN MENSUAL: " + fmtCLP(currentMonthly) + " CLP + IVA / mes\n\n";
-    mensaje += "Por favor indíquenos los pasos para formalizar la orden de trabajo.";
+    mensaje += "He revisado la Propuesta de Modalidad Arriendo COT-2026-0012 y el Directorio ha seleccionado:\n\n";
+    mensaje += "📌 " + plan.name + "\n";
+    mensaje += "• Inversión Setup: $0 CLP (100% bonificado)\n";
+    mensaje += "• Cuota Mensual Neta: " + fmtCLP(plan.price) + " CLP + IVA (" + fmtCLP(bruto) + " CLP mensual)\n";
+    mensaje += "• Alcance: " + plan.desc + "\n";
+    mensaje += "• Plazo Contractual: 24 meses renovables (reajuste anual IPC)\n";
+    mensaje += "• Activación: Mes 1 facturado por adelantado contra emisión de Orden de Trabajo.\n\n";
+    mensaje += "Por favor indíquenos los antecedentes necesarios para emitir la Orden de Trabajo.";
 
     const url = "https://wa.me/56990387414?text=" + encodeURIComponent(mensaje);
     window.open(url, '_blank');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    recalculate();
+    selectPlan(2);
   });
 </script>
 
