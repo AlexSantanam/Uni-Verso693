@@ -11,7 +11,7 @@
       color: #334155;
     }
     .instructions {
-      max-width: 680px;
+      max-width: 700px;
       margin: 0 auto 20px auto;
       background: #ffffff;
       border: 1px solid #cbd5e1;
@@ -27,26 +27,35 @@
 <body>
 
 <div class="instructions">
-  <strong>📋 Instrucciones para pegar en Gmail / Outlook:</strong><br>
-  1. Haz clic dentro del recuadro blanco de abajo.<br>
-  2. Presiona <strong>Ctrl + A</strong> (seleccionar todo) y luego <strong>Ctrl + C</strong> (copiar).<br>
-  3. Abre tu correo (Gmail u Outlook), presiona <strong>Ctrl + V</strong> (pegar) en el cuerpo del mensaje y se verá exactamente con este diseño profesional.
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <div>
+      <strong style="font-size: 14px;">📋 Instrucciones para pegar en Gmail / Outlook:</strong><br>
+      Haz clic en el botón verde, ve a tu correo y presiona <strong>Ctrl + V</strong>.<br>
+      <span style="font-size: 11.5px; color: #64748b;">(Método manual: selecciona todo el recuadro blanco, presiona Ctrl+C y luego Ctrl+V en tu correo).</span>
+    </div>
+    <div>
+      <button id="copyBtn" onclick="copyFormattedEmail()" style="background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(22,163,74,0.3);">
+        📋 Copiar Correo para Pegar
+      </button>
+      <span id="copyFeedback" style="display: none; color: #16a34a; font-weight: bold; font-size: 12px; margin-left: 8px;">¡Copiado con éxito!</span>
+    </div>
+  </div>
 </div>
 
 <!-- INICIO DEL BLOQUE COPIABLE PARA EL CORREO -->
-<div id="email-content" style="max-width: 680px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; line-height: 1.5; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+<div id="email-content" style="max-width: 700px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155; line-height: 1.5; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
 
   <!-- Barra Superior Institucional -->
-  <div style="background-color: #0f172a; padding: 22px 28px; border-bottom: 3px solid #7c3aed;">
+  <div style="background-color: #0f172a; padding: 22px 28px; border-bottom: 3px solid #0284c7;">
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
         <td style="vertical-align: middle;">
-          <span style="color: #38bdf8; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 2px;">Propuesta Técnica & Financiera</span>
+          <span style="color: #38bdf8; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 2px;">Propuesta Técnica & Comercial</span>
           <h2 style="margin: 0; color: #ffffff; font-size: 19px; font-weight: 800; letter-spacing: -0.3px;">Campus Virtual OTEC Ígneo</h2>
           <p style="margin: 3px 0 0 0; color: #94a3b8; font-size: 11.5px;">Fundación Cuerpo de Bomberos de Viña del Mar · Concón</p>
         </td>
         <td style="text-align: right; vertical-align: middle;">
-          <span style="background: rgba(255,255,255,0.1); color: #e2e8f0; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block;">COT-2026</span>
+          <span style="background: rgba(255,255,255,0.12); color: #e2e8f0; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block;">COT-2026-0011 / 0012</span>
         </td>
       </tr>
     </table>
@@ -59,118 +68,156 @@
       Estimada <strong>Claudia</strong>:
     </p>
 
-    <p style="font-size: 13px; color: #475569; margin-bottom: 18px; line-height: 1.55;">
-      Junto con saludarte y esperando que te encuentres muy bien, desde el equipo de ingeniería de <strong>UNIVERSO693 SpA</strong> hemos preparado la propuesta integral para la puesta en marcha del <strong>Campus Virtual de OTEC Ígneo</strong>.
+    <p style="font-size: 13px; color: #475569; margin-bottom: 16px; line-height: 1.55;">
+      Junto con saludarte y esperando que te encuentres muy bien, desde el equipo de ingeniería de <strong>UNIVERSO693 SpA</strong> te hacemos entrega de la propuesta técnica y económica para la puesta en marcha del <strong>Campus Virtual de OTEC Ígneo</strong>.
     </p>
 
-    <p style="font-size: 13px; color: #475569; margin-bottom: 22px; line-height: 1.55;">
-      Nuestro compromiso es entregarles una plataforma de estándar superior, alojada en un <strong>Servidor Cloud VPS Dedicado</strong> (recursos de alta velocidad exclusivos para Bomberos, sin compartir servidor con terceros ni riesgo de caídas), con cumplimiento SENCE, emisión de diplomas y plena soberanía técnica.
+    <p style="font-size: 13px; color: #475569; margin-bottom: 20px; line-height: 1.55;">
+      Nuestra propuesta contempla una infraestructura de alto estándar en <strong>Servidor Cloud VPS Dedicado</strong> (recursos exclusivos de alta velocidad para la Fundación, sin compartir servidor con terceros ni riesgo de caídas), con registro SENCE, emisión automática de diplomas digitales y acompañamiento continuo.
     </p>
 
-    <div style="background-color: #f8fafc; border-left: 4px solid #7c3aed; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 24px;">
-      <p style="margin: 0; font-size: 12.5px; color: #334155; line-height: 1.5;">
-        Para facilitar la evaluación del Directorio y adaptarnos al flujo presupuestario de la Fundación, hemos diseñado <strong>dos modalidades transparentes</strong> con sus respectivos cotizadores interactivos para simular en vivo:
+    <!-- Bloque Destacado: Carga de Contenido e Implementación Académica -->
+    <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px;">
+      <strong style="color: #0f172a; font-size: 13px; display: block; margin-bottom: 5px;">📚 Carga de Contenidos e Implementación de Cursos Incluida:</strong>
+      <p style="margin: 0; font-size: 12px; color: #334155; line-height: 1.55;">
+        En cualquiera de las modalidades que elijan, <strong>nuestro equipo se encarga de la estructuración pedagógica y la carga inicial de los cursos en la plataforma</strong> a partir del material de OTEC Ígneo (subida de videos, manuales PDF, presentaciones, creación de evaluaciones y configuración del diploma de aprobación), dejando las aulas 100% listas para operar.<br>
+        Además, incluimos <strong>4.5 horas de capacitación práctica</strong> para tu equipo y <strong>horas mensuales de soporte continuo</strong> que pueden utilizarse directamente para apoyar la subida y actualización de nuevos cursos o contenidos.
       </p>
     </div>
 
-    <!-- MODALIDAD 1: ARRIENDO -->
-    <div style="border: 2px solid #7c3aed; border-radius: 10px; background: #faf5ff; padding: 20px 22px; margin-bottom: 22px;">
+    <p style="font-size: 13px; color: #334155; margin-bottom: 18px; line-height: 1.5;">
+      Para que el Directorio pueda evaluar la alternativa que mejor se adapte a los lineamientos de la Fundación, hemos preparado <strong>dos modalidades equivalentes en calidad técnica</strong>, cada una con su cotizador interactivo en línea:
+    </p>
+
+    <!-- ========================================== -->
+    <!-- OPCIÓN 1: IMPLEMENTACIÓN LLAVE EN MANO     -->
+    <!-- ========================================== -->
+    <div style="border: 2px solid #0284c7; border-radius: 10px; background: #f8fafc; padding: 20px 22px; margin-bottom: 24px;">
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
         <tr>
           <td>
-            <span style="background: #7c3aed; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Modalidad 1 (Recomendada)</span>
-            <h3 style="margin: 6px 0 2px 0; color: #0f172a; font-size: 16px; font-weight: 800;">Suscripción Operacional Integral ($0 Setup)</h3>
-            <p style="margin: 0; font-size: 11.5px; color: #64748b;">Financiado como gasto mensual predecible (OPEX) · Contrato a 24 meses</p>
+            <span style="background: #0284c7; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 4px; text-transform: uppercase;">Opción 1 · COT-2026-0011</span>
+            <h3 style="margin: 6px 0 2px 0; color: #0f172a; font-size: 16px; font-weight: 800;">Implementación Llave en Mano & Configuración a Medida</h3>
+            <p style="margin: 0; font-size: 11.5px; color: #64748b;">Propiedad 100% institucional desde el día uno (entrega de Bóveda Soberana SSH) · Pago de instalación 50% inicio / 50% entrega</p>
           </td>
           <td style="text-align: right; vertical-align: top; white-space: nowrap;">
-            <span style="font-size: 11px; color: #16a34a; font-weight: 800; display: block;">INVERSIÓN SETUP:</span>
-            <span style="font-size: 16px; font-weight: 900; color: #16a34a;">$0 CLP</span>
+            <span style="font-size: 10.5px; color: #0284c7; font-weight: 800; display: block;">CAMPUS COMPLETO LLAVE EN MANO:</span>
+            <span style="font-size: 16px; font-weight: 900; color: #0f172a;">$600.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #15803d; font-weight: 800; display: block;">($714.000 IVA Incluido)</span>
           </td>
         </tr>
       </table>
 
-      <!-- 3 Planes Arriendo -->
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;">
-        <tr style="border-bottom: 1px solid #e9d5ff;">
-          <td style="padding: 10px 0; vertical-align: top; width: 68%;">
-            <strong style="color: #0f172a; font-size: 13px;">• Plan 1: Esencial OTEC</strong><br>
-            <span style="color: #64748b; font-size: 11.5px;">Servidor VPS Dedicado (100 alumnos simultáneos), 5 cursos activos, SENCE estándar, diplomas PDF nativos, backups diarios y 4.5h de inducción inicial + 2h mensuales de soporte.</span>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 10px 12px; vertical-align: top; width: 68%;">
+            <strong style="color: #0f172a; font-size: 12.5px;">• Campus Moodle Completo en Servidor Dedicado + Carga de 5 Cursos</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">Incluye <strong>Servidor Cloud VPS Dedicado exclusivo</strong> (100 alumnos en examen simultáneo sin caídas), <strong>Personalización Visual con los colores y logos de OTEC Ígneo y Bomberos</strong>, <strong>estructuración y carga completa de sus primeros 5 cursos por nuestro equipo</strong>, asistencia SENCE estándar, diplomas PDF automáticos, 4,5h de capacitación directiva y entrega de claves maestras en Bóveda Digital.</span>
           </td>
-          <td style="padding: 10px 0; text-align: right; vertical-align: middle; width: 32%;">
-            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$99.000</span>
-            <span style="font-size: 10.5px; color: #64748b; display: block;">+ IVA / mes</span>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle; width: 32%;">
+            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$600.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #15803d; font-weight: 700; display: block;">($714.000 IVA incl.)</span>
           </td>
         </tr>
-        <tr style="border-bottom: 1px solid #e9d5ff; background: rgba(124, 58, 237, 0.04);">
-          <td style="padding: 10px 6px; vertical-align: top;">
-            <strong style="color: #7c3aed; font-size: 13px;">• Plan 2: Pro & Docente IA 24/7</strong> <span style="font-size: 10.5px; font-weight: 700; color: #16a34a; background: #dcfce7; padding: 1px 6px; border-radius: 4px;">Más conveniente</span><br>
-            <span style="color: #475569; font-size: 11.5px;">Todo lo del Plan 1 (hasta 10 cursos) + <strong>Docente Virtual IA 24/7</strong> (tutor inteligente entrenado con manuales de Bomberos que equivale a un profesor auxiliar permanente por solo $60.000/mes) + 4h mensuales de soporte prioritario.</span>
+        <tr style="border-bottom: 1px solid #e2e8f0; background: #f0f9ff;">
+          <td style="padding: 10px 12px; vertical-align: top;">
+            <strong style="color: #0369a1; font-size: 12.5px;">• Mantención Mensual Todo Incluido (Servidor Dedicado + Respaldos + Soporte)</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">Ya incluye el costo del Servidor Cloud Dedicado (no deben pagar hosting aparte a terceros), respaldos diarios externos y horas todos los meses de soporte y apoyo en carga de contenidos:<br>
+            — <strong>Nivel Cloud Esencial:</strong> $45.000 + IVA/mes ($53.550 IVA incl. · incluye Servidor + 2h mensuales de soporte y contenidos).<br>
+            — <strong>Nivel Continuidad Pro:</strong> $85.000 + IVA/mes ($101.150 IVA incl. · incluye Servidor + 5h mensuales de soporte prioritario y asesoría SENCE).</span>
           </td>
-          <td style="padding: 10px 6px; text-align: right; vertical-align: middle;">
-            <span style="font-size: 16px; font-weight: 900; color: #7c3aed;">$159.000</span>
-            <span style="font-size: 10.5px; color: #64748b; display: block;">+ IVA / mes</span>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle;">
+            <span style="font-size: 13.5px; font-weight: 800; color: #0369a1;">$45.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #64748b; display: block;">($53.550 IVA incl./mes)</span>
           </td>
         </tr>
         <tr>
-          <td style="padding: 10px 0; vertical-align: top;">
-            <strong style="color: #0f172a; font-size: 13px;">• Plan 3: Enterprise & Faenas</strong><br>
-            <span style="color: #64748b; font-size: 11.5px;">Todo lo del Plan Pro (hasta 50 cursos y 200 alumnos) + Motor Forense SENCE Anti-Bypass + Portal Público QR Antifraude + App Móvil PWA + 8h de soporte prioritario.</span>
+          <td style="padding: 10px 12px; vertical-align: top;">
+            <strong style="color: #0f172a; font-size: 12.5px;">• Módulos de Alta Ingeniería (100% Opcionales para Fase 2)</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">El Plan Base de $600.000 + IVA ya entrega el Campus 100% completo. Si el Directorio desea agregar innovaciones que los hostings tradicionales no poseen, pueden activar opcionalmente: <strong>Docente Virtual con IA 24/7</strong>, <strong>App Móvil PWA</strong>, <strong>Motor Forense SENCE Anti-Bypass</strong> o <strong>Portal Público QR</strong>.</span>
           </td>
-          <td style="padding: 10px 0; text-align: right; vertical-align: middle;">
-            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$199.000</span>
-            <span style="font-size: 10.5px; color: #64748b; display: block;">+ IVA / mes</span>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle;">
+            <span style="font-size: 11.5px; font-weight: 700; color: #0284c7;">Opcionales<br>en línea</span>
           </td>
         </tr>
       </table>
 
-      <!-- Botón enlace Cotizador Arriendo -->
-      <div style="text-align: center; margin-top: 10px;">
-        <a href="https://universo693.com/cotizacion_0012_moodle_ia_igneo.html" target="_blank" style="background: #7c3aed; color: #ffffff; text-decoration: none; font-size: 12.5px; font-weight: 800; padding: 10px 22px; border-radius: 6px; display: inline-block;">
-          👉 Abrir Cotizador Interactivo de Arriendo ($0 Setup)
+      <div style="text-align: center;">
+        <a href="https://universo693.com/cotizacion_0011_moodle_igneo.html" target="_blank" style="background: #0284c7; color: #ffffff; text-decoration: none; font-size: 12.5px; font-weight: 800; padding: 10px 22px; border-radius: 6px; display: inline-block;">
+          👉 Abrir Cotizador Opción 1: Implementación Llave en Mano (COT-0011)
         </a>
       </div>
     </div>
 
-    <!-- MODALIDAD 2: COMPRA -->
-    <div style="border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; padding: 18px 20px; margin-bottom: 24px;">
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+    <!-- ========================================== -->
+    <!-- OPCIÓN 2: SUSCRIPCIÓN MENSUAL ($0 SETUP)   -->
+    <!-- ========================================== -->
+    <div style="border: 2px solid #7c3aed; border-radius: 10px; background: #faf5ff; padding: 20px 22px; margin-bottom: 24px;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
         <tr>
           <td>
-            <span style="background: #0f172a; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Modalidad 2</span>
-            <h3 style="margin: 6px 0 2px 0; color: #0f172a; font-size: 15px; font-weight: 800;">Compra Llave en Mano (Pago Setup + Mantención Básica)</h3>
-            <p style="margin: 0; font-size: 11.5px; color: #64748b;">Ideal si cuentan con presupuesto de inversión anual asignado (CAPEX)</p>
+            <span style="background: #7c3aed; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 4px; text-transform: uppercase;">Opción 2 · COT-2026-0012</span>
+            <h3 style="margin: 6px 0 2px 0; color: #0f172a; font-size: 16px; font-weight: 800;">Suscripción Mensual con Traspaso de Propiedad ($0 Setup Inicial)</h3>
+            <p style="margin: 0; font-size: 11.5px; color: #64748b;">Sin desembolso inicial de instalación · Al cumplir el mes 24 la propiedad del Campus y Bóveda Soberana pasan 100% a la Fundación a costo $0</p>
           </td>
           <td style="text-align: right; vertical-align: top; white-space: nowrap;">
-            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$600.000</span>
-            <span style="font-size: 10.5px; color: #64748b; display: block;">+ IVA (Setup Base)</span>
+            <span style="font-size: 10.5px; color: #16a34a; font-weight: 800; display: block;">INVERSIÓN SETUP:</span>
+            <span style="font-size: 16px; font-weight: 900; color: #16a34a;">$0 CLP</span>
+            <span style="font-size: 10.5px; color: #64748b; display: block;">100% Bonificado</span>
           </td>
         </tr>
       </table>
 
-      <p style="font-size: 12px; color: #475569; margin: 0 0 12px 0; line-height: 1.5;">
-        • <strong>Setup Inicial Base:</strong> $600.000 + IVA (pago 50% inicio / 50% contra entrega).<br>
-        • <strong>Mantención Mensual Servidor Dedicado:</strong> $45.000 + IVA / mes (incluye 2 horas mensuales de soporte directo).<br>
-        • <em>Módulos Opcionales:</em> Permite sumar Docente IA, PWA móvil, rediseño corporativo o portal QR a medida.
-      </p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; background: #ffffff; border: 1px solid #e9d5ff; border-radius: 8px; overflow: hidden;">
+        <tr style="border-bottom: 1px solid #e9d5ff;">
+          <td style="padding: 10px 12px; vertical-align: top; width: 68%;">
+            <strong style="color: #0f172a; font-size: 12.5px;">• Plan 1: Esencial OTEC</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">Servidor VPS Dedicado (100 alumnos simultáneos), <strong>Identidad Visual Ígneo/Bomberos + carga inicial de hasta 5 cursos por nuestro equipo</strong>, SENCE estándar, diplomas PDF, respaldos diarios, 4,5h de inducción inicial y <strong>2h mensuales de soporte y apoyo en carga de contenidos</strong>.</span>
+          </td>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle; width: 32%;">
+            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$99.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #64748b; display: block;">($117.810 IVA incl./mes)</span>
+          </td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e9d5ff; background: #faf5ff;">
+          <td style="padding: 10px 12px; vertical-align: top;">
+            <strong style="color: #7c3aed; font-size: 12.5px;">• Plan 2: Pro & Docente IA 24/7</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">Todo lo del Plan Esencial + <strong>capacidad y carga de hasta 10 cursos</strong> + <strong>Docente Virtual con IA 24/7</strong> (tutor inteligente entrenado con los manuales de Bomberos y normas NFPA, con tarifa plana sin cobros variables) + <strong>4h mensuales de soporte prioritario y gestión de contenidos</strong>.</span>
+          </td>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle;">
+            <span style="font-size: 14px; font-weight: 800; color: #7c3aed;">$159.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #64748b; display: block;">($189.210 IVA incl./mes)</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 10px 12px; vertical-align: top;">
+            <strong style="color: #0f172a; font-size: 12.5px;">• Plan 3: Enterprise & Faenas</strong><br>
+            <span style="color: #475569; font-size: 11.5px;">Todo lo del Plan Pro (ampliado hasta <strong>50 cursos y 200 alumnos simultáneos</strong>) + Motor Forense SENCE Anti-Bypass + Portal Público QR Antifraude + App Móvil PWA + <strong>8h mensuales de soporte prioritario y carga masiva de cursos/nóminas</strong>.</span>
+          </td>
+          <td style="padding: 10px 12px; text-align: right; vertical-align: middle;">
+            <span style="font-size: 14px; font-weight: 800; color: #0f172a;">$199.000 + IVA</span>
+            <span style="font-size: 10.5px; color: #64748b; display: block;">($236.810 IVA incl./mes)</span>
+          </td>
+        </tr>
+      </table>
 
-      <!-- Botón enlace Cotizador Compra -->
       <div style="text-align: center;">
-        <a href="https://universo693.com/cotizacion_0011_moodle_igneo.html" target="_blank" style="background: #0f172a; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 6px; display: inline-block;">
-          Ver Cotizador Modular de Compra ($600k) →
+        <a href="https://universo693.com/cotizacion_0012_moodle_ia_igneo.html" target="_blank" style="background: #7c3aed; color: #ffffff; text-decoration: none; font-size: 12.5px; font-weight: 800; padding: 10px 22px; border-radius: 6px; display: inline-block;">
+          👉 Abrir Cotizador Opción 2: Suscripción Mensual $0 Setup (COT-0012)
         </a>
       </div>
     </div>
 
-    <!-- Garantías Factuales -->
-    <div style="background-color: #f1f5f9; border-radius: 8px; padding: 14px 18px; font-size: 11.5px; color: #475569; line-height: 1.55; margin-bottom: 24px;">
-      <strong style="color: #0f172a; display: block; margin-bottom: 4px;">⚖️ Garantías Técnicas e Institucionales UNIVERSO693 SpA:</strong>
-      • <strong>Cumplimiento Normativo:</strong> Conector SENCE estándar / NCh 2728 y adecuación técnica a la Ley 21.719 de Protección de Datos Personales.<br>
-      • <strong>Soberanía Digital:</strong> Bóveda Digital con claves SSH root en modalidad compra; opción preferente de traspaso en arriendo.<br>
-      • <strong>Ahorro Real Institucional:</strong> Frente a proveedores tradicionales que cotizan sobre $1.168.067 + IVA en servidores compartidos, garantizamos servidores Cloud dedicados con opciones desde $99.000/mes sin costo de entrada.
+    <!-- Resumen Comparativo para el Directorio (Manzana con Manzana) -->
+    <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; font-size: 11.5px; color: #166534; line-height: 1.55; margin-bottom: 22px;">
+      <strong style="color: #14532d; display: block; margin-bottom: 4px;">⚖️ Resumen Ejecutivo para el Directorio (Diferencias Clave frente a Agencias Tradicionales):</strong>
+      • <strong>1. Ahorro Directo y Sin Hosting Aparte:</strong> Nuestro Campus Completo Llave en Mano cuesta <strong>$600.000 + IVA ($714.000 IVA incl.)</strong> y su mantención mensual ya incluye el <strong>Servidor Cloud VPS Dedicado</strong>. En propuestas tradicionales de $990.000+, la Fundación debe pagar además ~$355.000 anuales aparte a un proveedor externo de hosting compartido.<br>
+      • <strong>2. Nosotros Subimos los Cursos por Ustedes:</strong> Ambas modalidades incluyen la <strong>carga y estructuración completa de sus primeros 5 cursos</strong> (videos, PDFs, exámenes y diplomas) más la identidad visual de Bomberos, para que Claudia y el equipo reciban las aulas listas para usar.<br>
+      • <strong>3. Propiedad 100% de la Fundación (Cero Costos Ocultos):</strong> En la Opción 1 reciben las llaves maestras desde el Día 1; y en la Opción 2 ($0 Setup), al cumplirse el mes 24 la propiedad del Campus se transfiere automáticamente a la Fundación a <strong>costo $0 (sin cobro de rescate)</strong>.
     </div>
 
     <p style="font-size: 12.5px; color: #475569; margin-bottom: 24px; line-height: 1.5;">
-      Quedamos a tu entera disposición para resolver cualquier consulta o coordinar una breve reunión con la Dirección Ejecutiva para revisar la modalidad que más convenga a los planes de la Fundación.
+      Quedamos a tu entera disposición para resolver cualquier consulta o coordinar una breve reunión con la Dirección Ejecutiva para revisar en detalle la alternativa que mejor se ajuste a los objetivos de la Fundación.
     </p>
 
     <!-- Firma -->
@@ -182,7 +229,7 @@
           <span style="color: #0284c7; font-size: 11.5px;">contacto@universo693.com · +56 9 9038 7414</span>
         </td>
         <td style="text-align: right; vertical-align: middle;">
-          <a href="https://universo693.com" target="_blank" style="color: #7c3aed; text-decoration: none; font-size: 12px; font-weight: 700;">universo693.com</a>
+          <a href="https://universo693.com" target="_blank" style="color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 700;">universo693.com</a>
         </td>
       </tr>
     </table>
@@ -190,6 +237,52 @@
   </div>
 </div>
 <!-- FIN DEL BLOQUE COPIABLE -->
+
+<script>
+async function copyFormattedEmail() {
+  const content = document.getElementById('email-content');
+  const btn = document.getElementById('copyBtn');
+  const feedback = document.getElementById('copyFeedback');
+  
+  try {
+    const htmlBlob = new Blob([content.outerHTML], { type: 'text/html' });
+    const textBlob = new Blob([content.innerText], { type: 'text/plain' });
+    
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': htmlBlob,
+        'text/plain': textBlob
+      })
+    ]);
+    
+    btn.style.background = '#0f172a';
+    btn.innerHTML = '✅ ¡Copiado!';
+    feedback.style.display = 'inline';
+    setTimeout(() => {
+      btn.style.background = '#16a34a';
+      btn.innerHTML = '📋 Copiar Correo para Pegar';
+      feedback.style.display = 'none';
+    }, 3500);
+  } catch (err) {
+    const range = document.createRange();
+    range.selectNodeContents(content);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    
+    btn.style.background = '#0f172a';
+    btn.innerHTML = '✅ ¡Copiado!';
+    feedback.style.display = 'inline';
+    setTimeout(() => {
+      btn.style.background = '#16a34a';
+      btn.innerHTML = '📋 Copiar Correo para Pegar';
+      feedback.style.display = 'none';
+    }, 3500);
+  }
+}
+</script>
 
 </body>
 </html>
