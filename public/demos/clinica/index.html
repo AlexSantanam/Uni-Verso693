@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BÍO-SALUD — Portal Clínico & Reserva con Previsión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #F2F7F5; color: #102A32; }
+    .font-clinic { font-family: 'Instrument Serif', serif; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP MEDICAL TRUST BAR -->
+  <div class="bg-[#0F4C5C] text-teal-50 text-xs py-2.5 px-6 flex flex-wrap items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="bg-teal-400/20 border border-teal-300/40 text-teal-200 px-2.5 py-0.5 rounded-full font-bold text-[11px]">
+        ✓ Prestador Acreditado Superintendencia de Salud
+      </span>
+      <span class="hidden md:inline">Bono Electrónico Huella Digital · Fonasa Nivel 2 & Todas las Isapres</span>
+    </div>
+    <span class="font-bold">📍 Av. Providencia 2140, Piso 6 · ☎ (2) 2840 9100</span>
+  </div>
+
+  <!-- HEADER LIMPIO CON PESTAÑAS DE UNIDADES CLÍNICAS -->
+  <header class="bg-white border-b border-teal-900/10 px-6 py-4 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-[#0F4C5C] text-white flex items-center justify-center font-bold text-lg">✚</div>
+        <div>
+          <span class="font-clinic text-3xl tracking-tight text-[#0F4C5C] leading-none block">Centro Médico BíoSalud</span>
+          <span class="text-[11px] text-slate-500">Agenda Médica & Dental sin esperas telefónicas</span>
+        </div>
+      </div>
+
+      <!-- Selector de Previsión en Vivo (cambia los valores de copago en toda la página) -->
+      <div class="flex items-center gap-2 bg-[#F2F7F5] p-1.5 rounded-full border border-teal-900/15 text-xs">
+        <span class="pl-3 font-bold text-slate-600">Tu Previsión:</span>
+        <button onclick="setPrevision('fonasa')" id="prev-fonasa" class="px-3.5 py-1.5 rounded-full bg-[#0F4C5C] text-white font-bold cursor-pointer">Fonasa (Bono)</button>
+        <button onclick="setPrevision('isapre')" id="prev-isapre" class="px-3.5 py-1.5 rounded-full text-slate-700 font-medium cursor-pointer">Isapre</button>
+        <button onclick="setPrevision('particular')" id="prev-particular" class="px-3.5 py-1.5 rounded-full text-slate-700 font-medium cursor-pointer">Particular</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- WORKSPACE MÉDICO (SELECTOR DE ESPECIALISTAS + MATRIZ DE HORAS SEMANAL) -->
+  <main class="max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
+
+    <!-- COLUMNA IZQUIERDA (7 COLS): DIRECTORIO DE ESPECIALISTAS CON COPAGO CALCULADO -->
+    <div class="lg:col-span-7 space-y-5">
+      <div class="bg-white rounded-3xl p-6 border border-teal-900/10 shadow-xs space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-teal-700">PASO 1 · SELECCIONA ESPECIALIDAD Y PROFESIONAL</span>
+            <h1 class="font-clinic text-3xl sm:text-4xl text-[#102A32]">Reserva tu consulta en menos de 1 minuto</h1>
+          </div>
+          <span id="prevBadge" class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
+            Valores con Copago Fonasa Aplicado
+          </span>
+        </div>
+
+        <!-- Filtro por Unidad -->
+        <div class="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
+          <button onclick="filterUnit('all')" id="u-all" class="unit-btn px-4 py-2 rounded-full bg-[#102A32] text-white cursor-pointer">Todas las Unidades</button>
+          <button onclick="filterUnit('Kinesiología')" id="u-Kinesiología" class="unit-btn px-4 py-2 rounded-full bg-[#F2F7F5] text-slate-700 cursor-pointer">🦴 Kinesiología</button>
+          <button onclick="filterUnit('Dermatología')" id="u-Dermatología" class="unit-btn px-4 py-2 rounded-full bg-[#F2F7F5] text-slate-700 cursor-pointer">✨ Dermoestética</button>
+          <button onclick="filterUnit('Odontología')" id="u-Odontología" class="unit-btn px-4 py-2 rounded-full bg-[#F2F7F5] text-slate-700 cursor-pointer">🦷 Odontología</button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Profesionales -->
+      <div id="doctorsList" class="space-y-3.5"></div>
+    </div>
+
+    <!-- COLUMNA DERECHA (5 COLS): GRILLA DE HORARIOS SEMANAL Y CONFIRMACIÓN -->
+    <div class="lg:col-span-5">
+      <div class="bg-white rounded-3xl p-6 border-2 border-[#0F4C5C] shadow-lg sticky top-24 space-y-5">
+        <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+          <img id="selDocImg" src="" class="w-14 h-14 rounded-2xl object-cover border border-teal-900/20" />
+          <div>
+            <span class="text-[10px] font-bold uppercase text-teal-700">PASO 2 · AGENDA CON:</span>
+            <h2 id="selDocName" class="font-bold text-lg text-[#102A32] leading-tight"></h2>
+            <div id="selDocSpec" class="text-xs text-slate-500"></div>
+          </div>
+        </div>
+
+        <!-- Selector de Día en Grilla Semanal -->
+        <div>
+          <label class="text-xs font-bold text-slate-600 block mb-2">Selecciona Día Disponible:</label>
+          <div class="grid grid-cols-5 gap-1.5 text-center text-xs" id="daysGrid">
+            <button onclick="setDay('Lun 09')" class="day-btn p-2 rounded-xl border bg-[#0F4C5C] text-white font-bold cursor-pointer">Lun<br/><span class="text-sm">09</span></button>
+            <button onclick="setDay('Mar 10')" class="day-btn p-2 rounded-xl border border-slate-200 hover:border-teal-600 cursor-pointer">Mar<br/><span class="text-sm font-bold">10</span></button>
+            <button onclick="setDay('Mié 11')" class="day-btn p-2 rounded-xl border border-slate-200 hover:border-teal-600 cursor-pointer">Mié<br/><span class="text-sm font-bold">11</span></button>
+            <button onclick="setDay('Jue 12')" class="day-btn p-2 rounded-xl border border-slate-200 hover:border-teal-600 cursor-pointer">Jue<br/><span class="text-sm font-bold">12</span></button>
+            <button onclick="setDay('Vie 13')" class="day-btn p-2 rounded-xl border border-slate-200 hover:border-teal-600 cursor-pointer">Vie<br/><span class="text-sm font-bold">13</span></button>
+          </div>
+        </div>
+
+        <!-- Bloques Horarios -->
+        <div>
+          <label class="text-xs font-bold text-slate-600 block mb-2">Bloques de Atención (<span id="dayLabel">Lun 09</span>):</label>
+          <div class="grid grid-cols-3 gap-2 text-xs font-bold" id="timeGrid"></div>
+        </div>
+
+        <!-- Datos del Paciente -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <input id="patName" type="text" placeholder="Nombre y Apellido" class="col-span-2 bg-[#F2F7F5] border border-teal-900/15 rounded-xl px-3.5 py-2.5 text-xs font-medium" />
+          <input id="patRut" type="text" placeholder="RUT Paciente (Ej: 16.492.103-K)" class="bg-[#F2F7F5] border border-teal-900/15 rounded-xl px-3.5 py-2.5 text-xs font-medium" />
+          <input id="patPhone" type="text" placeholder="WhatsApp +56 9..." class="bg-[#F2F7F5] border border-teal-900/15 rounded-xl px-3.5 py-2.5 text-xs font-medium" />
+        </div>
+
+        <!-- Resumen de Copago -->
+        <div class="bg-[#F2F7F5] rounded-2xl p-4 flex items-center justify-between border border-teal-900/10">
+          <div>
+            <div class="text-[11px] text-slate-500">Valor a pagar según tu previsión:</div>
+            <div id="finalCopago" class="text-2xl font-bold text-[#0F4C5C]">$14.900</div>
+          </div>
+          <div class="text-right text-[11px] text-teal-800 font-bold">
+            Recordatorio automático<br/>por WhatsApp + Correo
+          </div>
+        </div>
+
+        <button onclick="confirmCita()" class="w-full py-3.5 rounded-2xl bg-[#0F4C5C] hover:bg-[#0b3946] text-white font-bold text-sm shadow-md cursor-pointer">
+          Confirmar Reserva Médica Ahora →
+        </button>
+
+        <div id="citaOk" class="hidden bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs text-emerald-950 space-y-1"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const DOCTORS = [
+      {
+        id: 1,
+        name: 'Dra. Javiera Rojas M.',
+        unit: 'Dermatología',
+        proc: 'Evaluación Dermoestética + Limpieza Clínica Ultrasonido',
+        sis: 'Reg. SIS N° 448910 · U. de Chile',
+        prices: { fonasa: 16900, isapre: 19900, particular: 35000 },
+        slots: ['09:30', '10:30', '12:00', '15:30', '17:00', '18:15'],
+        img: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 2,
+        name: 'Klgo. Matías Valdés C.',
+        unit: 'Kinesiología',
+        proc: 'Sesión Kinesiología Traumatológica y Deportiva (60 min)',
+        sis: 'Reg. SIS N° 319042 · PUC',
+        prices: { fonasa: 11900, isapre: 14500, particular: 28000 },
+        slots: ['09:00', '11:00', '12:30', '16:00', '17:30', '19:00'],
+        img: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 3,
+        name: 'Dr. Cristóbal Mena S.',
+        unit: 'Odontología',
+        proc: 'Destartraje Ultrasónico + Profilaxis + Diagnóstico RX',
+        sis: 'Reg. SIS N° 512088 · U. Mayor',
+        prices: { fonasa: 18500, isapre: 19900, particular: 38000 },
+        slots: ['10:00', '11:30', '14:30', '16:30', '18:00'],
+        img: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80'
+      }
+    ];
+
+    let prevision = 'fonasa';
+    let unitFilter = 'all';
+    let selectedDoc = DOCTORS[0];
+    let selectedDay = 'Lun 09';
+    let selectedSlot = '10:30';
+
+    function fmt(n) { return '$' + n.toLocaleString('es-CL'); }
+
+    function setPrevision(p) {
+      prevision = p;
+      ['fonasa', 'isapre', 'particular'].forEach(k => {
+        document.getElementById('prev-' + k).className = k === p
+          ? 'px-3.5 py-1.5 rounded-full bg-[#0F4C5C] text-white font-bold cursor-pointer'
+          : 'px-3.5 py-1.5 rounded-full text-slate-700 font-medium cursor-pointer';
+      });
+      const labels = {
+        fonasa: 'Valores con Copago Fonasa Aplicado',
+        isapre: 'Valores Reembolsables con Bono Isapre',
+        particular: 'Arancel Particular Preferencial'
+      };
+      document.getElementById('prevBadge').textContent = labels[p];
+      renderDoctors();
+      updateSidebar();
+    }
+
+    function filterUnit(u) {
+      unitFilter = u;
+      renderDoctors();
+    }
+
+    function pickDoc(id) {
+      selectedDoc = DOCTORS.find(d => d.id === id);
+      selectedSlot = selectedDoc.slots[0];
+      renderDoctors();
+      updateSidebar();
+    }
+
+    function setDay(d) {
+      selectedDay = d;
+      document.getElementById('dayLabel').textContent = d;
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.className = btn.textContent.includes(d.split(' ')[1])
+          ? 'day-btn p-2 rounded-xl border bg-[#0F4C5C] text-white font-bold cursor-pointer'
+          : 'day-btn p-2 rounded-xl border border-slate-200 hover:border-teal-600 cursor-pointer';
+      });
+    }
+
+    function setSlot(s) {
+      selectedSlot = s;
+      updateSidebar();
+    }
+
+    function renderDoctors() {
+      const list = unitFilter === 'all' ? DOCTORS : DOCTORS.filter(d => d.unit === unitFilter);
+      document.getElementById('doctorsList').innerHTML = list.map(d => {
+        const active = d.id === selectedDoc.id;
+        const price = d.prices[prevision];
+        return `
+          <div onclick="pickDoc(${d.id})" class="bg-white rounded-3xl p-5 border-2 transition cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${active ? 'border-[#0F4C5C] shadow-md' : 'border-teal-900/10 hover:border-teal-600/40'}">
+            <div class="flex items-center gap-4">
+              <img src="${d.img}" class="w-16 h-16 rounded-2xl object-cover" />
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold uppercase bg-teal-50 text-teal-800 px-2.5 py-0.5 rounded-full">${d.unit}</span>
+                  <span class="text-[11px] text-slate-400">${d.sis}</span>
+                </div>
+                <h3 class="font-bold text-lg text-[#102A32] mt-0.5">${d.name}</h3>
+                <p class="text-xs text-slate-600">${d.proc}</p>
+              </div>
+            </div>
+            <div class="sm:text-right shrink-0 w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-3 sm:pt-0">
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase block">Copago ${prevision}</span>
+                <span class="text-xl font-bold text-[#0F4C5C]">${fmt(price)}</span>
+              </div>
+              <span class="mt-1 inline-block text-xs font-bold ${active ? 'text-emerald-700' : 'text-teal-700'}">
+                ${active ? '● Seleccionado' : 'Elegir profesional →'}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateSidebar() {
+      document.getElementById('selDocImg').src = selectedDoc.img;
+      document.getElementById('selDocName').textContent = selectedDoc.name;
+      document.getElementById('selDocSpec').textContent = selectedDoc.proc;
+      document.getElementById('finalCopago').textContent = fmt(selectedDoc.prices[prevision]);
+
+      document.getElementById('timeGrid').innerHTML = selectedDoc.slots.map(s => `
+        <button onclick="setSlot('${s}')" class="py-2.5 rounded-xl border text-xs font-bold cursor-pointer ${s === selectedSlot ? 'bg-[#0F4C5C] text-white border-[#0F4C5C]' : 'bg-[#F2F7F5] text-slate-700 border-transparent hover:border-teal-600'}">
+          🕒 ${s}
+        </button>
+      `).join('');
+    }
+
+    function confirmCita() {
+      const name = document.getElementById('patName').value || 'Paciente';
+      const rut = document.getElementById('patRut').value || 'Sin RUT';
+      const box = document.getElementById('citaOk');
+      box.classList.remove('hidden');
+      box.innerHTML = `
+        <div class="font-bold text-emerald-900">✓ HORA MÉDICA RESERVADA (#BONO-9421)</div>
+        <div>Paciente: <strong>${name} (${rut})</strong></div>
+        <div>Profesional: <strong>${selectedDoc.name}</strong></div>
+        <div>Fecha y Hora: <strong>${selectedDay} a las ${selectedSlot} hrs</strong> · Copago ${prevision.toUpperCase()}: <strong>${fmt(selectedDoc.prices[prevision])}</strong></div>
+      `;
+    }
+
+    renderDoctors();
+    updateSidebar();
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>

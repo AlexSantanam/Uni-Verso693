@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AULA SOBERANA LMS — Campus Virtual OTEC & Tutor IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Outfit', sans-serif; background: #0D1117; color: #E6EDF3; }
+    .font-code { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP LMS APP BAR -->
+  <header class="h-14 bg-[#161B22] border-b border-slate-800 px-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-extrabold text-sm">🎓</div>
+      <div>
+        <span class="font-bold text-sm text-white">CAMPUS OTEC PRO</span>
+        <span class="hidden sm:inline text-xs text-slate-400 ml-2">· Norma NCh2728 / Franquicia SENCE</span>
+      </div>
+    </div>
+
+    <!-- Barra de progreso global del alumno -->
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-2 text-xs">
+        <span class="text-slate-400">Avance del Alumno:</span>
+        <div class="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-emerald-400 transition-all" style="width: 75%"></div>
+        </div>
+        <span id="progressText" class="font-code text-emerald-400 font-bold">75%</span>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-full px-3 py-1 text-xs flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Alumno Demo</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- APP WORKSPACE (3 PANELES TIPO SAAS: TEMARIO | VISOR CENTRAL | TUTOR IA) -->
+  <div class="flex-1 grid grid-cols-1 lg:grid-cols-12">
+
+    <!-- PANEL 1: SIDEBAR DE MÓDULOS DEL CURSO -->
+    <aside class="lg:col-span-3 bg-[#161B22] border-r border-slate-800 p-4 flex flex-col justify-between">
+      <div class="space-y-4">
+        <div>
+          <span class="text-[10px] font-code uppercase text-indigo-400">CÓD. SENCE 12-38-9941</span>
+          <h1 class="font-bold text-base text-white leading-snug mt-0.5">
+            Prevención de Riesgos Industriales y Control de Emergencias
+          </h1>
+        </div>
+
+        <!-- Navegación de Módulos -->
+        <div class="space-y-1.5 text-xs">
+          <button onclick="openView('lesson1')" id="nav-lesson1" class="nav-item w-full text-left p-3 rounded-xl bg-indigo-600/20 border border-indigo-500 text-white flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-indigo-300 font-code">MÓDULO 01 · VIDEO + PDF</div>
+              <div class="font-bold">Clasificación del Fuego (NCh 934)</div>
+            </div>
+            <span class="text-emerald-400 font-bold">✓</span>
+          </button>
+
+          <button onclick="openView('lesson2')" id="nav-lesson2" class="nav-item w-full text-left p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-slate-300 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-slate-400 font-code">MÓDULO 02 · PRÁCTICO</div>
+              <div class="font-bold">Operación de Extintores PQS y CO₂</div>
+            </div>
+            <span class="text-emerald-400 font-bold">✓</span>
+          </button>
+
+          <button onclick="openView('quiz')" id="nav-quiz" class="nav-item w-full text-left p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-slate-300 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-amber-400 font-code">EVALUACIÓN OBLIGATORIA</div>
+              <div class="font-bold">Examen Final Automatizado</div>
+            </div>
+            <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">Pendiente</span>
+          </button>
+
+          <button onclick="openView('cert')" id="nav-cert" class="nav-item w-full text-left p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 text-slate-300 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-emerald-400 font-code">EMISIÓN INMEDIATA</div>
+              <div class="font-bold">Diploma Oficial con Firma y QR</div>
+            </div>
+            <span>🎓</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hidden lg:block bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-slate-400">
+        <strong class="text-white block mb-1">💡 Cero trabajo manual:</strong>
+        El alumno se matricula online, rinde su evaluación autocorregida y descarga su certificado con validación QR sin intervención administrativa.
+      </div>
+    </aside>
+
+    <!-- PANEL 2: ÁREA CENTRAL CAMBIANTE (VIDEO / QUIZ / DIPLOMA EN VIVO) -->
+    <main class="lg:col-span-6 p-5 sm:p-7 overflow-y-auto">
+
+      <!-- VISTA 1 & 2: REPRODUCTOR DE CLASE -->
+      <div id="view-lesson" class="space-y-5">
+        <div class="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center">
+          <img id="lessonImg" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover opacity-55" />
+          <button onclick="openView('quiz')" class="relative z-10 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-full shadow-xl flex items-center gap-2 text-sm cursor-pointer">
+            ▶ Ir al Examen Final Interactivo →
+          </button>
+          <div class="absolute bottom-3 left-3 bg-black/80 px-3 py-1 rounded-lg text-xs font-code text-emerald-400" id="lessonBadge">
+            MÓDULO 01 · 18:40 MIN · HD
+          </div>
+        </div>
+
+        <div class="bg-[#161B22] border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h2 id="lessonTitle" class="text-xl font-bold text-white">Módulo 01: Clasificación del Fuego según Norma Chilena NCh 934</h2>
+          <p id="lessonSummary" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            En esta unidad revisamos el tetraedro del fuego y la distinción crítica entre fuegos Clase A (sólidos combustibles), Clase B (líquidos inflamables) y Clase C (equipos energizados eléctricamente).
+          </p>
+          <div class="flex flex-wrap gap-2 pt-2">
+            <button onclick="openView('quiz')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl cursor-pointer">
+              📝 Rendir Examen del Módulo
+            </button>
+            <button onclick="openView('cert')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer">
+              🎓 Ver Vista Previa del Certificado QR
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA 3: EXAMEN INTERACTIVO AUTOCORREGIDO -->
+      <div id="view-quiz" class="hidden space-y-5">
+        <div class="bg-[#161B22] border border-slate-800 rounded-2xl p-6 space-y-5">
+          <div>
+            <span class="text-xs font-code text-amber-400 uppercase">EVALUACIÓN AUTOMÁTICA EN LÍNEA</span>
+            <h2 class="text-2xl font-bold text-white mt-1">Examen de Certificación Técnica</h2>
+            <p class="text-xs text-slate-400">Responde esta pregunta de prueba para desbloquear el Certificado al 100%:</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+            <div class="font-bold text-sm text-white">
+              ¿Qué agente extintor es el más seguro frente a un tablero eléctrico energizado (Fuego Clase C) para no dañar los componentes electrónicos?
+            </div>
+            <div class="space-y-2 text-xs">
+              <button onclick="gradeQuiz(false)" class="w-full text-left p-3 rounded-xl border border-slate-700 hover:border-indigo-400 cursor-pointer">
+                A) Agua presurizada a chorro directo.
+              </button>
+              <button onclick="gradeQuiz(true)" class="w-full text-left p-3 rounded-xl border border-slate-700 hover:border-indigo-400 cursor-pointer">
+                B) Dióxido de Carbono (CO₂) a una distancia de 1,5 a 2,5 metros.
+              </button>
+              <button onclick="gradeQuiz(false)" class="w-full text-left p-3 rounded-xl border border-slate-700 hover:border-indigo-400 cursor-pointer">
+                C) Espuma mecánica conductora (AFFF).
+              </button>
+            </div>
+          </div>
+
+          <div id="quizResult" class="hidden p-4 rounded-xl text-xs"></div>
+        </div>
+      </div>
+
+      <!-- VISTA 4: GENERADOR DE CERTIFICADO OFICIAL EN VIVO -->
+      <div id="view-cert" class="hidden space-y-4">
+        <div class="flex items-center justify-between gap-2 bg-[#161B22] p-4 rounded-xl border border-slate-800">
+          <div class="text-xs">
+            <span class="text-slate-400 block">Escribe un nombre para probar el diploma en vivo:</span>
+            <input id="studentNameInput" oninput="updateCertName()" type="text" value="Camila Ignacia Soto Valdés" class="mt-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-bold text-xs w-64" />
+          </div>
+          <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-bold">
+            ✓ Firma Electrónica + QR Activo
+          </span>
+        </div>
+
+        <!-- Diploma visual estilo documento oficial -->
+        <div class="bg-[#FFFDF9] text-slate-900 rounded-2xl p-8 border-8 border-double border-amber-700 shadow-2xl space-y-4 text-center">
+          <div class="text-[11px] font-code uppercase tracking-widest text-amber-800">CERTIFICADO DE APROBACIÓN TÉCNICA · NORMA NCh2728</div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">DIPLOMA DE CERTIFICACIÓN</h3>
+          <p class="text-xs text-slate-600">Se otorga el presente certificado digital a:</p>
+          <div id="certStudentName" class="text-2xl font-extrabold text-indigo-950 border-b-2 border-amber-600/40 inline-block px-6 pb-1">
+            Camila Ignacia Soto Valdés
+          </div>
+          <p class="text-xs text-slate-600 max-w-md mx-auto">
+            Por haber aprobado con <strong>100% de rendimiento (24 horas cronológicas)</strong> el curso de <strong>Prevención de Riesgos Industriales y Control de Emergencias</strong>.
+          </p>
+          <div class="pt-4 flex items-center justify-between text-left border-t border-slate-200 text-[11px]">
+            <div>
+              <div class="font-bold text-slate-900">DIRECCIÓN ACADÉMICA OTEC</div>
+              <div class="text-slate-500">Folio N° OTEC-2026-8841</div>
+            </div>
+            <div class="font-code bg-slate-900 text-emerald-400 px-3 py-1.5 rounded-lg text-[10px]">
+              [QR VERIFICADO: VALIDO-SENCE]
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- PANEL 3: DOCENTE TUTOR IA 24/7 EN VIVO -->
+    <aside class="lg:col-span-3 bg-[#161B22] border-l border-slate-800 p-4 flex flex-col justify-between">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs">🤖</span>
+            <div>
+              <div class="font-bold text-xs text-white">Docente Tutor IA 24/7</div>
+              <div class="text-[10px] text-emerald-400">Entrenado con tus manuales PDF</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="aiChat" class="space-y-2.5 max-h-80 overflow-y-auto text-xs pr-1">
+          <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-slate-300">
+            👋 ¡Hola! Soy el asistente académico del curso. Haz clic en una consulta rápida o escribe tu duda sobre la norma NCh 934:
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <div class="text-[10px] text-slate-400 uppercase font-code">Preguntas frecuentes de alumnos:</div>
+          <button onclick="askAI('¿A qué distancia debo usar el extintor de CO2?')" class="w-full text-left text-[11px] bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 p-2 rounded-lg text-indigo-300 cursor-pointer">
+            • ¿A qué distancia debo usar el extintor de CO₂?
+          </button>
+          <button onclick="askAI('¿Cuál es la nota mínima para aprobar SENCE?')" class="w-full text-left text-[11px] bg-slate-900 hover:bg-indigo-950/60 border border-slate-800 p-2 rounded-lg text-indigo-300 cursor-pointer">
+            • ¿Cuál es la nota mínima y asistencia SENCE?
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex gap-1.5 mt-4">
+        <input id="aiInput" type="text" placeholder="Pregunta al Tutor IA..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+        <button onclick="askCustomAI()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">Enviar</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    function openView(v) {
+      document.getElementById('view-lesson').classList.toggle('hidden', v === 'quiz' || v === 'cert');
+      document.getElementById('view-quiz').classList.toggle('hidden', v !== 'quiz');
+      document.getElementById('view-cert').classList.toggle('hidden', v !== 'cert');
+
+      if (v === 'lesson1') {
+        document.getElementById('lessonTitle').textContent = 'Módulo 01: Clasificación del Fuego según Norma Chilena NCh 934';
+        document.getElementById('lessonBadge').textContent = 'MÓDULO 01 · 18:40 MIN · HD';
+      } else if (v === 'lesson2') {
+        document.getElementById('lessonTitle').textContent = 'Módulo 02: Técnica T.A.P.E. para Operación de Extintores CO₂ y PQS';
+        document.getElementById('lessonBadge').textContent = 'MÓDULO 02 · 22:15 MIN · PRÁCTICO';
+      }
+    }
+
+    function gradeQuiz(correct) {
+      const box = document.getElementById('quizResult');
+      box.classList.remove('hidden');
+      if (correct) {
+        box.className = 'p-4 rounded-xl text-xs bg-emerald-950/80 border border-emerald-500 text-emerald-200 space-y-2';
+        box.innerHTML = `
+          <div class="font-bold text-sm text-emerald-300">✓ ¡RESPUESTA CORRECTA! CALIFICACIÓN: 100% (7.0)</div>
+          <div>El CO₂ desplaza el oxígeno sin dejar residuos conductores. Tu certificado oficial ya está habilitado.</div>
+          <button onclick="openView('cert')" class="mt-2 bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg cursor-pointer">
+            🎓 Ver y Descargar mi Diploma Ahora →
+          </button>
+        `;
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').textContent = '100%';
+      } else {
+        box.className = 'p-4 rounded-xl text-xs bg-rose-950/80 border border-rose-500 text-rose-200';
+        box.textContent = '✕ Incorrecto. Nunca uses agua o espuma conductora sobre equipos eléctricos energizados (Clase C). Intenta con la alternativa B.';
+      }
+    }
+
+    function updateCertName() {
+      document.getElementById('certStudentName').textContent = document.getElementById('studentNameInput').value || 'Alumno Certificado';
+    }
+
+    function askAI(q) {
+      const chat = document.getElementById('aiChat');
+      let ans = 'Según el Manual Técnico del Módulo 2 (pág. 14), para extintores de CO₂ debes ubicarte entre 1,5 y 2,5 metros del foco y dirigir la corneta a la base de la llama.';
+      if (q.includes('SENCE')) {
+        ans = 'Para la aprobación con franquicia SENCE se exige un 75% de avance mínimo en plataforma y nota igual o superior a 4,0 (60% en el examen final).';
+      }
+      chat.innerHTML += `
+        <div class="bg-indigo-600/20 border border-indigo-500/40 p-2.5 rounded-xl text-indigo-200 text-right">${q}</div>
+        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-slate-200"><strong class="text-purple-400">Tutor IA:</strong> ${ans}</div>
+      `;
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function askCustomAI() {
+      const inp = document.getElementById('aiInput');
+      if (!inp.value.trim()) return;
+      askAI(inp.value);
+      inp.value = '';
+    }
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TORQUE LAB — Telemetría de Taller & Consulta por Patente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Chakra Petch', sans-serif; background: #0C0E12; color: #F3F4F6; }
+    .font-obd { font-family: 'Share Tech Mono', monospace; }
+    .hazard-stripe {
+      background: repeating-linear-gradient(-45deg, #FACC15, #FACC15 10px, #111317 10px, #111317 20px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- FRANJA INDUSTRIAL SUPERIOR -->
+  <div class="h-2 hazard-stripe"></div>
+
+  <header class="bg-[#141820] border-b border-yellow-400/30 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <span class="bg-yellow-400 text-black font-obd font-bold px-2.5 py-1 text-sm">OBD-II // LIVE</span>
+      <div>
+        <span class="text-lg font-bold tracking-wider uppercase text-white">TORQUE LAB · SISTEMA DE TALLER TRANSPARENTE</span>
+        <span class="hidden md:inline font-obd text-xs text-yellow-400 ml-3">[BAHÍAS ACTIVAS: 06/08]</span>
+      </div>
+    </div>
+
+    <!-- Selector rápido de Patentes en Taller -->
+    <div class="flex items-center gap-2">
+      <span class="font-obd text-xs text-slate-400">PATENTES EN BAHÍA:</span>
+      <button onclick="loadPlate('KJWP-88')" id="pl-KJWP-88" class="px-3 py-1 bg-yellow-400 text-black font-obd text-xs font-bold border border-yellow-400 cursor-pointer">🇨🇱 KJWP-88</button>
+      <button onclick="loadPlate('ABCD-12')" id="pl-ABCD-12" class="px-3 py-1 bg-[#0C0E12] text-slate-300 font-obd text-xs border border-slate-700 hover:border-yellow-400 cursor-pointer">🇨🇱 ABCD-12</button>
+      <button onclick="loadPlate('RTYU-45')" id="pl-RTYU-45" class="px-3 py-1 bg-[#0C0E12] text-slate-300 font-obd text-xs border border-slate-700 hover:border-yellow-400 cursor-pointer">🇨🇱 RTYU-45</button>
+    </div>
+  </header>
+
+  <!-- CONSOLA CENTRAL DE TELEMETRÍA Y PRESUPUESTO -->
+  <main class="max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+
+    <!-- COLUMNA 1 (7 COLS): ESCÁNER INTERACTIVO DE CHASIS + TIMELINE DE BAHÍA -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Ficha superior del vehículo -->
+      <div class="bg-[#141820] border border-slate-800 p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="vPlate" class="bg-white text-black font-obd font-bold px-3 py-0.5 text-sm border-2 border-black">KJWP-88</span>
+            <span id="vOrder" class="font-obd text-xs text-yellow-400">ORDEN #OT-4092</span>
+          </div>
+          <h1 id="vModel" class="text-2xl sm:text-3xl font-bold text-white mt-1">Toyota Hilux 2.8 4x4 Diesel (2022)</h1>
+          <div id="vOwner" class="font-obd text-xs text-slate-400">PROPIETARIO: CONSTRUCTORA DEL SUR SPA · KM: 84.320 KM</div>
+        </div>
+        <div class="text-right">
+          <span class="font-obd text-[10px] text-slate-400 block">ESTADO ACTUAL EN TALLER</span>
+          <span id="vStatusBadge" class="inline-block mt-1 bg-emerald-400/15 border border-emerald-400 text-emerald-300 font-obd text-xs px-3 py-1">
+            ● ETAPA 3/4: EN REPARACIÓN MECÁNICA
+          </span>
+        </div>
+      </div>
+
+      <!-- DIAGRAMA INTERACTIVO DE CHASIS CON SENSORES CLICKEABLES -->
+      <div class="bg-[#141820] border border-slate-800 p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <span class="font-obd text-xs text-yellow-400">// ESCÁNER INTERACTIVO POR ZONA (TOCA UN PUNTO DEL VEHÍCULO)</span>
+          <span class="font-obd text-[11px] text-slate-400">LECTURA OBD-II SIN ERRORES CRÍTICOS</span>
+        </div>
+
+        <div class="grid sm:grid-cols-12 gap-4 items-center">
+          <div class="sm:col-span-7 bg-[#0C0E12] border border-slate-800 p-4">
+            <svg viewBox="0 0 420 200" class="w-full h-44">
+              <!-- Silueta técnica superior del chasis -->
+              <rect x="55" y="40" width="310" height="120" rx="35" fill="none" stroke="#334155" stroke-width="3" />
+              <rect x="135" y="52" width="145" height="96" rx="15" fill="rgba(56,189,248,0.05)" stroke="#475569" stroke-width="2" />
+              <!-- Ruedas -->
+              <rect x="85" y="25" width="50" height="14" rx="4" fill="#475569" />
+              <rect x="285" y="25" width="50" height="14" rx="4" fill="#475569" />
+              <rect x="85" y="161" width="50" height="14" rx="4" fill="#475569" />
+              <rect x="285" y="161" width="50" height="14" rx="4" fill="#475569" />
+
+              <!-- Puntos interactivos (Hotspots) -->
+              <g onclick="inspectNode('motor')" class="cursor-pointer">
+                <circle cx="95" cy="100" r="14" fill="rgba(250,204,21,0.25)" stroke="#FACC15" stroke-width="2" />
+                <text x="91" y="104" fill="#FACC15" font-size="11" font-weight="bold">1</text>
+              </g>
+              <g onclick="inspectNode('frenos')" class="cursor-pointer">
+                <circle cx="110" cy="40" r="14" fill="rgba(244,63,94,0.25)" stroke="#F43F5E" stroke-width="2" />
+                <text x="106" y="44" fill="#F43F5E" font-size="11" font-weight="bold">2</text>
+              </g>
+              <g onclick="inspectNode('transmision')" class="cursor-pointer">
+                <circle cx="210" cy="100" r="14" fill="rgba(16,185,129,0.25)" stroke="#10B981" stroke-width="2" />
+                <text x="206" y="104" fill="#10B981" font-size="11" font-weight="bold">3</text>
+              </g>
+              <g onclick="inspectNode('suspension')" class="cursor-pointer">
+                <circle cx="310" cy="160" r="14" fill="rgba(16,185,129,0.25)" stroke="#10B981" stroke-width="2" />
+                <text x="306" y="164" fill="#10B981" font-size="11" font-weight="bold">4</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Detalle del sensor seleccionado -->
+          <div class="sm:col-span-5 bg-[#0C0E12] border-l-4 border-yellow-400 p-4 space-y-2">
+            <div id="nodeZone" class="font-obd text-xs text-yellow-400 uppercase">ZONA [1] · MOTOR & DISTRIBUCIÓN</div>
+            <div id="nodeTitle" class="font-bold text-base text-white">Inyección Common Rail & Filtros</div>
+            <p id="nodeDesc" class="text-xs text-slate-300 leading-relaxed">
+              Presión de riel dentro de norma (1.450 bar). Se reemplaza aceite sintético 5W-30 DPF y filtro de combustible primario.
+            </p>
+            <div id="nodeStatus" class="font-obd text-[11px] text-emerald-400">ESTADO: OPERATIVO / REEMPLAZADO</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bitácora visual de avance -->
+      <div class="grid grid-cols-4 gap-2 font-obd text-xs text-center">
+        <div class="p-3 bg-emerald-950/50 border border-emerald-500/50 text-emerald-300">01. RECEPCIÓN ✓</div>
+        <div class="p-3 bg-emerald-950/50 border border-emerald-500/50 text-emerald-300">02. SCANNER OBD ✓</div>
+        <div class="p-3 bg-yellow-400 text-black font-bold">03. EN ELEVADOR ⚙</div>
+        <div class="p-3 bg-[#141820] border border-slate-800 text-slate-500">04. ENTREGA</div>
+      </div>
+    </div>
+
+    <!-- COLUMNA 2 (5 COLS): APROBADOR INTERACTIVO DE PRESUPUESTO Y REPUESTOS -->
+    <div class="lg:col-span-5">
+      <div class="bg-[#141820] border-2 border-yellow-400 p-6 space-y-5">
+        <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+          <div>
+            <span class="font-obd text-[11px] text-yellow-400">AUTORIZACIÓN DIGITAL DEL CLIENTE</span>
+            <h2 class="text-xl font-bold text-white">Desglose de Repuestos y Mano de Obra</h2>
+          </div>
+          <span class="font-obd text-xs bg-slate-800 px-2.5 py-1 text-slate-300">IVA INCL.</span>
+        </div>
+
+        <p class="text-xs text-slate-400">
+          Marca o desmarca ítems opcionales para autorizar en línea al jefe de taller sin tener que llamar:
+        </p>
+
+        <div id="partsList" class="space-y-2.5 font-obd text-xs"></div>
+
+        <div class="border-t border-slate-800 pt-4 flex items-baseline justify-between">
+          <span class="font-obd text-xs text-slate-400">TOTAL PRESUPUESTO AUTORIZADO:</span>
+          <strong id="otTotal" class="font-obd text-2xl text-yellow-400">$245.000</strong>
+        </div>
+
+        <button onclick="approveBudget()" class="w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-black font-bold text-sm uppercase tracking-wider cursor-pointer">
+          ✓ APROBAR ORDEN DE TRABAJO EN LÍNEA
+        </button>
+
+        <div id="otApprovedMsg" class="hidden bg-emerald-950/80 border border-emerald-400 p-3 font-obd text-xs text-emerald-200">
+          ✓ ORDEN APROBADA DIGITALMENTE POR EL CLIENTE. EL MECÁNICO ASIGNADO HA RECIBIDO LA CONFIRMACIÓN EN SU TABLET DE BAHÍA.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const VEHICLES = {
+      'KJWP-88': {
+        order: 'ORDEN #OT-4092',
+        model: 'Toyota Hilux 2.8 4x4 Diesel (2022)',
+        owner: 'PROPIETARIO: CONSTRUCTORA DEL SUR SPA · KM: 84.320 KM',
+        status: '● ETAPA 3/4: EN REPARACIÓN MECÁNICA',
+        parts: [
+          { id: 1, name: 'Kit Pastillas Freno Delanteras Cerámicas', price: 85000, checked: true, req: true },
+          { id: 2, name: 'Rectificado de Discos Ventilados (Par)', price: 45000, checked: true, req: true },
+          { id: 3, name: 'Aceite Sintético 5W-30 DPF + Filtro Original', price: 78000, checked: true, req: true },
+          { id: 4, name: '[OPCIONAL] Alineación 3D + Balanceo 4 Ruedas', price: 37000, checked: true, req: false }
+        ]
+      },
+      'ABCD-12': {
+        order: 'ORDEN #OT-4095',
+        model: 'Peugeot 3008 Allure BlueHDi (2021)',
+        owner: 'PROPIETARIO: CAROLINA FUENTES M. · KM: 61.100 KM',
+        status: '● ETAPA 4/4: LISTO PARA RETIRO (LAVADO OK)',
+        parts: [
+          { id: 1, name: 'Kit Distribución Original + Bomba de Agua', price: 210000, checked: true, req: true },
+          { id: 2, name: 'Refrigerante Orgánico Peugeot LongLife', price: 32000, checked: true, req: true },
+          { id: 3, name: '[OPCIONAL] Sanitización Ozono Cabina A/C', price: 25000, checked: false, req: false }
+        ]
+      },
+      'RTYU-45': {
+        order: 'ORDEN #OT-4099',
+        model: 'Mazda CX-5 GTX AWD 2.5 (2023)',
+        owner: 'PROPIETARIO: RODRIGO HERRERA V. · KM: 40.050 KM',
+        status: '● ETAPA 2/4: DIAGNÓSTICO ELECTRÓNICO',
+        parts: [
+          { id: 1, name: 'Pauta Mantención 40.000 Km Estándar Fábrica', price: 145000, checked: true, req: true },
+          { id: 2, name: '[OPCIONAL] Cambio Escobillas Parabrisas Bosch', price: 29000, checked: true, req: false }
+        ]
+      }
+    };
+
+    const NODES = {
+      motor: {
+        zone: 'ZONA [1] · MOTOR & DISTRIBUCIÓN',
+        title: 'Inyección Common Rail & Lubricación',
+        desc: 'Presión de riel dentro de norma (1.450 bar). Se reemplaza aceite sintético 5W-30 DPF y filtro primario.',
+        status: 'ESTADO: OPERATIVO / MANTENCIÓN OK'
+      },
+      frenos: {
+        zone: 'ZONA [2] · TREN DELANTERO & FRENOS',
+        title: 'Desgaste en Pastillas Delanteras (2mm)',
+        desc: 'Se detectó desgaste crítico en pastillas delanteras. Se instaló juego cerámico nuevo y rectificado de discos.',
+        status: 'ESTADO: REPUESTO REEMPLAZADO EN BAHÍA'
+      },
+      transmision: {
+        zone: 'ZONA [3] · TRANSMISIÓN & TRANSFERENCIA',
+        title: 'Caja 6MT & Diferencial 4WD',
+        desc: 'Sin fugas de retenes. Nivel de valvulina sintética 75W-90 verificado al 100%.',
+        status: 'ESTADO: ÓPTIMO SIN OBSERVACIONES'
+      },
+      suspension: {
+        zone: 'ZONA [4] · SUSPENSIÓN TRASERA',
+        title: 'Amortiguadores y Paquete de Resortes',
+        desc: 'Bujes de poliuretano sin juego axial. Torque de pernos U revisado con llave dinamométrica.',
+        status: 'ESTADO: APROBADO PARA RUTA'
+      }
+    };
+
+    let currentPlate = 'KJWP-88';
+
+    function fmt(n) { return '$' + n.toLocaleString('es-CL'); }
+
+    function loadPlate(p) {
+      currentPlate = p;
+      const v = VEHICLES[p];
+      document.getElementById('vPlate').textContent = p;
+      document.getElementById('vOrder').textContent = v.order;
+      document.getElementById('vModel').textContent = v.model;
+      document.getElementById('vOwner').textContent = v.owner;
+      document.getElementById('vStatusBadge').textContent = v.status;
+      document.getElementById('otApprovedMsg').classList.add('hidden');
+
+      ['KJWP-88', 'ABCD-12', 'RTYU-45'].forEach(k => {
+        document.getElementById('pl-' + k).className = k === p
+          ? 'px-3 py-1 bg-yellow-400 text-black font-obd text-xs font-bold border border-yellow-400 cursor-pointer'
+          : 'px-3 py-1 bg-[#0C0E12] text-slate-300 font-obd text-xs border border-slate-700 hover:border-yellow-400 cursor-pointer';
+      });
+      renderParts();
+    }
+
+    function inspectNode(key) {
+      const n = NODES[key];
+      document.getElementById('nodeZone').textContent = n.zone;
+      document.getElementById('nodeTitle').textContent = n.title;
+      document.getElementById('nodeDesc').textContent = n.desc;
+      document.getElementById('nodeStatus').textContent = n.status;
+    }
+
+    function togglePart(idx) {
+      const item = VEHICLES[currentPlate].parts[idx];
+      item.checked = !item.checked;
+      renderParts();
+    }
+
+    function renderParts() {
+      const parts = VEHICLES[currentPlate].parts;
+      let sum = 0;
+      document.getElementById('partsList').innerHTML = parts.map((pt, i) => {
+        if (pt.checked) sum += pt.price;
+        return `
+          <label onclick="togglePart(${i})" class="p-3 bg-[#0C0E12] border ${pt.checked ? 'border-yellow-400/60' : 'border-slate-800 opacity-60'} flex items-center justify-between gap-3 cursor-pointer">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" ${pt.checked ? 'checked' : ''} class="accent-yellow-400 pointer-events-none" />
+              <span>${pt.name}</span>
+            </div>
+            <strong class="text-yellow-400 shrink-0">${fmt(pt.price)}</strong>
+          </label>
+        `;
+      }).join('');
+      document.getElementById('otTotal').textContent = fmt(sum);
+    }
+
+    function approveBudget() {
+      document.getElementById('otApprovedMsg').classList.remove('hidden');
+    }
+
+    loadPlate('KJWP-88');
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>

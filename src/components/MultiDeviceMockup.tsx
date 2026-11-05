@@ -439,3 +439,4 @@ export const MultiDeviceMockup: React.FC<MultiDeviceMockupProps> = ({
     </div>
   );
 };
+

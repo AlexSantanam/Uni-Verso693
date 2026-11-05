@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KÜZE ARQUITECTURA — Estudio & Configurador Paramétrico CAD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: #0B0F12;
+      color: #E5E7EB;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .font-arch { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP CAD STATUS BAR -->
+  <div class="border-b border-white/15 px-6 py-2.5 text-[11px] flex flex-wrap items-center justify-between bg-[#0B0F12]/90 backdrop-blur sticky top-0 z-30">
+    <div class="flex items-center gap-4">
+      <span class="font-arch font-extrabold text-sm tracking-wider text-amber-400">KÜZE // ARQ+ING</span>
+      <span class="hidden sm:inline text-white/40">|</span>
+      <span class="hidden sm:inline text-white/60">LAT -33.4372° S · LON -70.6506° W</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <span class="text-emerald-400">● VALOR UF REFERENCIAL: $38.450 CLP</span>
+      <a href="#cadSimulator" class="bg-amber-400 text-slate-950 font-bold px-3 py-1 text-[11px] uppercase hover:bg-amber-300">
+        [ABRIR PLANO INTERACTIVO CAD]
+      </a>
+    </div>
+  </div>
+
+  <!-- SPLIT SCREEN: ÍNDICE NUMERADO DE OBRAS + VISOR DE PROYECTO -->
+  <section class="grid grid-cols-1 lg:grid-cols-12 border-b border-white/15">
+    <!-- Columna Izquierda: Selector de Expedientes de Obra -->
+    <div class="lg:col-span-5 p-6 sm:p-10 border-b lg:border-b-0 lg:border-r border-white/15 flex flex-col justify-between">
+      <div>
+        <div class="text-[11px] text-amber-400 uppercase tracking-widest mb-2">// EXPEDIENTES DE OBRA EJECUTADOS</div>
+        <h1 class="font-arch text-2xl sm:text-3xl font-light leading-snug text-white mb-4">
+          Arquitectura de precisión &amp; <span class="font-semibold text-amber-300">cálculo estructural.</span>
+        </h1>
+        <p class="text-xs text-slate-400 leading-relaxed mb-6">
+          Selecciona un expediente construido para inspeccionar su ficha técnica, materialidad y metraje, o utiliza nuestro <strong>Configurador CAD en vivo</strong> más abajo.
+        </p>
+
+        <!-- Lista de proyectos interactiva -->
+        <div class="space-y-2" id="projectSelector">
+          <button onclick="selectWork(0)" class="work-btn w-full text-left p-4 border border-amber-400 bg-amber-400/10 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-amber-400">EXP-01 // VIVIENDA UNIFAMILIAR</div>
+              <div class="font-arch text-base font-medium text-white">Casa Mirador Lago Rupanco</div>
+            </div>
+            <span class="text-xs text-amber-300">240 m² →</span>
+          </button>
+          <button onclick="selectWork(1)" class="work-btn w-full text-left p-4 border border-white/15 hover:border-white/40 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-slate-400">EXP-02 // INFRAESTRUCTURA COMERCIAL</div>
+              <div class="font-arch text-base font-medium text-white">Pabellón Enológico Casablanca</div>
+            </div>
+            <span class="text-xs text-slate-400">410 m² →</span>
+          </button>
+          <button onclick="selectWork(2)" class="work-btn w-full text-left p-4 border border-white/15 hover:border-white/40 flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[10px] text-slate-400">EXP-03 // REHABILITACIÓN URBANA</div>
+              <div class="font-arch text-base font-medium text-white">Clínica &amp; Laboratorio Lo Curro</div>
+            </div>
+            <span class="text-xs text-slate-400">185 m² →</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-8 mt-8 border-t border-white/15 grid grid-cols-3 gap-4 text-xs">
+        <div>
+          <div class="text-amber-400 font-bold text-lg">48+</div>
+          <div class="text-[10px] text-slate-400">OBRAS ENTREGADAS</div>
+        </div>
+        <div>
+          <div class="text-amber-400 font-bold text-lg">BIM 3D</div>
+          <div class="text-[10px] text-slate-400">COORDINACIÓN</div>
+        </div>
+        <div>
+          <div class="text-amber-400 font-bold text-lg">100%</div>
+          <div class="text-[10px] text-slate-400">APROBACIÓN DOM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Visor Fotográfico + Cota Técnica -->
+    <div class="lg:col-span-7 relative min-h-[460px] flex flex-col justify-between overflow-hidden">
+      <img id="workPhoto" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" class="absolute inset-0 w-full h-full object-cover opacity-75 transition-all duration-500" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0B0F12] via-[#0B0F12]/20 to-transparent"></div>
+
+      <div class="relative z-10 p-6 flex justify-between items-start text-xs">
+        <span id="workCode" class="bg-[#0B0F12]/90 border border-amber-400 text-amber-400 px-3 py-1">
+          PLANO N° ARQ-2026-01
+        </span>
+        <span id="workLocation" class="bg-[#0B0F12]/90 border border-white/20 px-3 py-1">
+          REGIÓN DE LOS LAGOS, CHILE
+        </span>
+      </div>
+
+      <div class="relative z-10 p-6 sm:p-10 space-y-3">
+        <h2 id="workTitle" class="font-arch text-2xl sm:text-3xl font-medium text-white">
+          Casa Mirador Lago Rupanco
+        </h2>
+        <p id="workDesc" class="text-xs sm:text-sm text-slate-200 max-w-2xl">
+          Estructura mixta en hormigón armado visto y madera laminada cruzada (CLT) con eficiencia térmica pasiva y ventanales termopanel Low-E hacia el volcán.
+        </p>
+        <div class="grid grid-cols-3 gap-3 pt-3 max-w-xl text-xs">
+          <div class="bg-[#0B0F12]/90 border border-white/20 p-3">
+            <span class="text-[10px] text-slate-400 block">SUPERFICIE</span>
+            <strong id="workArea" class="text-amber-400">240 m²</strong>
+          </div>
+          <div class="bg-[#0B0F12]/90 border border-white/20 p-3">
+            <span class="text-[10px] text-slate-400 block">SISTEMA</span>
+            <strong id="workSys" class="text-white">Hormigón + CLT</strong>
+          </div>
+          <div class="bg-[#0B0F12]/90 border border-white/20 p-3">
+            <span class="text-[10px] text-slate-400 block">INVERSIÓN OBRA</span>
+            <strong id="workCost" class="text-emerald-400">6.720 UF</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIGURADOR PARAMÉTRICO CON PLANO SVG CAD EN VIVO -->
+  <section id="cadSimulator" class="p-6 sm:p-12 max-w-7xl mx-auto w-full">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/15 pb-4">
+      <div>
+        <div class="text-amber-400 text-xs uppercase">// SIMULADOR PARAMÉTRICO BIM / CAD EN TIEMPO REAL</div>
+        <h2 class="font-arch text-xl sm:text-2xl font-medium text-white mt-1">
+          Diseña la planta y calcula presupuesto en UF y Pesos
+        </h2>
+      </div>
+      <div class="text-xs text-slate-400">Mueve los controles para redibujar el plano esquemático →</div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <!-- Controles Paramétricos -->
+      <div class="lg:col-span-5 space-y-6 bg-[#11171C] border border-white/15 p-6">
+        <div>
+          <label class="text-xs text-amber-400 block mb-2">01. MATERIALIDAD ESTRUCTURAL</label>
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <button onclick="setMat('sip', 22, 'Madera + SIP')" id="mat-sip" class="py-2.5 px-2 border border-white/20 hover:border-amber-400 cursor-pointer">Panel SIP (22 UF/m²)</button>
+            <button onclick="setMat('acero', 28, 'Acero + CLT')" id="mat-acero" class="py-2.5 px-2 border border-amber-400 bg-amber-400 text-slate-950 font-bold cursor-pointer">Acero/CLT (28 UF/m²)</button>
+            <button onclick="setMat('hormigon', 34, 'Hormigón Visto')" id="mat-hormigon" class="py-2.5 px-2 border border-white/20 hover:border-amber-400 cursor-pointer">Hormigón (34 UF/m²)</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-2">
+            <span class="text-amber-400">02. SUPERFICIE INTERIOR PROYECTADA</span>
+            <strong id="m2Display" class="text-white text-base">140 m²</strong>
+          </div>
+          <input id="m2Range" type="range" min="50" max="320" step="10" value="140" oninput="updateCAD()" class="w-full accent-amber-400 cursor-pointer" />
+          <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+            <span>50 m² (Loft / Módulo)</span>
+            <span>180 m² (Familiar)</span>
+            <span>320 m² (Gran Escala)</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-amber-400 block mb-2">03. NIVELES Y TERRAZA</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button onclick="setFloors(1)" id="fl-1" class="py-2.5 border border-amber-400 bg-amber-400/15 text-amber-300 font-bold cursor-pointer">1 Nivel (Planta Extendida)</button>
+            <button onclick="setFloors(2)" id="fl-2" class="py-2.5 border border-white/20 text-slate-300 cursor-pointer">2 Niveles (Doble Altura)</button>
+          </div>
+        </div>
+
+        <!-- Resultado numérico UF + CLP -->
+        <div class="border-t border-white/15 pt-4 space-y-3">
+          <div class="flex justify-between items-baseline">
+            <span class="text-xs text-slate-400">HONORARIOS PROYECTO ARQUITECTURA:</span>
+            <strong id="archFeeCLP" class="text-xl text-amber-400">$3.500.000 CLP</strong>
+          </div>
+          <div class="flex justify-between items-baseline">
+            <span class="text-xs text-slate-400">ESTIMACIÓN CONSTRUCCIÓN OBRA:</span>
+            <strong id="buildCostUF" class="text-lg text-emerald-400">3.920 UF</strong>
+          </div>
+          <button onclick="document.getElementById('quoteSent').classList.remove('hidden')" class="w-full py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-widest cursor-pointer">
+            DESCARGAR FICHA PRE-FACTIBILIDAD PDF →
+          </button>
+          <div id="quoteSent" class="hidden text-[11px] text-emerald-300 border border-emerald-500/40 bg-emerald-950/40 p-3">
+            ✓ Expediente preliminar generado con código #CAD-693. Nuestro arquitecto director revisará la cabida municipal de tu rol SII.
+          </div>
+        </div>
+      </div>
+
+      <!-- PLANO CAD INTERACTIVO (SVG QUE CAMBIA DE PROPORCIÓN EN TIEMPO REAL) -->
+      <div class="lg:col-span-7 bg-[#07192B] border-2 border-cyan-500/40 p-6 relative overflow-hidden">
+        <div class="flex justify-between items-center text-[11px] text-cyan-300 mb-3 border-b border-cyan-500/30 pb-2">
+          <span>ESQUEMA DE PLANTA ARQUITECTÓNICA · ESCALA 1:100</span>
+          <span id="cadSpecLabel">SISTEMA: ACERO + CLT · 1 NIVEL</span>
+        </div>
+
+        <svg id="cadSvg" viewBox="0 0 600 340" class="w-full h-72 sm:h-80">
+          <!-- Retícula técnica -->
+          <defs>
+            <pattern id="cadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.12)" stroke-width="0.8"/>
+            </pattern>
+          </defs>
+          <rect width="600" height="340" fill="url(#cadGrid)" />
+
+          <!-- Rosa de los vientos Norte -->
+          <g transform="translate(545, 45)">
+            <circle cx="0" cy="0" r="18" fill="none" stroke="#38BDF8" stroke-width="1" />
+            <polygon points="0,-14 -5,6 0,2 5,6" fill="#FBBF24" />
+            <text x="-4" y="-22" fill="#38BDF8" font-size="10" font-family="JetBrains Mono">N</text>
+          </g>
+
+          <!-- Polígono dinámico de la vivienda -->
+          <g id="houseFootprint">
+            <rect id="mainRect" x="90" y="60" width="320" height="200" fill="rgba(56,189,248,0.1)" stroke="#38BDF8" stroke-width="2.5" />
+            <!-- Divisiones interiores -->
+            <line id="divLine1" x1="230" y1="60" x2="230" y2="260" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="5,4" />
+            <line id="divLine2" x1="90" y1="155" x2="230" y2="155" stroke="#38BDF8" stroke-width="1.5" />
+            <!-- Terraza proyectada -->
+            <rect id="terraceRect" x="410" y="85" width="75" height="150" fill="rgba(251,191,36,0.08)" stroke="#FBBF24" stroke-width="1.5" stroke-dasharray="4,4" />
+            <!-- Etiquetas de recintos -->
+            <text id="lblPublic" x="250" y="155" fill="#E0F2FE" font-size="11" font-family="JetBrains Mono">ESTAR / COCINA INTEGRADA</text>
+            <text id="lblRooms" x="105" y="110" fill="#7DD3FC" font-size="10" font-family="JetBrains Mono">ZONA DORMITORIOS</text>
+            <text id="lblServices" x="105" y="210" fill="#7DD3FC" font-size="10" font-family="JetBrains Mono">BAÑOS + SERVICIOS</text>
+            <text id="lblTerrace" x="420" y="165" fill="#FBBF24" font-size="10" font-family="JetBrains Mono">TERRAZA</text>
+            <!-- Cotas dinámicas -->
+            <text id="dimWidth" x="220" y="45" fill="#FBBF24" font-size="12" font-weight="bold" font-family="JetBrains Mono">← 14.0 m →</text>
+            <text id="dimHeight" x="22" y="165" fill="#FBBF24" font-size="12" font-weight="bold" font-family="JetBrains Mono">10.0 m</text>
+          </g>
+        </svg>
+
+        <div class="mt-2 flex justify-between text-[10px] text-cyan-400/80 border-t border-cyan-500/30 pt-2">
+          <span id="cadProgram">PROGRAMA ESTIMADO: 3 DORMITORIOS · 2 BAÑOS · ESTAR DOBLE</span>
+          <span>NORMATIVA OGUC VIGENTE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const WORKS = [
+      {
+        code: 'PLANO N° ARQ-2026-01',
+        loc: 'REGIÓN DE LOS LAGOS, CHILE',
+        title: 'Casa Mirador Lago Rupanco',
+        desc: 'Estructura mixta en hormigón armado visto y madera laminada cruzada (CLT) con eficiencia térmica pasiva y ventanales termopanel Low-E hacia el volcán.',
+        area: '240 m²',
+        sys: 'Hormigón + CLT',
+        cost: '6.720 UF',
+        img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
+      },
+      {
+        code: 'PLANO N° ARQ-2026-02',
+        loc: 'VALLE DE CASABLANCA, CHILE',
+        title: 'Pabellón Enológico Casablanca',
+        desc: 'Nave de degustación y guarda subterránea en acero corten y piedra laja local, diseñada con ventilación cruzada natural y cubierta verde.',
+        area: '410 m²',
+        sys: 'Acero Corten',
+        cost: '11.480 UF',
+        img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80'
+      },
+      {
+        code: 'PLANO N° ARQ-2026-03',
+        loc: 'VITACURA, SANTIAGO',
+        title: 'Clínica & Laboratorio Lo Curro',
+        desc: 'Habilitación interior sanitaria con estándar SEREMI de Salud, iluminación circadiana, acústica aislada y fachada ventilada de celosía.',
+        area: '185 m²',
+        sys: 'Acero + Cristal',
+        cost: '5.180 UF',
+        img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'
+      }
+    ];
+
+    let ufPerM2 = 28;
+    let matName = 'Acero + CLT';
+    let floors = 1;
+
+    function selectWork(idx) {
+      const w = WORKS[idx];
+      document.getElementById('workPhoto').src = w.img;
+      document.getElementById('workCode').textContent = w.code;
+      document.getElementById('workLocation').textContent = w.loc;
+      document.getElementById('workTitle').textContent = w.title;
+      document.getElementById('workDesc').textContent = w.desc;
+      document.getElementById('workArea').textContent = w.area;
+      document.getElementById('workSys').textContent = w.sys;
+      document.getElementById('workCost').textContent = w.cost;
+
+      document.querySelectorAll('.work-btn').forEach((btn, i) => {
+        btn.className = i === idx
+          ? 'work-btn w-full text-left p-4 border border-amber-400 bg-amber-400/10 flex items-center justify-between cursor-pointer'
+          : 'work-btn w-full text-left p-4 border border-white/15 hover:border-white/40 flex items-center justify-between cursor-pointer';
+      });
+    }
+
+    function setMat(id, rate, label) {
+      ufPerM2 = rate;
+      matName = label;
+      ['sip', 'acero', 'hormigon'].forEach(k => {
+        document.getElementById('mat-' + k).className = k === id
+          ? 'py-2.5 px-2 border border-amber-400 bg-amber-400 text-slate-950 font-bold cursor-pointer'
+          : 'py-2.5 px-2 border border-white/20 hover:border-amber-400 cursor-pointer';
+      });
+      updateCAD();
+    }
+
+    function setFloors(n) {
+      floors = n;
+      document.getElementById('fl-1').className = n === 1
+        ? 'py-2.5 border border-amber-400 bg-amber-400/15 text-amber-300 font-bold cursor-pointer'
+        : 'py-2.5 border border-white/20 text-slate-300 cursor-pointer';
+      document.getElementById('fl-2').className = n === 2
+        ? 'py-2.5 border border-amber-400 bg-amber-400/15 text-amber-300 font-bold cursor-pointer'
+        : 'py-2.5 border border-white/20 text-slate-300 cursor-pointer';
+      updateCAD();
+    }
+
+    function updateCAD() {
+      const m2 = Number(document.getElementById('m2Range').value);
+      document.getElementById('m2Display').textContent = m2 + ' m²';
+
+      const feeCLP = m2 * 25000;
+      const totalUF = m2 * ufPerM2;
+      document.getElementById('archFeeCLP').textContent = '$' + feeCLP.toLocaleString('es-CL') + ' CLP';
+      document.getElementById('buildCostUF').textContent = totalUF.toLocaleString('es-CL') + ' UF';
+      document.getElementById('cadSpecLabel').textContent = `SISTEMA: ${matName.toUpperCase()} · ${floors} NIVEL(ES)`;
+
+      // Redraw SVG floorplan dynamically
+      const footprintM2 = floors === 2 ? m2 / 2 : m2;
+      const widthPx = Math.min(390, Math.max(180, Math.round(140 + footprintM2 * 0.85)));
+      const heightPx = Math.min(230, Math.max(120, Math.round(95 + footprintM2 * 0.42)));
+
+      const mainRect = document.getElementById('mainRect');
+      mainRect.setAttribute('width', widthPx);
+      mainRect.setAttribute('height', heightPx);
+
+      const splitX = 90 + Math.round(widthPx * 0.44);
+      const splitY = 60 + Math.round(heightPx * 0.5);
+      document.getElementById('divLine1').setAttribute('x1', splitX);
+      document.getElementById('divLine1').setAttribute('x2', splitX);
+      document.getElementById('divLine1').setAttribute('y2', 60 + heightPx);
+
+      document.getElementById('divLine2').setAttribute('x2', splitX);
+      document.getElementById('divLine2').setAttribute('y1', splitY);
+      document.getElementById('divLine2').setAttribute('y2', splitY);
+
+      const terr = document.getElementById('terraceRect');
+      terr.setAttribute('x', 90 + widthPx);
+      terr.setAttribute('height', Math.round(heightPx * 0.75));
+      document.getElementById('lblTerrace').setAttribute('x', 98 + widthPx);
+      document.getElementById('lblPublic').setAttribute('x', splitX + 14);
+
+      const wMeters = (Math.sqrt(footprintM2 * 1.4)).toFixed(1);
+      const hMeters = (footprintM2 / wMeters).toFixed(1);
+      document.getElementById('dimWidth').textContent = `← ${wMeters} m →`;
+      document.getElementById('dimHeight').textContent = `${hMeters} m`;
+
+      const rooms = m2 < 90 ? '1 DORMITORIO · 1 BAÑO · ESTUDIO' : m2 < 180 ? '3 DORMITORIOS · 2 BAÑOS · ESTAR' : '4 DORMITORIOS + SALA ESTAR + SERVICIOS';
+      document.getElementById('cadProgram').textContent = 'PROGRAMA ESTIMADO: ' + rooms;
+    }
+
+    updateCAD();
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>

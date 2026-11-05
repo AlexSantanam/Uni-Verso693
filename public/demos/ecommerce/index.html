@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA ATELIER — Editorial E-Commerce & Webpay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,600&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #F5F2EB; color: #111111; }
+    .font-serif-ed { font-family: 'Cormorant Garamond', serif; }
+    .font-mono-tech { font-family: 'Space Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-black selection:text-white">
+
+  <!-- BARRA DE PROGRESO DE ENVÍO GRATIS (DINÁMICA) -->
+  <div class="bg-[#111111] text-[#F5F2EB] px-4 py-2 text-[11px] font-mono-tech uppercase tracking-widest flex flex-wrap items-center justify-between border-b border-black">
+    <span id="freeShipText">ENVÍO EXPRESS GRATIS EN COMPRAS SOBRE $50.000 CLP · 3 CUOTAS SIN INTERÉS WEBPAY</span>
+    <span class="hidden md:inline">COLECCIÓN OTOÑO / INVIERNO · SANTIAGO DE CHILE</span>
+  </div>
+
+  <!-- HEADER EDITORIAL CON BORDES EXPUESTOS DE 1PX (ESTILO BRUTALISTA SUIZO) -->
+  <header class="grid grid-cols-12 border-b border-black bg-[#F5F2EB] sticky top-0 z-30">
+    <div class="col-span-6 md:col-span-3 p-4 border-r border-black flex items-center justify-between">
+      <span class="font-serif-ed text-3xl font-bold tracking-tight">AURA / ATELIER</span>
+      <span class="font-mono-tech text-[10px] border border-black px-1.5 py-0.5">CL</span>
+    </div>
+    <nav class="hidden md:flex md:col-span-6 items-center justify-center gap-8 text-xs uppercase tracking-[0.2em] font-medium border-r border-black">
+      <button onclick="filterGender('all')" class="hover:underline cursor-pointer">01. Todo</button>
+      <button onclick="filterGender('Outerwear')" class="hover:underline cursor-pointer">02. Abrigos & Lanas</button>
+      <button onclick="filterGender('Calzado')" class="hover:underline cursor-pointer">03. Marroquinería</button>
+      <button onclick="filterGender('Accesorios')" class="hover:underline cursor-pointer">04. Objetos</button>
+    </nav>
+    <div class="col-span-6 md:col-span-3 flex items-center justify-end">
+      <button onclick="toggleBag(true)" class="w-full h-full p-4 bg-black text-[#F5F2EB] hover:bg-neutral-800 font-mono-tech text-xs uppercase tracking-widest flex items-center justify-between cursor-pointer">
+        <span>BOLSA DE COMPRA</span>
+        <span id="bagHeaderCount" class="border border-[#F5F2EB] px-2 py-0.5">[0] — $0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- LOOKBOOK SPLIT ASIMÉTRICO -->
+  <section class="grid grid-cols-1 lg:grid-cols-12 border-b border-black">
+    <!-- Columna Izquierda Editorial -->
+    <div class="lg:col-span-5 p-8 sm:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-black bg-[#ECE7DC]">
+      <div class="space-y-4">
+        <div class="font-mono-tech text-[11px] uppercase tracking-widest flex items-center gap-3">
+          <span>SERIE N° 04</span>
+          <span>—</span>
+          <span>LANA MERINO & CUERO CURTIDO</span>
+        </div>
+        <h1 class="font-serif-ed text-5xl sm:text-6xl leading-[0.95] font-bold">
+          Diseño de autor con cobro directo a tu cuenta.
+        </h1>
+      </div>
+
+      <div class="space-y-6 pt-8">
+        <p class="text-sm text-neutral-700 leading-relaxed">
+          Esta plantilla de E-Commerce Editorial está diseñada para marcas de vestuario, calzado, cosmética o diseño de autor que buscan estética de revista europea con pasarela chilena <strong>Webpay Plus y MercadoPago</strong> integrada.
+        </p>
+        <div class="grid grid-cols-3 border border-black text-center font-mono-tech text-[11px] bg-[#F5F2EB]">
+          <div class="p-3 border-r border-black">
+            <div class="font-bold text-sm">3X / 6X</div>
+            <div class="text-[10px] text-neutral-500">SIN INTERÉS</div>
+          </div>
+          <div class="p-3 border-r border-black">
+            <div class="font-bold text-sm">STARKEN</div>
+            <div class="text-[10px] text-neutral-500">BLUE EXPRESS</div>
+          </div>
+          <div class="p-3">
+            <div class="font-bold text-sm">BOLETA SII</div>
+            <div class="text-[10px] text-neutral-500">AUTOMÁTICA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha Producto Destacado Interactivo -->
+    <div class="lg:col-span-7 grid sm:grid-cols-2">
+      <div class="relative min-h-[380px] border-b sm:border-b-0 sm:border-r border-black overflow-hidden group">
+        <img id="heroImg" src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+        <div class="absolute top-4 left-4 bg-[#F5F2EB] border border-black px-2.5 py-1 font-mono-tech text-[10px]">
+          EDICIÓN LIMITADA · 12 UNIDADES
+        </div>
+      </div>
+      <div class="p-8 flex flex-col justify-between bg-[#F5F2EB]">
+        <div class="space-y-4">
+          <div class="font-mono-tech text-[10px] text-neutral-500">SKU: AUR-882-CL</div>
+          <h2 class="font-serif-ed text-3xl font-bold italic">Abrigo Oversize "Cordillera" 100% Lana</h2>
+          <div class="flex items-baseline gap-3">
+            <span class="font-mono-tech text-2xl font-bold">$89.900</span>
+            <span class="font-mono-tech text-xs text-emerald-800 bg-emerald-100 px-2 py-0.5">3 cuotas de $29.966 s/interés</span>
+          </div>
+          <p class="text-xs text-neutral-600 leading-relaxed">
+            Confeccionado en taller nacional. Forro interior de viscosa respirable y botones de carey natural.
+          </p>
+
+          <!-- Selector de Color -->
+          <div class="space-y-1.5 pt-2">
+            <span class="font-mono-tech text-[10px] uppercase">Tono: <strong id="colorLabel">Carbón Austral</strong></span>
+            <div class="flex gap-2">
+              <button onclick="setHeroColor('Carbón Austral','https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=80')" class="w-7 h-7 bg-neutral-900 border-2 border-black cursor-pointer"></button>
+              <button onclick="setHeroColor('Arena Atacama','https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=900&q=80')" class="w-7 h-7 bg-[#D6C7B2] border border-black cursor-pointer"></button>
+              <button onclick="setHeroColor('Verde Bosque','https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80')" class="w-7 h-7 bg-[#2D4A3E] border border-black cursor-pointer"></button>
+            </div>
+          </div>
+
+          <!-- Selector de Talla -->
+          <div class="space-y-1.5 pt-2">
+            <span class="font-mono-tech text-[10px] uppercase">Talla Seleccionada: <strong id="sizeLabel">M</strong></span>
+            <div class="grid grid-cols-4 border border-black font-mono-tech text-xs">
+              <button onclick="setHeroSize('S')" class="sz-btn py-2 border-r border-black hover:bg-black hover:text-white cursor-pointer">S</button>
+              <button onclick="setHeroSize('M')" class="sz-btn py-2 border-r border-black bg-black text-white cursor-pointer">M</button>
+              <button onclick="setHeroSize('L')" class="sz-btn py-2 border-r border-black hover:bg-black hover:text-white cursor-pointer">L</button>
+              <button onclick="setHeroSize('XL')" class="sz-btn py-2 hover:bg-black hover:text-white cursor-pointer">XL</button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="addToBag(100)" class="mt-6 w-full py-4 bg-black text-[#F5F2EB] hover:bg-neutral-800 font-mono-tech text-xs uppercase tracking-widest cursor-pointer">
+          + AÑADIR A LA BOLSA — $89.900
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRILLA EDITORIAL SUIZA DE CATÁLOGO (BORDES DE 1PX) -->
+  <section class="border-b border-black">
+    <div class="px-6 py-4 border-b border-black flex items-center justify-between font-mono-tech text-xs uppercase">
+      <span>CATÁLOGO DE TEMPORADA (HAZ CLIC EN CUALQUIER PIEZA)</span>
+      <span id="itemCountLabel">6 PIEZAS DISPONIBLES</span>
+    </div>
+    <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-black"></div>
+  </section>
+
+  <!-- DRAWER LATERAL DE BOLSA + CHECKOUT WEBPAY -->
+  <div id="bagDrawer" class="fixed inset-0 bg-black/60 z-50 hidden justify-end">
+    <div class="bg-[#F5F2EB] w-full max-w-md h-full flex flex-col justify-between border-l border-black">
+      <div class="p-6 border-b border-black flex items-center justify-between">
+        <div>
+          <span class="font-mono-tech text-[10px] uppercase text-neutral-500">PASARELA TRANSBANK / MERCADOPAGO</span>
+          <h3 class="font-serif-ed text-2xl font-bold">Tu Bolsa de Compra</h3>
+        </div>
+        <button onclick="toggleBag(false)" class="font-mono-tech text-xs border border-black px-2.5 py-1 cursor-pointer">CERRAR [X]</button>
+      </div>
+
+      <!-- Barra de envío gratis dentro del carrito -->
+      <div class="px-6 py-3 bg-[#ECE7DC] border-b border-black">
+        <div id="drawerShipMsg" class="font-mono-tech text-[11px] mb-1.5"></div>
+        <div class="w-full h-2 bg-neutral-300 border border-black overflow-hidden">
+          <div id="drawerShipBar" class="h-full bg-black transition-all duration-300" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div id="bagList" class="flex-1 overflow-y-auto divide-y divide-black"></div>
+
+      <div class="p-6 border-t border-black bg-white space-y-4">
+        <div class="flex justify-between font-mono-tech text-sm">
+          <span>TOTAL A PAGAR</span>
+          <strong id="bagTotal" class="text-lg">$0</strong>
+        </div>
+        <div class="font-mono-tech text-[11px] text-neutral-600 flex justify-between">
+          <span>O EN 3 CUOTAS SIN INTERÉS DE:</span>
+          <strong id="bagInstallment">$0 / mes</strong>
+        </div>
+        <button onclick="simulateWebpay()" class="w-full py-4 bg-black text-white font-mono-tech text-xs uppercase tracking-widest hover:bg-neutral-800 cursor-pointer">
+          PROCEDER AL PAGO CON WEBPAY PLUS →
+        </button>
+        <div id="webpaySuccess" class="hidden border border-black bg-emerald-50 p-3 font-mono-tech text-[11px] text-emerald-950">
+          ✓ TRANSACCIÓN APROBADA (CÓD. AUT: 774910) · BOLETA ELECTRÓNICA SII ENVIADA AL CORREO Y ORDEN DE DESPACHO CREADA.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ITEMS = [
+      { id: 100, name: 'Abrigo Oversize "Cordillera"', cat: 'Outerwear', price: 89900, sku: 'AUR-882', img: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=700&q=80' },
+      { id: 101, name: 'Botín Cuero Crudo "Valdivia"', cat: 'Calzado', price: 64900, sku: 'AUR-104', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=700&q=80' },
+      { id: 102, name: 'Bolso Tote Talabartería Nacional', cat: 'Accesorios', price: 48900, sku: 'AUR-309', img: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=700&q=80' },
+      { id: 103, name: 'Sweater Tejido Alpaca "Lenga"', cat: 'Outerwear', price: 52900, sku: 'AUR-412', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=80' },
+      { id: 104, name: 'Lentes Acetato "Pacífico"', cat: 'Accesorios', price: 34900, sku: 'AUR-519', img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80' },
+      { id: 105, name: 'Mocasín Suela Crepé "Lastarria"', cat: 'Calzado', price: 59900, sku: 'AUR-620', img: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=700&q=80' }
+    ];
+
+    let activeCat = 'all';
+    let heroSize = 'M';
+    let bag = [{ ...ITEMS[1], size: '38', qty: 1 }];
+
+    function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
+    function setHeroColor(name, url) {
+      document.getElementById('colorLabel').textContent = name;
+      document.getElementById('heroImg').src = url;
+    }
+
+    function setHeroSize(sz) {
+      heroSize = sz;
+      document.getElementById('sizeLabel').textContent = sz;
+      document.querySelectorAll('.sz-btn').forEach(b => {
+        b.className = b.textContent === sz
+          ? 'sz-btn py-2 border-r border-black bg-black text-white cursor-pointer'
+          : 'sz-btn py-2 border-r border-black hover:bg-black hover:text-white cursor-pointer';
+      });
+    }
+
+    function filterGender(c) {
+      activeCat = c;
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const list = activeCat === 'all' ? ITEMS : ITEMS.filter(i => i.cat === activeCat);
+      document.getElementById('itemCountLabel').textContent = list.length + ' PIEZAS DISPONIBLES';
+      document.getElementById('catalogGrid').innerHTML = list.map(item => `
+        <div class="p-6 flex flex-col justify-between border-b border-black bg-[#F5F2EB] hover:bg-[#ECE7DC] transition">
+          <div>
+            <div class="flex justify-between font-mono-tech text-[10px] text-neutral-500 mb-2">
+              <span>${item.sku}</span>
+              <span>${item.cat.toUpperCase()}</span>
+            </div>
+            <div class="h-72 overflow-hidden border border-black mb-4">
+              <img src="${item.img}" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+            </div>
+            <h3 class="font-serif-ed text-2xl font-bold">${item.name}</h3>
+            <div class="font-mono-tech text-xs text-neutral-600 mt-1">3x ${fmt(item.price / 3)} sin interés</div>
+          </div>
+          <div class="pt-4 mt-4 border-t border-black flex items-center justify-between">
+            <span class="font-mono-tech text-lg font-bold">${fmt(item.price)}</span>
+            <button onclick="addToBag(${item.id})" class="px-4 py-2 bg-black text-white font-mono-tech text-[11px] uppercase hover:bg-neutral-800 cursor-pointer">
+              + AÑADIR
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addToBag(id) {
+      const prod = ITEMS.find(i => i.id === id);
+      const existing = bag.find(x => x.id === id);
+      if (existing) existing.qty += 1;
+      else bag.push({ ...prod, size: heroSize, qty: 1 });
+      updateBagUI();
+      toggleBag(true);
+    }
+
+    function removeBagItem(id) {
+      bag = bag.filter(x => x.id !== id);
+      updateBagUI();
+    }
+
+    function updateBagUI() {
+      const total = bag.reduce((s, i) => s + i.price * i.qty, 0);
+      const count = bag.reduce((s, i) => s + i.qty, 0);
+      document.getElementById('bagHeaderCount').textContent = `[${count}] — ${fmt(total)}`;
+      document.getElementById('bagTotal').textContent = fmt(total);
+      document.getElementById('bagInstallment').textContent = fmt(total / 3) + ' / mes';
+
+      const goal = 50000;
+      const pct = Math.min(100, Math.round((total / goal) * 100));
+      document.getElementById('drawerShipBar').style.width = pct + '%';
+      document.getElementById('drawerShipMsg').textContent = total >= goal
+        ? '✓ ¡TIENES DESPACHO EXPRESS GRATIS A TODO CHILE!'
+        : `TE FALTAN ${fmt(goal - total)} PARA DESPACHO GRATIS`;
+
+      document.getElementById('bagList').innerHTML = bag.map(i => `
+        <div class="p-4 flex gap-4 items-center">
+          <img src="${i.img}" class="w-16 h-20 object-cover border border-black" />
+          <div class="flex-1">
+            <div class="font-serif-ed text-lg font-bold leading-tight">${i.name}</div>
+            <div class="font-mono-tech text-[11px] text-neutral-500">CANT: ${i.qty} · ${fmt(i.price)}</div>
+          </div>
+          <button onclick="removeBagItem(${i.id})" class="font-mono-tech text-[10px] underline cursor-pointer">QUITAR</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleBag(open) {
+      const d = document.getElementById('bagDrawer');
+      d.classList.toggle('hidden', !open);
+      d.classList.toggle('flex', open);
+    }
+
+    function simulateWebpay() {
+      document.getElementById('webpaySuccess').classList.remove('hidden');
+    }
+
+    renderCatalog();
+    updateBagUI();
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>

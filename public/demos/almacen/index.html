@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Vega del Barrio — App de Pedidos Express</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Nunito', sans-serif; background: #FFF8EE; }
+    .font-display { font-family: 'Fredoka', sans-serif; }
+    .font-receipt { font-family: 'Space Mono', monospace; }
+    /* Zigzag receipt border */
+    .receipt-edge {
+      background-image: linear-gradient(135deg, #ffffff 50%, transparent 50%), linear-gradient(225deg, #ffffff 50%, transparent 50%);
+      background-position: bottom;
+      background-size: 16px 16px;
+      background-repeat: repeat-x;
+    }
+  </style>
+</head>
+<body class="text-stone-900 min-h-screen flex flex-col">
+
+  <!-- TOP PROMO TICKER -->
+  <div class="bg-[#D9381E] text-amber-100 text-xs font-extrabold py-2 px-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="bg-amber-300 text-[#D9381E] px-2 py-0.5 rounded-full text-[10px] uppercase font-black">Horno Recién Salido</span>
+      <span>🥖 Marraqueta crujiente saliendo ahora · Reparto en 20 min a todo el sector</span>
+    </div>
+    <span class="hidden sm:inline font-receipt text-[11px]">HORARIO: 07:30 - 21:30 HRS</span>
+  </div>
+
+  <!-- ESTRUCTURA TIPO SUPER-APP (3 COLUMNAS: PASILLOS | VITRINA | BOLETA TÉRMICA EN VIVO) -->
+  <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 max-w-[1440px] w-full mx-auto">
+
+    <!-- COLUMNA 1: SIDEBAR DE PASILLOS DEL ALMACÉN -->
+    <aside class="lg:col-span-2 bg-[#2B1B12] text-amber-50 p-4 lg:min-h-[calc(100vh-36px)] flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-3 pb-4 mb-4 border-b border-amber-900/60">
+          <div class="w-11 h-11 rounded-2xl bg-[#F59E0B] text-[#2B1B12] flex items-center justify-center text-2xl font-display font-bold shadow">
+            🥖
+          </div>
+          <div>
+            <div class="font-display text-lg leading-none text-amber-300">Don Pepe</div>
+            <div class="text-[11px] text-amber-200/70">Mercado & Panadería</div>
+          </div>
+        </div>
+
+        <div class="text-[10px] uppercase tracking-widest text-amber-400/70 font-extrabold mb-2 px-2">Pasillos del Local</div>
+        <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-2 lg:pb-0" id="aisleNav">
+          <button onclick="setCat('todos')" data-cat="todos" class="aisle-btn bg-[#F59E0B] text-[#2B1B12] font-extrabold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap">
+            <span>🧺</span> Todo el Local
+          </button>
+          <button onclick="setCat('Panadería')" data-cat="Panadería" class="aisle-btn hover:bg-white/10 text-amber-100 font-bold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap">
+            <span>🥐</span> Panadería Caliente
+          </button>
+          <button onclick="setCat('Fiambrería')" data-cat="Fiambrería" class="aisle-btn hover:bg-white/10 text-amber-100 font-bold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap">
+            <span>🧀</span> Quesos y Fiambres
+          </button>
+          <button onclick="setCat('Verdulería')" data-cat="Verdulería" class="aisle-btn hover:bg-white/10 text-amber-100 font-bold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap">
+            <span>🥑</span> Frutas y Verduras
+          </button>
+          <button onclick="setCat('Despensa')" data-cat="Despensa" class="aisle-btn hover:bg-white/10 text-amber-100 font-bold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap">
+            <span>🥚</span> Huevos y Despensa
+          </button>
+        </nav>
+      </div>
+
+      <div class="hidden lg:block bg-[#3D271B] rounded-2xl p-3.5 text-xs space-y-1.5 border border-amber-700/30">
+        <div class="text-amber-300 font-extrabold">🛵 Reparto Propio</div>
+        <p class="text-amber-100/80 text-[11px] leading-snug">Sin comisiones de apps externas. Pagas al recibir con efectivo, transferencia o Redcompra.</p>
+      </div>
+    </aside>
+
+    <!-- COLUMNA 2: VITRINA DE PRODUCTOS ESTILO MERCADO -->
+    <main class="lg:col-span-6 xl:col-span-7 p-4 sm:p-6 space-y-5">
+      <!-- Barra Buscadora y Pizarra de Oferta -->
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div class="relative flex-1">
+          <input id="searchBox" oninput="renderItems()" type="text" placeholder="Ej: marraqueta, palta hass, queso mantecoso..." class="w-full bg-white border-2 border-amber-900/15 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-bold focus:outline-none focus:border-[#D9381E]" />
+          <span class="absolute left-3.5 top-3 text-stone-400">🔍</span>
+        </div>
+        <div class="bg-emerald-900 text-emerald-100 px-4 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          Tiempo despacho hoy: ~20 min
+        </div>
+      </div>
+
+      <!-- Banner Pizarra de Feria -->
+      <div class="bg-gradient-to-r from-[#2B1B12] via-[#432818] to-[#D9381E] text-white rounded-3xl p-5 flex items-center justify-between shadow-lg">
+        <div class="space-y-1 max-w-md">
+          <span class="bg-amber-300 text-[#2B1B12] text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md">Combo Once Familiar</span>
+          <h1 class="font-display text-2xl sm:text-3xl">1 Kg Pan Caliente + ½ Kg Palta Hass + ¼ Queso</h1>
+          <p class="text-xs text-amber-100">Haz tu pedido en 30 segundos y te llega directo al WhatsApp del almacenero sin hacer fila.</p>
+        </div>
+        <button onclick="addCombo()" class="bg-[#F59E0B] hover:bg-amber-400 text-[#2B1B12] font-display font-bold px-4 py-3 rounded-2xl text-sm shadow-md shrink-0 cursor-pointer">
+          + Agregar Combo $8.990
+        </button>
+      </div>
+
+      <!-- Grilla de Productos con Botones Rápidos + / - Directos -->
+      <div id="itemsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </main>
+
+    <!-- COLUMNA 3: BOLETA / COMANDA TÉRMICA EN VIVO (SIEMPRE VISIBLE) -->
+    <aside class="lg:col-span-4 xl:col-span-3 p-4 sm:p-6 bg-[#F3E9D8] border-l border-amber-900/10">
+      <div class="sticky top-4">
+        <div class="bg-white rounded-t-2xl p-5 shadow-xl border-t-8 border-[#D9381E] receipt-edge pb-8">
+          <div class="text-center border-b-2 border-dashed border-stone-300 pb-3 mb-3">
+            <div class="font-receipt font-bold text-sm tracking-tight">ALMACÉN DON PEPE · COMANDA WEB</div>
+            <div class="font-receipt text-[11px] text-stone-500">ORDEN AUTOMÁTICA WHATSAPP #089</div>
+          </div>
+
+          <!-- Selector Despacho vs Retiro -->
+          <div class="grid grid-cols-2 gap-1.5 bg-stone-100 p-1 rounded-xl mb-4 text-xs font-extrabold">
+            <button id="btnDespacho" onclick="setDelivery('despacho')" class="py-2 rounded-lg bg-[#2B1B12] text-amber-300 cursor-pointer">🛵 A Domicilio</button>
+            <button id="btnRetiro" onclick="setDelivery('retiro')" class="py-2 rounded-lg text-stone-600 cursor-pointer">🏪 Retiro Local</button>
+          </div>
+
+          <!-- Lista de productos en la boleta -->
+          <div id="receiptList" class="font-receipt text-xs space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+
+          <!-- Totales -->
+          <div class="border-t-2 border-dashed border-stone-300 mt-4 pt-3 font-receipt space-y-1 text-xs">
+            <div class="flex justify-between text-stone-500">
+              <span>DESPACHO BARRIO:</span>
+              <span id="shippingFee">$1.000</span>
+            </div>
+            <div class="flex justify-between text-base font-bold text-stone-900 pt-1">
+              <span>TOTAL PEDIDO:</span>
+              <span id="grandTotal">$0</span>
+            </div>
+          </div>
+
+          <!-- Datos rápidos -->
+          <div class="mt-4 space-y-2">
+            <input id="custName" type="text" placeholder="Tu Nombre (Ej: Sra. Marta)" class="w-full bg-stone-100 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold" />
+            <input id="custAddr" type="text" placeholder="Dirección / Pasaje y Casa" class="w-full bg-stone-100 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold" />
+            <select id="custPay" class="w-full bg-stone-100 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold">
+              <option>💳 Pago con Redcompra al repartidor</option>
+              <option>🏦 Transferencia Bancaria</option>
+              <option>💵 Efectivo</option>
+            </select>
+          </div>
+
+          <button onclick="sendWhatsApp()" class="mt-4 w-full bg-[#16A34A] hover:bg-[#15803D] text-white font-display text-base py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+            📲 Enviar Comanda por WhatsApp
+          </button>
+
+          <div id="waPreviewBox" class="hidden mt-3 bg-[#DCF8C6] border border-emerald-400 rounded-xl p-3 font-receipt text-[11px] text-stone-800 whitespace-pre-line"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const PRODUCTS = [
+      { id: 1, name: 'Pan Marraqueta Crujiente', cat: 'Panadería', price: 2290, unit: '1 Kg', badge: 'Recién horneado', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80' },
+      { id: 2, name: 'Palta Hass Chilena Cremosa', cat: 'Verdulería', price: 4890, unit: '1 Kg', badge: 'Lista para hoy', img: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=500&q=80' },
+      { id: 3, name: 'Queso Mantecoso Osorno', cat: 'Fiambrería', price: 3450, unit: '250 gr laminado', badge: 'Artesanal', img: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=500&q=80' },
+      { id: 4, name: 'Bandeja 30 Huevos de Campo', cat: 'Despensa', price: 7490, unit: '30 unid.', badge: 'Primera', img: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=500&q=80' },
+      { id: 5, name: 'Jamón Pierna Acaramelado', cat: 'Fiambrería', price: 2990, unit: '250 gr', badge: 'Corte fino', img: 'https://images.unsplash.com/photo-1524438418049-ab2acb7aa48f?auto=format&fit=crop&w=500&q=80' },
+      { id: 6, name: 'Empanadas de Pino Horno (x4)', cat: 'Panadería', price: 7990, unit: '4 unidades', badge: 'Calientes', img: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80' },
+      { id: 7, name: 'Tomate Limachino Jugoso', cat: 'Verdulería', price: 1990, unit: '1 Kg', badge: 'Cosecha hoy', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=500&q=80' },
+      { id: 8, name: 'Pie de Limón Casero Entero', cat: 'Panadería', price: 8500, unit: '8 porciones', badge: 'Receta Abuela', img: 'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=500&q=80' },
+      { id: 9, name: 'Aceite de Oliva Extra Virgen', cat: 'Despensa', price: 6990, unit: '500 ml', badge: 'Valle Colchagua', img: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=500&q=80' }
+    ];
+
+    let activeCat = 'todos';
+    let deliveryMode = 'despacho';
+    let cart = { 1: 1, 2: 1 };
+
+    function fmt(n) { return '$' + n.toLocaleString('es-CL'); }
+
+    function setCat(c) {
+      activeCat = c;
+      document.querySelectorAll('.aisle-btn').forEach(btn => {
+        if (btn.dataset.cat === c) {
+          btn.className = 'aisle-btn bg-[#F59E0B] text-[#2B1B12] font-extrabold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap';
+        } else {
+          btn.className = 'aisle-btn hover:bg-white/10 text-amber-100 font-bold text-xs px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left whitespace-nowrap';
+        }
+      });
+      renderItems();
+    }
+
+    function changeQty(id, d) {
+      cart[id] = Math.max(0, (cart[id] || 0) + d);
+      if (cart[id] === 0) delete cart[id];
+      renderItems();
+      renderReceipt();
+    }
+
+    function addCombo() {
+      cart[1] = (cart[1] || 0) + 1;
+      cart[2] = (cart[2] || 0) + 1;
+      cart[3] = (cart[3] || 0) + 1;
+      renderItems();
+      renderReceipt();
+    }
+
+    function setDelivery(m) {
+      deliveryMode = m;
+      document.getElementById('btnDespacho').className = m === 'despacho' ? 'py-2 rounded-lg bg-[#2B1B12] text-amber-300 cursor-pointer' : 'py-2 rounded-lg text-stone-600 cursor-pointer';
+      document.getElementById('btnRetiro').className = m === 'retiro' ? 'py-2 rounded-lg bg-[#2B1B12] text-amber-300 cursor-pointer' : 'py-2 rounded-lg text-stone-600 cursor-pointer';
+      renderReceipt();
+    }
+
+    function renderItems() {
+      const q = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = PRODUCTS.filter(p => (activeCat === 'todos' || p.cat === activeCat) && p.name.toLowerCase().includes(q));
+      document.getElementById('itemsGrid').innerHTML = filtered.map(p => {
+        const qty = cart[p.id] || 0;
+        return `
+          <div class="bg-white rounded-3xl p-3.5 border-2 ${qty > 0 ? 'border-[#D9381E] shadow-md' : 'border-amber-900/10'} flex flex-col justify-between">
+            <div>
+              <div class="relative h-36 rounded-2xl overflow-hidden mb-3">
+                <img src="${p.img}" class="w-full h-full object-cover" />
+                <span class="absolute top-2 left-2 bg-[#2B1B12]/90 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">${p.badge}</span>
+                <span class="absolute bottom-2 right-2 bg-white/95 text-stone-900 font-receipt font-bold text-xs px-2 py-0.5 rounded-lg shadow">${p.unit}</span>
+              </div>
+              <div class="text-[10px] uppercase font-extrabold text-[#D9381E]">${p.cat}</div>
+              <h3 class="font-display text-base text-stone-900 leading-snug">${p.name}</h3>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-stone-100">
+              <span class="font-display text-xl text-[#2B1B12]">${fmt(p.price)}</span>
+              ${qty === 0 ? `
+                <button onclick="changeQty(${p.id}, 1)" class="bg-[#F59E0B] hover:bg-amber-400 text-[#2B1B12] font-extrabold text-xs px-3.5 py-2 rounded-xl cursor-pointer">
+                  + Agregar
+                </button>
+              ` : `
+                <div class="flex items-center gap-2 bg-[#2B1B12] text-white px-2 py-1 rounded-xl">
+                  <button onclick="changeQty(${p.id}, -1)" class="w-6 h-6 rounded-lg bg-white/15 font-black cursor-pointer">-</button>
+                  <span class="font-receipt text-xs font-bold w-4 text-center">${qty}</span>
+                  <button onclick="changeQty(${p.id}, 1)" class="w-6 h-6 rounded-lg bg-[#F59E0B] text-[#2B1B12] font-black cursor-pointer">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderReceipt() {
+      const entries = Object.entries(cart);
+      const listEl = document.getElementById('receiptList');
+      let subtotal = 0;
+
+      if (entries.length === 0) {
+        listEl.innerHTML = `<div class="text-stone-400 text-center py-6">Tu canasta está vacía.<br/>Toca "+ Agregar" en cualquier producto.</div>`;
+      } else {
+        listEl.innerHTML = entries.map(([id, qty]) => {
+          const item = PRODUCTS.find(x => x.id === Number(id));
+          const line = item.price * qty;
+          subtotal += line;
+          return `
+            <div class="flex justify-between items-center border-b border-stone-100 pb-1.5">
+              <div>
+                <span class="font-bold">${qty}x</span> ${item.name}
+                <div class="text-[10px] text-stone-400">${item.unit}</div>
+              </div>
+              <div class="font-bold">${fmt(line)}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const ship = (deliveryMode === 'despacho' && subtotal > 0) ? 1000 : 0;
+      document.getElementById('shippingFee').textContent = ship === 0 ? 'GRATIS (Retiro)' : fmt(ship);
+      document.getElementById('grandTotal').textContent = fmt(subtotal + ship);
+    }
+
+    function sendWhatsApp() {
+      const entries = Object.entries(cart);
+      if (entries.length === 0) return;
+      const name = document.getElementById('custName').value || 'Vecino(a)';
+      const addr = document.getElementById('custAddr').value || 'Por confirmar';
+      const pay = document.getElementById('custPay').value;
+      let total = 0;
+      const lines = entries.map(([id, qty]) => {
+        const item = PRODUCTS.find(x => x.id === Number(id));
+        total += item.price * qty;
+        return `• ${qty}x ${item.name} (${fmt(item.price * qty)})`;
+      }).join('\n');
+      const ship = deliveryMode === 'despacho' ? 1000 : 0;
+      const msg = `🟢 *COMANDA WEB #089 - DON PEPE*\n👤 Cliente: ${name}\n📍 Entrega: ${deliveryMode === 'despacho' ? 'Domicilio (' + addr + ')' : 'Retiro en Local'}\n${pay}\n\n${lines}\n\n*TOTAL A PAGAR: ${fmt(total + ship)}*`;
+      const box = document.getElementById('waPreviewBox');
+      box.classList.remove('hidden');
+      box.textContent = msg;
+    }
+
+    renderItems();
+    renderReceipt();
+  </script>
+  <script src="/demos/modo-dueno.js"></script>
+</body>
+</html>
