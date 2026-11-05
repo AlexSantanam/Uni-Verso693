@@ -4548,6 +4548,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
       if (isMaster) return true;
       if (!userPerms) return t.id === 'cotizaciones';
       if (t.id === 'usuarios') return Boolean(userPerms.usuarios);
+      if (t.id === 'prospeccion') return (userPerms as any).prospeccion !== false;
       return Boolean((userPerms as any)[t.id]);
     });
   }, [isMaster, userPerms]);

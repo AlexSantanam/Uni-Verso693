@@ -491,6 +491,58 @@ const ebsViewPage: PageSeo = {
   jsonLd: [],
 };
 
+const impulsaPymePage: PageSeo = {
+  path: '/impulsa-pyme',
+  title: `Impulsa ProPyme: tu página web desde $19.900/mes | ${SITE_NAME}`,
+  description: clip(
+    'Páginas web y sistemas a medida para negocios chilenos: restaurantes, almacenes, tiendas online, estudios profesionales, salud y estética, academias OTEC y talleres. Demo en vivo, sin letra chica.',
+  ),
+  priority: 0.6,
+  jsonLd: graph(breadcrumb([{ name: 'Impulsa ProPyme', path: '/impulsa-pyme' }]), {
+    '@type': 'Service',
+    name: 'Impulsa ProPyme',
+    serviceType: 'Desarrollo de sitios web y sistemas a medida para PyMEs',
+    description: 'Programa de UNIVERSO693 SpA para digitalizar negocios chilenos con páginas web y sistemas a medida, financiados en modalidad de arriendo, derecho a compra o alianza por ventas.',
+    url: url('/impulsa-pyme'),
+    provider: { '@id': `${SITE_URL}/#org` },
+    areaServed: [{ '@type': 'Country', name: 'Chile' }],
+  }),
+};
+
+/** Catálogo de rubros Impulsa ProPyme: debe reflejar las keys y precios de BUSINESS_TYPES en src/pages/ImpulsaPyme.tsx. */
+const impulsaRubros: { slug: string; name: string; tag: string; description: string; fromPrice: number }[] = [
+  { slug: 'restaurante', name: 'Restaurante, Fuente de Soda, Sushi o Gastrobar', tag: 'Carta QR en Mesa + Delivery', description: 'Tus clientes escanean el QR en su mesa o piden por Delivery directo a cocina y WhatsApp.', fromPrice: 24900 },
+  { slug: 'almacen', name: 'Almacén de Barrio, Minimarket o Cafetería', tag: 'Catálogo & Pedidos WhatsApp', description: 'Vitrina digital de ofertas donde tus vecinos arman su pedido y te llega listo al WhatsApp.', fromPrice: 19900 },
+  { slug: 'comercio', name: 'Tienda Online, Pastelería, Boutique o Ferretería', tag: 'E-Commerce & Webpay', description: 'Vende 24/7 en todo Chile con carrito, control de stock y pago con tarjetas.', fromPrice: 32900 },
+  { slug: 'profesional', name: 'Estudio de Arquitectura, Contadores o Abogados', tag: 'Portafolio & Cotizador m²', description: 'Presencia de alto estándar con galería de proyectos y pre-cotizador interactivo.', fromPrice: 29900 },
+  { slug: 'servicios', name: 'Centro de Salud, Estética, Barbería o Veterinaria', tag: 'Agenda Online & Abonos', description: 'Reserva de horas 24/7 con abono previo para eliminar las horas perdidas.', fromPrice: 19900 },
+  { slug: 'academia', name: 'Academia, OTEC, Escuela de Oficios o Capacitación', tag: 'Aula Virtual & Diplomas', description: 'Tu propio campus virtual para vender cursos con pruebas y diplomas PDF.', fromPrice: 39900 },
+  { slug: 'gestion', name: 'Taller Mecánico, Servicio Técnico o Contratista', tag: 'Órdenes & Seguimiento Patente', description: 'Tus clientes consultan el estado de su vehículo/equipo en vivo y tú ordenas tu taller.', fromPrice: 34900 },
+];
+
+const impulsaRubroPages: PageSeo[] = impulsaRubros.map((r) => ({
+  path: `/impulsa-pyme/${r.slug}`,
+  title: `${r.name}: ${r.tag} desde $${r.fromPrice.toLocaleString('es-CL')}/mes | Impulsa ProPyme`,
+  description: clip(`${r.description} Precio base desde $${r.fromPrice.toLocaleString('es-CL')}/mes, 100% personalizable. Un programa de ${SITE_NAME}.`),
+  priority: 0.6,
+  jsonLd: graph(
+    breadcrumb([
+      { name: 'Impulsa ProPyme', path: '/impulsa-pyme' },
+      { name: r.name, path: `/impulsa-pyme/${r.slug}` },
+    ]),
+    {
+      '@type': 'Service',
+      name: `${r.tag} — ${r.name}`,
+      serviceType: 'Desarrollo de sitios web y sistemas a medida para PyMEs',
+      description: r.description,
+      url: url(`/impulsa-pyme/${r.slug}`),
+      provider: { '@id': `${SITE_URL}/#org` },
+      areaServed: [{ '@type': 'Country', name: 'Chile' }],
+      offers: { '@type': 'Offer', price: String(r.fromPrice), priceCurrency: 'CLP', url: url(`/impulsa-pyme/${r.slug}`), availability: 'https://schema.org/InStock' },
+    },
+  ),
+}));
+
 /** Every page to prerender, in sitemap order (noindex pages are left out of the sitemap). */
 const industryPages: PageSeo[] = industries.map((i) => ({
   path: `/ia-para/${i.slug}`,
@@ -516,7 +568,7 @@ const industryPages: PageSeo[] = industries.map((i) => ({
   ),
 }));
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage, auditoriaPage];
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage, auditoriaPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

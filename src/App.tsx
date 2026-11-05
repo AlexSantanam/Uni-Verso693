@@ -44,6 +44,7 @@ export const AppRoutes: React.FC = () => (
         <Routes>
           {isImpulsaSubdomain && <Route index element={<ImpulsaPyme />} />}
           <Route path="impulsa-pyme" element={<ImpulsaPyme />} />
+          <Route path="impulsa-pyme/:rubro" element={<ImpulsaPyme />} />
           <Route path="propyme" element={<ImpulsaPyme />} />
           <Route
             path="interno"

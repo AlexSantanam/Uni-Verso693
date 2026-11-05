@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   Store,
   Utensils,
@@ -49,6 +49,7 @@ interface BusinessConfig {
   examples: string;
   allowsRevShare: boolean;
   deliverables: string[];
+  addons: { name: string; desc: string; price: string }[];
   prices: {
     propiedad: { pie: number; monthly24: number; after24: number };
     socio: { setup: number; baseMonthly: number; revShare: string };
@@ -63,7 +64,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Carta QR en Mesa + Delivery (Simple o Pro)',
     subtitle: 'Tus clientes escanean el QR en su mesa o piden por Delivery directo a cocina y WhatsApp (estilo OlaClick)',
     demoUrl: '/demos/restaurante/index.html',
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/restaurante.jpg',
     icon: <Utensils className="w-5 h-5" />,
     examples: 'Restaurantes, pizzerías, sushi, sangucherías, fuentes de soda, foodtrucks y cafeterías con salón',
     allowsRevShare: true,
@@ -72,6 +73,11 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Dos versiones a elección: Versión Simple (pedidos directo a WhatsApp) o Versión Pro (comanda en salón + propina 10% + control de caja)',
       'Generador de códigos QR individuales por mesa listos para imprimir y pegar',
       'App Móvil “Modo Dueño” (PWA $0) para agotar platos en 1 toque, programar horarios y cuadrar ventas del turno',
+    ],
+    addons: [
+      { name: 'Impresora térmica de comandas en cocina', desc: 'Integración directa con tu impresora para que el pedido salga impreso en cocina sin que nadie lo tipee.', price: 'Desde $25.000 habilitación' },
+      { name: 'Programa de fidelización con puntos', desc: 'Tus clientes acumulan puntos por compra y los canjean por descuentos o platos gratis.', price: '+$9.900/mes' },
+      { name: 'Multi-sucursal', desc: 'Administra varios locales desde un solo panel, con carta y stock independientes por sucursal.', price: '+$14.900/mes por sucursal adicional' },
     ],
     prices: {
       propiedad: { pie: 35000, monthly24: 34900, after24: 15900 },
@@ -85,7 +91,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Catálogo & Pedidos WhatsApp',
     subtitle: 'Vitrina digital de ofertas donde tus vecinos arman su pedido y te llega listo al WhatsApp',
     demoUrl: '/demos/almacen/index.html',
-    image: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/almacen.jpg',
     icon: <Store className="w-5 h-5" />,
     examples: 'Almacenes de barrio, verdulerías, panaderías, bazares, comida casera y reparto local',
     allowsRevShare: false,
@@ -94,6 +100,11 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Catálogo con comanda automática que llega sumada y detallada a tu WhatsApp',
       'Dominio propio .CL configurado y carga inicial de tus primeros 30 productos',
       'Panel autoadministrable desde tu celular para cambiar precios u ofertas en 10 segundos',
+    ],
+    addons: [
+      { name: 'Control de stock avanzado', desc: 'Alertas automáticas cuando un producto está por agotarse, para que nunca le falles a un cliente.', price: '+$9.900/mes' },
+      { name: 'Reparto propio con mapa de despacho', desc: 'Tus repartidores ven las direcciones pendientes en un mapa y marcan la entrega como hecha.', price: '+$9.900/mes' },
+      { name: 'Multi-sucursal', desc: 'Un catálogo y panel por cada local, todo desde una sola cuenta.', price: '+$9.900/mes por sucursal adicional' },
     ],
     prices: {
       propiedad: { pie: 29000, monthly24: 29900, after24: 14900 },
@@ -107,7 +118,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'E-Commerce & Webpay',
     subtitle: 'Vende 24/7 en todo Chile con carrito, control de stock y pago con tarjetas',
     demoUrl: '/demos/ecommerce/index.html',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/comercio.jpg',
     icon: <ShoppingBag className="w-5 h-5" />,
     examples: 'Tiendas de ropa, pastelerías, artículos de mascotas, ferreterías, distribuidoras',
     allowsRevShare: true,
@@ -116,6 +127,11 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Pagos integrados con tarjetas de débito y crédito (Webpay / MercadoPago / Flow)',
       'Carga inicial asistida de hasta 60 productos con sus fotos y precios',
       'Panel autoadministrable simple para ajustar stock, precios y productos nuevos cuando quieras',
+    ],
+    addons: [
+      { name: 'Facturación electrónica SII integrada', desc: 'Boletas y facturas electrónicas se emiten solas al cerrar cada venta.', price: '+$14.900/mes' },
+      { name: 'Marketing automático', desc: 'Recupera carritos abandonados y envía ofertas automáticas por correo o WhatsApp.', price: '+$12.900/mes' },
+      { name: 'Multi-bodega / varios puntos de retiro', desc: 'Controla stock por bodega y permite retiro en más de una dirección.', price: '+$9.900/mes' },
     ],
     prices: {
       propiedad: { pie: 45000, monthly24: 44900, after24: 18900 },
@@ -129,7 +145,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Portafolio & Cotizador m²',
     subtitle: 'Presencia de alto estándar con galería de proyectos y pre-cotizador interactivo',
     demoUrl: '/demos/arquitectura/index.html',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/profesional.jpg',
     icon: <Compass className="w-5 h-5" />,
     examples: 'Estudios de arquitectura, constructoras, oficinas contables, estudios jurídicos, ingenierías',
     allowsRevShare: false,
@@ -139,10 +155,15 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Agenda integrada para reuniones online o presenciales y correos corporativos',
       'Panel autoadministrable para subir nuevas obras o actualizar valores de referencia',
     ],
+    addons: [
+      { name: 'Firma digital de documentos', desc: 'Tus clientes firman contratos y propuestas sin imprimir, con validez legal.', price: '+$9.900/mes' },
+      { name: 'Portal privado de clientes', desc: 'Cada cliente ve el avance de su proyecto o causa con su propia clave.', price: '+$14.900/mes' },
+      { name: 'Integración con software contable', desc: 'Conecta tu cotizador con tu sistema contable para no duplicar datos.', price: '+$12.900/mes' },
+    ],
     prices: {
-      propiedad: { pie: 35000, monthly24: 34900, after24: 14900 },
-      socio: { setup: 39000, baseMonthly: 24900, revShare: 'Solo Cuota Fija (0% comisión)' },
-      arriendo: { setup: 39000, monthly: 24900 },
+      propiedad: { pie: 39000, monthly24: 39900, after24: 16900 },
+      socio: { setup: 45000, baseMonthly: 22900, revShare: 'Solo Cuota Fija (0% comisión)' },
+      arriendo: { setup: 45000, monthly: 29900 },
     },
   },
   servicios: {
@@ -151,7 +172,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Agenda Online & Abonos',
     subtitle: 'Reserva de horas 24/7 con abono previo para eliminar las horas perdidas',
     demoUrl: '/demos/clinica/index.html',
-    image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/servicios.jpg',
     icon: <Calendar className="w-5 h-5" />,
     examples: 'Clínicas dentales, centros de estética, kinesiólogos, psicólogos, barberías, veterinarias',
     allowsRevShare: true,
@@ -161,10 +182,15 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Carga inicial de profesionales, aranceles y horarios + panel autoadministrable',
       'Recordatorios automáticos de cita para tus pacientes o clientes',
     ],
+    addons: [
+      { name: 'Ficha clínica digital', desc: 'Historial de cada paciente o cliente guardado y disponible en cada visita.', price: '+$14.900/mes' },
+      { name: 'Recordatorios también por SMS', desc: 'Además del WhatsApp, un SMS de respaldo para quienes no lo leen a tiempo.', price: '+$9.900/mes' },
+      { name: 'Multi-sede', desc: 'Varios profesionales o sucursales agendando en paralelo desde el mismo sistema.', price: '+$9.900/mes' },
+    ],
     prices: {
-      propiedad: { pie: 39000, monthly24: 39900, after24: 16900 },
-      socio: { setup: 45000, baseMonthly: 22900, revShare: '5% por reserva pagada online' },
-      arriendo: { setup: 45000, monthly: 29900 },
+      propiedad: { pie: 29000, monthly24: 29900, after24: 14900 },
+      socio: { setup: 35000, baseMonthly: 19900, revShare: '5% por reserva pagada online' },
+      arriendo: { setup: 35000, monthly: 19900 },
     },
   },
   academia: {
@@ -173,15 +199,20 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Aula Virtual & Diplomas',
     subtitle: 'Tu propio campus virtual para vender cursos con pruebas y diplomas PDF',
     demoUrl: '/demos/academia/index.html',
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/academia.jpg',
     icon: <GraduationCap className="w-5 h-5" />,
     examples: 'OTECs, profesores independientes, academias de idiomas, repostería o capacitación técnica',
     allowsRevShare: true,
     deliverables: [
       'Campus virtual propio con acceso para alumnos desde celular, tablet o computador',
-      'Nosotros subimos tus primeros cursos (videos, manuales PDF y cuestionarios)',
+      'Nosotros subimos tus primeros cursos (videos alojados vía link de YouTube/Vimeo, manuales PDF y cuestionarios)',
       'Emisión automática de certificado/diploma PDF con firma y validación QR',
       'Matrícula pagada en línea con activación automática del alumno',
+    ],
+    addons: [
+      { name: 'Fiscalización SENCE NCh2728 completa', desc: 'Control anti-bypass de video, registro de asistencia y reportería lista para auditoría SENCE.', price: '+$29.900/mes' },
+      { name: 'Asistente Virtual IA 24/7 para alumnos', desc: 'Responde dudas frecuentes de tus alumnos por WhatsApp a cualquier hora, sin que tú tengas que estar ahí.', price: '+$14.900/mes' },
+      { name: 'Hosting de video propio', desc: 'Tus videos quedan en servidor propio en vez de depender de un link externo de YouTube.', price: '+$19.900/mes' },
     ],
     prices: {
       propiedad: { pie: 49000, monthly24: 49900, after24: 19900 },
@@ -195,7 +226,7 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
     tag: 'Órdenes & Seguimiento Patente',
     subtitle: 'Tus clientes consultan el estado de su vehículo/equipo en vivo y tú ordenas tu taller',
     demoUrl: '/demos/taller/index.html',
-    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=80',
+    image: '/impulsa/gestion.jpg',
     icon: <Wrench className="w-5 h-5" />,
     examples: 'Talleres mecánicos, servicios técnicos de celulares/PC, imprentas, empresas de mantención',
     allowsRevShare: false,
@@ -204,6 +235,11 @@ const BUSINESS_TYPES: Record<BusinessType, BusinessConfig> = {
       'Aprobación en línea de presupuestos de repuestos y mano de obra',
       'Panel autoadministrable para actualizar estados de bahía en 5 segundos desde el taller',
       'Capacitación inicial a tu equipo y continuidad operativa en servidor dedicado',
+    ],
+    addons: [
+      { name: 'Inventario de repuestos', desc: 'Control de stock de repuestos con alertas cuando algo se está por agotar.', price: '+$9.900/mes' },
+      { name: 'Multi-sucursal', desc: 'Varios talleres o sucursales operando desde el mismo sistema.', price: '+$9.900/mes' },
+      { name: 'Integración con proveedores de repuestos', desc: 'Consulta precios y disponibilidad de tus proveedores sin salir del sistema.', price: '+$14.900/mes' },
     ],
     prices: {
       propiedad: { pie: 45000, monthly24: 46900, after24: 18900 },
@@ -220,6 +256,21 @@ export const ImpulsaPyme: React.FC = () => {
   const [includeFormalizacion, setIncludeFormalizacion] = useState<boolean>(false);
   const [includeAsistente, setIncludeAsistente] = useState<boolean>(false);
   const [includeGoogleAds, setIncludeGoogleAds] = useState<boolean>(false);
+
+  const { rubro } = useParams<{ rubro?: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const rubroPage: BusinessType | null = rubro && rubro in BUSINESS_TYPES ? (rubro as BusinessType) : null;
+  const rubroPageInvalid = Boolean(rubro) && !rubroPage;
+
+  useEffect(() => {
+    const navState = location.state as { biz?: BusinessType; tab?: ActiveTab } | null;
+    if (navState?.biz) {
+      setSelectedBiz(navState.biz);
+      if (navState.tab) setActiveTab(navState.tab);
+    }
+    window.scrollTo(0, 0);
+  }, [location.key]);
 
   const currentBiz = BUSINESS_TYPES[selectedBiz];
   const fmtCLP = (n: number) => '$' + n.toLocaleString('es-CL');
@@ -266,6 +317,10 @@ export const ImpulsaPyme: React.FC = () => {
         : '';
     return `¡Hola equipo Impulsa ProPyme (UNIVERSO693)! Estuve viendo las demos y simulando mi proyecto.\n\n• Mi rubro: *${biz}*\n• Modalidad elegida: *${modText}*${formText}${asistText}${adsText}\n\nMe gustaría agendar la reunión breve con mi Ejecutivo Asignado para conversar los detalles antes de contratar.`;
   };
+
+  if (rubroPageInvalid) {
+    return <Navigate to="/impulsa-pyme" replace />;
+  }
 
   return (
     <div
@@ -402,9 +457,145 @@ export const ImpulsaPyme: React.FC = () => {
         </header>
 
         {/* ===================================================================== */}
+        {/* PÁGINA PROPIA POR RUBRO (/impulsa-pyme/:rubro) — CON LINK COMPARTIBLE  */}
+        {/* ===================================================================== */}
+        {rubroPage && (
+          <main className="py-8 sm:py-12">
+            <Container>
+              <Link
+                to="/impulsa-pyme"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1B4D3E] hover:underline mb-5"
+              >
+                ← Volver a todos los rubros
+              </Link>
+
+              <div className="rounded-[28px] bg-white border-2 border-[#E6DEC8] overflow-hidden shadow-sm">
+                <div className="p-6 sm:p-9 pb-0">
+                  <span className="inline-flex items-center gap-1.5 bg-[#E9C46A] text-[#1F1A17] text-[11px] font-black uppercase px-3 py-1 rounded-full mb-3">
+                    {BUSINESS_TYPES[rubroPage].icon}
+                    {BUSINESS_TYPES[rubroPage].tag}
+                  </span>
+                  <h1 className="font-human text-2xl sm:text-4xl font-semibold text-[#1F1A17] leading-tight">{BUSINESS_TYPES[rubroPage].name}</h1>
+                </div>
+
+                <div className="p-6 sm:p-9 pt-5">
+                  <div className="rounded-2xl overflow-hidden border-2 border-stone-300 shadow-lg">
+                    <div className="bg-stone-900 px-4 py-2.5 flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                      <span className="ml-2 text-[11px] text-stone-400 font-mono">tunegocio.cl — captura real del sistema</span>
+                    </div>
+                    <div className="bg-stone-100">
+                      <img
+                        src={`/impulsa/${rubroPage}-software.png`}
+                        alt={`Software real: ${BUSINESS_TYPES[rubroPage].name}`}
+                        className="w-full h-auto block"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-6 sm:px-9 pb-9 space-y-7">
+                  <div>
+                    <p className="text-sm sm:text-base text-[#574C43] leading-relaxed">{BUSINESS_TYPES[rubroPage].subtitle}</p>
+                    <p className="text-xs text-[#8C7A6B] mt-1.5">
+                      <strong>Pensado para:</strong> {BUSINESS_TYPES[rubroPage].examples}
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div className="bg-[#FAF6F0] rounded-2xl border-2 border-[#E6DEC8] p-5">
+                      <div className="inline-flex items-center gap-2 bg-[#E3F2EA] text-[#1B4D3E] text-xs font-black px-3 py-1 rounded-full uppercase mb-3">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Incluido desde {fmtCLP(BUSINESS_TYPES[rubroPage].prices.arriendo.monthly)}/mes
+                      </div>
+                      <ul className="space-y-2.5 text-sm text-stone-700">
+                        {BUSINESS_TYPES[rubroPage].deliverables.map((d, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#15803d] mt-0.5 shrink-0" />
+                            <span>{d}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-[#FFFDF9] rounded-2xl border-2 border-dashed border-[#E2CFA5] p-5">
+                      <div className="inline-flex items-center gap-2 bg-[#F3E9D2] text-[#7C4D25] text-xs font-black px-3 py-1 rounded-full uppercase mb-3">
+                        <Plus className="w-3.5 h-3.5" />
+                        Todo el potencial que le puedes sacar
+                      </div>
+                      <p className="text-xs text-stone-500 mb-3">
+                        Esto es un piso, no un techo. Partes simple y vas sumando a medida que tu negocio crece:
+                      </p>
+                      <ul className="space-y-3 text-sm">
+                        {BUSINESS_TYPES[rubroPage].addons.map((a, i) => (
+                          <li key={i} className="flex items-start justify-between gap-3 border-b border-[#E6DEC8] last:border-0 pb-2.5 last:pb-0">
+                            <div>
+                              <div className="font-bold text-[#1F1A17]">{a.name}</div>
+                              <div className="text-xs text-stone-500">{a.desc}</div>
+                            </div>
+                            <span className="shrink-0 text-xs font-black text-[#C85A32] whitespace-nowrap">{a.price}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <div className="rounded-2xl bg-stone-50 border border-stone-200 p-4">
+                      <div className="text-[11px] font-black uppercase text-stone-500">Suscripción Accesible</div>
+                      <div className="text-lg font-black text-[#0f172a]">{fmtCLP(BUSINESS_TYPES[rubroPage].prices.arriendo.monthly)}/mes</div>
+                      <div className="text-[11px] text-stone-500">+ {fmtCLP(BUSINESS_TYPES[rubroPage].prices.arriendo.setup)} habilitación</div>
+                    </div>
+                    <div className="rounded-2xl bg-stone-50 border border-stone-200 p-4">
+                      <div className="text-[11px] font-black uppercase text-stone-500">Derecho a Compra (24m)</div>
+                      <div className="text-lg font-black text-[#0f172a]">{fmtCLP(BUSINESS_TYPES[rubroPage].prices.propiedad.monthly24)}/mes</div>
+                      <div className="text-[11px] text-stone-500">y al mes 24 es 100% tuyo</div>
+                    </div>
+                    {BUSINESS_TYPES[rubroPage].allowsRevShare ? (
+                      <div className="rounded-2xl bg-stone-50 border border-stone-200 p-4">
+                        <div className="text-[11px] font-black uppercase text-stone-500">Socio a % Ventas</div>
+                        <div className="text-lg font-black text-[#0f172a]">{fmtCLP(BUSINESS_TYPES[rubroPage].prices.socio.baseMonthly)}/mes</div>
+                        <div className="text-[11px] text-stone-500">+ {BUSINESS_TYPES[rubroPage].prices.socio.revShare}</div>
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl bg-stone-50 border border-stone-200 p-4">
+                        <div className="text-[11px] font-black uppercase text-stone-500">Alianza Impulsa</div>
+                        <div className="text-lg font-black text-[#0f172a]">{fmtCLP(BUSINESS_TYPES[rubroPage].prices.socio.baseMonthly)}/mes</div>
+                        <div className="text-[11px] text-stone-500">{BUSINESS_TYPES[rubroPage].prices.socio.revShare}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => navigate('/impulsa-pyme', { state: { biz: rubroPage, tab: 'demos' } })}
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#F3E9D2] hover:bg-[#E8D8B5] text-[#5C3A1B] font-bold text-sm py-3.5 transition-colors cursor-pointer"
+                    >
+                      <MonitorPlay className="w-4 h-4" />
+                      Ver Demo en Vivo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/impulsa-pyme', { state: { biz: rubroPage, tab: 'simulador' } })}
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#1B4D3E] hover:bg-[#143B2F] text-white font-bold text-sm py-3.5 transition-colors cursor-pointer"
+                    >
+                      <Coffee className="w-4 h-4 text-[#E9C46A]" />
+                      Armar mi Plan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Container>
+          </main>
+        )}
+
+        {/* ===================================================================== */}
         {/* PESTAÑA 1: BIENVENIDA HUMANA Y RUBROS                                  */}
         {/* ===================================================================== */}
-        {activeTab === 'inicio' && (
+        {!rubroPage && activeTab === 'inicio' && (
           <main className="py-10 lg:py-14 space-y-16">
             {/* HERO EDITORIAL CÁLIDO Y EMPÁTICO */}
             <Container>
@@ -586,7 +777,10 @@ export const ImpulsaPyme: React.FC = () => {
                       key={key}
                       className="group rounded-[28px] bg-[#FFFDF9] border-2 border-[#E6DEC8] hover:border-[#1B4D3E] overflow-hidden shadow-xs hover:shadow-xl transition-all flex flex-col justify-between"
                     >
-                      <div>
+                      <Link
+                        to={`/impulsa-pyme/${key}`}
+                        className="text-left block"
+                      >
                         <div className="relative h-48 overflow-hidden bg-stone-200">
                           <img
                             src={b.image}
@@ -603,16 +797,19 @@ export const ImpulsaPyme: React.FC = () => {
                           </div>
                         </div>
 
-                        <div className="p-6 space-y-2">
-                          <h3 className="font-human text-lg font-semibold text-[#1F1A17] leading-snug">{b.name}</h3>
+                        <div className="p-6 pb-3 space-y-2">
+                          <h3 className="font-human text-lg font-semibold text-[#1F1A17] leading-snug group-hover:text-[#1B4D3E] transition-colors">{b.name}</h3>
                           <p className="text-xs text-[#574C43] leading-relaxed">{b.subtitle}</p>
                           <p className="text-[11px] text-[#8C7A6B] pt-1">
                             <strong>Pensado para:</strong> {b.examples}
                           </p>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#C85A32] pt-1">
+                            Ver todo lo que incluye y puedes sumarle <ArrowRight className="w-3 h-3" />
+                          </span>
                         </div>
-                      </div>
+                      </Link>
 
-                      <div className="px-6 pb-6 grid grid-cols-2 gap-2.5">
+                      <div className="px-6 pb-6 pt-3 grid grid-cols-2 gap-2.5">
                         <button
                           type="button"
                           onClick={() => switchTab('demos', key)}
@@ -739,7 +936,7 @@ export const ImpulsaPyme: React.FC = () => {
         {/* ===================================================================== */}
         {/* PESTAÑA 2: GALERÍA DE DEMOS EN VIVO (INTERACTIVA POR RUBRO)            */}
         {/* ===================================================================== */}
-        {activeTab === 'demos' && (
+        {!rubroPage && activeTab === 'demos' && (
           <main className="py-10 lg:py-12">
             <Container>
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -860,6 +1057,45 @@ export const ImpulsaPyme: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* INCLUIDO EN LA BASE VS QUÉ PUEDES SUMARLE: EL PRECIO ES UN PISO, NO UN TECHO */}
+              <div className="mt-8 grid md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-3xl border-2 border-[#E6DEC8] p-6">
+                  <div className="inline-flex items-center gap-2 bg-[#E3F2EA] text-[#1B4D3E] text-xs font-black px-3 py-1 rounded-full uppercase mb-3">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Incluido desde {fmtCLP(currentBiz.prices.arriendo.monthly)}/mes
+                  </div>
+                  <ul className="space-y-2.5 text-sm text-stone-700">
+                    {currentBiz.deliverables.map((d, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#15803d] mt-0.5 shrink-0" />
+                        <span>{d}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-[#FFFDF9] rounded-3xl border-2 border-dashed border-[#E2CFA5] p-6">
+                  <div className="inline-flex items-center gap-2 bg-[#F3E9D2] text-[#7C4D25] text-xs font-black px-3 py-1 rounded-full uppercase mb-3">
+                    <Plus className="w-3.5 h-3.5" />
+                    Lo puedes personalizar sumando esto
+                  </div>
+                  <p className="text-xs text-stone-500 mb-3">
+                    El precio base es un piso, no un techo: casi cualquier negocio de este rubro puede agregar módulos extra sin cambiar de plataforma.
+                  </p>
+                  <ul className="space-y-3 text-sm">
+                    {currentBiz.addons.map((a, i) => (
+                      <li key={i} className="flex items-start justify-between gap-3 border-b border-[#E6DEC8] last:border-0 pb-2.5 last:pb-0">
+                        <div>
+                          <div className="font-bold text-[#1F1A17]">{a.name}</div>
+                          <div className="text-xs text-stone-500">{a.desc}</div>
+                        </div>
+                        <span className="shrink-0 text-xs font-black text-[#C85A32] whitespace-nowrap">{a.price}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </Container>
           </main>
         )}
@@ -867,7 +1103,7 @@ export const ImpulsaPyme: React.FC = () => {
         {/* ===================================================================== */}
         {/* PESTAÑA 3: LAS 3 MODALIDADES + TABLA + EMPRESA EN UN DÍA              */}
         {/* ===================================================================== */}
-        {activeTab === 'modalidades' && (
+        {!rubroPage && activeTab === 'modalidades' && (
           <main className="py-10 lg:py-14 space-y-12">
             <Container>
               <div className="max-w-3xl mx-auto text-center space-y-2 mb-10">
@@ -1067,7 +1303,7 @@ export const ImpulsaPyme: React.FC = () => {
         {/* ===================================================================== */}
         {/* PESTAÑA 4: SIMULADOR INTERACTIVO EN VIVO                              */}
         {/* ===================================================================== */}
-        {activeTab === 'simulador' && (
+        {!rubroPage && activeTab === 'simulador' && (
           <main className="py-10 lg:py-12">
             <Container>
               <div className="grid lg:grid-cols-12 gap-8 items-start">
@@ -1547,6 +1783,7 @@ export const ImpulsaPyme: React.FC = () => {
           </div>
         </Container>
       </footer>
+
     </div>
   );
 };
