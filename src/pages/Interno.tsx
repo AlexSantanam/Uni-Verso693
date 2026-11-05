@@ -34,6 +34,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, mapOf, leakArea, type CompanyMap, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
+import { ProspeccionTab } from '../components/ProspeccionTab';
 
 // Internal workspace (/interno). Spanish only, not indexed, not linked from the site.
 // Everything goes through api/admin.ts with a bearer token saved in this browser.
@@ -49,6 +50,7 @@ export interface UserPermissions {
   audit: boolean;
   ajustes: boolean;
   usuarios: boolean;
+  prospeccion?: boolean;
 }
 
 export interface AppUser {
@@ -74,6 +76,7 @@ const DEFAULT_USER_PERMISSIONS: UserPermissions = {
   audit: false,
   ajustes: false,
   usuarios: false,
+  prospeccion: true,
 };
 
 type Unit = 'proyecto' | 'mes' | 'hora' | 'unidad';
@@ -4510,13 +4513,14 @@ const UsersAdmin = ({ api }: { api: Api }) => {
 };
 
 // ---------------------------------------------------------------- shell
-type Tab = 'solicitudes' | 'whatsapp' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'usuarios' | 'ajustes';
+type Tab = 'solicitudes' | 'whatsapp' | 'prospeccion' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'usuarios' | 'ajustes';
 
 // EBS first: it's the main working tool, the rest supports it
 const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
   { id: 'ebs', label: 'EBS 693', Icon: Target },
   { id: 'solicitudes', label: 'Solicitudes', Icon: Inbox },
   { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
+  { id: 'prospeccion', label: 'Prospección B2B', Icon: Send },
   { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
   { id: 'facturacion', label: 'Facturación', Icon: Receipt },
   { id: 'boveda', label: 'Bóveda', Icon: KeyRound },
@@ -4676,6 +4680,8 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
           />
         ) : tab === 'whatsapp' ? (
           <WhatsAppInbox api={api} onUnread={setWaUnread} />
+        ) : tab === 'prospeccion' ? (
+          <ProspeccionTab token={token} />
         ) : tab === 'cotizaciones' ? (
           <Quotes api={api} settings={settings} onOpen={setEditing} onNew={() => setEditing(emptyQuote(settings))} />
         ) : tab === 'facturacion' ? (

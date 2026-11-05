@@ -13,6 +13,7 @@ import { Audit } from './pages/Audit';
 import { Diagnostico } from './pages/Diagnostico';
 import { Industry } from './pages/Industry';
 import { PaginasWeb } from './pages/PaginasWeb';
+import { ImpulsaPyme } from './pages/ImpulsaPyme';
 import { AuditoriaDetalle } from './pages/AuditoriaDetalle';
 import { Container } from './components/ui';
 
@@ -33,9 +34,17 @@ const NotFound: React.FC = () => (
   </Container>
 );
 
+/** Detect if accessed via standalone subdomain (impulsa.universo693.com or propyme.universo693.com) */
+const isImpulsaSubdomain =
+  typeof window !== 'undefined' &&
+  (window.location.hostname.startsWith('impulsa.') || window.location.hostname.startsWith('propyme.'));
+
 /** Route table shared by the browser app and the build-time prerender (src/entry-server.tsx). */
 export const AppRoutes: React.FC = () => (
         <Routes>
+          {isImpulsaSubdomain && <Route index element={<ImpulsaPyme />} />}
+          <Route path="impulsa-pyme" element={<ImpulsaPyme />} />
+          <Route path="propyme" element={<ImpulsaPyme />} />
           <Route
             path="interno"
             element={

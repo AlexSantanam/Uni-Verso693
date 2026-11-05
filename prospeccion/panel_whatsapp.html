@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Prospección con Auditoría Automática - UNIVERSO693</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8FAFC;
+            margin: 0;
+            padding: 30px;
+            color: #1A202C;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E2E8F0;
+            overflow: hidden;
+        }
+        .header {
+            background: #1A365D;
+            color: white;
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header-title h1 { margin: 0; font-size: 20px; }
+        .header-title p { margin: 6px 0 0 0; font-size: 13px; color: #CBD5E0; }
+        .header-stats {
+            background: rgba(255,255,255,0.12);
+            padding: 10px 18px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13px;
+        }
+        .counter-badge {
+            background: #25D366;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .btn-reset:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th {
+            background: #F1F5F9;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #4A5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+        tr:hover {
+            background-color: #F8FAFC;
+        }
+        .row-sent {
+            background-color: #F0FDF4 !important;
+        }
+        .btn-sent {
+            background-color: #4A5568 !important;
+            box-shadow: none !important;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>🚀 Panel de Prospección Quirúrgica (Auditoría en Vivo)</h1>
+                <p>UNIVERSO693 SpA &bull; Propuestas automáticas generadas a partir del análisis real del sitio web de cada cliente.</p>
+            </div>
+            <div class="header-stats">
+                <div>Progreso: <span id="sent-count" class="counter-badge">0 / 9</span></div>
+                <button class="btn-reset" onclick="resetAll()">Restablecer marcas</button>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 26%;">Empresa / Web</th>
+                    <th style="width: 24%;">Contacto / Canales</th>
+                    <th style="width: 33%;">Diagnóstico de Auditoría y Propuesta</th>
+                    <th style="width: 17%; text-align: center;">Acción WhatsApp</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr id="row-CL-001" class="lead-row" data-id="CL-001">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Odontoviña Clínica Dental</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Salud Dental &bull; Viña del Mar</div>
+                <div style="margin-top: 4px;"><a href='https://odontovina.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 odontovina.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Equipo Directivo</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56939273177</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ clinica.odontovina@gmail.com</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    A Medida / Desconocido Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-001" 
+                   href="https://api.whatsapp.com/send?phone=56939273177&text=Hola%20Equipo%20Directivo%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Odontovi%C3%B1a%20Cl%C3%ADnica%20Dental%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-001')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-001" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-002" class="lead-row" data-id="CL-002">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Dentalmar Odontología</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Salud Dental &bull; Viña del Mar</div>
+                <div style="margin-top: 4px;"><a href='https://dentalmar.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 dentalmar.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Dra. Dirección Médica</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56997317171</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ info@dentalmar.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    WordPress Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-002" 
+                   href="https://api.whatsapp.com/send?phone=56997317171&text=Hola%20Dra.%20Direcci%C3%B3n%20M%C3%A9dica%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Dentalmar%20Odontolog%C3%ADa%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-002')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-002" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-003" class="lead-row" data-id="CL-003">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Clínica Dental y Estética VM</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Dental y Estética Facial &bull; Reñaca</div>
+                <div style="margin-top: 4px;"><a href='https://clinicadentalvm.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 clinicadentalvm.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Dr. Dirección Clínica</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56975592776</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ contacto@clinicadentalvm.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    A Medida / Desconocido Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-003" 
+                   href="https://api.whatsapp.com/send?phone=56975592776&text=Hola%20Dr.%20Direcci%C3%B3n%20Cl%C3%ADnica%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Cl%C3%ADnica%20Dental%20y%20Est%C3%A9tica%20VM%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-003')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-003" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-004" class="lead-row" data-id="CL-004">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Edent Clínica Dental</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Salud Dental &bull; Viña del Mar</div>
+                <div style="margin-top: 4px;"><a href='https://edent.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 edent.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Equipo de Gestión</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56973569523</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ eden.clinicadental.vina@gmail.com</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    WordPress Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-004" 
+                   href="https://api.whatsapp.com/send?phone=56973569523&text=Hola%20Equipo%20de%20Gesti%C3%B3n%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Edent%20Cl%C3%ADnica%20Dental%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-004')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-004" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-005" class="lead-row" data-id="CL-005">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Meser Climatización Residencial</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Climatización y HVAC &bull; Las Condes</div>
+                <div style="margin-top: 4px;"><a href='https://meser.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 meser.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Gerencia Comercial</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56982351110</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ contacto@meser.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    A Medida / Desconocido Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-005" 
+                   href="https://api.whatsapp.com/send?phone=56982351110&text=Hola%20Gerencia%20Comercial%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Meser%20Climatizaci%C3%B3n%20Residencial%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-005')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-005" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-006" class="lead-row" data-id="CL-006">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">RAISA Climatizaciones</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Climatización y Aire Acondicionado &bull; Santiago Centro</div>
+                <div style="margin-top: 4px;"><a href='https://raisaclimatizaciones.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 raisaclimatizaciones.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Área de Ventas y Proyectos</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56933206872</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ ventas@raisaclimatizaciones.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    A Medida / Desconocido Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-006" 
+                   href="https://api.whatsapp.com/send?phone=56933206872&text=Hola%20%C3%81rea%20de%20Ventas%20y%20Proyectos%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20RAISA%20Climatizaciones%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-006')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-006" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-007" class="lead-row" data-id="CL-007">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Aires Chile Proyectos</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Climatización Industrial y Comercial &bull; Las Condes</div>
+                <div style="margin-top: 4px;"><a href='https://aireschile.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 aireschile.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Cristián Herman</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56990870829</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ cherman@aireschile.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    Error Conexión
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Creación de sitio web moderno y optimizado
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-007" 
+                   href="https://api.whatsapp.com/send?phone=56990870829&text=Hola%20Cristi%C3%A1n%20Herman%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Aires%20Chile%20Proyectos%3A%20not%C3%A9%20que%20su%20presencia%20en%20internet%20est%C3%A1%20desactualizada%20y%20les%20vendr%C3%ADa%20muy%20bien%20una%20landing%20moderna.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-007')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-007" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-008" class="lead-row" data-id="CL-008">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Clínica Indira Estética</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Medicina Estética y Cuidado Facial &bull; Concepción</div>
+                <div style="margin-top: 4px;"><a href='https://clinicaindira.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 clinicaindira.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Dra. Dirección Médica</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56974887372</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ contacto@clinicaindira.cl</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    WordPress Informativo
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Integración de pasarela de citas y cotizador interactivo para multiplicar consultas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-008" 
+                   href="https://api.whatsapp.com/send?phone=56974887372&text=Hola%20Dra.%20Direcci%C3%B3n%20M%C3%A9dica%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Cl%C3%ADnica%20Indira%20Est%C3%A9tica%3A%20estuve%20en%20su%20sitio%20web%20y%20not%C3%A9%20una%20oportunidad%20clave%20para%20agregarle%20un%20cotizador/agendador%20interactivo%20que%20convierta%20visitantes%20en%20clientes%20al%20instante.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-008')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-008" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+        <tr id="row-CL-009" class="lead-row" data-id="CL-009">
+            <td style="padding: 14px 16px;">
+                <div style="font-weight: 700; color: #1A365D; font-size: 14px;">Clínica OH Estética</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">Estética Integral y Bienestar &bull; Concepción</div>
+                <div style="margin-top: 4px;"><a href='https://reservo.cl' target='_blank' style='color: #2B6CB0; text-decoration: none; font-size: 11px;'>🔗 reservo.cl</a></div>
+            </td>
+            <td style="padding: 14px 16px;">
+                <div style="color: #2D3748; font-weight: 500;">Equipo de Atención</div>
+                <div style="font-size: 12px; color: #4A5568; margin-top: 2px;">📞 +56926083260</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 2px;">✉️ contacto.clinicaoh@gmail.com</div>
+            </td>
+            <td style="padding: 14px 16px; max-width: 300px;">
+                <div style="display: inline-block; background-color: #EDF2F7; color: #2B6CB0; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 5px;">
+                    A Medida / Desconocido con Agenda
+                </div>
+                <div style="font-size: 12.5px; color: #2D3748; line-height: 1.4;">
+                    <strong>Propuesta Auditada:</strong> Asistente de inteligencia artificial por WhatsApp para triaje de pacientes y confirmación de horas
+                </div>
+            </td>
+            <td style="padding: 14px 16px; text-align: center; vertical-align: middle;">
+                <a id="btn-CL-009" 
+                   href="https://api.whatsapp.com/send?phone=56926083260&text=Hola%20Equipo%20de%20Atenci%C3%B3n%2C%20buen%20d%C3%ADa.%20Te%20escribe%20Alexis%20Santana%20de%20UNIVERSO693%20SpA.%0A%0ATe%20envi%C3%A9%20un%20correo%20breve%20con%20una%20propuesta%20para%20Cl%C3%ADnica%20OH%20Est%C3%A9tica%3A%20vi%20que%20ya%20tienen%20reservas%20online%3B%20tenemos%20un%20asistente%20de%20WhatsApp%20con%20IA%20que%20confirma%20horas%20autom%C3%A1ticamente%20para%20reducir%20el%20ausentismo%20de%20pacientes%20en%20un%2030%25.%0A%0ATenemos%20una%20modalidad%20de%20arriendo%20mensual%20desde%20%2445.000%20sin%20costo%20de%20desarrollo%20inicial%2C%20para%20que%20no%20tengan%20que%20desembolsar%20capital%20fuerte.%0A%0ATe%20escribo%20por%20ac%C3%A1%20solo%20para%20confirmar%20si%20te%20lleg%C3%B3%20bien%20el%20correo%20a%20tu%20bandeja%20principal.%20Saludos%21" 
+                   target="_blank" 
+                   onclick="markAsSent('CL-009')"
+                   class="wa-btn"
+                   style="background-color: #25D366; color: white; padding: 10px 18px; text-decoration: none; font-weight: 700; font-size: 13px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                   <span class="btn-icon">📱</span> <span class="btn-text">Enviar WhatsApp</span>
+                </a>
+                <div id="status-CL-009" class="status-badge" style="display: none; font-size: 11px; color: #2B6CB0; font-weight: 600; margin-top: 6px;">
+                    Enviado
+                </div>
+            </td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'u693_whatsapp_sent_leads';
+
+        function getSentLeads() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveSentLeads(leads) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+            updateUI();
+        }
+
+        function markAsSent(id) {
+            let sent = getSentLeads();
+            if (!sent.includes(id)) {
+                sent.push(id);
+                saveSentLeads(sent);
+            }
+        }
+
+        function resetAll() {
+            if (confirm("¿Deseas reiniciar las marcas de enviado de todos los clientes?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        function updateUI() {
+            const sent = getSentLeads();
+            const allRows = document.querySelectorAll('.lead-row');
+            
+            allRows.forEach(row => {
+                const id = row.getAttribute('data-id');
+                const btn = document.getElementById('btn-' + id);
+                const status = document.getElementById('status-' + id);
+
+                if (sent.includes(id)) {
+                    row.classList.add('row-sent');
+                    if (btn) {
+                        btn.classList.add('btn-sent');
+                        btn.querySelector('.btn-icon').textContent = '✅';
+                        btn.querySelector('.btn-text').textContent = 'Enviado / Reabrir';
+                    }
+                    if (status) status.style.display = 'block';
+                } else {
+                    row.classList.remove('row-sent');
+                    if (btn) {
+                        btn.classList.remove('btn-sent');
+                        btn.querySelector('.btn-icon').textContent = '📱';
+                        btn.querySelector('.btn-text').textContent = 'Enviar WhatsApp';
+                    }
+                    if (status) status.style.display = 'none';
+                }
+            });
+
+            const counter = document.getElementById('sent-count');
+            if (counter) {
+                counter.textContent = sent.length + ' / ' + allRows.length;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateUI);
+    </script>
+</body>
+</html>
+    
