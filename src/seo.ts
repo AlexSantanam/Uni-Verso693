@@ -41,7 +41,7 @@ const organization = {
   logo: LOGO,
   image: OG_IMAGE,
   description:
-    'Empresa chilena de desarrollo de software: plataformas a medida, agentes de IA, aplicaciones móviles y producto digital para empresas.',
+    'Empresa chilena de desarrollo de software e inteligencia artificial aplicada: soluciones ProPyme, plataformas a medida, agentes de IA para WhatsApp, campus virtuales SENCE y soberanía digital para empresas en crecimiento.',
   subOrganization: [
     { '@type': 'Organization', name: 'YndiPet', url: 'https://yndipet.com' },
     { '@type': 'Organization', name: 'MEMORA', url: 'https://memora.lat' },
@@ -65,14 +65,32 @@ const organization = {
     ...(CONTACT_EMAIL && { email: CONTACT_EMAIL }),
     ...(WHATSAPP_NUMBER && { telephone: `+${WHATSAPP_NUMBER}` }),
   },
-  makesOffer: {
-    '@type': 'Offer',
-    name: `${ebs.name}: diagnóstico estratégico de IA`,
-    description: 'Sesión de 45 minutos que entrega una hoja de ruta priorizada con ROI estimado.',
-    price: '197000',
-    priceCurrency: 'CLP',
-    url: `${SITE_URL}/diagnostico-ia`,
-  },
+  makesOffer: [
+    {
+      '@type': 'Offer',
+      name: `${ebs.name}: diagnóstico estratégico de IA`,
+      description: 'Sesión de 45 minutos que entrega una hoja de ruta priorizada con ROI estimado.',
+      price: '197000',
+      priceCurrency: 'CLP',
+      url: `${SITE_URL}/diagnostico-ia`,
+    },
+    {
+      '@type': 'Offer',
+      name: 'Programa Impulsa ProPyme: arriendo y leasing de plataformas web para PyMEs',
+      description: 'Desarrollo de sitios web de alto rendimiento, e-commerce, cartas QR y sistemas a medida desde $19.900 CLP/mes o leasing 24 meses.',
+      price: '19900',
+      priceCurrency: 'CLP',
+      url: `${SITE_URL}/impulsa-pyme`,
+    },
+    {
+      '@type': 'Offer',
+      name: 'AUDIT 693 PRO: informe técnico de optimización y automatización',
+      description: 'Auditoría integral web con estimación de costos manuales y 8-10 oportunidades de automatización con IA.',
+      price: '19990',
+      priceCurrency: 'CLP',
+      url: `${SITE_URL}/audit-693`,
+    },
+  ],
 };
 
 const website = {
@@ -111,9 +129,9 @@ const serviceTitles: Record<string, string> = {
 
 const home: PageSeo = {
   path: '/',
-  title: `Desarrollo de software a medida e IA en Chile | ${SITE_NAME}`,
+  title: `Desarrollo de Software a Medida, IA & Soluciones ProPyme en Chile | ${SITE_NAME}`,
   description:
-    'Empresa chilena de desarrollo de software: plataformas a medida, agentes de IA para WhatsApp y web, apps móviles y producto digital. Casos reales en producción.',
+    'Empresa chilena de ingeniería de software e IA aplicada: plataformas a medida, agentes de IA para WhatsApp, programa Impulsa ProPyme y soberanía tecnológica sin vendor lock-in.',
   priority: 1,
   jsonLd: graph({
     '@type': 'FAQPage',
@@ -491,40 +509,53 @@ const ebsViewPage: PageSeo = {
   jsonLd: [],
 };
 
-const impulsaPymePage: PageSeo = {
-  path: '/impulsa-pyme',
-  title: `Impulsa ProPyme: tu página web desde $19.900/mes | ${SITE_NAME}`,
-  description: clip(
-    'Páginas web y sistemas a medida para negocios chilenos: restaurantes, almacenes, tiendas online, estudios profesionales, salud y estética, academias OTEC y talleres. Demo en vivo, sin letra chica.',
-  ),
-  priority: 0.6,
-  jsonLd: graph(breadcrumb([{ name: 'Impulsa ProPyme', path: '/impulsa-pyme' }]), {
-    '@type': 'Service',
-    name: 'Impulsa ProPyme',
-    serviceType: 'Desarrollo de sitios web y sistemas a medida para PyMEs',
-    description: 'Programa de UNIVERSO693 SpA para digitalizar negocios chilenos con páginas web y sistemas a medida, financiados en modalidad de arriendo, derecho a compra o alianza por ventas.',
-    url: url('/impulsa-pyme'),
-    provider: { '@id': `${SITE_URL}/#org` },
-    areaServed: [{ '@type': 'Country', name: 'Chile' }],
-  }),
-};
-
 /** Catálogo de rubros Impulsa ProPyme: debe reflejar las keys y precios de BUSINESS_TYPES en src/pages/ImpulsaPyme.tsx. */
 const impulsaRubros: { slug: string; name: string; tag: string; description: string; fromPrice: number }[] = [
   { slug: 'restaurante', name: 'Restaurante, Fuente de Soda, Sushi o Gastrobar', tag: 'Carta QR en Mesa + Delivery', description: 'Tus clientes escanean el QR en su mesa o piden por Delivery directo a cocina y WhatsApp.', fromPrice: 24900 },
   { slug: 'almacen', name: 'Almacén de Barrio, Minimarket o Cafetería', tag: 'Catálogo & Pedidos WhatsApp', description: 'Vitrina digital de ofertas donde tus vecinos arman su pedido y te llega listo al WhatsApp.', fromPrice: 19900 },
-  { slug: 'comercio', name: 'Tienda Online, Pastelería, Boutique o Ferretería', tag: 'E-Commerce & Webpay', description: 'Vende 24/7 en todo Chile con carrito, control de stock y pago con tarjetas.', fromPrice: 32900 },
+  { slug: 'comercio', name: 'Tienda Online, Pastelería, Boutique o Ferretería', tag: 'E-Commerce & Webpay', description: 'Vende 24/7 en todo Chile con carrito, control de stock y pago con tarjetas.', fromPrice: 35900 },
   { slug: 'profesional', name: 'Estudio de Arquitectura, Contadores o Abogados', tag: 'Portafolio & Cotizador m²', description: 'Presencia de alto estándar con galería de proyectos y pre-cotizador interactivo.', fromPrice: 29900 },
-  { slug: 'servicios', name: 'Centro de Salud, Estética, Barbería o Veterinaria', tag: 'Agenda Online & Abonos', description: 'Reserva de horas 24/7 con abono previo para eliminar las horas perdidas.', fromPrice: 19900 },
-  { slug: 'academia', name: 'Academia, OTEC, Escuela de Oficios o Capacitación', tag: 'Aula Virtual & Diplomas', description: 'Tu propio campus virtual para vender cursos con pruebas y diplomas PDF.', fromPrice: 39900 },
-  { slug: 'gestion', name: 'Taller Mecánico, Servicio Técnico o Contratista', tag: 'Órdenes & Seguimiento Patente', description: 'Tus clientes consultan el estado de su vehículo/equipo en vivo y tú ordenas tu taller.', fromPrice: 34900 },
+  { slug: 'servicios', name: 'Centro de Salud, Estética, Barbería o Veterinaria', tag: 'Agenda Online & Abonos', description: 'Reserva de horas 24/7 con abono previo para eliminar las horas perdidas.', fromPrice: 22500 },
+  { slug: 'academia', name: 'Academia, OTEC, Escuela de Oficios o Capacitación', tag: 'Aula Virtual & Diplomas', description: 'Tu propio campus virtual para vender cursos con pruebas y diplomas PDF.', fromPrice: 45000 },
+  { slug: 'gestion', name: 'Taller Mecánico, Servicio Técnico o Contratista', tag: 'Órdenes & Seguimiento Patente', description: 'Tus clientes consultan el estado de su vehículo/equipo en vivo y tú ordenas tu taller.', fromPrice: 37500 },
 ];
+
+const impulsaPymePage: PageSeo = {
+  path: '/impulsa-pyme',
+  title: `Impulsa ProPyme: Sitios Web y Sistemas para PyMEs desde $19.900/mes | ${SITE_NAME}`,
+  description: clip(
+    'Programa Impulsa ProPyme en Chile: desarrollo de páginas web ultrarrápidas, e-commerce, cartas QR y sistemas a medida bajo arriendo mensual o leasing con derecho a compra en 24 cuotas (100% código propio). Demos en vivo para restaurantes, almacenes, tiendas, profesionales y talleres.',
+  ),
+  priority: 0.95,
+  jsonLd: graph(breadcrumb([{ name: 'Impulsa ProPyme', path: '/impulsa-pyme' }]), {
+    '@type': 'Service',
+    name: 'Programa Impulsa ProPyme',
+    serviceType: 'Desarrollo de sitios web, e-commerce y sistemas a medida para PyMEs',
+    description: 'Programa de UNIVERSO693 SpA para digitalizar negocios chilenos con páginas web de alto rendimiento, sistemas a medida y agentes de IA, financiados en modalidad de arriendo mensual todo incluido o leasing con derecho a compra en 24 cuotas (100% soberanía tecnológica).',
+    url: url('/impulsa-pyme'),
+    provider: { '@id': `${SITE_URL}/#org` },
+    areaServed: [{ '@type': 'Country', name: 'Chile' }],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Catálogo de Soluciones Impulsa ProPyme',
+      itemListElement: impulsaRubros.map((r) => ({
+        '@type': 'Offer',
+        name: `${r.tag} — ${r.name}`,
+        description: r.description,
+        price: String(r.fromPrice),
+        priceCurrency: 'CLP',
+        url: url(`/impulsa-pyme/${r.slug}`),
+        availability: 'https://schema.org/InStock',
+      })),
+    },
+  }),
+};
 
 const impulsaRubroPages: PageSeo[] = impulsaRubros.map((r) => ({
   path: `/impulsa-pyme/${r.slug}`,
   title: `${r.name}: ${r.tag} desde $${r.fromPrice.toLocaleString('es-CL')}/mes | Impulsa ProPyme`,
   description: clip(`${r.description} Precio base desde $${r.fromPrice.toLocaleString('es-CL')}/mes, 100% personalizable. Un programa de ${SITE_NAME}.`),
-  priority: 0.6,
+  priority: 0.85,
   jsonLd: graph(
     breadcrumb([
       { name: 'Impulsa ProPyme', path: '/impulsa-pyme' },

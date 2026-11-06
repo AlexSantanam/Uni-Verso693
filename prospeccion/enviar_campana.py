@@ -51,12 +51,18 @@ def update_csv_status(leads_list):
         writer.writeheader()
         writer.writerows(leads_list)
 
-def send_campaign(test_email=None, limit=None, force=False):
+def send_campaign(test_email=None, limit=None, force=False, sender="alexis"):
     smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", 587))
     smtp_user = os.getenv("SMTP_USER", "")
     smtp_pass = os.getenv("SMTP_PASS", "")
-    smtp_from = os.getenv("SMTP_FROM", "contacto@universo693.com")
+
+    if sender == "martin":
+        sender_name = "Martín Romero"
+        smtp_from = os.getenv("SMTP_MARTIN_FROM", "martin@universo693.com")
+    else:
+        sender_name = "Alexis Santana"
+        smtp_from = os.getenv("SMTP_FROM", "contacto@universo693.com")
 
     if not smtp_user or not smtp_pass:
         print("\n[ALERTA] No se han configurado SMTP_USER y SMTP_PASS en el archivo .env")
@@ -75,7 +81,7 @@ def send_campaign(test_email=None, limit=None, force=False):
     server.starttls()
     server.login(smtp_user, smtp_pass)
     print(f"[OK] Autenticado exitosamente como: {smtp_user}")
-    print(f"[OK] Remitente visible: {smtp_from}\n")
+    print(f"[OK] Remitente visible: {sender_name} <{smtp_from}>\n")
 
     try:
         for lead in leads:
@@ -96,7 +102,7 @@ def send_campaign(test_email=None, limit=None, force=False):
 
             msg = MIMEMultipart("alternative")
             msg["Subject"] = Header(subject_text, "utf-8")
-            msg["From"] = f"Alexis Santana - UNIVERSO693 SpA <{smtp_from}>"
+            msg["From"] = f"{sender_name} - UNIVERSO693 SpA <{smtp_from}>"
             msg["To"] = recipient
             msg["Reply-To"] = smtp_from
             msg.attach(MIMEText(html_body, "html", "utf-8"))
@@ -124,10 +130,11 @@ if __name__ == "__main__":
     parser.add_argument("--send", action="store_true", help="Ejecuta el envío de la campaña a los leads del CSV")
     parser.add_argument("--force", action="store_true", help="Fuerza el reenvío incluso si ya figura como enviado")
     parser.add_argument("--limit", type=int, default=None, help="Límite máximo de correos a enviar")
+    parser.add_argument("--sender", type=str, default="alexis", choices=["alexis", "martin"], help="Selecciona el remitente (alexis o martin)")
 
     args = parser.parse_args()
 
     if args.preview or (not args.send and not args.test_email):
         generate_previews()
     elif args.send or args.test_email:
-        send_campaign(test_email=args.test_email, limit=args.limit, force=args.force)
+        send_campaign(test_email=args.test_email, limit=args.limit, force=args.force, sender=args.sender)

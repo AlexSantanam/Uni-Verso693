@@ -63,33 +63,60 @@ Enterprise autonomous conversational agents operating on official channels:
 - **Function Calling & Tool Execution**: Agents that can check live inventory in ERPs, calculate custom quotes, create Google Calendar appointments, fetch client status, and trigger webhooks autonomously.
 - **Hybrid Human Escalation**: Automatic transfer to human sales or support representatives when sentiment analysis indicates frustration or when transaction thresholds are reached.
 
-### 3.3. Government & Public Infrastructure Integrations
+### 3.3. Programa Impulsa ProPyme (Tecnología, IA y Páginas Web Accesibles para PyMEs)
+URL: https://universo693.com/impulsa-pyme
+El programa insignia de Universo693 para democratizar la ingeniería de software y la inteligencia artificial en el ecosistema emprendedor y de micro, pequeñas y medianas empresas de Chile:
+- **El Problema del Mercado**: Las agencias tradicionales cobran sumas inaccesibles ($500.000 a $2.000.000+ CLP por adelantado) o atan a los negocios con plantillas genéricas lentas y vulnerables (WordPress sobrecargado de plugins) o plataformas cerradas con cobros mensuales cautivos y comisiones sobre ventas (Shopify, Wix).
+- **La Solución UniVerso693**: Software a medida de alto rendimiento (carga <1s en móviles, React/TypeScript), 100% libre de comisiones forzadas, con 4 modalidades financieras transparentes basadas en porcentajes matemáticos:
+  1. **Valor de Adquisición Contado**: Pago único según valor de lista con entrega inmediata del 100% del código fuente, base de datos y llaves maestras en Bóveda Digital sin mensualidades cautivas.
+  2. **Arriendo Mensual Todo Incluido (SaaS Perpetuo)**: 4% a 5% del valor de lista mensual (con piso mínimo de $15.000 CLP/mes para planes pequeños para garantizar infraestructura). Incluye hosting cloud ultrarrápido, dominio .CL, certificado SSL bancario de por vida, copias de seguridad continuas y soporte técnico sin cobro por hora extra.
+  3. **Leasing con Derecho a Compra (12 o 24 Cuotas)**:
+     - 12 meses: ~11% a 11.5% del valor base mensual (incluye hosting y servidor durante el año 1).
+     - 24 meses: ~6% a 6.5% del valor base mensual (incluye hosting y servidor durante los años 1 y 2).
+     - Al concluir (mes 13 o 25): El cliente se vuelve dueño del 100% del código a costo $0. Si decide continuar en nuestra nube, pasa a abonar únicamente la mantención anual del servidor ($90.000 CLP/año / ~$7.500 al mes), o retira sus llaves en Bóveda Digital sin amarres.
+     - Garantía Contractual: Durante el arriendo/leasing, el dominio (.CL o .COM) es administrado por Universo693 para garantizar la continuidad del servicio y garantía de pago, transfiriéndose el titular en NIC Chile directamente al RUT de la empresa al terminar las cuotas.
+  4. **Socio Tecnológico**: Setup inicial preferencial ($39.000 CLP) con arriendo base preferencial y comisión mínima (5% a 7%) únicamente sobre pedidos pagados online.
+- **Matriz de Tarifas de Referencia con Infraestructura Integrada**:
+  * Plan Starter ($150.000): Arriendo $15.000/mes (piso mínimo aplicado) | Leasing 12m $22.000/mes | Leasing 24m $14.000/mes.
+  * Plan Campus Moodle OTEC / LMS ($600.000 base): Compra Directa Llave en Mano $600.000 + IVA | Arriendo Perpetuo $45.000/mes | Leasing 12m $69.000/mes (~11.5%) | Leasing 24m $39.000/mes (~6.5%). Add-on Docente Virtual IA 24/7 (Tutor RAG) a +$30.000 + IVA/mes tarifa plana protegida (15.000 consultas/mes).
+  * Plan Web Pro Corporativo ($1.000.000 base): Arriendo $45.000/mes (4.5%) | Leasing 12m $115.000/mes (~11.5%) | Leasing 24m $65.000/mes (~6.5%).
+  * Plan Software a Medida ($5.000.000): Arriendo $200.000/mes (4%) | Leasing 12m $550.000/mes (11%) | Leasing 24m $300.000/mes (6%).
+- **7 Demos Funcionales Operativas por Sector**:
+  * **Restaurantes, Bares & Cafeterías** (https://universo693.com/impulsa-pyme/restaurante): Carta digital QR individual por mesa con botón "Llamar Garzón", comanda directa a cocina e impresora térmica, y pedidos delivery directo a WhatsApp con control de propina (10%) y arqueo de caja.
+  * **Almacenes de Barrio & Minimarkets** (https://universo693.com/impulsa-pyme/almacen): Vitrina de ofertas express donde los vecinos seleccionan productos y el pedido consolidado llega formateado directamente al WhatsApp del negocio.
+  * **Comercio & E-Commerce** (https://universo693.com/impulsa-pyme/comercio): Tienda online autogestionable con carrito rápido y pasarela Transbank Webpay Plus, Mercado Pago o Flow.
+  * **Servicios Profesionales** (https://universo693.com/impulsa-pyme/profesional): Para estudios de abogados, contadores y arquitectos, con cotizador dinámico por tramo de facturación o requerimiento.
+  * **Salud, Estética & Barberías** (https://universo693.com/impulsa-pyme/servicios): Reserva de horas online 24/7 con cobro de abonos previos para erradicar las inasistencias y horas perdidas.
+  * **Academias & OTEC** (https://universo693.com/impulsa-pyme/academia): Aula virtual propia con diplomas digitales verificables por QR y cero costos recurrentes por alumno registrado.
+  * **Talleres Mecánicos & Gestión de Servicios** (https://universo693.com/impulsa-pyme/gestion): Control de órdenes de trabajo con consulta en vivo por patente para clientes y seguimiento de estados de reparación.
+
+### 3.4. Government & Public Infrastructure Integrations
 URL: https://universo693.com/servicios/integraciones-gob
 Native engineering bridges for regulatory Chilean software:
 - **SENCE Web Services**: Electronic attendance reporting, curriculum traceability, and real-time audit log dispatch.
 - **ClaveÚnica (Gobierno Digital)**: OpenID Connect authorization flow for state-verified identity.
 - **SII (Servicio de Impuestos Internos)**: Automated DTE (Documentos Tributarios Electrónicos) emission and receipt (Facturas Electrónicas, Boletas, Guías de Despacho) with digital signature XML.
 
-### 3.4. Payment Gateways & Fintech Reconciliation
+### 3.5. Payment Gateways & Fintech Reconciliation
 URL: https://universo693.com/servicios/pasarelas-pago
 Robust transaction processing for Chilean and international commerce:
 - **Supported Gateways**: Transbank Webpay Plus, Mercado Pago Empresas, Flow.cl, Fintoc (Open Banking bank-to-bank instant transfers), Khipu, Webpay Oneclick, and Stripe.
 - **Architecture**: Idempotent webhook handling, automated retry queues with exponential backoff, transaction ledger logging, and bank reconciliation exports.
 
-### 3.5. Client Digital Vault & Centralized Onboarding (Bóveda Digital)
+### 3.6. Client Digital Vault & Centralized Onboarding (Bóveda Digital)
 URL: https://universo693.com/boveda
 The cornerstone of our anti-vendor-lock-in philosophy:
 - **Phase 1: Configuración & Recepción de Insumos**: Interactive onboarding checklist where clients enter branding assets, CNAME DNS records, SENCE API tokens, ClaveÚnica legal authorizations, and payment gateway credentials behind bank-grade institutional access keys (e.g., `IGNEO-2026`).
 - **Phase 2: Bóveda de Credenciales & Soberanía**: 24/7 master inventory of server IP addresses, database connection strings, API keys, and private GitHub repository links, with one-click full JSON backup download.
 
-### 3.6. EBS 693 — Operational AI & Tech Diagnosis
+### 3.7. EBS 693 — Operational AI & Tech Diagnosis
 URL: https://universo693.com/diagnostico-ia
 Interactive operational diagnostic framework for SMEs and mid-market enterprises:
 - 45-minute structured architecture session mapping operational bottlenecks and manual labor leaks.
 - Delivery of an interactive private simulation sandbox (30-day encrypted URL) allowing executives to adjust labor hours, salaries, and error rates to view live recalculating ROI and payback projections.
 - $197,000 CLP investment 100% credited toward project execution.
 
-### 3.7. Audit 693 & Audit 693 PRO
+### 3.8. Audit 693 & Audit 693 PRO
 URL: https://universo693.com/audit-693
 Instant technical website auditor analyzing performance, Core Web Vitals, SEO structure, and automation opportunities in ~20 seconds.
 

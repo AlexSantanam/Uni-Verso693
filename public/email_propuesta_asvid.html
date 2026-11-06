@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plantilla de Correo Ejecutivo — Asvid SpA | UNIVERSO693 SpA</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .toolbar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+    }
+    .toolbar-info {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .toolbar-info strong {
+      color: #38bdf8;
+    }
+    .btn-copy {
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: linear-gradient(135deg, #c2410c, #9a3412);
+      transform: translateY(-1px);
+    }
+    .btn-copy.copied {
+      background: #059669;
+    }
+    .email-wrapper {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="toolbar">
+      <div class="toolbar-info">
+        <strong>Propuesta para Asvid SpA</strong> &bull; Lista para copiar y pegar directo en Gmail / Outlook.
+      </div>
+      <button id="copyBtn" class="btn-copy" onclick="copyEmailContent()">
+        📋 Copiar Correo Formateado
+      </button>
+    </div>
+
+    <!-- START OF EMAIL HTML (Lo que se copia y pega en Gmail / Outlook) -->
+    <div id="emailContent" class="email-wrapper">
+      <div style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.6; color: #334155; background-color: #ffffff; padding: 35px 30px; max-width: 640px; margin: 0 auto;">
+        
+        <!-- HEADER WITH LOGOS -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 22px;">
+          <tr>
+            <td style="vertical-align: middle; text-align: left;">
+              <span style="font-size: 19px; font-weight: 900; color: #ea580c; letter-spacing: -0.5px;">UNIVERSO<span style="color: #0f172a;">693</span></span>
+              <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Ingeniería Web & Agentes de IA ProPyme</div>
+            </td>
+            <td style="vertical-align: middle; text-align: right;">
+              <span style="font-size: 14px; font-weight: 800; color: #ea580c; text-transform: uppercase;">AsviD</span>
+              <div style="font-size: 10.5px; color: #64748b;">Ingeniería y Construcción SpA</div>
+            </td>
+          </tr>
+        </table>
+
+        <div style="border-top: 2px solid #f1f5f9; margin-bottom: 22px;"></div>
+
+        <!-- ASUNTO RECOMENDADO -->
+        <div style="background-color: #fff7ed; border-left: 4px solid #ea580c; padding: 12px 16px; margin-bottom: 22px; border-radius: 4px;">
+          <div style="font-size: 11px; color: #9a3412; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Asunto sugerido:</div>
+          <div style="font-size: 14.5px; color: #0f172a; font-weight: bold; margin-top: 3px;">
+            Propuesta Técnica: Sitio Web Portafolio de Obras y Presencia en Google — Asvid SpA (COT-2026-0013)
+          </div>
+        </div>
+
+        <!-- SALUTATION -->
+        <p style="margin-top: 0; margin-bottom: 16px; font-size: 15.5px; color: #0f172a;">
+          Estimado <strong>Equipo de Ingeniería y Construcción Asvid SpA</strong>,
+        </p>
+
+        <p style="margin-bottom: 18px; color: #475569;">
+          Junto con saludarles cordialmente desde <strong>UNIVERSO693 SpA</strong> (Viña del Mar), les hacemos llegar nuestra propuesta oficial para el desarrollo del <strong>Sitio Web y Portafolio Digital de Obras</strong> de Asvid SpA.
+        </p>
+
+        <p style="margin-bottom: 18px; color: #475569;">
+          Entendemos perfectamente lo que una empresa constructora necesita hoy: <strong>mostrarse con estándar corporativo serio, exhibir fotos de faenas y obras reales a los mandantes, aparecer en Google en búsquedas locales y convertir visitas en contactos directos de WhatsApp</strong>, sin incurrir en costos desproporcionados ni contratos amarrados.
+        </p>
+
+        <!-- DELIVERABLES HIGHLIGHT -->
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px 20px; margin-bottom: 22px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">
+            🏗️ Entregables Incluidos en la Propuesta (Plan Start Oficial)
+          </div>
+          <ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.65;">
+            <li><strong>4 Secciones de Alto Impacto:</strong> Portada con propuesta de valor, Servicios de Obras Civiles y Cálculo, Galería de Proyectos Ejecutados y Contacto.</li>
+            <li><strong>Identidad Visual Asvid:</strong> Diseño adaptado a sus colores institucionales (Naranja Seguridad / Gris Acero / Blanco).</li>
+            <li><strong>Autoadministrable ("Modo Dueño"):</strong> Para subir fotos de nuevas obras desde el celular en 30 segundos sin pagarle a un programador.</li>
+            <li><strong>Infraestructura por 1 año completo incluida:</strong> Dominio propio <em>asvid.cl</em> en NIC Chile + Hosting Cloud de alta velocidad + Certificado SSL Bancario (HTTPS).</li>
+            <li><strong>SEO Google Local:</strong> Optimizado para aparecer en búsquedas de constructoras en Viña del Mar, Valparaíso y Concón.</li>
+            <li><strong>Botón Directo a WhatsApp:</strong> Configurado con mensaje personalizado para cotizaciones al instante.</li>
+            <li><strong>Plazo de Entrega:</strong> Solo <strong>5 días hábiles</strong>.</li>
+          </ul>
+        </div>
+
+        <!-- PRICING OPTIONS TABLE -->
+        <p style="margin-bottom: 10px; color: #0f172a; font-weight: 700; font-size: 14px;">
+          💼 Modalidades Transparentes para cuidar su Flujo de Caja:
+        </p>
+        <p style="margin-top: 0; margin-bottom: 14px; color: #64748b; font-size: 12.5px;">
+          Nuestra política es 100% transparente y está anclada a los precios oficiales de nuestra web (<a href="https://universo693.com/paginas-web" target="_blank" style="color: #ea580c; text-decoration: underline;">universo693.com/paginas-web</a>):
+        </p>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+          <thead>
+            <tr style="background-color: #0f172a; color: #ffffff;">
+              <th style="padding: 10px 12px; text-align: left; font-size: 12px;">Modalidad</th>
+              <th style="padding: 10px 12px; text-align: right; font-size: 12px;">Inversión</th>
+              <th style="padding: 10px 12px; text-align: left; font-size: 12px;">Condiciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background-color: #ffffff; border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 11px 12px; font-weight: bold; color: #0f172a;">
+                1. Arriendo Mensual
+              </td>
+              <td style="padding: 11px 12px; text-align: right; font-weight: 800; color: #0f172a; white-space: nowrap;">
+                $15.000 / mes<br>
+                <span style="font-size: 10px; color: #16a34a; font-weight: 700;">IVA INCLUIDO</span><br>
+                <span style="font-size: 9.5px; color: #64748b;">(1er mes: $30.000)</span>
+              </td>
+              <td style="padding: 11px 12px; color: #475569; font-size: 11.5px;">
+                Habilitación inicial $15.000 + mes 1 $15.000 (total $30.000). Luego <strong>$15.000/mes fijo</strong> con hosting, dominio y soporte incluidos. Cero permanencia.
+              </td>
+            </tr>
+            <tr style="background-color: #fffaf5; border-bottom: 1px solid #fed7aa;">
+              <td style="padding: 11px 12px; font-weight: bold; color: #c2410c;">
+                2. Derecho a Compra (Leasing 12m)
+                <div style="font-size: 10px; color: #ea580c; font-weight: 800;">★ RECOMENDADO</div>
+              </td>
+              <td style="padding: 11px 12px; text-align: right; font-weight: 800; color: #ea580c; white-space: nowrap;">
+                $22.000 / mes<br>
+                <span style="font-size: 10px; color: #16a34a; font-weight: 700;">IVA INCLUIDO</span><br>
+                <span style="font-size: 9.5px; color: #ea580c; font-weight: 700;">(1er mes: $37.000)</span>
+              </td>
+              <td style="padding: 11px 12px; color: #475569; font-size: 11.5px;">
+                Habilitación congruente de $15.000 + cuota 1 $22.000 (total $37.000). Luego 11 cuotas de $22.000. <strong>Al cumplir la cuota 12 el sitio y dominio pasan a ser 100% de Asvid a costo $0</strong>.
+              </td>
+            </tr>
+            <tr style="background-color: #ffffff;">
+              <td style="padding: 11px 12px; font-weight: bold; color: #0f172a;">
+                3. Venta Directa (Contado)
+              </td>
+              <td style="padding: 11px 12px; text-align: right; font-weight: 800; color: #0f172a; white-space: nowrap;">
+                $150.000 único<br>
+                <span style="font-size: 10px; color: #16a34a; font-weight: 700;">IVA INCLUIDO</span>
+              </td>
+              <td style="padding: 11px 12px; color: #475569; font-size: 11.5px;">
+                <strong>$0 cuota mensual</strong>. Dueños desde el Día 1. Incluye <strong>30 días de soporte post-entrega</strong> (cambios futuros a $15.000/hora). Hosting y dominio año 1 incluido (renovación 1 vez al año).
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- OPTIONAL AI MODULE NOTE -->
+        <div style="background-color: #f0fdf4; border: 1px dashed #86efac; border-radius: 6px; padding: 12px 16px; margin-bottom: 24px; font-size: 12.5px; color: #166534;">
+          <strong>🤖 Módulo Opcional (Cotizado Aparte):</strong> Si desean sumar un <strong>Agente de Atención con IA 24/7</strong> que responda consultas y derive las fichas de las obras a su WhatsApp, tiene un setup único de <strong>+$50.000</strong> y una cuota fija de tokens de <strong>$15.000/mes</strong>. Se puede activar ahora o sumarlo en cualquier momento.
+        </div>
+
+        <!-- CTA BUTTON -->
+        <div style="text-align: center; margin: 26px 0;">
+          <a href="https://universo693.com/cotizacion_0013_portafolio_asvid.html" target="_blank" style="background: linear-gradient(135deg, #ea580c, #c2410c); color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 14.5px; font-weight: bold; border-radius: 8px; display: inline-block; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35); letter-spacing: 0.3px;">
+            📄 REVISAR COTIZACIÓN OFICIAL COT-2026-0013 &rarr;
+          </a>
+          <div style="font-size: 11.5px; color: #64748b; margin-top: 8px;">
+            <em>(Incluye botón para descargar en PDF o imprimir para su carpeta tributaria)</em>
+          </div>
+        </div>
+
+        <p style="margin-bottom: 24px; color: #475569;">
+          Quedamos muy atentos para coordinar la recepción del logo y las fotos de sus obras para tener su sitio en línea esta misma semana.
+        </p>
+
+        <!-- SIGNATURE -->
+        <table style="width: 100%; border-collapse: collapse; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 18px;">
+          <tr>
+            <td style="vertical-align: top;">
+              <div style="font-weight: bold; font-size: 15.5px; color: #0f172a;">Alexis Patricio Santana Miranda</div>
+              <div style="font-size: 13px; color: #ea580c; font-weight: 700;">Director General &bull; UNIVERSO693 SpA</div>
+              <div style="font-size: 12.5px; color: #64748b; margin-top: 5px; line-height: 1.5;">
+                📞 +56 9 9038 7414<br>
+                ✉️ <a href="mailto:contacto@universo693.com" style="color: #ea580c; text-decoration: none;">contacto@universo693.com</a> &bull; <a href="mailto:alex@universo693.com" style="color: #ea580c; text-decoration: none;">alex@universo693.com</a><br>
+                🌐 <a href="https://universo693.com" style="color: #ea580c; text-decoration: none;">universo693.com</a> &bull; Viña del Mar / Valparaíso, Chile
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+    <!-- END OF EMAIL HTML -->
+
+  </div>
+
+  <script>
+    function copyEmailContent() {
+      const emailDiv = document.getElementById('emailContent');
+      const range = document.createRange();
+      range.selectNode(emailDiv);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          const btn = document.getElementById('copyBtn');
+          btn.innerHTML = '✓ ¡Copiado al Portapapeles!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = '📋 Copiar Correo Formateado';
+            btn.classList.remove('copied');
+          }, 3000);
+        }
+      } catch (err) {
+        alert('Por favor selecciona el contenido manualmente con Ctrl+A y copia con Ctrl+C.');
+      }
+      selection.removeAllRanges();
+    }
+  </script>
+</body>
+</html>

@@ -598,7 +598,44 @@ const INITIAL_LEADS: ProspeccionLead[] = [
 
 const STORAGE_KEY = 'u693_prospeccion_leads_v4';
 
-export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
+export interface SenderProfile {
+  id: 'alexis' | 'martin';
+  name: string;
+  fullName: string;
+  role: string;
+  email: string;
+  phone: string;
+  waPhone: string;
+  greeting: string;
+}
+
+export const SENDER_PROFILES: Record<'alexis' | 'martin', SenderProfile> = {
+  alexis: {
+    id: 'alexis',
+    name: 'Alexis',
+    fullName: 'Alexis Santana Miranda',
+    role: 'Director General',
+    email: 'contacto@universo693.com',
+    phone: '+56 9 9038 7414',
+    waPhone: '56990387414',
+    greeting: 'Te escribe Alexis Santana de UNIVERSO693 SpA'
+  },
+  martin: {
+    id: 'martin',
+    name: 'Martín',
+    fullName: 'Martín Romero González',
+    role: 'Desarrollo Comercial & Alianzas',
+    email: 'martin@universo693.com',
+    phone: '+56 9 9038 7414',
+    waPhone: '56990387414',
+    greeting: 'Te escribe Martín Romero del equipo comercial de UNIVERSO693 SpA'
+  }
+};
+
+export const ProspeccionTab: React.FC<{
+  token: string;
+  currentUser?: { id?: string; username?: string; name?: string; email?: string; role?: string } | null;
+}> = ({ token, currentUser }) => {
   const [leads, setLeads] = useState<ProspeccionLead[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -607,6 +644,26 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
       return INITIAL_LEADS;
     }
   });
+
+  const isMartinUser = useMemo(() => {
+    if (!currentUser) return false;
+    const u = (currentUser.username || '').toLowerCase();
+    const e = (currentUser.email || '').toLowerCase();
+    const n = (currentUser.name || '').toLowerCase();
+    return u.includes('martin') || e.includes('martin') || n.includes('martín') || n.includes('martin');
+  }, [currentUser]);
+
+  const [senderId, setSenderId] = useState<'alexis' | 'martin'>(() => {
+    return isMartinUser ? 'martin' : 'alexis';
+  });
+
+  useEffect(() => {
+    if (isMartinUser) {
+      setSenderId('martin');
+    }
+  }, [isMartinUser]);
+
+  const activeSender = SENDER_PROFILES[senderId] || SENDER_PROFILES.alexis;
 
   const [search, setSearch] = useState('');
   const [filterRubro, setFilterRubro] = useState<string>('todos');
@@ -733,14 +790,17 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
     const phone = lead.telefono.replace(/[^0-9]/g, '');
     
     // Mensaje con URL oficial para que WhatsApp active el OpenGraph card (banner e imagen de empresa)
-    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.
+    const msg = `Hola ${lead.contacto}, buen día. ${activeSender.greeting}.
 
 Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
 
-Tenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.
+Trabajamos con tarifas transparentes basadas en porcentajes para cuidar su flujo de caja:
+• 1. Compra Directa Contado: desde $600.000 + IVA (100% código propio en Bóveda Digital desde el Día 1).
+• 2. Leasing con Derecho a Compra: en 24 cuotas ($39.000 a $65.000/mes) o 12 cuotas ($69.000 a $115.000/mes), con 100% de propiedad al terminar.
+• 3. Arriendo Mensual Todo Incluido: desde $45.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
 
-👉 Puedes revisar nuestros planes y ejemplos en vivo acá:
-https://universo693.com/paginas-web
+👉 Puedes revisar los planes y simular en vivo acá:
+https://universo693.com/impulsa-pyme
 
 Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
 
@@ -760,14 +820,17 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
   };
 
   const handleCopyPitch = (lead: ProspeccionLead) => {
-    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.
+    const msg = `Hola ${lead.contacto}, buen día. ${activeSender.greeting}.
 
 Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
 
-Tenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.
+Trabajamos con tarifas transparentes basadas en porcentajes para cuidar su flujo de caja:
+• 1. Compra Directa Contado: desde $600.000 + IVA (100% código propio en Bóveda Digital desde el Día 1).
+• 2. Leasing con Derecho a Compra: en 24 cuotas ($39.000 a $65.000/mes) o 12 cuotas ($69.000 a $115.000/mes), con 100% de propiedad al terminar.
+• 3. Arriendo Mensual Todo Incluido: desde $45.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
 
-👉 Puedes revisar nuestros planes y ejemplos en vivo acá:
-https://universo693.com/paginas-web
+👉 Puedes revisar los planes y simular en vivo acá:
+https://universo693.com/impulsa-pyme
 
 Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
 
@@ -807,37 +870,46 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
       <div style="background-color: #EDF2F7; border-left: 4px solid #2B6CB0; padding: 12px; margin: 16px 0;">
         <strong>Propuesta Auditada:</strong> ${lead.oportunidad}.
       </div>
-      <p>Para no comprometer la liquidez de su empresa, trabajamos con 3 modalidades flexibles:</p>
+      <p>Para no comprometer la liquidez de su empresa, trabajamos con <strong>tarifas transparentes basadas en porcentajes de inversión y no valores al azar</strong>:</p>
       <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0;">
         <tr style="background-color: #F1F5F9;">
-          <th style="padding: 8px; border: 1px solid #E2E8F0;">Modalidad</th>
-          <th style="padding: 8px; border: 1px solid #E2E8F0;">Inversión</th>
-          <th style="padding: 8px; border: 1px solid #E2E8F0;">Beneficio</th>
+          <th style="padding: 10px; border: 1px solid #E2E8F0; text-align: left;">Modalidad</th>
+          <th style="padding: 10px; border: 1px solid #E2E8F0; text-align: left;">Inversión Transparente</th>
+          <th style="padding: 10px; border: 1px solid #E2E8F0; text-align: left;">Infraestructura & Propiedad</th>
+        </tr>
+        <tr style="background-color: #F0FDF4;">
+          <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #166534;">1. Compra Directa Contado</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;"><strong>$600.000 a $1.000.000 CLP</strong> + IVA</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Traspaso inmediato de repositorio en GitHub y llaves maestras en Bóveda Digital desde el Día 1.</td>
         </tr>
         <tr>
-          <td style="padding: 8px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">1. Arriendo Mensual</td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">Desde <strong>$45.000 CLP / mes</strong></td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">Cero inversión inicial. Todo incluido.</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">2. Leasing a 24 Meses</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">24 cuotas de <strong>$39.000 a $65.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~6.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Incluye hosting años 1 y 2. Al mes 25 el código es 100% de su empresa sin costo de traspaso.</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
-          <td style="padding: 8px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">2. Arriendo con Compra</td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">12 cuotas de <strong>$85.000 CLP</strong></td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">Al año es 100% suyo sin bancos.</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">3. Leasing a 12 Meses</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">12 cuotas de <strong>$69.000 a $115.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~11.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Incluye hosting año 1. Al mes 13 el código es 100% de su empresa.</td>
         </tr>
         <tr>
-          <td style="padding: 8px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">3. Compra Directa</td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">Pago único contra entrega</td>
-          <td style="padding: 8px; border: 1px solid #E2E8F0;">Código fuente transferido a su empresa.</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">4. Arriendo Perpetuo (SaaS)</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Desde <strong>$45.000 CLP / mes</strong><br><span style="font-size: 11px; color: #718096;">(4.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Hosting de alta velocidad, SSL y soporte continuo incluidos. Sin descapitalización.</td>
         </tr>
       </table>
+      <div style="background-color: #EDF2F7; padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #4A5568; margin-bottom: 16px;">
+        ℹ️ <strong>Nota de Soberanía Tecnológica:</strong> En todas las modalidades de Leasing, una vez que paga la última cuota (mes 12 o 24) usted pasa a ser dueño absoluto del software. Si decide quedarse en nuestros servidores, solo paga la mantención anual del hosting ($90.000 al año / ~$7.500 al mes), o retira sus llaves en Bóveda Digital a costo $0.
+      </div>
       <div style="text-align: center; margin: 24px 0;">
-        <a href="https://wa.me/56990387414?text=Hola%20Alexis,%20recibí%20la%20propuesta%20para%20${encodeURIComponent(lead.nombreEmpresa)}" 
+        <a href="https://wa.me/${activeSender.waPhone}?text=Hola%20${encodeURIComponent(activeSender.name)},%20recibí%20la%20propuesta%20para%20${encodeURIComponent(lead.nombreEmpresa)}" 
            style="background-color: #25D366; color: #FFFFFF; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; display: inline-block;">
-          Conversar por WhatsApp (+56 9 9038 7414)
+          Conversar por WhatsApp (${activeSender.phone})
         </a>
       </div>
       <p style="font-size: 13px; color: #718096;">
-        Atentamente,<br><strong>Alexis Santana Miranda</strong> &bull; Gerente General UNIVERSO693 SpA
+        Atentamente,<br><strong>${activeSender.fullName}</strong> &bull; ${activeSender.role} UNIVERSO693 SpA<br>
+        <span style="font-size: 12px; color: #94a3b8;">✉️ ${activeSender.email} &bull; 📞 ${activeSender.phone}</span>
       </p>
     </div>
   </div>
@@ -855,7 +927,8 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
 
     const initialLogs = [
       `[UNIVERSO693 MAILING ENGINE v2.0 - ANTI-SPAM PROTECTED]`,
-      `[AUTH] Conectado al servidor SMTP seguro (contacto@universo693.com)`,
+      `[AUTH] Conectado al servidor SMTP seguro (${activeSender.email})`,
+      `[REMITENTE ACTIVO] ${activeSender.fullName} <${activeSender.email}> (${activeSender.role})`,
       `[AUDITORÍA] ${selectedList.length} empresas en cola de procesamiento.`,
       antiSpamFilter 
         ? `[ESCUDO ANTI-SPAM: ACTIVO] Se ignorarán automáticamente contactos que ya tengan fecha de envío registrada.\n`
@@ -1020,8 +1093,11 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
   };
 
   const copyTerminalCommand = () => {
-    navigator.clipboard.writeText('python prospeccion/enviar_campana.py --send');
-    alert('Comando copiado al portapapeles:\npython prospeccion/enviar_campana.py --send\n\nPuedes pegarlo en tu terminal de PowerShell.');
+    const cmd = senderId === 'martin'
+      ? 'python prospeccion/enviar_campana.py --send --sender martin'
+      : 'python prospeccion/enviar_campana.py --send';
+    navigator.clipboard.writeText(cmd);
+    alert(`Comando copiado al portapapeles:\n${cmd}\n\nRemitente activo: ${activeSender.fullName} (${activeSender.email})\nPuedes pegarlo en tu terminal de PowerShell.`);
   };
 
   return (
@@ -1043,6 +1119,28 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Selector de Remitente Oficial (Alexis / Martín) */}
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1.5 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${senderId === 'martin' ? 'bg-cyan-400' : 'bg-emerald-400'}`}></span> Remitente:
+            </span>
+            <select
+              value={senderId}
+              onChange={(e) => setSenderId(e.target.value as 'alexis' | 'martin')}
+              className="bg-slate-950 text-white text-xs font-semibold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-brand-500 cursor-pointer"
+            >
+              <option value="martin">👤 Martín Romero (martin@universo693.com)</option>
+              <option value="alexis">👤 Alexis Santana (contacto@universo693.com)</option>
+            </select>
+          </div>
+
+          <button
+            onClick={selectOnlyPending}
+            title="Seleccionar prospectos pendientes para enviar correos"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-emerald-600/25 transition cursor-pointer"
+          >
+            <Send className="w-3.5 h-3.5" /> Despachar Correos ({stats.pendientes} pendientes)
+          </button>
           <button
             onClick={copyTerminalCommand}
             title="Copiar comando de consola para enviar desde PowerShell"
@@ -1384,7 +1482,7 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
                   <Mail className="w-4 h-4 text-brand-400" /> Vista Previa del Correo Oficial
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Destinatario: <strong>{previewEmailLead.email}</strong> &bull; Remitente: <strong>contacto@universo693.com</strong>
+                  Destinatario: <strong>{previewEmailLead.email}</strong> &bull; Remitente: <strong>{activeSender.fullName} &lt;{activeSender.email}&gt;</strong>
                 </p>
               </div>
               <button onClick={() => setPreviewEmailLead(null)} className="text-slate-400 hover:text-white p-1">

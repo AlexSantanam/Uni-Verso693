@@ -368,9 +368,9 @@ const Badge = ({ className, children }: { className: string; children: React.Rea
 
 // ---------------------------------------------------------------- login
 const Login = ({ onToken }: { onToken: (t: string) => void }) => {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('martinromero');
   const [password, setPassword] = useState('');
-  const [isCollab, setIsCollab] = useState(false);
+  const [loginMode, setLoginMode] = useState<'collab' | 'admin'>('collab');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -379,7 +379,8 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
     setBusy(true);
     setError(null);
     try {
-      const body = isCollab ? { username: username.trim(), password } : { password };
+      const u = loginMode === 'collab' ? username.trim() : '';
+      const body = u ? { username: u, password } : { password };
       const { token, user } = await call<{ token: string; user?: AppUser }>('login', { body });
       writeToken(token);
       if (user) {
@@ -399,25 +400,52 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
         <div className="space-y-1">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Uni-Verso693</p>
           <h1 className="text-2xl font-black text-white">
-            {isCollab ? 'Acceso Colaborador' : 'Espacio interno'}
+            Portal Interno
           </h1>
           <p className="text-xs text-slate-400">
-            {isCollab ? 'Ingresa con tu usuario y contraseña asignada' : 'Ingreso con contraseña maestra'}
+            {loginMode === 'collab' ? 'Ingreso para colaboradores y ejecutivos' : 'Ingreso con contraseña maestra'}
           </p>
         </div>
 
-        {isCollab && (
+        {/* Pestañas de modo de acceso */}
+        <div className="grid grid-cols-2 gap-1 p-1 bg-white/5 rounded-xl border border-white/10 text-xs font-bold">
+          <button
+            type="button"
+            onClick={() => { setLoginMode('collab'); setError(null); }}
+            className={`py-2 px-3 rounded-lg transition-all cursor-pointer ${
+              loginMode === 'collab'
+                ? 'bg-cyan-500 text-slate-950 shadow font-extrabold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            👥 Colaborador
+          </button>
+          <button
+            type="button"
+            onClick={() => { setLoginMode('admin'); setError(null); }}
+            className={`py-2 px-3 rounded-lg transition-all cursor-pointer ${
+              loginMode === 'admin'
+                ? 'bg-brand-500 text-white shadow font-extrabold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            🔐 Admin Maestro
+          </button>
+        </div>
+
+        {loginMode === 'collab' && (
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre de usuario</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre de usuario o correo</label>
             <input
               type="text"
               autoFocus
               autoComplete="username"
-              placeholder="Ej: matias"
+              placeholder="Ej: martinromero"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className={input}
             />
+            <p className="text-[10.5px] text-slate-400 mt-1">Usuario asignado en tu Kit de Inducción (<code className="text-cyan-300">martinromero</code> o <code className="text-cyan-300">martin</code>)</p>
           </div>
         )}
 
@@ -425,9 +453,9 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
           <label className="block text-xs font-semibold text-slate-300 mb-1">Contraseña</label>
           <input
             type="password"
-            autoFocus={!isCollab}
+            autoFocus={loginMode === 'admin'}
             autoComplete="current-password"
-            placeholder="Contraseña"
+            placeholder={loginMode === 'collab' ? 'Tu contraseña (ej: Martin2026)' : 'Contraseña maestra'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={input}
@@ -438,7 +466,7 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
 
         <button
           type="submit"
-          disabled={busy || !password || (isCollab && !username.trim())}
+          disabled={busy || !password || (loginMode === 'collab' && !username.trim())}
           className={`${btnPrimary} w-full py-3`}
         >
           {busy && <Loader2 className="w-4 h-4 animate-spin" />} Ingresar
@@ -447,10 +475,10 @@ const Login = ({ onToken }: { onToken: (t: string) => void }) => {
         <div className="text-center pt-2 border-t border-white/10">
           <button
             type="button"
-            onClick={() => { setIsCollab(!isCollab); setError(null); }}
+            onClick={() => { setLoginMode(loginMode === 'collab' ? 'admin' : 'collab'); setError(null); }}
             className="text-xs text-brand-400 hover:text-brand-300 underline font-medium cursor-pointer"
           >
-            {isCollab ? '← Ingresar con Contraseña Maestra (Admin)' : '¿Eres colaborador? Ingresar con Usuario y Clave →'}
+            {loginMode === 'collab' ? '¿Eres Administrador General? Cambiar a Contraseña Maestra →' : '← Volver al ingreso de Colaborador'}
           </button>
         </div>
       </form>
@@ -4682,7 +4710,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
         ) : tab === 'whatsapp' ? (
           <WhatsAppInbox api={api} onUnread={setWaUnread} />
         ) : tab === 'prospeccion' ? (
-          <ProspeccionTab token={token} />
+          <ProspeccionTab token={token} currentUser={currentUser} />
         ) : tab === 'cotizaciones' ? (
           <Quotes api={api} settings={settings} onOpen={setEditing} onNew={() => setEditing(emptyQuote(settings))} />
         ) : tab === 'facturacion' ? (

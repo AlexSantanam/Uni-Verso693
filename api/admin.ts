@@ -2943,9 +2943,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      // Case 2: Sub-user login (by username)
+      // Case 2: Sub-user login (by username, alias or email)
       if (username) {
-        const userId = await redis.get<string>(K.userByUsername(username));
+        let cleanUser = username;
+        if (cleanUser.includes('@')) {
+          cleanUser = cleanUser.split('@')[0];
+        }
+        let userId = await redis.get<string>(K.userByUsername(username));
+        if (!userId && cleanUser !== username) {
+          userId = await redis.get<string>(K.userByUsername(cleanUser));
+        }
+        // Fallback: search in users if index is missing or out of sync
+        if (!userId) {
+          const ids = await redis.zrange<string[]>(K.users, 0, -1);
+          if (ids && ids.length) {
+            const allUsers = await redis.mget<(AppUser | null)[]>(...ids.map(K.user));
+            const found = allUsers.find(
+              (u) =>
+                u &&
+                (u.username?.toLowerCase() === username ||
+                  u.username?.toLowerCase() === cleanUser ||
+                  u.email?.toLowerCase() === username)
+            );
+            if (found) {
+              userId = found.id;
+              // Auto-heal the index
+              await redis.set(K.userByUsername(found.username.toLowerCase()), found.id);
+            }
+          }
+        }
+
         const user = userId ? await redis.get<AppUser>(K.user(userId)) : null;
         if (user && user.active && user.passwordHash && user.salt) {
           const hash = scryptSync(password, user.salt, 64).toString('hex');
@@ -2968,7 +2995,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       await loginLimit.limit(ip);
-      res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
+      const isBlankUser = !username || username === 'admin';
+      const errMsg = isBlankUser
+        ? 'Contraseña maestra incorrecta. Si eres colaborador (ej. Martín), selecciona la pestaña "Colaborador" e ingresa tu usuario.'
+        : 'Usuario o contraseña incorrectos.';
+      res.status(401).json({ error: errMsg });
       return;
     }
 

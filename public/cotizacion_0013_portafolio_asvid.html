@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=960, user-scalable=yes">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cotización COT-2026-0013 | Ingeniería y Construcción Asvid SpA - UNIVERSO693 SpA</title>
+  <style>
+    :root {
+      --primary: #EA6A1F;
+      --primary-dark: #C8530E;
+      --navy: #1F1A17;
+      --accent-dark: #1B4D3E;
+      --border: #e2e8f0;
+      --text: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background-color: #f8fafc;
+      padding: 30px 15px;
+      line-height: 1.5;
+    }
+    .cotizacion-sheet {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 42px 48px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .cotizacion-sheet { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+      .no-print { display: none !important; }
+      @page { margin: 1.2cm; size: A4 portrait; }
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-img {
+      height: 54px;
+      width: auto;
+      max-width: 160px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 4px 10px;
+    }
+    .logo-divider {
+      width: 1px;
+      height: 44px;
+      background: #cbd5e1;
+    }
+    .brand h1 { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .brand p { font-size: 11px; color: #64748b; margin-top: 1px; }
+    .meta { text-align: right; }
+    .badge-code {
+      display: inline-block;
+      background: var(--navy);
+      color: white;
+      font-weight: 800;
+      font-size: 13.5px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .meta div { font-size: 11.5px; color: #64748b; }
+    .client-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 18px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 15px;
+      font-size: 12px;
+    }
+    .client-box strong { color: var(--navy); }
+
+    /* Public alignment notice */
+    .pricing-match-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      font-size: 11.5px;
+      color: #166534;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .pricing-match-banner strong { color: #14532d; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    th {
+      background: var(--navy);
+      color: white;
+      text-align: left;
+      padding: 9px 12px;
+      font-weight: 700;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background-color: #fafbfc; }
+    
+    .badge-included {
+      display: inline-block;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .badge-addon {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 13px;
+      margin: 18px 0 22px;
+    }
+    .plan-box {
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 15px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #ffffff;
+      position: relative;
+    }
+    .plan-box.recommended {
+      border-color: var(--primary);
+      background: #fffaf5;
+      box-shadow: 0 4px 14px rgba(234, 106, 31, 0.10);
+    }
+    .plan-box.featured-buy {
+      border-color: var(--accent-dark);
+      background: #f4fbf8;
+    }
+    .plan-tag {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+    .plan-tag.buy {
+      background: var(--accent-dark);
+    }
+    .plan-tag.gray {
+      background: #64748b;
+    }
+    .plan-box h3 { font-size: 13.5px; color: var(--navy); margin-bottom: 8px; font-weight: 800; }
+    .plan-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #475569;
+      margin-bottom: 5px;
+      gap: 6px;
+    }
+    .plan-row span {
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .plan-row strong {
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .plan-total {
+      border-top: 1px dashed #cbd5e1;
+      margin-top: 10px;
+      padding-top: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--navy);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .callout-notes {
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.6;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 18px;
+      margin-bottom: 18px;
+    }
+    .callout-notes strong { color: #334155; }
+    .footer-signs {
+      margin-top: 30px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .pill-tokens {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1.5px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div class="cotizacion-sheet">
+  <div class="no-print" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 18px;">
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
+  </div>
+
+  <div class="header">
+    <div class="header-logos">
+      <img src="assets/asvid/logo-asvid-clean.png" alt="Ingeniería y Construcción Asvid SpA" class="logo-img">
+      <div class="logo-divider"></div>
+      <div class="brand">
+        <h1>UNIVERSO693 SpA</h1>
+        <p>RUT: 78.521.951-1 &bull; Viña del Mar / Valparaíso, Chile</p>
+        <p style="color: var(--primary); font-weight: 700;">Ingeniería Web & Agentes de IA ProPyme</p>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="badge-code">COT-2026-0013</div>
+      <div><strong>Fecha:</strong> Noviembre 2026 &bull; <strong>Validez:</strong> 15 días</div>
+      <div><strong>Tarifas:</strong> 100% Alineadas con Web Oficial</div>
+    </div>
+  </div>
+
+  <div class="client-box">
+    <div>
+      <p><strong>Razón Social:</strong> Ingeniería y Construcción Asvid SpA</p>
+      <p><strong>Rubro:</strong> Obras Civiles, Construcción e Ingeniería</p>
+      <p><strong>Contacto Directo:</strong> contacto.asvid@gmail.com</p>
+      <p><strong>Zona de Cobertura:</strong> Viña del Mar, Valparaíso, Concón y Región Central</p>
+    </div>
+    <div>
+      <p><strong>Proyecto:</strong> Sitio Web Portafolio Obras (Plan Start Oficial) + SEO Google</p>
+      <p><strong>Plazo de Entrega:</strong> 5 días hábiles (rápido para partir)</p>
+      <p><strong>Garantía Técnica:</strong> 60 días corridos post-entrega</p>
+      <p><strong>Bóveda Digital:</strong> Código y accesos propios (0% amarres)</p>
+    </div>
+  </div>
+
+  <div class="pricing-match-banner">
+    <div>
+      <strong>✓ Política de Precios Transparentes UNIVERSO693:</strong> Esta propuesta está 100% anclada al valor de nuestro <strong>Plan Start Oficial</strong> publicado en (<a href="https://universo693.com/paginas-web" target="_blank" style="color:#166534; font-weight:bold; text-decoration:underline;">universo693.com/paginas-web</a>). Sin sobrecostos ni precios inflados.
+    </div>
+    <div style="font-weight:800; white-space:nowrap; color:#15803d;">Plan Start Oficial: $150.000 IVA Inc.</div>
+  </div>
+
+  <div class="table-responsive">
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 6%;">Ítem</th>
+        <th style="width: 72%;">Descripción del Módulo y Entregables de Ingeniería</th>
+        <th style="width: 22%; text-align: right;">Inversión de Lista</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ITEM 1: SITIO BASE PLAN START -->
+      <tr>
+        <td style="font-weight: bold; color: var(--primary);">01</td>
+        <td>
+          <span class="badge-included">BASE OFICIAL PLAN START PUBLICADO</span>
+          <strong style="color: var(--navy); display: block; font-size: 12.5px;">Sitio Web Portafolio de Obras y Construcción (Hasta 4 Secciones)</strong>
+          <span style="color: #475569; font-size: 11px; display: block; margin-top: 3px;">
+            • <strong>Identidad Visual Asvid:</strong> Diseño profesional limpio acorde a sus colores institucionales (Naranja Seguridad / Gris Acero / Blanco).<br>
+            • <strong>4 Secciones Clave de Alto Impacto:</strong> 1. Portada con propuesta de valor • 2. Servicios de Ingeniería & Obras • 3. Portafolio/Galería de proyectos ejecutados • 4. Contacto y faenas.<br>
+            • <strong>Botón Directo a WhatsApp:</strong> Configurado con mensaje personalizado para cotizaciones al instante.<br>
+            • <strong>100% Autoadministrable ("Modo Dueño"):</strong> Para subir fotos de nuevas obras desde el teléfono sin pagar programador.<br>
+            • <strong>Infraestructura por 1 año completo incluida:</strong> Dominio .CL en NIC Chile + Hosting Cloud de alta velocidad + Certificado SSL Bancario (HTTPS).<br>
+            • <strong>Plazo de Entrega Garantizado:</strong> 5 días hábiles desde la entrega del material.
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: var(--navy); font-size: 12.5px;">
+          $150.000<br>
+          <span style="font-size: 10px; color: #15803d; font-weight: 700;">IVA INCLUIDO</span><br>
+          <span style="font-size: 9.5px; color: #64748b;">($126.050 + IVA)</span>
+        </td>
+      </tr>
+
+      <!-- ITEM 2: SEO Y SCHEMA -->
+      <tr>
+        <td style="font-weight: bold; color: var(--primary);">02</td>
+        <td>
+          <span class="badge-included">INCLUIDO $0 EN PLAN START</span>
+          <strong style="color: var(--navy); display: block; font-size: 12.5px;">Optimización SEO para Google & Motores de Búsqueda</strong>
+          <span style="color: #475569; font-size: 11px; display: block; margin-top: 3px;">
+            • <strong>Visibilidad Local:</strong> Optimizado para búsquedas como <em>"constructora en Viña del Mar", "ingeniería y construcción Valparaíso", "obras civiles Concón"</em>.<br>
+            • <strong>Indexación Inmediata:</strong> Alta en Google Search Console y Schema.org para posicionar su ficha técnica de servicios.
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 12px;">
+          $0 (INCLUIDO)<br>
+          <span style="font-size: 10px; color: #64748b;">En Plan Start</span>
+        </td>
+      </tr>
+
+      <!-- ITEM 3: AGENTE IA (COTIZADO APARTE) -->
+      <tr>
+        <td style="font-weight: bold; color: #0284c7;">03</td>
+        <td>
+          <span class="badge-addon" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">MÓDULO ADICIONAL · COTIZADO APARTE</span>
+          <strong style="color: var(--navy); display: block; font-size: 12.5px;">Agente de Atención con Inteligencia Artificial 24/7 (Web → WhatsApp)</strong>
+          <span style="color: #475569; font-size: 11px; display: block; margin-top: 3px;">
+            • <strong>Atención Automatizada Día y Noche:</strong> Asistente virtual en la web entrenado con los servicios, cubicación aproximada y zonas de trabajo de Asvid.<br>
+            • <strong>Filtro y Derivación:</strong> Califica el prospecto y envía los datos de la obra directo al WhatsApp del dueño/ingeniero.<br>
+            • <strong>Consumo Técnico Transparente:</strong> Cuota fija de <strong>$15.000 CLP / mes</strong> para mantención de tokens del modelo LLM.<br>
+            <em>(Módulo 100% opcional: Asvid puede contratarlo hoy o activarlo a futuro con un clic).</em>
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: #0284c7; font-size: 12px;">
+          +$50.000 setup<br>
+          <span style="font-size: 10px; color: #475569; font-weight: 700;">+ $15.000/mes tokens</span><br>
+          <span style="font-size: 9.5px; color: #94a3b8;">(Opcional Aparte)</span>
+        </td>
+      </tr>
+
+      <!-- ITEM 4: GOOGLE ADS (OPCIONAL) -->
+      <tr>
+        <td style="font-weight: bold; color: #64748b;">04</td>
+        <td>
+          <strong style="color: #475569; font-size: 11.5px;">Google Ads — Campañas de Búsqueda Pagada en Google (Opcional Fase 2)</strong><br>
+          <span style="color: #64748b; font-size: 10.5px;">
+            Fee de gestión $120.000/mes + pauta directa a Google con tarjeta de la empresa ($150.000 a $250.000 sugerido). <em>(No obligatorio para partir).</em>
+          </span>
+        </td>
+        <td style="text-align: right; font-weight: bold; color: #64748b; font-size: 11.5px;">
+          Opcional<br>
+          <span style="font-size: 9.5px;">Fase 2</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div style="margin-bottom: 8px;">
+    <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-dark);">
+      Elige la Modalidad Financiera que mejor cuide tu Flujo de Caja (Base Plan Start $150.000)
+    </span>
+  </div>
+
+  <div class="plans-grid">
+    <!-- MODALIDAD 1: ARRIENDO MENSUAL -->
+    <div class="plan-box">
+      <span class="plan-tag gray">1. ARRIENDO MENSUAL</span>
+      <h3>Suscripción PyME</h3>
+      <div class="plan-row"><span>Habilitación inicial (setup/hosting):</span><strong>$15.000</strong></div>
+      <div class="plan-row"><span>Arriendo Mensual:</span><strong>$15.000/mes</strong></div>
+      <div class="plan-row"><span>Total 1er Mes (Hab. + Mes 1):</span><strong style="color:var(--navy);">$30.000 IVA Inc.</strong></div>
+      <div class="plan-row"><span>Mes 2 en adelante:</span><strong>$15.000/mes</strong></div>
+      <div class="plan-row"><span>Permanencia mínima:</span><strong>0 meses (flexible)</strong></div>
+      <div class="plan-row"><span>Hosting, Dominio y Soporte:</span><strong style="color:#15803d;">Siempre Incluido</strong></div>
+      <div class="plan-total">
+        <span>Mensualidad:</span>
+        <span style="color: var(--navy); font-size: 15px;">$15.000 IVA Inc.</span>
+      </div>
+      <p style="font-size: 10px; color: #64748b; margin-top: 8px; line-height: 1.35;">
+        Total 1er mes $30.000 (habilitación $15.000 + primer mes $15.000). Luego $15.000/mes fijo con hosting, dominio y soporte incluidos. Cero amarres.
+      </p>
+    </div>
+
+    <!-- MODALIDAD 2: ARRIENDO CON DERECHO A COMPRA (LEASING 12 MESES) -->
+    <div class="plan-box recommended">
+      <span class="plan-tag">2. DERECHO A COMPRA (LEASING)</span>
+      <h3>Leasing a 12 Meses</h3>
+      <div class="plan-row"><span>Habilitación inicial (congruente):</span><strong>$15.000</strong></div>
+      <div class="plan-row"><span>Cuota Mensual (12 meses):</span><strong>$22.000/mes</strong></div>
+      <div class="plan-row"><span>Total 1er Mes (Hab. + Cuota 1):</span><strong style="color:var(--primary);">$37.000 IVA Inc.</strong></div>
+      <div class="plan-row"><span>Meses 2 al 12:</span><strong>$22.000/mes</strong></div>
+      <div class="plan-row"><span>Hosting y Dominio .CL:</span><strong style="color:#15803d;">Incluido Año 1</strong></div>
+      <div class="plan-row"><span>Al mes 12 (Costo de Traspaso):</span><strong style="color:#15803d;">$0 (100% tuyo)</strong></div>
+      <div class="plan-total">
+        <span>Cuota mensual (12m):</span>
+        <span style="color: var(--primary); font-size: 15px;">$22.000 IVA Inc.</span>
+      </div>
+      <p style="font-size: 10px; color: #64748b; margin-top: 8px; line-height: 1.35;">
+        Total 1er mes $37.000 ($15.000 habilitación + $22.000 cuota 1). Luego 11 cuotas de $22.000. <strong>Al cumplir la cuota 12 el sitio y el dominio son 100% propiedad de Asvid a costo $0</strong>.
+      </p>
+    </div>
+
+    <!-- MODALIDAD 3: VENTA DIRECTA (COMPRA CONTADO) -->
+    <div class="plan-box featured-buy">
+      <span class="plan-tag buy">3. VENTA DIRECTA (CONTADO)</span>
+      <h3>Propiedad 100% Día 1</h3>
+      <div class="plan-row"><span>Sitio Web Base (Plan Start oficial):</span><strong>$150.000</strong></div>
+      <div class="plan-row"><span>Hosting + Dominio .CL (Año 1):</span><strong style="color:#15803d;">INCLUIDO $0</strong></div>
+      <div class="plan-row"><span>Cuota Mensual Obligatoria:</span><strong style="color:#15803d;">$0 / mes</strong></div>
+      <div class="plan-row"><span>Soporte Garantizado Post-Entrega:</span><strong>30 días corridos</strong></div>
+      <div class="plan-row"><span>Hora Consulta / Cambios Futuros:</span><strong>$15.000 / hora</strong></div>
+      <div class="plan-row"><span>Renovación Servidor + Dominio:</span><span>1 vez al año</span></div>
+      <div class="plan-total">
+        <span>Total Compra:</span>
+        <span style="color: var(--accent-dark); font-size: 14.5px;">$150.000 IVA Inc.</span>
+      </div>
+      <p style="font-size: 10px; color: #64748b; margin-top: 8px; line-height: 1.35;">
+        Eres dueño del código y dominio desde el Día 1. Soporte post-entrega por 30 días (cambios o consultas posteriores a $15.000/hora). Renovación de hosting/dominio solo 1 vez al año.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout-notes">
+    <p>• <strong>Transparencia de Costos de Partida:</strong> Para ser 100% congruentes, tanto en Arriendo como en Leasing la Habilitación Inicial es de <strong>$15.000</strong>. En Arriendo pagas <strong>$30.000 el 1er mes</strong> (habilitación + mes 1) y luego $15.000/mes fijo. En Leasing pagas <strong>$37.000 el 1er mes</strong> (habilitación + cuota 1) y luego 11 cuotas de $22.000/mes hasta ser dueños al mes 12 a costo $0.</p>
+    <p>• <strong>Condiciones de Venta Directa ($150.000):</strong> Incluye 30 días de soporte técnico continuo para afinamiento. Posterior a los 30 días, cualquier hora de consulta o cambio técnico se cobra a valor preferencial de <strong>$15.000 / hora</strong>. El hosting y dominio .CL están incluidos por 1 año completo y se renuevan 1 vez al año.</p>
+    <p>• <strong>Módulo Agente IA Opcional Cotizado Aparte:</strong> Si Asvid desea incorporar el Asistente Virtual 24/7 entrenado, se adiciona un setup único de <strong>+$50.000</strong> y una cuota fija de consumo de tokens de <strong>+$15.000 CLP / mes</strong>. Si no lo necesitan para partir, pagan únicamente los valores base del Plan Start.</p>
+    <p>• <strong>Dominio propio .CL:</strong> Gestionado e inscrito en NIC Chile. Al finalizar el leasing (o de inmediato en Compra Contado), se traspasa la titularidad directamente al RUT de Asvid SpA a costo $0.</p>
+    <p>• Se emite Factura Electrónica formal con IVA según normativa tributaria chilena.</p>
+  </div>
+
+  <div class="footer-signs">
+    <div>
+      <p><strong>UNIVERSO693 SpA</strong></p>
+      <p>Alexis Santana Miranda &bull; Director General</p>
+      <p>contacto@universo693.com &bull; +56 9 9038 7414</p>
+    </div>
+    <div style="text-align: right;">
+      <p><strong>Ingeniería y Construcción Asvid SpA</strong></p>
+      <p>Aceptación de Propuesta Comercial</p>
+      <p>Firma / Aprobación por Correo o WhatsApp</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
