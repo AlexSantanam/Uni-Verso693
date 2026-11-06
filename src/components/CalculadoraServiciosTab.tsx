@@ -140,21 +140,27 @@ export const CalculadoraServiciosTab: React.FC = () => {
   // ----------------------------------------------------
 
   // 1. MODELO 1: ARRIENDO PERPETUO (SaaS / Arriendo Barato)
-  // Regla: 3.5% a 5% del valor base, con piso mínimo de $15.000 para proyectos pequeños (<= $200.000)
+  // Regla: Escalamiento proporcional y justo según el tamaño del servicio:
+  // • Plan Start ($150k): $15.000/mes (Piso mínimo de infraestructura).
+  // • Plan Pro ($200k): $20.000/mes (10% valor base).
+  // • Plan Plus ($250k): $25.000/mes (10% valor base, catálogo).
+  // • Plan Store ($285k): $29.000/mes (10% valor base, transacciones Webpay Plus y e-commerce).
+  // • Proyectos corporativos ($1M a $5M): baja suavemente de 4.5% a 4.0%.
   const saasMonthly = useMemo(() => {
     let monthly = 15000;
-    if (activeBasePrice <= 200000) {
-      monthly = 15000; // Piso mínimo que cubre $7.500 hosting + $7.500 utilidad
-    } else if (activeBasePrice <= 500000) {
-      // 5.0%
-      monthly = Math.round((activeBasePrice * 0.05) / 1000) * 1000;
-      if (monthly < 15000) monthly = 15000;
-    } else if (activeBasePrice <= 1500000) {
-      // 4.5% ($1M -> $45.000)
-      monthly = Math.round((activeBasePrice * 0.045) / 1000) * 1000;
+    if (activeBasePrice <= 300000) {
+      // Planes Pyme: 10% del valor base con piso mínimo de $15.000
+      monthly = Math.max(15000, Math.round((activeBasePrice * 0.10) / 1000) * 1000);
+    } else if (activeBasePrice <= 1000000) {
+      // De 300k (10% = 30k) a 1M (4.5% = 45k)
+      const t = (activeBasePrice - 300000) / 700000.0;
+      const pct = 0.10 * (1 - t) + 0.045 * t;
+      monthly = Math.round((activeBasePrice * pct) / 1000) * 1000;
     } else {
-      // 4.0% ($5M -> $200.000)
-      monthly = Math.round((activeBasePrice * 0.04) / 1000) * 1000;
+      // De 1M (4.5% = 45k) a 5M (4.0% = 200k)
+      const t = Math.min(1.0, (activeBasePrice - 1000000) / 4000000.0);
+      const pct = 0.045 * (1 - t) + 0.04 * t;
+      monthly = Math.round((activeBasePrice * pct) / 1000) * 1000;
     }
     return monthly + aiMonthlyCost;
   }, [activeBasePrice, aiMonthlyCost]);
@@ -171,33 +177,18 @@ export const CalculadoraServiciosTab: React.FC = () => {
     const m = leasingMonths;
     let cuota = 22000;
 
-    if (activeBasePrice <= 200000) {
+    if (activeBasePrice <= 300000) {
       const ratio = activeBasePrice / 150000.0;
-      if (m === 12) {
-        cuota = 22000 * ratio;
-      } else if (m === 24) {
-        cuota = 14000 * ratio;
-      } else {
-        cuota = 22000 * ratio * Math.pow(12.0 / m, 0.65);
-      }
+      const c12 = 22000 * ratio;
+      cuota = c12 * Math.pow(12.0 / m, 0.65);
     } else if (activeBasePrice <= 1500000) {
       const ratio = activeBasePrice / 1000000.0;
-      if (m === 12) {
-        cuota = 115000 * ratio;
-      } else if (m === 24) {
-        cuota = 65000 * ratio;
-      } else {
-        cuota = 115000 * ratio * Math.pow(12.0 / m, 0.82);
-      }
+      const c12 = 115000 * ratio;
+      cuota = c12 * Math.pow(12.0 / m, 0.82);
     } else {
       const ratio = activeBasePrice / 5000000.0;
-      if (m === 12) {
-        cuota = 550000 * ratio;
-      } else if (m === 24) {
-        cuota = 300000 * ratio;
-      } else {
-        cuota = 550000 * ratio * Math.pow(12.0 / m, 0.87);
-      }
+      const c12 = 550000 * ratio;
+      cuota = c12 * Math.pow(12.0 / m, 0.87);
     }
 
     const rounded = Math.round(cuota / 1000) * 1000;
@@ -215,6 +206,16 @@ export const CalculadoraServiciosTab: React.FC = () => {
   // Formateador chileno de moneda
   const clp = (val: number) => {
     return '$' + Math.round(val).toLocaleString('es-CL');
+  };
+
+  const getPresetSaaS = (price: number) => {
+    if (price <= 300000) return Math.max(15000, Math.round((price * 0.10) / 1000) * 1000);
+    if (price <= 1000000) {
+      const t = (price - 300000) / 700000.0;
+      return Math.round((price * (0.10 * (1 - t) + 0.045 * t)) / 1000) * 1000;
+    }
+    const t = Math.min(1.0, (price - 1000000) / 4000000.0);
+    return Math.round((price * (0.045 * (1 - t) + 0.04 * t)) / 1000) * 1000;
   };
 
   // Generador de textos listos para copiar
@@ -420,7 +421,9 @@ Ingeniería de Software & Agentes de IA`;
                   </div>
                   <div className="mt-2 pt-2 border-t border-slate-800/80">
                     <div className="text-sm font-extrabold text-white">{clp(plan.basePrice)}</div>
-                    <div className="text-[9.5px] text-emerald-400 font-medium">IVA Inc.</div>
+                    <div className="text-[10px] text-slate-400 mt-1 flex flex-col gap-0.5">
+                      <span className="text-emerald-400 font-semibold">Arriendo: {clp(getPresetSaaS(plan.basePrice))}/m</span>
+                    </div>
                   </div>
                 </div>
               );
@@ -676,9 +679,17 @@ Ingeniería de Software & Agentes de IA`;
             <span className="text-[10.5px] text-slate-400 block mt-0.5">
               IVA Incluido &bull; Renovación automática
             </span>
-            {activeBasePrice <= 200000 && (
+            {activeBasePrice <= 150000 ? (
               <div className="mt-2 text-[10px] bg-slate-950/80 border border-slate-800/80 p-2 rounded-lg text-slate-400">
-                💡 <em>Piso mínimo de $15.000 aplicado para asegurar $7.500 de servidor + $7.500 de utilidad neta.</em>
+                💡 <em>Piso mínimo de $15.000/mes aplicado (cubre $7.500 de servidor cloud + $7.500 utilidad neta).</em>
+              </div>
+            ) : activeBasePrice <= 300000 ? (
+              <div className="mt-2 text-[10px] bg-emerald-950/40 border border-emerald-900/60 p-2 rounded-lg text-emerald-300">
+                🛒 <em>Arriendo Pyme proporcional (~10% del valor base). Cubre hosting transaccional, soporte continuo y seguridad.</em>
+              </div>
+            ) : (
+              <div className="mt-2 text-[10px] bg-slate-950/80 border border-slate-800/80 p-2 rounded-lg text-slate-400">
+                🏢 <em>Tarifa corporativa escalada (4.0% - 4.5% mensual) para plataformas y sistemas de alto tráfico.</em>
               </div>
             )}
           </div>
@@ -836,3 +847,4 @@ Ingeniería de Software & Agentes de IA`;
     </div>
   );
 };
+
