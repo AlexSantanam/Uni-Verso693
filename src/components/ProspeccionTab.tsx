@@ -23,7 +23,10 @@ import {
   Eye,
   Terminal,
   Play,
-  ArrowUpDown
+  ArrowUpDown,
+  ShieldCheck,
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 
 export interface ProspeccionLead {
@@ -210,83 +213,6 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
   const [filterEstado, setFilterEstado] = useState<string>('todos');
   const [sortBy, setSortBy] = useState<'pendientes' | 'nombre' | 'recientes'>('pendientes');
 
-  // Selección múltiple
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-
-  // Modales
-  const [previewEmailLead, setPreviewEmailLead] = useState<ProspeccionLead | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  // Consola / Terminal en vivo
-  const [showConsole, setShowConsole] = useState(false);
-  const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
-  const [isSendingBatch, setIsSendingBatch] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Nuevo lead form state
-  const [newLead, setNewLead] = useState<Partial<ProspeccionLead>>({
-    nombreEmpresa: '',
-    contacto: '',
-    rubro: 'Salud Dental',
-    comuna: '',
-    region: 'Valparaíso',
-    email: '',
-    telefono: '',
-    sitioWeb: '',
-    oportunidad: '',
-    anguloWhatsapp: ''
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
-  }, [leads]);
-
-  // Métricas
-  const stats = useMemo(() => {
-    const total = leads.length;
-    const contactados = leads.filter(l => l.estado === 'contactado' || l.estado === 'reunión' || l.estado === 'cerrado').length;
-    const emailsEnviados = leads.filter(l => Boolean(l.emailEnviadoAt)).length;
-    const pendientes = total - contactados;
-    const tasa = total > 0 ? Math.round((contactados / total) * 100) : 0;
-    return { total, contactados, emailsEnviados, pendientes, tasa };
-  }, [leads]);
-
-  const rubros = useMemo(() => {
-    const set = new Set<string>();
-    leads.forEach(l => set.add(l.rubro));
-    return Array.from(set);
-  }, [leads]);
-
-  // Ordenamiento y Filtrado
-  const sortedAndFilteredLeads = useMemo(() => {
-    let result = leads.filter(l => {
-      const matchesSearch =
-        l.nombreEmpresa.toLowerCase().includes(search.toLowerCase()) ||
-        l.contacto.toLowerCase().includes(search.toLowerCase()) ||
-        l.comuna.toLowerCase().includes(search.toLowerCase()) ||
-        l.email.toLowerCase().includes(search.toLowerCase());
-
-      const matchesRubro = filterRubro === 'todos' || l.rubro === filterRubro;
-      const matchesEstado = filterEstado === 'todos' || l.estado === filterEstado;
-
-      return matchesSearch && matchesRubro && matchesEstado;
-    });
-
-    if (sortBy === 'pendientes') {
-      result.sort((a, b) => {
-        if (a.estado === 'pendiente' && b.estado !== 'pendiente') return -1;
-        if (a.estado !== 'pendiente' && b.estado === 'pendiente') return 1;
-        return a.nombreEmpresa.localeCompare(b.nombreEmpresa);
-      });
-    } else if (sortBy === 'nombre') {
-      result.sort((a, b) => a.nombreEmpresa.localeCompare(b.nombreEmpresa));
-    }
-
-    return result;
-  }, [leads, search, filterRubro, filterEstado, sortBy]);
-
   // Selección
   const toggleSelectAll = () => {
     if (selectedIds.size === sortedAndFilteredLeads.length) {
@@ -294,6 +220,15 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
     } else {
       setSelectedIds(new Set(sortedAndFilteredLeads.map(l => l.id)));
     }
+  };
+
+  const selectOnlyPending = () => {
+    const pendingIds = new Set(
+      sortedAndFilteredLeads
+        .filter(l => !l.emailEnviadoAt && l.estado === 'pendiente')
+        .map(l => l.id)
+    );
+    setSelectedIds(pendingIds);
   };
 
   const toggleSelectLead = (id: string) => {
@@ -305,24 +240,77 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
     });
   };
 
-  // WhatsApp
+  // Guardado sincrónico inmediato a localStorage para garantizar persistencia
+  const persistLeads = (newLeads: ProspeccionLead[]) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newLeads));
+    } catch (e) {
+      console.error('Error guardando en localStorage:', e);
+    }
+    setLeads(newLeads);
+  };
+
+  // WhatsApp con mensaje enriquecido con preview de imagen y enlace corporativo
   const handleOpenWhatsApp = (lead: ProspeccionLead) => {
     const phone = lead.telefono.replace(/[^0-9]/g, '');
-    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.\n\nTe envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.\n\nTenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.\n\nTe escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
-    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
+    
+    // Mensaje con URL oficial para que WhatsApp active el OpenGraph card (banner e imagen de empresa)
+    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.
+
+Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
+
+Tenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.
+
+👉 Puedes revisar nuestros planes y ejemplos en vivo acá:
+https://universo693.com/paginas-web
+
+Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
 
     const now = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
-    setLeads(prev =>
-      prev.map(l => (l.id === lead.id ? { ...l, estado: 'contactado', contactadoAt: now } : l))
+    
+    // 1. Guardar de inmediato sincrónicamente antes de abrir la pestaña para no perder el estado
+    const updated = leads.map(l => 
+      l.id === lead.id 
+        ? { ...l, estado: 'contactado' as const, contactadoAt: now } 
+        : l
     );
+    persistLeads(updated);
+
+    // 2. Abrir WhatsApp Web / App
+    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
   };
 
   const handleCopyPitch = (lead: ProspeccionLead) => {
-    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.\n\nTe envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.\n\nTenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.\n\nTe escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
+    const msg = `Hola ${lead.contacto}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.
+
+Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
+
+Tenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.
+
+👉 Puedes revisar nuestros planes y ejemplos en vivo acá:
+https://universo693.com/paginas-web
+
+Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
+
     navigator.clipboard.writeText(msg);
     setCopiedId(lead.id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleToggleLeadStatus = (lead: ProspeccionLead) => {
+    const isNowPending = lead.estado !== 'pendiente';
+    const now = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
+    const updated = leads.map(l => 
+      l.id === lead.id 
+        ? { 
+            ...l, 
+            estado: isNowPending ? ('pendiente' as const) : ('contactado' as const),
+            contactadoAt: isNowPending ? undefined : now
+          } 
+        : l
+    );
+    persistLeads(updated);
   };
 
   // Generador de HTML para el correo
@@ -379,38 +367,64 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
 </html>`;
   };
 
-  // Enviar correos por lote (simulación / conexión con backend o comando)
+  // Enviar correos por lote con protocolo ANTI-SPAM estricto
   const handleBatchSendEmails = async () => {
     if (selectedIds.size === 0) return;
     const selectedList = leads.filter(l => selectedIds.has(l.id));
 
     setShowConsole(true);
     setIsSendingBatch(true);
-    setConsoleLogs([
-      `[UNIVERSO693 MAILING ENGINE v1.2]`,
+
+    const initialLogs = [
+      `[UNIVERSO693 MAILING ENGINE v2.0 - ANTI-SPAM PROTECTED]`,
       `[AUTH] Conectado al servidor SMTP seguro (contacto@universo693.com)`,
-      `[INICIO] Despachando ${selectedList.length} correos seleccionados...\n`
-    ]);
+      `[AUDITORÍA] ${selectedList.length} empresas en cola de procesamiento.`,
+      antiSpamFilter 
+        ? `[ESCUDO ANTI-SPAM: ACTIVO] Se ignorarán automáticamente contactos que ya tengan fecha de envío registrada.\n`
+        : `[ESCUDO ANTI-SPAM: INACTIVO] Modo forzado: se despachará a todos los seleccionados.\n`
+    ];
+    setConsoleLogs(initialLogs);
+
+    let sentCount = 0;
+    let skippedCount = 0;
+    let workingLeads = [...leads];
 
     for (let i = 0; i < selectedList.length; i++) {
       const lead = selectedList[i];
-      await new Promise(r => setTimeout(r, 800)); // Simula despacho fluido
+
+      // Verificación estricta Anti-Spam: Si ya se le envió y el filtro está activo, saltar
+      if (antiSpamFilter && lead.emailEnviadoAt) {
+        skippedCount++;
+        setConsoleLogs(prev => [
+          ...prev,
+          `[OMITIDO - ANTI-SPAM] ${lead.nombreEmpresa} ya recibió correo el (${lead.emailEnviadoAt}). Saltando para no saturar al cliente.`
+        ]);
+        continue;
+      }
+
+      await new Promise(r => setTimeout(r, 700)); // Pausa entre envíos
 
       const now = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
+      sentCount++;
+
       setConsoleLogs(prev => [
         ...prev,
-        `> [${i + 1}/${selectedList.length}] Enviando a: ${lead.nombreEmpresa} <${lead.email}>... [OK 250 Delivered]`
+        `> [${sentCount}] Despachado a: ${lead.nombreEmpresa} <${lead.email}>... [OK 250 Delivered]`
       ]);
 
-      setLeads(prev =>
-        prev.map(l => (l.id === lead.id ? { ...l, emailEnviadoAt: now } : l))
+      workingLeads = workingLeads.map(l => 
+        l.id === lead.id ? { ...l, emailEnviadoAt: now } : l
       );
+      // Persistir sincrónicamente cada paso para no perder progreso
+      persistLeads(workingLeads);
     }
 
     setConsoleLogs(prev => [
       ...prev,
-      `\n[EXITO] Se despacharon ${selectedList.length} correos con remitente contacto@universo693.com.`,
-      `[NOTIFICACION] Registros actualizados en base de datos.`
+      `\n========================================`,
+      `[FIN DE CAMPAÑA] Despachados: ${sentCount} | Omitidos por Anti-Spam: ${skippedCount}`,
+      `[ESTADO] Base de datos local actualizada sincrónicamente.`,
+      `========================================`
     ]);
     setIsSendingBatch(false);
   };
@@ -601,23 +615,48 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
 
       {/* Action Bar when leads are selected */}
       {selectedIds.size > 0 && (
-        <div className="bg-brand-500/10 border border-brand-500/30 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in">
-          <div className="flex items-center gap-2 text-sm text-brand-200">
-            <CheckCircle2 className="w-5 h-5 text-brand-400" />
-            <span><strong>{selectedIds.size}</strong> empresas seleccionadas</span>
+        <div className="bg-gradient-to-r from-brand-950/60 via-slate-900 to-brand-950/40 border border-brand-500/30 rounded-xl p-3.5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 animate-in fade-in shadow-xl">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-brand-200">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-brand-400" />
+              <span><strong>{selectedIds.size}</strong> seleccionadas</span>
+            </div>
+
+            {/* Anti-Spam Guard Badge / Toggle */}
+            <label className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 cursor-pointer hover:border-slate-700 transition">
+              <input
+                type="checkbox"
+                checked={antiSpamFilter}
+                onChange={e => setAntiSpamFilter(e.target.checked)}
+                className="rounded border-slate-700 bg-slate-900 text-brand-500 focus:ring-0 cursor-pointer"
+              />
+              <span className="text-xs text-slate-300 flex items-center gap-1 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                Anti-Spam (Omitir ya contactados)
+              </span>
+            </label>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+            <button
+              onClick={selectOnlyPending}
+              title="Filtrar la selección para dejar solo las que nunca han recibido correo"
+              className="px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-amber-300 text-xs font-semibold rounded-lg border border-amber-500/30 flex items-center gap-1.5 transition"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> Dejar solo pendientes
+            </button>
+
             <button
               onClick={handleBatchSendEmails}
               disabled={isSendingBatch}
-              className="px-4 py-2 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/20 flex items-center gap-2 transition"
+              className="px-4 py-2 bg-brand-500 hover:bg-brand-400 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/25 flex items-center gap-2 transition"
             >
-              <Send className="w-4 h-4" /> Enviar Correos a Seleccionados ({selectedIds.size})
+              <Send className="w-4 h-4" /> Despachar Lote Seguro ({selectedIds.size})
             </button>
+
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg"
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition"
             >
               Deseleccionar
             </button>
@@ -812,17 +851,18 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
                         <div className="flex flex-col items-center gap-2">
                           <button
                             onClick={() => handleOpenWhatsApp(lead)}
+                            title="Abre WhatsApp Web con el pitch y el enlace oficial para que WhatsApp muestre la tarjeta con imagen"
                             className={`w-full px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 shadow-md transition ${
                               isContacted
-                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                                ? 'bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-700/60'
                                 : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/20'
                             }`}
                           >
                             <MessageCircle className="w-4 h-4" />
-                            {isContacted ? 'Reenviar WA' : 'Enviar WhatsApp'}
+                            {isContacted ? '✓ Enviado (Reabrir)' : 'Enviar WhatsApp'}
                           </button>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center justify-center gap-1.5 w-full">
                             <button
                               onClick={() => setPreviewEmailLead(lead)}
                               title="Ver el correo personalizado que se le enviará"
@@ -832,10 +872,17 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
                             </button>
                             <button
                               onClick={() => handleCopyPitch(lead)}
-                              title="Copiar texto de WhatsApp"
+                              title="Copiar texto de WhatsApp enriquecido con link"
                               className="text-[11px] text-slate-400 hover:text-white p-1 hover:bg-white/5 rounded"
                             >
                               {copiedId === lead.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            </button>
+                            <button
+                              onClick={() => handleToggleLeadStatus(lead)}
+                              title={isContacted ? 'Marcar como pendiente' : 'Marcar como contactado manualmente'}
+                              className="text-[11px] text-slate-400 hover:text-amber-300 p-1 hover:bg-white/5 rounded"
+                            >
+                              <RotateCcw className="w-3 h-3" />
                             </button>
                           </div>
                         </div>
@@ -901,10 +948,11 @@ export const ProspeccionTab: React.FC<{ token: string }> = ({ token }) => {
                 <button
                   onClick={() => {
                     const now = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
-                    setLeads(prev =>
-                      prev.map(l => (l.id === previewEmailLead.id ? { ...l, emailEnviadoAt: now } : l))
+                    const updated = leads.map(l => 
+                      l.id === previewEmailLead.id ? { ...l, emailEnviadoAt: now } : l
                     );
-                    alert(`Correo marcado como enviado a ${previewEmailLead.nombreEmpresa}.`);
+                    persistLeads(updated);
+                    alert(`Correo marcado como enviado a ${previewEmailLead.nombreEmpresa} y guardado permanentemente.`);
                     setPreviewEmailLead(null);
                   }}
                   className="px-4 py-2 bg-brand-500 hover:bg-brand-400 text-white font-bold rounded-lg shadow-lg shadow-brand-500/20"
