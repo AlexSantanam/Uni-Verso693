@@ -200,7 +200,7 @@ export const CalculadoraServiciosTab: React.FC = () => {
   const leasingTotalContract = leasingSetupInitial + (leasingMonthly * leasingMonths);
 
   // 3. MODELO 3: VENTA DIRECTA (CONTADO)
-  const contadoBase = activeBasePrice - domainDiscount + aiSetupCost + webpaySetupCost + extraHoursCost;
+  const contadoBase = activeBasePrice + aiSetupCost + webpaySetupCost + extraHoursCost; // Venta directa siempre mantiene el valor oficial íntegro
   const contadoAnualRenewal = activeBasePrice >= 2000000 ? 90000 : 60000;
 
   // Formateador chileno de moneda
@@ -496,7 +496,7 @@ Ingeniería de Software & Agentes de IA`;
               />
               <div>
                 <strong className="block text-white">Escenario B: Cliente YA tiene dominio propio</strong>
-                <span>Aplica incentivo de cierre con <strong>-$10.000 de descuento</strong> en el 1er pago. El cliente solo apunta registros DNS a nuestro servidor.</span>
+                <span>Aplica incentivo de cortesía con <strong>-$10.000 de descuento</strong> en la habilitación inicial de Arriendo/Leasing ($15.000 ➔ $5.000). En Venta Directa el precio se mantiene íntegro oficial.</span>
               </div>
             </label>
           </div>
