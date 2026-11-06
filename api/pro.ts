@@ -552,6 +552,70 @@ Encuentra entre 3 y 5 competidores directos reales (mismo rubro y, si aplica, mi
   return notes.trim();
 };
 
+// ---------- report generation: Groq first, Anthropic as fallback ----------
+// (competitor research above stays Anthropic-only: it needs its server-side web_search tool,
+// which Groq has no equivalent for; it already degrades to an empty competitors list on failure.)
+const PRO_PROVIDERS = (process.env.LLM_PRO || 'groq,anthropic').split(',').map((x) => x.trim()).filter(Boolean);
+const PRO_GROQ_MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map((x) => x.trim()).filter(Boolean);
+const PRO_JSON_SCHEMA = (() => {
+  const { $schema: _omit, ...schema } = z.toJSONSchema(ProReport) as Record<string, unknown>;
+  return schema;
+})();
+
+const callProGroqModel = async (model: string, userContent: string): Promise<ProReport> => {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: SYSTEM },
+        { role: 'user', content: userContent },
+      ],
+      temperature: 0.4,
+      max_completion_tokens: 8000,
+      reasoning_effort: 'medium',
+      response_format: { type: 'json_schema', json_schema: { name: 'pro_report', strict: true, schema: PRO_JSON_SCHEMA } },
+    }),
+    signal: AbortSignal.timeout(55_000),
+  });
+  const j = (await res.json().catch(() => ({}))) as { choices?: { message?: { content?: string } }[]; usage?: { prompt_tokens?: number; completion_tokens?: number }; error?: { message?: string } };
+  if (!res.ok) throw new Error(`Groq ${model} ${res.status}: ${j.error?.message ?? 'error'}`);
+  console.log(`Pro: groq ${model} tokens in/out: ${j.usage?.prompt_tokens ?? '?'}/${j.usage?.completion_tokens ?? '?'}`);
+  const content = j.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Groq returned no content');
+  return ProReport.parse(JSON.parse(content));
+};
+
+const callProGroq = async (userContent: string): Promise<ProReport> => {
+  let lastError: unknown;
+  for (const model of PRO_GROQ_MODELS) {
+    try {
+      return await callProGroqModel(model, userContent);
+    } catch (err) {
+      lastError = err;
+      console.error('Pro: groq model failed', (err as Error).message.slice(0, 200));
+    }
+  }
+  throw lastError ?? new Error('no Groq model configured');
+};
+
+const callProAnthropic = async (userContent: string): Promise<ProReport> => {
+  const response = await new Anthropic().beta.messages.parse({
+    model: 'claude-opus-5-5',
+    max_tokens: 16000,
+    output_config: { effort: 'medium', format: betaZodOutputFormat(ProReport) },
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default',
+    system: SYSTEM,
+    messages: [{ role: 'user', content: userContent }],
+  });
+  if (response.stop_reason === 'refusal') throw new ProError('No pudimos analizar este sitio.');
+  const report = response.parsed_output;
+  if (!report) throw new Error(`Pro parse failed (stop_reason: ${response.stop_reason})`);
+  return report;
+};
+
 export const runProAudit = async (input: ProInput): Promise<{ url: string; report: ProReport }> => {
   const site = await readSite(input.url);
   const client = new Anthropic();
@@ -592,29 +656,28 @@ export const runProAudit = async (input: ProInput): Promise<{ url: string; repor
     `Herramientas que usan hoy: ${input.tools || '(no indicadas)'}`,
   ].join('\n');
 
-  const response = await client.beta.messages.parse({
-    model: 'claude-opus-5-5',
-    max_tokens: 16000,
-    output_config: { effort: 'medium', format: betaZodOutputFormat(ProReport) },
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    system: SYSTEM,
-    messages: [
-      {
-        role: 'user',
-        content: `Prepara el Audit 693 Pro.${
-          input.lang === 'en'
-            ? ' Escribe TODO el informe en inglés (English): textos, industria, hallazgos, oportunidades y preguntas. Los campos enum mantienen sus valores definidos.'
-            : ''
-        }\n\n<cliente>\n${clientBlock}\n</cliente>\n\n<sitio>\n${siteBlock}\n</sitio>\n\n<competencia>\n${
-          competition || '(No hay resultados de investigación: deja competitors vacío y explícalo en competitive_summary.)'
-        }\n</competencia>`,
-      },
-    ],
-  });
-  if (response.stop_reason === 'refusal') throw new ProError('No pudimos analizar este sitio.');
-  const report = response.parsed_output;
-  if (!report) throw new Error(`Pro parse failed (stop_reason: ${response.stop_reason})`);
+  const userContent = `Prepara el Audit 693 Pro.${
+    input.lang === 'en'
+      ? ' Escribe TODO el informe en inglés (English): textos, industria, hallazgos, oportunidades y preguntas. Los campos enum mantienen sus valores definidos.'
+      : ''
+  }\n\n<cliente>\n${clientBlock}\n</cliente>\n\n<sitio>\n${siteBlock}\n</sitio>\n\n<competencia>\n${
+    competition || '(No hay resultados de investigación: deja competitors vacío y explícalo en competitive_summary.)'
+  }\n</competencia>`;
+
+  let report: ProReport | undefined;
+  let lastError: unknown;
+  for (const provider of PRO_PROVIDERS) {
+    try {
+      if (provider === 'groq' && process.env.GROQ_API_KEY) report = await callProGroq(userContent);
+      if (provider === 'anthropic' && process.env.ANTHROPIC_API_KEY) report = await callProAnthropic(userContent);
+      if (report) break;
+    } catch (err) {
+      lastError = err;
+      console.error(`Pro: ${provider} failed, trying the next provider`, (err as Error).message);
+      if (err instanceof ProError) throw err;
+    }
+  }
+  if (!report) throw lastError ?? new Error('no model provider configured');
   report.opportunities = report.opportunities.slice(0, 10);
   report.competitors = report.competitors.slice(0, 5);
   report.quick_wins = report.quick_wins.slice(0, 3);
