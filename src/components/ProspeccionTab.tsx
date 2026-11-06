@@ -25,6 +25,8 @@ import {
   Play,
   ArrowUpDown,
   ShieldCheck,
+  ShieldAlert,
+  Users,
   AlertTriangle,
   RotateCcw
 } from 'lucide-react';
@@ -45,7 +47,10 @@ export interface ProspeccionLead {
   asuntoEmail?: string;
   estado: 'pendiente' | 'contactado' | 'reunión' | 'cerrado';
   contactadoAt?: string;
+  contactadoPor?: 'martin' | 'alexis';
   emailEnviadoAt?: string;
+  emailEnviadoPor?: 'martin' | 'alexis';
+  asignadoA: 'martin' | 'alexis' | 'compartido';
   notas?: string;
 }
 
@@ -639,9 +644,16 @@ export const ProspeccionTab: React.FC<{
   const [leads, setLeads] = useState<ProspeccionLead[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : INITIAL_LEADS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map((l: any) => ({
+          ...l,
+          asignadoA: l.asignadoA || 'martin'
+        }));
+      }
+      return INITIAL_LEADS.map(l => ({ ...l, asignadoA: l.asignadoA || 'martin' }));
     } catch {
-      return INITIAL_LEADS;
+      return INITIAL_LEADS.map(l => ({ ...l, asignadoA: 'martin' }));
     }
   });
 
@@ -664,6 +676,10 @@ export const ProspeccionTab: React.FC<{
   }, [isMartinUser]);
 
   const activeSender = SENDER_PROFILES[senderId] || SENDER_PROFILES.alexis;
+
+  const [filterCartera, setFilterCartera] = useState<'todos' | 'martin' | 'alexis'>(() => {
+    return isMartinUser ? 'martin' : 'todos';
+  });
 
   const [search, setSearch] = useState('');
   const [filterRubro, setFilterRubro] = useState<string>('todos');
@@ -697,7 +713,8 @@ export const ProspeccionTab: React.FC<{
     telefono: '',
     sitioWeb: '',
     oportunidad: '',
-    anguloWhatsapp: ''
+    anguloWhatsapp: '',
+    asignadoA: isMartinUser ? 'martin' : 'alexis'
   });
 
   useEffect(() => {
@@ -731,8 +748,12 @@ export const ProspeccionTab: React.FC<{
 
       const matchesRubro = filterRubro === 'todos' || l.rubro === filterRubro;
       const matchesEstado = filterEstado === 'todos' || l.estado === filterEstado;
+      const matchesCartera =
+        filterCartera === 'todos' ||
+        l.asignadoA === filterCartera ||
+        l.asignadoA === 'compartido';
 
-      return matchesSearch && matchesRubro && matchesEstado;
+      return matchesSearch && matchesRubro && matchesEstado && matchesCartera;
     });
 
     if (sortBy === 'pendientes') {
@@ -746,7 +767,7 @@ export const ProspeccionTab: React.FC<{
     }
 
     return result;
-  }, [leads, search, filterRubro, filterEstado, sortBy]);
+  }, [leads, search, filterRubro, filterEstado, filterCartera, sortBy]);
 
   // Selección
   const toggleSelectAll = () => {
@@ -755,6 +776,22 @@ export const ProspeccionTab: React.FC<{
     } else {
       setSelectedIds(new Set(sortedAndFilteredLeads.map(l => l.id)));
     }
+  };
+
+  const handleAssignSelected = (targetUser: 'martin' | 'alexis' | 'compartido') => {
+    if (selectedIds.size === 0) return;
+    const updated = leads.map(l =>
+      selectedIds.has(l.id) ? { ...l, asignadoA: targetUser } : l
+    );
+    persistLeads(updated);
+    setSelectedIds(new Set());
+  };
+
+  const handleAssignSingleLead = (leadId: string, targetUser: 'martin' | 'alexis' | 'compartido') => {
+    const updated = leads.map(l =>
+      l.id === leadId ? { ...l, asignadoA: targetUser } : l
+    );
+    persistLeads(updated);
   };
 
   const selectOnlyPending = () => {
@@ -809,7 +846,7 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
     // 1. Guardar de inmediato sincrónicamente antes de abrir la pestaña para no perder el estado
     const updated = leads.map(l => 
       l.id === lead.id 
-        ? { ...l, estado: 'contactado' as const, contactadoAt: now } 
+        ? { ...l, estado: 'contactado' as const, contactadoAt: now, contactadoPor: senderId } 
         : l
     );
     persistLeads(updated);
@@ -964,7 +1001,7 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
       ]);
 
       workingLeads = workingLeads.map(l => 
-        l.id === lead.id ? { ...l, emailEnviadoAt: now } : l
+        l.id === lead.id ? { ...l, emailEnviadoAt: now, emailEnviadoPor: senderId } : l
       );
       // Persistir sincrónicamente cada paso para no perder progreso
       persistLeads(workingLeads);
@@ -1230,15 +1267,83 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
               <Send className="w-4 h-4" /> Despachar Lote Seguro ({selectedIds.size})
             </button>
 
+            {/* Asignación rápida en lote */}
+            <div className="flex items-center gap-1.5 border-l border-slate-800 pl-2 ml-1">
+              <span className="text-[11px] text-slate-400 font-medium">Asignar:</span>
+              <button
+                type="button"
+                onClick={() => handleAssignSelected('martin')}
+                className="px-2.5 py-1.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-200 text-xs font-bold rounded-lg border border-cyan-800 transition cursor-pointer"
+                title="Asignar seleccionados a Martín Romero"
+              >
+                👤 A Martín
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAssignSelected('alexis')}
+                className="px-2.5 py-1.5 bg-emerald-950 hover:bg-emerald-900 text-emerald-200 text-xs font-bold rounded-lg border border-emerald-800 transition cursor-pointer"
+                title="Asignar seleccionados a Alexis Santana"
+              >
+                💼 A Alexis
+              </button>
+            </div>
+
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition"
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition cursor-pointer"
             >
               Deseleccionar
             </button>
           </div>
         </div>
       )}
+
+      {/* Segmentación por Cartera y Escudo Anti-Colisión */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/50 border border-slate-800 rounded-xl p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold text-slate-400 px-1 flex items-center gap-1.5">
+            <Users className="w-4 h-4 text-brand-400" /> Cartera:
+          </span>
+          <button
+            type="button"
+            onClick={() => setFilterCartera('todos')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              filterCartera === 'todos'
+                ? 'bg-slate-800 text-white shadow-sm border border-slate-600'
+                : 'text-slate-400 hover:text-white bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            🌐 Vista Global ({leads.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilterCartera('martin')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              filterCartera === 'martin'
+                ? 'bg-cyan-950 text-cyan-200 border border-cyan-500/60 shadow-sm'
+                : 'text-slate-400 hover:text-cyan-300 bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            👤 Lote Martín ({leads.filter(l => l.asignadoA === 'martin' || l.asignadoA === 'compartido').length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilterCartera('alexis')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              filterCartera === 'alexis'
+                ? 'bg-emerald-950 text-emerald-200 border border-emerald-500/60 shadow-sm'
+                : 'text-slate-400 hover:text-emerald-300 bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            💼 Cartera Alexis ({leads.filter(l => l.asignadoA === 'alexis').length})
+          </button>
+        </div>
+
+        <div className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-md border border-slate-800/80">
+          <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>Protección Anti-Colisión activa: no permite duplicar correos ni llamadas</span>
+        </div>
+      </div>
 
       {/* Filter / Search Bar */}
       <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center gap-3">
@@ -1370,8 +1475,17 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
 
                       {/* Empresa */}
                       <td className="py-4 px-4 align-top">
-                        <div className="font-bold text-white flex items-center gap-1.5">
-                          {lead.nombreEmpresa}
+                        <div className="font-bold text-white flex flex-wrap items-center gap-1.5">
+                          <span>{lead.nombreEmpresa}</span>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            lead.asignadoA === 'martin'
+                              ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/80'
+                              : lead.asignadoA === 'alexis'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/80'
+                              : 'bg-purple-950 text-purple-300 border border-purple-800/80'
+                          }`}>
+                            {lead.asignadoA === 'martin' ? '👤 Martín' : lead.asignadoA === 'alexis' ? '💼 Alexis' : '👥 Compartido'}
+                          </span>
                         </div>
                         <div className="text-xs text-slate-400 mt-0.5">
                           {lead.rubro} &bull; <span className="text-slate-300 font-medium">{lead.comuna}</span>
@@ -1402,7 +1516,12 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
                         </div>
                         {lead.emailEnviadoAt && (
                           <div className="text-[10px] text-sky-400 mt-1.5 font-semibold flex items-center gap-1">
-                            <Check className="w-3 h-3" /> Email enviado ({lead.emailEnviadoAt})
+                            <Check className="w-3 h-3" /> Email por {lead.emailEnviadoPor === 'martin' ? 'Martín' : 'Alexis'} ({lead.emailEnviadoAt})
+                          </div>
+                        )}
+                        {lead.contactadoAt && (
+                          <div className="text-[10px] text-emerald-400 mt-0.5 font-semibold flex items-center gap-1">
+                            <Check className="w-3 h-3" /> WhatsApp por {lead.contactadoPor === 'martin' ? 'Martín' : 'Alexis'} ({lead.contactadoAt})
                           </div>
                         )}
                       </td>
@@ -1577,10 +1696,11 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
                 oportunidad: newLead.oportunidad || 'Landing page con agendamiento y cotizador automático con arriendo mensual',
                 anguloWhatsapp: newLead.anguloWhatsapp || 'estuve revisando su presencia digital y noté una excelente oportunidad para automatizar sus reservas',
                 asuntoEmail: `Propuesta de digitalización para ${newLead.nombreEmpresa}`,
-                estado: 'pendiente'
+                estado: 'pendiente',
+                asignadoA: (newLead.asignadoA || (isMartinUser ? 'martin' : 'alexis')) as any
               };
 
-              setLeads(prev => [lead, ...prev]);
+              persistLeads([lead, ...leads]);
               setShowAddModal(false);
               setNewLead({
                 nombreEmpresa: '',
@@ -1592,19 +1712,34 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
                 telefono: '',
                 sitioWeb: '',
                 oportunidad: '',
-                anguloWhatsapp: ''
+                anguloWhatsapp: '',
+                asignadoA: isMartinUser ? 'martin' : 'alexis'
               });
             }} className="space-y-3.5 text-xs">
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Nombre de la Empresa *</label>
-                <input
-                  type="text"
-                  required
-                  value={newLead.nombreEmpresa}
-                  onChange={e => setNewLead({ ...newLead, nombreEmpresa: e.target.value })}
-                  placeholder="Ej: Clínica Los Boldos"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 focus:outline-none focus:border-brand-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Nombre de la Empresa *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newLead.nombreEmpresa}
+                    onChange={e => setNewLead({ ...newLead, nombreEmpresa: e.target.value })}
+                    placeholder="Ej: Clínica Los Boldos"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 focus:outline-none focus:border-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Asignar a Cartera</label>
+                  <select
+                    value={newLead.asignadoA || (isMartinUser ? 'martin' : 'alexis')}
+                    onChange={e => setNewLead({ ...newLead, asignadoA: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 focus:outline-none focus:border-brand-500"
+                  >
+                    <option value="alexis">💼 Cartera Alexis (Mis Prospectos)</option>
+                    <option value="martin">👤 Cartera Martín Romero</option>
+                    <option value="compartido">👥 Compartido / Ambos</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
