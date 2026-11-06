@@ -116,6 +116,10 @@ export const CalculadoraServiciosTab: React.FC = () => {
   const [includeWebpay, setIncludeWebpay] = useState<boolean>(false);
   const [extraHours, setExtraHours] = useState<number>(0);
 
+  // Mantención Mensual para Venta Directa (% del monto de compra)
+  const [includeContadoMaintenance, setIncludeContadoMaintenance] = useState<boolean>(false);
+  const [contadoMaintenancePct, setContadoMaintenancePct] = useState<number>(4);
+
   // Feedback de copiado
   const [copiedType, setCopiedType] = useState<'wsp' | 'email' | null>(null);
 
@@ -203,6 +207,13 @@ export const CalculadoraServiciosTab: React.FC = () => {
   const contadoBase = activeBasePrice + aiSetupCost + webpaySetupCost + extraHoursCost; // Venta directa siempre mantiene el valor oficial íntegro
   const contadoAnualRenewal = activeBasePrice >= 2000000 ? 90000 : 60000;
 
+  // Mantención mensual opcional para venta directa (% del monto base con piso mínimo $15.000)
+  const contadoMaintenanceMonthly = useMemo(() => {
+    if (!includeContadoMaintenance) return 0;
+    const calc = Math.round((activeBasePrice * (contadoMaintenancePct / 100)) / 1000) * 1000;
+    return Math.max(15000, calc);
+  }, [includeContadoMaintenance, activeBasePrice, contadoMaintenancePct]);
+
   // Formateador chileno de moneda
   const clp = (val: number) => {
     return '$' + Math.round(val).toLocaleString('es-CL');
@@ -242,6 +253,7 @@ export const CalculadoraServiciosTab: React.FC = () => {
 • Cuota mensual obligatoria: *$0 / mes*
 • Incluye: Hosting cloud + Dominio .CL por el Año 1 y 30 días de soporte post-entrega.
 • A partir del Año 2: Renovación de hosting/dominio por solo ${clp(contadoAnualRenewal)}/año (apenas ~$5.000/mes; *NO vuelves a pagar el sitio*).
+${includeContadoMaintenance ? `• 🛡️ *Plan de Mantención Técnica Opcional:* ${clp(contadoMaintenanceMonthly)} / mes (${contadoMaintenancePct}% del valor de compra). Incluye monitoreo 24/7, respaldos cloud automáticos, soporte prioritario por WhatsApp y afinamiento.` : ''}
 ${includeAI ? `\n🤖 *Módulo Agente IA 24/7:* Incluido con setup de $120.000 + IVA (Ref. mercado $390.000) y mantención fija de $15.000/mes de tokens.` : ''}
 ${domainScenario === 'has-domain' ? `\n🌐 *Dominio Propio:* Ya cuentas con dominio, te aplicamos un descuento de -$10.000 en el primer pago y te enviamos la guía DNS.` : `\n🌐 *Dominio:* Gestionamos tu .CL en NIC Chile a costo $0 dentro del plan.`}
 
@@ -272,11 +284,12 @@ MODALIDAD 2: ARRIENDO CON DERECHO A COMPRA (LEASING A ${leasingMonths} MESES)
 MODALIDAD 3: COMPRA DIRECTA (PAGO ÚNICO CONTADO)
 ══════════════════════════════════════════════════════════════
 • Inversión Total: ${clp(contadoBase)} IVA Inc.
-• Cuota Mensual: $0 / mes.
+• Cuota Mensual Obligatoria: $0 / mes.
 • Propiedad: Dueños del código y plataforma desde el Día 1 en Bóveda Digital.
 • Infraestructura Año 1: Hosting Cloud + Dominio .CL 100% incluidos.
 • Renovación Técnica (Año 2 en adelante): Solo ${clp(contadoAnualRenewal)} al año (apenas ~$5.000/mes; no se vuelve a pagar el desarrollo).
 • Garantía y Soporte: 30 días corridos de afinamiento continuo (posteriores a $15.000/hora).
+${includeContadoMaintenance ? `• Plan de Mantención Técnica Opcional: ${clp(contadoMaintenanceMonthly)} / mes (${contadoMaintenancePct}% del monto de compra). Cubre monitoreo 24/7 de caídas, respaldos automáticos, soporte prioritario por WhatsApp y mantención preventiva.` : ''}
 ${includeAI ? `\n• Módulo Agente IA 24/7: Setup preferencial de $120.000 + IVA (Ref. $390.000) y mantención fija de $15.000/mes de tokens.` : ''}
 
 Emitimos Factura Electrónica formal con IVA según normativa tributaria vigente.
@@ -783,16 +796,68 @@ Ingeniería de Software & Agentes de IA`;
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
-              Pago Único de Compra:
-            </span>
-            <div className="text-2xl font-black text-emerald-400">{clp(contadoBase)}</div>
-            <span className="text-[10.5px] text-slate-400 block mt-0.5">
-              IVA Incluido &bull; Factura electrónica formal
-            </span>
-            <div className="mt-2 text-[10px] bg-slate-950/80 border border-slate-800/80 p-2 rounded-lg text-slate-400">
-              ✨ <em>Horas posteriores a los 30 días se atienden a tarifa preferencial de $15.000 / hora.</em>
+          <div className="mt-4 pt-4 border-t border-slate-800 space-y-3">
+            <div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
+                Pago Único de Compra:
+              </span>
+              <div className="text-2xl font-black text-emerald-400">{clp(contadoBase)}</div>
+              <span className="text-[10.5px] text-slate-400 block mt-0.5">
+                IVA Incluido &bull; Factura electrónica formal
+              </span>
+            </div>
+
+            {/* COTIZADOR DE MANTENCIÓN MENSUAL OPCIONAL */}
+            <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 space-y-2">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                  <Percent className="w-3.5 h-3.5 text-cyan-400" /> Cotizar Mantención Mensual:
+                </span>
+                <input
+                  type="checkbox"
+                  checked={includeContadoMaintenance}
+                  onChange={e => setIncludeContadoMaintenance(e.target.checked)}
+                  className="rounded text-brand-500 focus:ring-0"
+                />
+              </label>
+
+              {includeContadoMaintenance && (
+                <div className="space-y-2 pt-1 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <span>% del monto compra:</span>
+                    <div className="flex items-center gap-1">
+                      {[3, 4, 5].map(pct => (
+                        <button
+                          key={pct}
+                          type="button"
+                          onClick={() => setContadoMaintenancePct(pct)}
+                          className={`px-2 py-0.5 rounded text-[10.5px] font-bold transition cursor-pointer ${
+                            contadoMaintenancePct === pct
+                              ? 'bg-cyan-600 text-white'
+                              : 'bg-slate-800 text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          {pct}%
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-baseline pt-1">
+                    <span className="text-[11px] text-slate-300 font-medium">Cuota Mantención:</span>
+                    <strong className="text-sm font-extrabold text-cyan-300">
+                      {clp(contadoMaintenanceMonthly)} <span className="text-[10px] text-slate-400 font-normal">/ mes</span>
+                    </strong>
+                  </div>
+                  <p className="text-[9.5px] text-slate-400 leading-tight">
+                    Respaldos cloud automáticos, monitoreo 24/7, soporte prioritario por WhatsApp y mantención preventiva continua.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="text-[10px] bg-slate-950/80 border border-slate-800/80 p-2 rounded-lg text-slate-400">
+              ✨ <em>Horas posteriores a los 30 días sin plan de mantención se cobran a tarifa preferencial de $15.000 / hora.</em>
             </div>
           </div>
         </div>

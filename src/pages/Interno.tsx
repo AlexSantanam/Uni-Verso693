@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
+  Percent,
   Check,
   Copy,
   Download,
@@ -620,6 +621,32 @@ const QuoteEditor = ({
     update({ items: [...q.items, { name: m.name, description: m.description, qty: 1, unitPrice: q.currency === 'CLP' ? m.price : 0, unit: m.unit }] });
   const addBlank = () => update({ items: [...q.items, { name: 'Ítem a medida', description: '', qty: 1, unitPrice: 0, unit: 'proyecto' }] });
 
+  const addMaintenanceItem = (pct: number = 4) => {
+    // Calcular subtotal de compra directa (ítems de proyecto o unidad)
+    const directTotal = q.items
+      .filter((it) => it.unit !== 'mes')
+      .reduce((sum, it) => sum + it.qty * it.unitPrice, 0);
+
+    const baseAmount = directTotal > 0 ? directTotal : 150000;
+    // Si es monto pequeño piso mínimo de $15.000, sino porcentaje redondeado a miles
+    const monthlyPrice = baseAmount <= 200000 
+      ? 15000 
+      : Math.max(15000, Math.round((baseAmount * (pct / 100)) / 1000) * 1000);
+
+    update({
+      items: [
+        ...q.items,
+        {
+          name: `Plan de Mantención, Soporte & Continuidad Operativa (${pct}% mensual)`,
+          description: `Monitoreo 24/7 de disponibilidad, respaldos cloud automáticos periódicos, actualizaciones de seguridad, soporte prioritario por WhatsApp y hasta 2 horas de afinamiento al mes (${pct}% del valor de compra directa).`,
+          qty: 1,
+          unitPrice: monthlyPrice,
+          unit: 'mes'
+        }
+      ]
+    });
+  };
+
   const t = totals(q, settings.ivaRate);
   const missingPrice = q.items.some((i) => i.unitPrice <= 0);
   const byCategory = useMemo(() => {
@@ -832,7 +859,18 @@ const QuoteEditor = ({
           <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Detalle</h3>
-              <button onClick={addBlank} className={`${btnGhost} ml-auto`}><Plus className="w-4 h-4" /> Ítem a medida</button>
+              <div className="ml-auto flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => addMaintenanceItem(4)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-950 hover:bg-cyan-900 text-cyan-200 border border-cyan-700/80 transition cursor-pointer"
+                  title="Calcular y agregar cuota de mantención mensual como porcentaje (4%) del total de compra directa"
+                >
+                  <Percent className="w-3.5 h-3.5 text-cyan-400" />
+                  + Mantención Mensual (% Compra)
+                </button>
+                <button onClick={addBlank} className={btnGhost}><Plus className="w-4 h-4" /> Ítem a medida</button>
+              </div>
             </div>
             {q.items.length === 0 && <p className="text-sm text-slate-500">Agrega módulos desde el catálogo de la derecha o un ítem a medida.</p>}
             <div className="space-y-3">
