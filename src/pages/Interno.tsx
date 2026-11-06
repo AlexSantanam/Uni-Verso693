@@ -32,9 +32,11 @@ import {
   Cpu,
   ExternalLink,
   Lock,
+  Calculator,
 } from 'lucide-react';
 import { PLAYBOOKS, playbookById, computeLeaks, documentsEmail, suggestionsFor, mapOf, leakArea, type CompanyMap, type ComputedLeak, type Confidence, type Metric } from '../data/ebsPlaybooks';
 import { ProspeccionTab } from '../components/ProspeccionTab';
+import { CalculadoraServiciosTab } from '../components/CalculadoraServiciosTab';
 
 // Internal workspace (/interno). Spanish only, not indexed, not linked from the site.
 // Everything goes through api/admin.ts with a bearer token saved in this browser.
@@ -51,6 +53,7 @@ export interface UserPermissions {
   ajustes: boolean;
   usuarios: boolean;
   prospeccion?: boolean;
+  calculadora?: boolean;
 }
 
 export interface AppUser {
@@ -77,6 +80,7 @@ const DEFAULT_USER_PERMISSIONS: UserPermissions = {
   ajustes: false,
   usuarios: false,
   prospeccion: true,
+  calculadora: true,
 };
 
 type Unit = 'proyecto' | 'mes' | 'hora' | 'unidad';
@@ -4354,6 +4358,7 @@ const UsersAdmin = ({ api }: { api: Api }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                 {[
                   { key: 'cotizaciones', label: 'Cotizador Oficial', desc: 'Crear, editar, enviar y descargar cotizaciones.' },
+                  { key: 'calculadora', label: 'Calculadora Financiera', desc: 'Simulador de arriendo, leasing y venta contado.' },
                   { key: 'catalogo', label: 'Catálogo de Servicios', desc: 'Consultar módulos, precios y horas.' },
                   { key: 'solicitudes', label: 'Solicitudes / Leads', desc: 'Bandeja de formularios de la web.' },
                   { key: 'whatsapp', label: 'Bandeja WhatsApp', desc: 'Lectura y respuesta de mensajes.' },
@@ -4541,7 +4546,7 @@ const UsersAdmin = ({ api }: { api: Api }) => {
 };
 
 // ---------------------------------------------------------------- shell
-type Tab = 'solicitudes' | 'whatsapp' | 'prospeccion' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'usuarios' | 'ajustes';
+type Tab = 'solicitudes' | 'whatsapp' | 'prospeccion' | 'calculadora' | 'ebs' | 'cotizaciones' | 'facturacion' | 'boveda' | 'audit' | 'catalogo' | 'usuarios' | 'ajustes';
 
 // EBS first: it's the main working tool, the rest supports it
 const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[] = [
@@ -4549,6 +4554,7 @@ const TABS: { id: Tab; label: string; Icon: React.FC<{ className?: string }> }[]
   { id: 'solicitudes', label: 'Solicitudes', Icon: Inbox },
   { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
   { id: 'prospeccion', label: 'Prospección B2B', Icon: Send },
+  { id: 'calculadora', label: 'Calculadora Financiera', Icon: Calculator },
   { id: 'cotizaciones', label: 'Cotizaciones', Icon: FileText },
   { id: 'facturacion', label: 'Facturación', Icon: Receipt },
   { id: 'boveda', label: 'Bóveda', Icon: KeyRound },
@@ -4577,6 +4583,7 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
       if (!userPerms) return t.id === 'cotizaciones';
       if (t.id === 'usuarios') return Boolean(userPerms.usuarios);
       if (t.id === 'prospeccion') return (userPerms as any).prospeccion !== false;
+      if (t.id === 'calculadora') return (userPerms as any).calculadora !== false;
       return Boolean((userPerms as any)[t.id]);
     });
   }, [isMaster, userPerms]);
@@ -4711,6 +4718,8 @@ const Workspace = ({ token, onLogout }: { token: string; onLogout: () => void })
           <WhatsAppInbox api={api} onUnread={setWaUnread} />
         ) : tab === 'prospeccion' ? (
           <ProspeccionTab token={token} currentUser={currentUser} />
+        ) : tab === 'calculadora' ? (
+          <CalculadoraServiciosTab />
         ) : tab === 'cotizaciones' ? (
           <Quotes api={api} settings={settings} onOpen={setEditing} onNew={() => setEditing(emptyQuote(settings))} />
         ) : tab === 'facturacion' ? (
