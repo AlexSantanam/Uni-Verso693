@@ -106,15 +106,27 @@ const renderBlock = (lang: 'es' | 'en') => (b: Block, i: number) => {
       );
     case 'cta':
       return (
-        <aside key={i} className="my-4 rounded-3xl border border-brand-500/30 bg-brand-500/10 p-7 space-y-5">
-          <p className="text-lg font-semibold text-white leading-relaxed">{b.text}</p>
-          <div className="flex flex-wrap gap-3">
-            <CalendlyButton />
+        <aside key={i} className="my-6 rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-slate-900/60 to-slate-950 p-7 sm:p-8 space-y-5 shadow-xl">
+          <p className="text-lg font-bold text-white leading-relaxed">{b.text}</p>
+          <div className="flex flex-wrap gap-3 items-center">
+            <Link
+              to="/paginas-web"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 px-6 py-3.5 text-sm font-extrabold text-white transition-all shadow-md shadow-cyan-600/20"
+            >
+              <span>Ver Planes Web ($150k - $285k)</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/impulsa-pyme"
+              className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 hover:border-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-6 py-3.5 text-sm font-extrabold text-amber-200 transition-colors"
+            >
+              <span>O Arrienda desde $19.900/mes</span>
+            </Link>
             <Link
               to="/contacto"
-              className="group inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-6 py-3.5 text-sm font-bold text-white transition-colors"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/20 hover:border-white/40 px-5 py-3 text-sm font-bold text-slate-300 hover:text-white transition-colors"
             >
-              {lang === 'es' ? 'Escríbenos' : 'Contact us'}
+              {lang === 'es' ? 'Cotizar a Medida' : 'Contact us'}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
