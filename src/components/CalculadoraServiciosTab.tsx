@@ -321,9 +321,6 @@ Ingeniería de Software & Agentes de IA`;
             <div>
               <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
                 Calculadora Financiera de Servicios
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
-                  Alexis & Martín
-                </span>
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
                 Simulador automático de Arriendo SaaS, Leasing (3 a 24 meses) y Venta Contado con porcentajes y pisos de infraestructura oficiales.
