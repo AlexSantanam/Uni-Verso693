@@ -24,6 +24,7 @@ import {
   Laptop,
   ShoppingBag,
   CreditCard,
+  Bot,
 } from 'lucide-react';
 import { Container } from '../components/ui';
 import { WHATSAPP_NUMBER, whatsappLink } from '../data/site';
@@ -739,6 +740,75 @@ export const PaginasWeb: React.FC = () => {
             </div>
           </div>
 
+          {/* MÓDULO DESTACADO: AGENTE DE INTELIGENCIA ARTIFICIAL 24/7 */}
+          <div className="mt-12 max-w-5xl mx-auto rounded-3xl bg-gradient-to-r from-slate-950 via-[#0B1528] to-slate-950 border-2 border-cyan-500/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute -right-20 -top-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="space-y-3 max-w-2xl text-left">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="bg-cyan-500 text-slate-950 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
+                    Add-On Oficial · Automatización
+                  </span>
+                  <span className="text-[11px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2.5 py-0.5 rounded-full border border-cyan-800/60">
+                    Ref. Comercio: $390.000 CLP
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                  Agente de Inteligencia Artificial 24/7 para WhatsApp & Web
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Entrenado exclusivamente con el conocimiento, catálogo, horarios y preguntas frecuentes de tu empresa con arquitectura RAG. Responde consultas complejas sin alucinaciones, califica prospectos en frío y deriva a ejecutivos humanos con el resumen listo.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 pt-1">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>WhatsApp Business API o Widget Web flotante</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>Cero respuestas inventadas (Citas exactas de tu negocio)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>Calificación de prospectos y derivación por WhatsApp</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span>Consumo protegido: cuota fija de tokens sin sorpresas</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing & CTA */}
+              <div className="w-full lg:w-72 bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-5 text-center space-y-3 shrink-0 shadow-lg">
+                <div className="text-[10px] uppercase tracking-wider font-extrabold text-cyan-400">
+                  Implementación Preferencial
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-white">
+                    $120.000 <span className="text-xs font-normal text-slate-400">+ IVA</span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 line-through mt-0.5">
+                    Valor Comercio: $390.000 CLP
+                  </div>
+                </div>
+                <div className="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800 text-xs">
+                  <span className="text-slate-400 block text-[10px]">Cuota mensual tokens & mantención:</span>
+                  <span className="font-mono font-extrabold text-cyan-300 text-sm">+$15.000 CLP / mes</span>
+                </div>
+                <a
+                  href={whatsappLink('Hola UNIVERSO693, me interesa implementar el Agente de IA 24/7 ($120.000 setup + $15.000/mes) para mi empresa.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 px-4 text-xs shadow-lg transition-all"
+                >
+                  <Bot className="w-4 h-4" />
+                  <span>Quiero mi Agente de IA</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
           {/* Banner de Alternativas: Arriendo Impulsa ProPyme vs Proyectos de Software a Medida */}
           <div className="mt-14 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Alternativa 1: Arriendo mensual */}
@@ -749,7 +819,7 @@ export const PaginasWeb: React.FC = () => {
                 </span>
                 <h4 className="text-lg font-black text-[#1F1A17]">Programa Impulsa ProPyme</h4>
                 <p className="text-xs sm:text-sm text-[#574C43] leading-relaxed">
-                  Ten tu página web profesional o sistema con arriendo mensual desde <strong>$19.900/mes</strong>, incluyendo hosting, cambios ilimitados y soporte técnico continuo sin descapitalizarte.
+                  Ten tu página web profesional o sistema con arriendo mensual desde <strong>$15.000/mes</strong>, incluyendo hosting, cambios ilimitados y soporte técnico continuo sin descapitalizarte.
                 </p>
               </div>
               <div className="pt-4">

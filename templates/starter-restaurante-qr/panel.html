@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Dueño · Recepción & Carta</title>
+
+  <meta name="theme-color" content="#181310" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            ember: '#C85A32',
+            darkwood: '#181310',
+            warmcard: '#221C18',
+            gold: '#E9C46A'
+          }
+        }
+      }
+    }
+  </script>
+
+  <script src="config.js"></script>
+
+  <!-- Firebase (productos, categorías, estado del local y pedidos) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
+</head>
+<body class="bg-darkwood text-[#F4EFEA] antialiased min-h-screen font-sans">
+
+  <!-- CANDADO DE ACCESO -->
+  <div id="loginGate" class="fixed inset-0 z-[999] bg-darkwood flex items-center justify-center p-4">
+    <form id="loginForm" class="w-full max-w-sm bg-warmcard border border-white/10 rounded-2xl p-6 space-y-3 shadow-2xl">
+      <div class="text-center space-y-1 mb-2">
+        <div class="text-2xl">🔐</div>
+        <h2 class="font-serif text-lg font-bold text-white">Panel del Dueño</h2>
+        <p class="text-[11px] text-stone-400" id="loginBrandLabel">Carta, precios, stock y pedidos en vivo.</p>
+      </div>
+      <input id="loginEmail" type="email" required placeholder="correo@tulocal.cl" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
+      <input id="loginPass" type="password" required placeholder="Contraseña" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
+      <p id="loginError" class="hidden text-[11px] text-red-400 font-bold"></p>
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs shadow transition-all cursor-pointer">Ingresar</button>
+    </form>
+  </div>
+
+  <!-- APP DEL PANEL (oculta hasta iniciar sesión) -->
+  <div id="panelApp" class="hidden">
+
+    <header class="sticky top-0 z-40 bg-darkwood/95 backdrop-blur-md border-b border-white/10">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-ember/20 border border-ember/40 flex items-center justify-center text-xl shadow">🔐</div>
+          <div>
+            <h1 id="brandName" class="font-serif text-lg font-bold leading-none text-white tracking-wide">Panel del Dueño</h1>
+            <p class="text-[11px] text-stone-400 mt-1">Recepción, carta y pedidos — autoadministrable</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <a href="index.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 font-bold border border-white/10 flex items-center gap-1.5">📱 Ver Carta Cliente ↗</a>
+          <a href="cocina.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-amber-950/60 hover:bg-amber-900/60 text-amber-300 font-bold border border-amber-600/50 flex items-center gap-1.5">👨‍🍳 Pantalla de Cocina ↗</a>
+          <button onclick="firebase.auth().signOut()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-red-900/40 text-stone-400 hover:text-red-300 font-bold border border-white/10 cursor-pointer">🚪 Salir</button>
+        </div>
+      </div>
+
+      <!-- PESTAÑAS -->
+      <div class="max-w-5xl mx-auto px-4 flex gap-2 overflow-x-auto no-scrollbar pb-2">
+        <button class="panel-tab-btn" data-tab="negocio" onclick="switchTab('negocio')">🏪 Negocio</button>
+        <button class="panel-tab-btn" data-tab="productos" onclick="switchTab('productos')">🍽️ Productos</button>
+        <button class="panel-tab-btn" data-tab="categorias" onclick="switchTab('categorias')">🗂️ Categorías</button>
+        <button class="panel-tab-btn" data-tab="clientes" onclick="switchTab('clientes')">👥 Clientes</button>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-5">
+
+      <!-- TAB: NEGOCIO -->
+      <section id="tab-negocio" class="panel-pane space-y-4">
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-white flex items-center justify-between">
+            🚦 Estado del Local
+            <span id="estadoLabel" class="text-xs font-mono"></span>
+          </h2>
+          <div class="flex gap-2">
+            <button id="btnAbrir" onclick="setEstado(true)" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer">🟢 Recibiendo Pedidos</button>
+            <button id="btnPausar" onclick="setEstado(false)" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs cursor-pointer">⏸️ Pausar Pedidos</button>
+          </div>
+        </div>
+
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-white">📢 Banner de Oferta en Vivo</h2>
+          <p class="text-[11px] text-stone-400">Se muestra arriba de la carta del cliente al instante. Déjalo vacío para ocultarlo.</p>
+          <div class="flex gap-2">
+            <input id="promoInput" type="text" placeholder="Ej: 15% dcto en pedidos online hoy" class="flex-1 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
+            <button onclick="publicarPromo()" class="px-4 py-2 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">Publicar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: PRODUCTOS -->
+      <section id="tab-productos" class="panel-pane space-y-4 hidden">
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-white">➕ Agregar Plato Nuevo</h2>
+          <div class="grid sm:grid-cols-2 gap-2">
+            <input id="newName" type="text" placeholder="Nombre del plato" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <select id="newCat" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember"></select>
+            <input id="newPrice" type="number" step="500" placeholder="Precio CLP" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <input id="newBadge" type="text" placeholder="Etiqueta (ej: Nuevo, Favorito)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <input id="newImg" type="text" placeholder="URL de la foto (opcional)" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <textarea id="newDesc" placeholder="Descripción breve" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" rows="2"></textarea>
+          </div>
+          <button onclick="agregarPlato()" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Agregar al Catálogo</button>
+          <p class="text-[10px] text-stone-500">Los modificadores (punto de cocción, extras, etc.) para platos complejos se configuran directo en Firestore o pídenos ayuda — esta vista cubre precio, stock y datos básicos.</p>
+        </div>
+
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
+          <h2 class="font-bold text-sm text-white mb-1">🏷️ Catálogo (precio, stock y categoría en vivo)</h2>
+          <div id="productosList" class="divide-y divide-white/5"></div>
+        </div>
+      </section>
+
+      <!-- TAB: CLIENTES (CRM) -->
+      <section id="tab-clientes" class="panel-pane space-y-4 hidden">
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h2 class="font-bold text-sm text-white">👥 Clientes que han pedido delivery</h2>
+            <div class="flex gap-3 text-[11px] text-stone-400">
+              <span>🆕 Nuevo</span>
+              <span>⭐ Frecuente</span>
+              <span>✅ Activo</span>
+              <span>💤 Inactivo (+45 días)</span>
+            </div>
+          </div>
+          <input id="clientesSearch" type="text" placeholder="Buscar por nombre o teléfono..." oninput="renderClientesList()" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+          <p class="text-[10px] text-stone-500">Se crean solos cuando alguien pide por delivery desde la carta. Los pedidos de mesa no quedan fichados (no se les pide teléfono).</p>
+        </div>
+
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
+          <div id="clientesList" class="divide-y divide-white/5"></div>
+        </div>
+      </section>
+
+      <!-- TAB: CATEGORÍAS -->
+      <section id="tab-categorias" class="panel-pane space-y-4 hidden">
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-white">➕ Nueva Categoría</h2>
+          <div class="grid grid-cols-[60px_1fr_auto] gap-2">
+            <input id="newCatIcon" type="text" placeholder="🍔" maxlength="4" class="bg-darkwood border border-white/10 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-ember">
+            <input id="newCatName" type="text" placeholder="Nombre de la categoría" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <button onclick="agregarCategoria()" class="px-4 py-2 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Agregar</button>
+          </div>
+        </div>
+
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
+          <h2 class="font-bold text-sm text-white mb-1">🗂️ Categorías Activas</h2>
+          <div id="categoriasList" class="divide-y divide-white/5"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <style>
+    .panel-tab-btn {
+      padding: 8px 14px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #d6d3d1;
+      background: #221C18;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    .panel-tab-btn.active {
+      background: #C85A32;
+      color: #fff;
+      border-color: #C85A32;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <script>
+    const CFG = window.RESTAURANTE_CONFIG;
+    let categorias = [];
+    let productos = [];
+    let clientes = [];
+
+    document.getElementById('loginBrandLabel').textContent = CFG.nombre + ' · Carta, precios, stock y pedidos en vivo.';
+    document.getElementById('brandName').textContent = 'Panel · ' + CFG.nombre;
+
+    // --- LOGIN ---
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('hidden');
+      firebase.auth().signInWithEmailAndPassword(email, pass).catch((err) => {
+        errEl.textContent = 'Correo o contraseña incorrectos.';
+        errEl.classList.remove('hidden');
+        console.error(err);
+      });
+    });
+
+    let subscribed = false;
+    firebase.auth().onAuthStateChanged(async (user) => {
+      const gate = document.getElementById('loginGate');
+      const app = document.getElementById('panelApp');
+      if (user) {
+        gate.classList.add('hidden');
+        app.classList.remove('hidden');
+        if (!subscribed) {
+          subscribed = true;
+          await window.seedIfEmpty();
+          subscribeAll();
+        }
+      } else {
+        gate.classList.remove('hidden');
+        app.classList.add('hidden');
+      }
+    });
+
+    function fmt(n) {
+      return '$' + Number(n || 0).toLocaleString('es-CL');
+    }
+
+    // --- TABS ---
+    function switchTab(tab) {
+      document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
+    }
+    switchTab('negocio');
+
+    // --- SUSCRIPCIONES EN VIVO ---
+    function subscribeAll() {
+      window.restRef().onSnapshot(snap => {
+        const data = snap.data() || {};
+        const abierto = data.abierto !== false;
+        document.getElementById('estadoLabel').innerHTML = abierto
+          ? '<span class="text-emerald-400">🟢 ABIERTO</span>'
+          : '<span class="text-red-400">⏸️ EN PAUSA</span>';
+        document.getElementById('promoInput').value = data.promo || '';
+      });
+
+      window.categoriasRef().orderBy('orden').onSnapshot(snap => {
+        categorias = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        renderCategoriasList();
+        renderCatSelect();
+      });
+
+      window.platosRef().orderBy('orden').onSnapshot(snap => {
+        productos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        renderProductosList();
+      });
+
+      window.clientesRef().orderBy('ultimaCompra', 'desc').onSnapshot(snap => {
+        clientes = snap.docs.map(d => ({
+          docId: d.id,
+          ...d.data(),
+          ultimaCompra: d.data().ultimaCompra && d.data().ultimaCompra.toDate ? d.data().ultimaCompra.toDate() : null
+        }));
+        renderClientesList();
+      });
+    }
+
+    // --- CLIENTES (CRM) ---
+    function segmentoCliente(c) {
+      if (!c.ultimaCompra) return { label: '🆕 Nuevo', diasInactivo: 0 };
+      const dias = Math.floor((Date.now() - c.ultimaCompra.getTime()) / 86400000);
+      if (c.totalPedidos <= 1) return { label: '🆕 Nuevo', diasInactivo: dias };
+      if (dias > 45) return { label: '💤 Inactivo', diasInactivo: dias };
+      if (c.totalPedidos >= 3 && dias <= 30) return { label: '⭐ Frecuente', diasInactivo: dias };
+      return { label: '✅ Activo', diasInactivo: dias };
+    }
+
+    function renderClientesList() {
+      const box = document.getElementById('clientesList');
+      const q = (document.getElementById('clientesSearch').value || '').toLowerCase().trim();
+
+      const filtrados = clientes.filter(c =>
+        !q || (c.nombre || '').toLowerCase().includes(q) || (c.telefono || '').includes(q)
+      );
+
+      if (filtrados.length === 0) {
+        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay clientes fichados (o ninguno coincide con la búsqueda).</p>';
+        return;
+      }
+
+      box.innerHTML = filtrados.map(c => {
+        const seg = segmentoCliente(c);
+        const fecha = c.ultimaCompra ? c.ultimaCompra.toLocaleDateString('es-CL') : '—';
+        const telLimpio = window.normalizarTelefono(c.telefono);
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
+            <div class="flex-1 min-w-[140px]">
+              <div class="text-white font-semibold">${c.nombre || 'Sin nombre'}</div>
+              <div class="text-[10px] text-stone-500">${c.telefono || ''} · Última compra: ${fecha}</div>
+            </div>
+            <span class="px-2 py-1 rounded-lg bg-darkwood border border-white/10 text-[10px] font-bold">${seg.label}</span>
+            <span class="text-stone-400 font-mono text-[11px]">${c.totalPedidos || 0}x · ${fmt(c.totalGastado)}</span>
+            <a href="https://wa.me/${telLimpio}" target="_blank" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">💬 WhatsApp</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- NEGOCIO ---
+    function setEstado(abierto) {
+      window.restRef().set({ abierto }, { merge: true });
+    }
+
+    function publicarPromo() {
+      const promo = document.getElementById('promoInput').value.trim();
+      window.restRef().set({ promo }, { merge: true });
+    }
+
+    // --- CATEGORÍAS ---
+    function renderCatSelect() {
+      const sel = document.getElementById('newCat');
+      sel.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icono || ''} ${c.nombre}</option>`).join('');
+    }
+
+    function renderCategoriasList() {
+      const box = document.getElementById('categoriasList');
+      if (categorias.length === 0) {
+        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay categorías. Agrega la primera arriba.</p>';
+        return;
+      }
+      box.innerHTML = categorias.map(c => `
+        <div class="flex items-center justify-between gap-2 py-2.5 text-xs">
+          <span class="text-white font-semibold">${c.icono || ''} ${c.nombre}</span>
+          <button onclick="eliminarCategoria('${c.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold">Eliminar</button>
+        </div>
+      `).join('');
+    }
+
+    function agregarCategoria() {
+      const nombre = document.getElementById('newCatName').value.trim();
+      const icono = document.getElementById('newCatIcon').value.trim() || '🍽️';
+      if (!nombre) return;
+      const id = nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      window.categoriasRef().doc(id).set({ id, nombre, icono, orden: categorias.length });
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatIcon').value = '';
+    }
+
+    function eliminarCategoria(docId) {
+      if (!confirm('¿Eliminar esta categoría? Los platos que la usan quedarán sin categoría visible.')) return;
+      window.categoriasRef().doc(docId).delete();
+    }
+
+    // --- PRODUCTOS ---
+    function renderProductosList() {
+      const box = document.getElementById('productosList');
+      if (productos.length === 0) {
+        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay platos cargados.</p>';
+        return;
+      }
+      box.innerHTML = productos.map(p => `
+        <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
+          <div class="flex-1 min-w-[140px]">
+            <div class="text-white font-semibold">${p.name}</div>
+            <div class="text-[10px] text-stone-500">${(categorias.find(c => c.id === p.cat) || {}).nombre || p.cat || 'Sin categoría'}</div>
+          </div>
+          <input type="number" value="${p.price}" step="500" onchange="actualizarPrecio('${p.docId}', this.value)" class="w-24 bg-darkwood border border-white/10 rounded-lg px-2 py-1.5 text-gold font-mono font-bold text-xs">
+          <select onchange="actualizarCategoria('${p.docId}', this.value)" class="bg-darkwood border border-white/10 rounded-lg px-2 py-1.5 text-xs text-stone-200">
+            ${categorias.map(c => `<option value="${c.id}" ${c.id === p.cat ? 'selected' : ''}>${c.nombre}</option>`).join('')}
+          </select>
+          <button onclick="toggleDisponible('${p.docId}', ${p.disponible === false})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold ${p.disponible === false ? 'bg-red-950 text-red-300 border border-red-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">
+            ${p.disponible === false ? '🔴 Agotado' : '🟢 Disponible'}
+          </button>
+          <button onclick="eliminarPlato('${p.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold px-1">Eliminar</button>
+        </div>
+      `).join('');
+    }
+
+    function actualizarPrecio(docId, value) {
+      const price = Number(value);
+      if (isNaN(price) || price < 0) return;
+      window.platosRef().doc(docId).update({ price });
+    }
+
+    function actualizarCategoria(docId, cat) {
+      window.platosRef().doc(docId).update({ cat });
+    }
+
+    function toggleDisponible(docId, nextValue) {
+      window.platosRef().doc(docId).update({ disponible: nextValue });
+    }
+
+    function eliminarPlato(docId) {
+      if (!confirm('¿Eliminar este plato del catálogo?')) return;
+      window.platosRef().doc(docId).delete();
+    }
+
+    function agregarPlato() {
+      const name = document.getElementById('newName').value.trim();
+      const cat = document.getElementById('newCat').value;
+      const price = Number(document.getElementById('newPrice').value) || 0;
+      const badge = document.getElementById('newBadge').value.trim() || 'Nuevo';
+      const img = document.getElementById('newImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=80';
+      const desc = document.getElementById('newDesc').value.trim();
+
+      if (!name || !cat) {
+        alert('Completa al menos el nombre y la categoría.');
+        return;
+      }
+
+      window.platosRef().doc('plato-' + Date.now()).set({
+        id: Date.now(),
+        cat, name, price, badge, img, desc,
+        modificadores: [],
+        disponible: true,
+        orden: productos.length
+      });
+
+      document.getElementById('newName').value = '';
+      document.getElementById('newPrice').value = '';
+      document.getElementById('newBadge').value = '';
+      document.getElementById('newImg').value = '';
+      document.getElementById('newDesc').value = '';
+    }
+  </script>
+</body>
+</html>

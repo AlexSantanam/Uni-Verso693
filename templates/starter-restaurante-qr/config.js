@@ -5,6 +5,10 @@
  */
 
 window.RESTAURANTE_CONFIG = {
+  // Identificador único del local en la base de datos (sin espacios ni tildes).
+  // Cambialo por cliente para que cada restaurante tenga su propia carta y pedidos.
+  restaurantId: "la-brasa-y-lena",
+
   // Información de la Marca
   nombre: "La Brasa & Leña",
   slogan: "Fuego & Tradición Porteña",
@@ -20,6 +24,12 @@ window.RESTAURANTE_CONFIG = {
   propinaSugeridaPct: 10, // Propina voluntaria chilena estándar 10%
   mesaDefault: "Mesa 07 · Terraza",
   totalMesasImprimibles: 20,
+
+  // Información de Despacho mostrada al cliente (estilo panel "Información" de OlaClick)
+  tiempoEntregaMin: 25,
+  tiempoEntregaMax: 50,
+  pedidoMinimoDelivery: 6000,
+  envioGratis: false,
 
   // Métodos de Pago Permitidos
   metodosPago: [

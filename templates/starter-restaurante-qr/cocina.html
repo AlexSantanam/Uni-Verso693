@@ -58,8 +58,30 @@
   </style>
 
   <script src="config.js"></script>
+
+  <!-- Firebase (pedidos en vivo, compartido con index.html y panel.html) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
 </head>
 <body class="bg-kdsBg text-slate-100 min-h-screen font-sans flex flex-col selection:bg-ember selection:text-white">
+
+  <!-- CANDADO DE ACCESO: solo personal autenticado ve los pedidos -->
+  <div id="loginGate" class="fixed inset-0 z-[999] bg-kdsBg flex items-center justify-center p-4">
+    <form id="loginForm" class="w-full max-w-sm bg-kdsCard border border-kdsBorder rounded-2xl p-6 space-y-3 shadow-2xl">
+      <div class="text-center space-y-1 mb-2">
+        <div class="text-2xl">🔐</div>
+        <h2 class="text-sm font-extrabold text-white">Acceso Personal · Pantalla de Cocina</h2>
+        <p class="text-[11px] text-slate-400">Ingresa con la cuenta que te entregó el dueño del local.</p>
+      </div>
+      <input id="loginEmail" type="email" required placeholder="correo@tulocal.cl" class="w-full bg-kdsBg border border-kdsBorder rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
+      <input id="loginPass" type="password" required placeholder="Contraseña" class="w-full bg-kdsBg border border-kdsBorder rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
+      <p id="loginError" class="hidden text-[11px] text-red-400 font-bold"></p>
+      <button type="submit" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs shadow transition-all cursor-pointer">Ingresar</button>
+    </form>
+  </div>
 
   <!-- TOP BAR KDS / SISTEMA DE COCINA Y CAJA -->
   <header class="bg-kdsCard border-b border-kdsBorder px-4 py-3 sticky top-0 z-30 shadow-xl">
@@ -115,6 +137,16 @@
           <span>📱</span>
           <span>Ver Carta Cliente ↗</span>
         </a>
+
+        <!-- Enlace al Panel del Dueño -->
+        <a href="panel.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold border border-emerald-800/60 flex items-center gap-1">
+          <span>🔐</span>
+          <span>Panel Dueño ↗</span>
+        </a>
+
+        <button onclick="firebase.auth().signOut()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-red-900/50 text-slate-400 hover:text-red-300 font-bold border border-kdsBorder cursor-pointer" title="Cerrar sesión">
+          <span>🚪</span>
+        </button>
       </div>
 
     </div>
@@ -253,74 +285,62 @@
     }
   </script>
 
-  <!-- LÓGICA DE NEGOCIO Y SINCRONIZACIÓN EN TIEMPO REAL -->
+  <!-- LOGIN: CANDADO DE ACCESO -->
   <script>
-    const KDS_STORAGE_KEY = 'universo693_kds_orders';
-    const CHANNEL_NAME = 'universo693_restaurante_sync';
-    let broadcast = null;
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('hidden');
+      firebase.auth().signInWithEmailAndPassword(email, pass).catch((err) => {
+        errEl.textContent = 'Correo o contraseña incorrectos.';
+        errEl.classList.remove('hidden');
+        console.error(err);
+      });
+    });
 
-    try {
-      broadcast = new BroadcastChannel(CHANNEL_NAME);
-      broadcast.onmessage = (event) => {
-        if (event.data && event.data.type === 'NEW_ORDER') {
-          handleIncomingOrder(event.data.order);
-        }
-      };
-    } catch (e) {
-      console.log('BroadcastChannel no soportado, usando polling de localStorage.');
-    }
-
-    // Inicializar órdenes base o cargar desde localStorage
-    let orders = loadOrders();
-
-    function loadOrders() {
-      const saved = localStorage.getItem(KDS_STORAGE_KEY);
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+    firebase.auth().onAuthStateChanged((user) => {
+      const gate = document.getElementById('loginGate');
+      if (user) {
+        gate.classList.add('hidden');
+        subscribeToOrders();
+      } else {
+        gate.classList.remove('hidden');
       }
-      // Si está vacío, cargar pedidos de demostración iniciales
-      return [
-        {
-          id: 'BRA-101',
-          createdAt: new Date(Date.now() - 4 * 60000).toISOString(),
-          status: 'cocina', // 'nuevo' | 'cocina' | 'listo' | 'despachado'
-          type: 'mesa',
-          table: 'Mesa #07 · Terraza',
-          customer: 'Alexis Santana',
-          items: [
-            { name: 'Bife de Chorizo Angus (400g)', qty: 1, mods: ['Término Medio', 'Papas Rústicas', '+ Chimichurri'], price: 19900 },
-            { name: 'Pisco Sour Tabernero', qty: 2, mods: ['Copa Tradicional'], price: 13000 }
-          ],
-          subtotal: 32900,
-          tip: 3290,
-          total: 36190,
-          payment: '💳 Tarjeta Débito (POS a la mesa)',
-          notes: 'Carne bien sellada por fuera por favor.'
-        },
-        {
-          id: 'BRA-102',
-          createdAt: new Date(Date.now() - 12 * 60000).toISOString(),
-          status: 'listo',
-          type: 'delivery',
-          address: 'Av. Libertad 450, Depto 802, Viña del Mar',
-          customer: 'Martín Romero (+56 9 9038 7414)',
-          items: [
-            { name: 'Burger Doble Smoked Bacon', qty: 2, mods: ['Papas Tradicionales', '+ Doble Tocino'], price: 25400 },
-            { name: 'Schop Cerveza Artesanal IPA', qty: 2, mods: [], price: 9800 }
-          ],
-          subtotal: 35200,
-          tip: 3520,
-          deliveryFee: 1500,
-          total: 40220,
-          payment: '💵 Efectivo (Paga con billete de $50.000, enviar vuelto)',
-          notes: 'Tocar timbre 802, portón blanco.'
-        }
-      ];
-    }
+    });
+  </script>
 
-    function saveOrders() {
-      localStorage.setItem(KDS_STORAGE_KEY, JSON.stringify(orders));
-      renderBoard();
+  <!-- LÓGICA DE NEGOCIO Y SINCRONIZACIÓN EN TIEMPO REAL (FIRESTORE) -->
+  <script>
+    let orders = [];
+    let knownOrderIds = new Set();
+    let subscribed = false;
+
+    function subscribeToOrders() {
+      if (subscribed) return; // evita doble suscripción si el login cambia de estado más de una vez
+      subscribed = true;
+
+      window.pedidosRef().orderBy('createdAt', 'desc').limit(60).onSnapshot((snap) => {
+        const prevIds = knownOrderIds;
+        const nextIds = new Set();
+        let hasNewOrder = false;
+
+        orders = snap.docs.map((d) => {
+          const data = d.data();
+          nextIds.add(d.id);
+          if (data.status === 'nuevo' && !prevIds.has(d.id)) hasNewOrder = true;
+          return {
+            docId: d.id,
+            ...data,
+            createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString()
+          };
+        });
+
+        knownOrderIds = nextIds;
+        if (hasNewOrder && prevIds.size > 0) playKitchenChime();
+        renderBoard();
+      });
     }
 
     function fmt(n) {
@@ -334,18 +354,11 @@
       return `Hace ${diffMin} min`;
     }
 
-    function handleIncomingOrder(newOrder) {
-      orders.unshift(newOrder);
-      saveOrders();
-      playKitchenChime();
-    }
-
-    function changeOrderStatus(orderId, nextStatus) {
-      const ord = orders.find(o => o.id === orderId);
-      if (ord) {
-        ord.status = nextStatus;
-        saveOrders();
-      }
+    function changeOrderStatus(orderDocId, nextStatus) {
+      window.pedidosRef().doc(orderDocId).update({ status: nextStatus }).catch((err) => {
+        console.error('Error actualizando el estado del pedido:', err);
+        alert('No se pudo actualizar el pedido. Revisa tu conexión.');
+      });
     }
 
     function renderBoard() {
@@ -387,7 +400,7 @@
                   ${new Date(o.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} · <strong class="text-gold">${getTimeAgo(o.createdAt)}</strong>
                 </div>
               </div>
-              <button onclick="printTicket('${o.id}')" title="Imprimir Comanda" class="text-slate-400 hover:text-white bg-kdsBg border border-kdsBorder p-1.5 rounded-lg text-xs cursor-pointer">
+              <button onclick="printTicket('${o.docId}')" title="Imprimir Comanda" class="text-slate-400 hover:text-white bg-kdsBg border border-kdsBorder p-1.5 rounded-lg text-xs cursor-pointer">
                 🖨️
               </button>
             </div>
@@ -462,21 +475,21 @@
     function getActionButtons(order) {
       if (order.status === 'nuevo') {
         return `
-          <button onclick="changeOrderStatus('${order.id}', 'cocina')" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+          <button onclick="changeOrderStatus('${order.docId}', 'cocina')" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
             <span>🔥</span> Aceptar y Pasar a Cocina
           </button>
         `;
       }
       if (order.status === 'cocina') {
         return `
-          <button onclick="changeOrderStatus('${order.id}', 'listo')" class="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+          <button onclick="changeOrderStatus('${order.docId}', 'listo')" class="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
             <span>✓</span> Marcar Listo para Servir
           </button>
         `;
       }
       if (order.status === 'listo') {
         return `
-          <button onclick="changeOrderStatus('${order.id}', 'despachado')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+          <button onclick="changeOrderStatus('${order.docId}', 'despachado')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
             <span>🚀</span> Marcar Despachado / Cobrado
           </button>
         `;
@@ -497,7 +510,6 @@
 
       const fakeOrder = {
         id: 'BRA-' + num,
-        createdAt: new Date().toISOString(),
         status: 'nuevo',
         type: isMesa ? 'mesa' : 'delivery',
         table: isMesa ? demoTables[Math.floor(Math.random() * demoTables.length)] : undefined,
@@ -514,11 +526,14 @@
         notes: 'Punto medio exacto por favor.'
       };
 
-      handleIncomingOrder(fakeOrder);
+      window.pedidosRef().add({
+        ...fakeOrder,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
     }
 
-    function printTicket(orderId) {
-      const o = orders.find(x => x.id === orderId);
+    function printTicket(orderDocId) {
+      const o = orders.find(x => x.docId === orderDocId);
       if (!o) return;
 
       const pArea = document.getElementById('printArea');
@@ -563,10 +578,7 @@
       window.open('index.html', '_blank', 'width=450,height=800,left=50,top=50');
     }
 
-    // Render inicial
-    renderBoard();
-
-    // Actualizar tiempos cada 30 segundos
+    // Actualizar tiempos relativos ("Hace X min") cada 30 segundos
     setInterval(renderBoard, 30000);
   </script>
 </body>

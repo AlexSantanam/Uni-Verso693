@@ -424,9 +424,10 @@ const DEFAULT_SETTINGS: Settings = {
 const DEFAULT_CATALOG: Module[] = [
   { id: 'ebs693', category: 'Diagnóstico', name: 'Diagnóstico EBS 693', description: 'Sesión de 45 minutos y hoja de ruta priorizada con ROI estimado.', price: 197000, unit: 'proyecto' },
   { id: 'audit-pro', category: 'Diagnóstico', name: 'AUDIT 693 PRO - Informe de Fugas de Dinero', description: 'Informe PDF con análisis del sitio, competencia y oportunidades de IA.', price: 19990, unit: 'proyecto' },
-  { id: 'agente-whatsapp', category: 'Agentes de IA', name: 'Agente de IA para WhatsApp', description: 'Agente con base de conocimiento propia, derivación a una persona e integración con una herramienta.', price: 0, unit: 'proyecto' },
-  { id: 'agente-web', category: 'Agentes de IA', name: 'Agente de IA para sitio web', description: 'Chat con IA en el sitio, con información oficial de la empresa y captura de contactos.', price: 0, unit: 'proyecto' },
-  { id: 'agente-mantencion', category: 'Agentes de IA', name: 'Mantención y mejora del agente', description: 'Ajustes de respuestas, métricas y soporte.', price: 0, unit: 'mes' },
+  { id: 'agente-whatsapp', category: 'Agentes de IA', name: 'Agente de IA para WhatsApp Business (RAG)', description: 'Entrenamiento con base de conocimiento propia, calificación de prospectos y derivación a ejecutivos humanos (Ref. comercio $390.000).', price: 120000, unit: 'proyecto' },
+  { id: 'agente-web', category: 'Agentes de IA', name: 'Agente de IA para Sitio Web / Widget 24/7', description: 'Chat interactivo flotante en sitio web con información oficial de la empresa, catálogo de productos y captura de leads.', price: 120000, unit: 'proyecto' },
+  { id: 'agente-omnicanal', category: 'Agentes de IA', name: 'Agente de IA Omnicanal Pro (WhatsApp + Web + CRM)', description: 'Solución integral omnicanal con automatización de flujos en n8n, agendamiento y sincronización de base de datos.', price: 250000, unit: 'proyecto' },
+  { id: 'agente-mantencion', category: 'Agentes de IA', name: 'Consumo Mensual de Tokens & Mantención IA', description: 'Cuota fija mensual protegida de tokens de modelo LLM, calibración de respuestas y monitoreo continuo.', price: 15000, unit: 'mes' },
   { id: 'automatizacion', category: 'Automatización', name: 'Automatización de proceso', description: 'Flujo automatizado entre sistemas (n8n, Make o código a medida).', price: 0, unit: 'proyecto' },
   { id: 'integracion', category: 'Automatización', name: 'Integración con CRM, ERP o API', description: 'Conexión de datos entre sistemas existentes.', price: 0, unit: 'proyecto' },
   { id: 'dashboard', category: 'Software a medida', name: 'Panel de reportes', description: 'Dashboard con indicadores que se actualizan solos.', price: 0, unit: 'proyecto' },

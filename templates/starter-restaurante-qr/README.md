@@ -12,15 +12,38 @@ Plantilla oficial estandarizada de **UNIVERSO693 SpA** para entrega de cartas di
 4. **Propina Chilena Estándar (10%):** Calculada y formateada automáticamente en el total de la comanda.
 5. **Formateo para WhatsApp Tipo Voucher:** Genera un mensaje estructurado y ordenado para cocina o barra.
 6. **Impresión Térmica 58mm / 80mm:** Con 1 clic imprime el ticket directo en la ticketera física de cocina usando `window.print()` sin drivers propietarios.
-7. **Modo Dueño:** Panel flotante para apagar platos agotados en 1 segundo y pausar pedidos en horas pico.
+7. **Panel del Dueño Autoadministrable (`panel.html`):** Sistema separado de la carta del cliente, con login propio, donde el dueño cambia precios, agota platos, agrega productos y categorías, y pausa el local — todo en vivo, sin tocar código. Igual que `panel.olaclick.app`, pero sin comisiones.
 8. **Generador de QRs por Mesa:** Incluye herramienta interna para generar e imprimir todos los códigos QR para las mesas del local listos para plastificar.
+9. **Pedidos 100% en tiempo real entre dispositivos:** Un pedido hecho desde el celular de un cliente aparece al instante en la Pantalla de Cocina y en el Panel del Dueño, aunque estén en WiFi o locales distintos (vía Firebase, no localStorage).
+
+---
+
+## 🏗️ Arquitectura: 3 sistemas separados, 1 sola base de datos
+
+| Archivo | Para quién | Necesita login |
+|---|---|---|
+| `index.html` | El cliente (escanea el QR o entra por el link) | No |
+| `panel.html` | El dueño / recepción — carta, precios, stock, estado del local | Sí |
+| `cocina.html` | Cocina / barra — tablero de pedidos en vivo (KDS) | Sí |
+
+Los tres leen y escriben la misma base de datos en **Firebase Firestore**, así que un cambio de precio en `panel.html` se ve al instante en `index.html`, y un pedido nuevo del cliente aparece al instante en `cocina.html` y `panel.html` — sin recargar, sin estar en el mismo navegador ni el mismo WiFi.
 
 ---
 
 ## 🚀 Cómo configurar y desplegar un nuevo cliente en 10 minutos
 
+### Paso 0: Crear el backend en Firebase (una vez por cliente, ~3 minutos)
+1. Entra a [console.firebase.google.com](https://console.firebase.google.com/) y crea un proyecto nuevo (gratis, plan Spark, no pide tarjeta).
+2. **Compilación -> Firestore Database -> Crear base de datos** (modo producción, región `southamerica-east1`).
+3. **Compilación -> Authentication -> Comenzar -> habilita "Correo electrónico/Contraseña"**, y crea el primer usuario (el dueño o quien reciba pedidos): su correo + una clave.
+4. **Configuración del proyecto** (ícono de engranaje) **-> Tus apps -> Agregar app Web (`</>`)** -> copia el objeto `firebaseConfig`.
+5. Pega ese objeto en `firebase-config.js` (reemplaza los valores de ejemplo).
+6. En **Firestore Database -> pestaña Reglas**, pega el contenido completo de `firestore.rules` (incluido en esta carpeta) y publica.
+7. Abre `index.html` una vez en el navegador: la primera carga siembra automáticamente la carta de `config.js` dentro de Firestore (solo pasa una vez, si la base está vacía). De ahí en adelante, Firestore manda — los cambios se hacen desde `panel.html`.
+
 ### Paso 1: Editar `config.js`
 Abre el archivo `config.js` y personaliza los campos:
+* `restaurantId`: identificador único del local en la base de datos (ej: *"sushi-vina-gourmet"*, sin tildes ni espacios). Un valor distinto por cliente = cada uno con su propia carta y pedidos aislados.
 * `nombre`: Nombre comercial del restaurante (ej: *"Sushi Viña Gourmet"*).
 * `whatsapp`: Número con código de país sin el `+` (ej: *"56990387414"*).
 * `direccion` y `horario`.

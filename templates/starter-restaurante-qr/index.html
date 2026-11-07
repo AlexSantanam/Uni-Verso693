@@ -4,6 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Menú Digital & QR · La Brasa & Leña</title>
+
+  <!-- Aplica el tema guardado ANTES de pintar, para que no haya parpadeo -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('universo693_theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
   
   <!-- PWA & Mobile Meta -->
   <meta name="theme-color" content="#181310" />
@@ -27,15 +40,58 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            ember: '#C85A32',
-            darkwood: '#181310',
-            warmcard: '#221C18',
-            gold: '#E9C46A'
+            ember: 'rgb(var(--c-ember) / <alpha-value>)',
+            darkwood: 'rgb(var(--c-darkwood) / <alpha-value>)',
+            warmcard: 'rgb(var(--c-warmcard) / <alpha-value>)',
+            gold: 'rgb(var(--c-gold) / <alpha-value>)'
           }
         }
       }
     }
   </script>
+
+  <!-- Modo Claro / Oscuro: variables de color de marca + overrides de la paleta neutra de Tailwind -->
+  <style>
+    :root, [data-theme="dark"] {
+      --c-ember: 200 90 50;
+      --c-darkwood: 24 19 16;
+      --c-warmcard: 34 28 24;
+      --c-gold: 233 196 106;
+    }
+    [data-theme="light"] {
+      --c-ember: 200 90 50;
+      --c-darkwood: 250 246 240;
+      --c-warmcard: 255 255 255;
+      --c-gold: 165 110 20;
+    }
+
+    /* La paleta neutra de Tailwind (white/stone/black) no usa variables, así que
+       se invierte a mano solo para el modo claro. Dark mode no necesita nada: ya
+       está diseñado así por defecto. */
+    [data-theme="light"] body { color: #221C18; }
+    [data-theme="light"] .text-white { color: #221C18 !important; }
+    [data-theme="light"] .text-stone-200 { color: #4A433D !important; }
+    [data-theme="light"] .text-stone-300 { color: #5C5248 !important; }
+    [data-theme="light"] .text-stone-400 { color: #7A6F63 !important; }
+    [data-theme="light"] .text-stone-500 { color: #948878 !important; }
+    [data-theme="light"] .placeholder-stone-500::placeholder { color: #A89C8E !important; }
+    [data-theme="light"] .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    [data-theme="light"] .border-white\/10 { border-color: rgba(0,0,0,0.10) !important; }
+    [data-theme="light"] .border-white\/15 { border-color: rgba(0,0,0,0.14) !important; }
+    [data-theme="light"] .bg-white\/5 { background-color: rgba(0,0,0,0.035) !important; }
+    [data-theme="light"] .bg-white\/10 { background-color: rgba(0,0,0,0.06) !important; }
+    [data-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.06) !important; }
+    [data-theme="light"] .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.1) !important; }
+    [data-theme="light"] .hover\:text-white:hover { color: #221C18 !important; }
+    [data-theme="light"] .bg-stone-900 { background-color: #EFE8DF !important; }
+    [data-theme="light"] .bg-black\/80 { background-color: rgba(34,28,24,0.55) !important; }
+
+    /* Botón de alternar tema */
+    #themeToggle .icon-dark { display: inline; }
+    #themeToggle .icon-light { display: none; }
+    [data-theme="light"] #themeToggle .icon-dark { display: none; }
+    [data-theme="light"] #themeToggle .icon-light { display: inline; }
+  </style>
 
   <!-- Estilos para Impresión Térmica de Cocina (58mm / 80mm) -->
   <style>
@@ -61,6 +117,13 @@
 
   <!-- Carga de la Configuración Central -->
   <script src="config.js"></script>
+
+  <!-- Firebase (carta, stock y pedidos en vivo, compartido con panel.html y cocina.html) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase-init.js"></script>
 </head>
 <body class="bg-darkwood text-[#F4EFEA] antialiased selection:bg-ember selection:text-white pb-32">
 
@@ -75,6 +138,13 @@
           <h1 id="brandName" class="font-serif text-lg font-bold leading-none text-white tracking-wide">La Brasa & Leña</h1>
           <p id="brandAddress" class="text-[11px] text-stone-400 mt-1">Av. San Martín 693 · <span class="text-emerald-400 font-bold">● Cocina Abierta</span></p>
         </div>
+        <button onclick="openInfoModal()" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white text-[11px] font-bold flex items-center justify-center shrink-0 cursor-pointer" title="Información del local">
+          ℹ️
+        </button>
+        <button id="themeToggle" onclick="toggleTheme()" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white text-[11px] font-bold flex items-center justify-center shrink-0 cursor-pointer" title="Cambiar tema claro/oscuro">
+          <span class="icon-dark">☀️</span>
+          <span class="icon-light">🌙</span>
+        </button>
       </div>
 
       <div class="flex items-center gap-2">
@@ -113,6 +183,9 @@
         </div>
       </div>
     </div>
+
+    <!-- BANNER DE OFERTA EN VIVO (lo activa el dueño desde panel.html) -->
+    <div id="promoBar" class="hidden bg-emerald-900/80 border-t border-b border-emerald-500/40 px-4 py-1.5 text-center text-xs font-bold text-emerald-200"></div>
   </header>
 
   <!-- HERO PROMOCIONAL CÁLIDO -->
@@ -214,6 +287,53 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL DE INFORMACIÓN DEL LOCAL (ESTILO "INFORMACIÓN" DE OLACLICK) -->
+  <div id="infoModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-warmcard border border-white/15 w-full max-w-sm rounded-3xl p-5 shadow-2xl text-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 class="font-serif text-lg font-bold text-white">Información</h3>
+        <button onclick="closeInfoModal()" class="text-stone-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div class="space-y-1">
+        <p class="font-bold text-white text-sm" id="infoNombre"></p>
+        <p class="text-xs text-stone-400" id="infoDireccion"></p>
+        <p class="text-xs text-stone-400" id="infoHorario"></p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a id="infoWhatsapp" target="_blank" class="flex-1 text-center py-2 rounded-xl bg-emerald-900/60 border border-emerald-700/50 text-emerald-300 text-xs font-bold">💬 WhatsApp</a>
+        <a id="infoInstagram" target="_blank" class="flex-1 text-center py-2 rounded-xl bg-white/5 border border-white/10 text-stone-200 text-xs font-bold">📸 Instagram</a>
+        <button onclick="shareMenu()" class="flex-1 text-center py-2 rounded-xl bg-white/5 border border-white/10 text-stone-200 text-xs font-bold cursor-pointer">🔗 Compartir</button>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <p class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Tipos de servicio</p>
+
+        <div class="bg-darkwood/70 rounded-xl p-3 border border-white/10 text-xs space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white">🛵 A domicilio</span>
+            <span class="text-emerald-400">✓</span>
+          </div>
+          <p class="text-stone-400">Entrega <span id="infoTiempoEntrega" class="text-white font-semibold"></span></p>
+          <p class="text-stone-400" id="infoPedidoMinimo"></p>
+        </div>
+
+        <div class="bg-darkwood/70 rounded-xl p-3 border border-white/10 text-xs flex items-center justify-between">
+          <span class="font-bold text-white">🏃 Para llevar / Retiro</span>
+          <span class="text-emerald-400">✓</span>
+        </div>
+
+        <div class="bg-darkwood/70 rounded-xl p-3 border border-white/10 text-xs flex items-center justify-between">
+          <span class="font-bold text-white">🍽️ En el local</span>
+          <span class="text-emerald-400">✓</span>
+        </div>
+      </div>
+
+      <a href="panel.html" target="_blank" class="block text-center text-[10px] text-stone-500 hover:text-stone-300 pt-1">🔐 Acceso del local (dueño / recepción)</a>
     </div>
   </div>
 
@@ -348,13 +468,18 @@
     let activeModQty = 1;
     let selectedPayment = CFG.metodosPago[0].id;
 
+    // Carta en vivo: se llena desde Firestore (fuente real) en vez de config.js.
+    // config.js solo se usa como "semilla" la primera vez que corre el local.
+    let platos = [];
+    let categorias = [{ id: 'todos', nombre: '🔥 Toda la Carta', icono: '🔥' }];
+
     // Formateador de moneda CLP
     function fmt(n) {
       return '$' + Number(n).toLocaleString('es-CL');
     }
 
     // Inicialización al cargar la página
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       // 1. Detección automática de Mesa en la URL (?mesa=12 o ?mesa=Terraza%203)
       const urlParams = new URLSearchParams(window.location.search);
       const urlTable = urlParams.get('mesa');
@@ -364,20 +489,45 @@
 
       // 2. Cargar datos de la marca
       document.getElementById('brandName').textContent = CFG.nombre;
-      document.getElementById('brandAddress').innerHTML = `${CFG.direccion} · <span class="text-emerald-400 font-bold">● Cocina Abierta</span>`;
       document.getElementById('brandSlogan').textContent = CFG.slogan;
       document.getElementById('tableLabel').textContent = currentTable.toUpperCase();
 
-      // 3. Renderizar Categorías
-      renderCategories();
-
-      // 4. Renderizar Platos
-      renderMenu();
-
-      // 5. Renderizar Métodos de Pago
+      // 3. Renderizar Métodos de Pago
       renderPaymentMethods();
 
       setServiceMode(urlParams.get('modo') === 'delivery' ? 'delivery' : 'mesa');
+
+      // 4. Sembrar Firestore la primera vez, luego suscribirse en vivo.
+      //    Desde aquí en adelante, cualquier cambio hecho en panel.html
+      //    (precio, stock, nuevo plato, categoría) se refleja solo, sin recargar.
+      await window.seedIfEmpty();
+
+      window.categoriasRef().orderBy('orden').onSnapshot(snap => {
+        const extra = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        categorias = [{ id: 'todos', nombre: '🔥 Toda la Carta', icono: '🔥' }, ...extra];
+        renderCategories();
+      });
+
+      window.platosRef().orderBy('orden').onSnapshot(snap => {
+        platos = snap.docs
+          .map(d => ({ docId: d.id, ...d.data() }))
+          .filter(p => p.disponible !== false);
+        renderMenu();
+      });
+
+      window.restRef().onSnapshot(snap => {
+        const data = snap.data() || {};
+        const abierto = data.abierto !== false;
+        document.getElementById('brandAddress').innerHTML = `${CFG.direccion} · <span class="${abierto ? 'text-emerald-400' : 'text-red-400'} font-bold">● ${abierto ? 'Cocina Abierta' : 'Cerrado Temporalmente'}</span>`;
+
+        const promoBar = document.getElementById('promoBar');
+        if (data.promo) {
+          promoBar.textContent = '🔥 ' + data.promo;
+          promoBar.classList.remove('hidden');
+        } else {
+          promoBar.classList.add('hidden');
+        }
+      });
     });
 
     function setServiceMode(mode) {
@@ -423,9 +573,49 @@
       alert('🔔 ¡Llamada enviada a barra y cocina! El garzón de ' + currentTable + ' se acerca a tu mesa en unos instantes.');
     }
 
+    // --- MODO CLARO / OSCURO ---
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('universo693_theme', next); } catch (e) {}
+    }
+
+    // --- MODAL DE INFORMACIÓN DEL LOCAL ---
+    function openInfoModal() {
+      document.getElementById('infoNombre').textContent = CFG.nombre;
+      document.getElementById('infoDireccion').textContent = CFG.direccion;
+      document.getElementById('infoHorario').textContent = CFG.horario;
+      document.getElementById('infoWhatsapp').href = `https://wa.me/${CFG.whatsapp}`;
+      document.getElementById('infoInstagram').href = `https://instagram.com/${(CFG.instagram || '').replace('@', '')}`;
+      document.getElementById('infoTiempoEntrega').textContent = `${CFG.tiempoEntregaMin}-${CFG.tiempoEntregaMax} min`;
+      document.getElementById('infoPedidoMinimo').textContent = CFG.envioGratis
+        ? 'Envío gratuito'
+        : `Pedido mínimo ${fmt(CFG.pedidoMinimoDelivery)}`;
+
+      const modal = document.getElementById('infoModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeInfoModal() {
+      const modal = document.getElementById('infoModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function shareMenu() {
+      const url = window.location.origin + window.location.pathname;
+      if (navigator.share) {
+        navigator.share({ title: CFG.nombre, text: 'Mira la carta de ' + CFG.nombre, url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => alert('🔗 Link de la carta copiado.'));
+      }
+    }
+
     function renderCategories() {
       const bar = document.getElementById('categoriesBar');
-      bar.innerHTML = CFG.categorias.map(cat => {
+      bar.innerHTML = categorias.map(cat => {
         const isMatch = cat.id === currentCat;
         return `
           <button onclick="filterCat('${cat.id}')" class="cat-pill px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all ${isMatch ? 'bg-ember text-white shadow' : 'bg-warmcard text-stone-300 hover:text-white border border-white/10'}">
@@ -443,7 +633,12 @@
 
     function renderMenu() {
       const grid = document.getElementById('menuGrid');
-      const filtered = CFG.platos.filter(d => currentCat === 'todos' || d.cat === currentCat);
+      const filtered = platos.filter(d => currentCat === 'todos' || d.cat === currentCat);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center text-stone-500 text-xs py-10">Aún no hay platos cargados en esta categoría.</div>`;
+        return;
+      }
 
       grid.innerHTML = filtered.map(d => {
         const hasMods = d.modificadores && d.modificadores.length > 0;
@@ -481,7 +676,7 @@
 
     // --- MODAL DE MODIFICADORES (OLACLICK PRO) ---
     function openModifierModal(dishId) {
-      const dish = CFG.platos.find(p => p.id === dishId);
+      const dish = platos.find(p => p.id === dishId);
       if (!dish) return;
       activeModDish = dish;
       activeModQty = 1;
@@ -776,34 +971,48 @@
         notes: cart.map(i => i.notes).filter(Boolean).join(', ')
       };
 
-      // 1. Guardar en localStorage para persistencia del KDS
-      try {
-        const KDS_KEY = 'universo693_kds_orders';
-        const existing = JSON.parse(localStorage.getItem(KDS_KEY) || '[]');
-        existing.unshift(orderPayload);
-        localStorage.setItem(KDS_KEY, JSON.stringify(existing));
-      } catch(e) {}
+      // Guardar el pedido en Firestore: así llega en vivo a panel.html y
+      // cocina.html sin importar en qué celular/dispositivo esté abierto.
+      window.pedidosRef().add({
+        ...orderPayload,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        actualizarFichaCliente(total);
+        document.getElementById('ticketIdLabel').textContent = ticketId;
+        document.getElementById('orderSuccess').classList.remove('hidden');
 
-      // 2. Transmitir en tiempo real al panel KDS de cocina
-      try {
-        const bc = new BroadcastChannel('universo693_restaurante_sync');
-        bc.postMessage({ type: 'NEW_ORDER', order: orderPayload });
-        bc.close();
-      } catch(e) {}
+        setTimeout(() => {
+          if (serviceMode === 'delivery') {
+            sendOrderWhatsApp();
+          }
+          cart = [];
+          updateCartBar();
+          renderMenu();
+          closeComandaModal();
+          alert('🛎️ ¡Comanda ' + ticketId + ' ingresada en Pantalla de Cocina (KDS)! El chef y los garzones ya tienen tu pedido.');
+        }, 1200);
+      }).catch(err => {
+        console.error('Error enviando pedido a Firestore:', err);
+        alert('⚠️ No pudimos enviar tu pedido al sistema. Igual lo mandamos por WhatsApp para que no se pierda.');
+        sendOrderWhatsApp();
+      });
+    }
 
-      document.getElementById('ticketIdLabel').textContent = ticketId;
-      document.getElementById('orderSuccess').classList.remove('hidden');
+    // --- CRM: crea o actualiza la ficha del cliente al confirmar un pedido con delivery ---
+    function actualizarFichaCliente(total) {
+      if (serviceMode !== 'delivery') return; // en mesa no capturamos teléfono, no hay a quién fichar
+      const telRaw = document.getElementById('delivPhone').value;
+      const tel = window.normalizarTelefono(telRaw);
+      if (!tel) return;
 
-      setTimeout(() => {
-        if (serviceMode === 'delivery') {
-          sendOrderWhatsApp();
-        }
-        cart = [];
-        updateCartBar();
-        renderMenu();
-        closeComandaModal();
-        alert('🛎️ ¡Comanda ' + ticketId + ' ingresada en Pantalla de Cocina (KDS)! El chef y los garzones ya tienen tu pedido.');
-      }, 1200);
+      const nombre = document.getElementById('delivName').value || 'Cliente';
+      window.clientesRef().doc(tel).set({
+        nombre,
+        telefono: telRaw,
+        totalPedidos: firebase.firestore.FieldValue.increment(1),
+        totalGastado: firebase.firestore.FieldValue.increment(total),
+        ultimaCompra: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(err => console.error('Error actualizando ficha de cliente:', err));
     }
 
     // --- IMPRESIÓN DE COMANDA TÉRMICA (58mm / 80mm) ---
