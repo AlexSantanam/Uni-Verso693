@@ -311,104 +311,167 @@
       <main class="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">
 
         <!-- =================================================================== -->
-        <!-- TAB 1: PEDIDOS PDV (PUNTO DE VENTA Y CAJA / GARZÓN) -->
+        <!-- TAB 1: PEDIDOS PDV (BANDEJA CENTRAL DE PEDIDOS Y CAJA OLACLICK) -->
         <!-- =================================================================== -->
-        <section id="tab-pedidos" class="panel-pane space-y-5">
+        <section id="tab-pedidos" class="panel-pane space-y-4">
           
-          <div class="grid lg:grid-cols-12 gap-5 items-start">
+          <!-- 1. AVISO SUPERIOR: CONTROL DE CAJA REGISTRADORA -->
+          <div id="cajaBanner" class="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-xs transition-all">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-xl shrink-0">
+                📠
+              </div>
+              <div>
+                <h4 id="cajaBannerTitle" class="text-xs font-black text-amber-950">Tu caja está cerrada y ya empezaste tu turno</h4>
+                <p id="cajaBannerSub" class="text-[11px] text-amber-800 mt-0.5">
+                  Para empezar a registrar pedidos y llevar un control exacto de tus ventas de hoy, necesitas abrir tu caja.
+                  <a href="javascript:void(0)" onclick="abrirModalCaja()" class="underline font-bold hover:text-amber-950 ml-1">Abrir o cuadrar caja</a>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="abrirModalCaja()" id="btnCajaBannerAction" class="px-4 py-2 rounded-xl bg-white hover:bg-amber-100 border border-amber-300 text-amber-950 text-xs font-black shadow-xs cursor-pointer transition-all">
+                Abrir caja
+              </button>
+              <button onclick="document.getElementById('cajaBanner').classList.add('hidden')" class="text-amber-500 hover:text-amber-800 p-1 text-sm cursor-pointer" title="Cerrar aviso">
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. BARRA DE CANALES Y ACCIONES (MOSTRADOR, A DOMICILIO, MESAS) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-soft">
             
-            <!-- COLUMNA IZQUIERDA: CATÁLOGO TÁCTIL (7 COLS) -->
-            <div class="lg:col-span-7 bg-white rounded-2xl border border-borderLight p-4 md:p-5 space-y-4 shadow-soft">
+            <!-- Canales principales: Mostrador / A domicilio / Mesas -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+              <button onclick="setPdvChannel('mostrador')" id="btnChannelMostrador" class="channel-tab-btn active px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm flex items-center gap-2 cursor-pointer">
+                <span>💵/🛍️</span>
+                <span>Mostrador</span>
+                <span id="badgeChannelMostrador" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+
+              <button onclick="setPdvChannel('delivery')" id="btnChannelDelivery" class="channel-tab-btn px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
+                <span>🛵</span>
+                <span>A domicilio</span>
+                <span id="badgeChannelDelivery" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+
+              <button onclick="setPdvChannel('mesas')" id="btnChannelMesas" class="channel-tab-btn px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
+                <span>🍽️</span>
+                <span>Mesas</span>
+                <span id="badgeChannelMesas" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+            </div>
+
+            <!-- Controles rápidos y Botón "+ Nuevo Pedido" -->
+            <div class="flex items-center gap-2">
               
-              <!-- BUSCADOR RÁPIDO -->
-              <div class="relative">
-                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-                <input id="pedidoBuscar" type="text" placeholder="Buscar plato, trago o acompañamiento..." oninput="renderPedidoCatalogo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 focus:bg-white transition-all">
+              <!-- Estado de Caja Icono -->
+              <button onclick="abrirModalCaja()" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center gap-1.5 cursor-pointer" title="Apertura / Cierre de Caja">
+                <span>📠</span>
+                <span id="cajaQuickDot" class="w-2 h-2 rounded-full bg-red-500"></span>
+              </button>
+
+              <!-- Refrescar -->
+              <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 cursor-pointer" title="Refrescar lista">
+                ↺
+              </button>
+
+              <!-- Buscador Rápido -->
+              <div class="relative hidden sm:block">
+                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                <input id="pdvSearchOrders" type="text" placeholder="Buscar pedido..." oninput="renderPdvOrders()" class="bg-slate-50 border border-slate-200 rounded-xl pl-7 pr-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 w-36 md:w-44 font-medium">
               </div>
 
-              <!-- CHIPS DE CATEGORÍAS DESLIZABLES (TIPO OLACLICK / UBER EATS) -->
-              <div id="pdvCategoryChips" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                <!-- Inyección JS: Todos, Hamburguesas, Bebidas, etc. -->
+              <!-- Selector Vista Lista / Tarjetas -->
+              <div class="flex bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                <button onclick="setPdvViewMode('table')" id="btnViewTable" class="p-1.5 rounded-lg bg-white text-slate-900 shadow-xs cursor-pointer font-mono" title="Vista Lista / Tabla">
+                  ☰
+                </button>
+                <button onclick="setPdvViewMode('cards')" id="btnViewCards" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer font-mono" title="Vista Tarjetas">
+                  ⊞
+                </button>
               </div>
 
-              <!-- GRID / LISTADO DE PRODUCTOS TÁCTILES -->
-              <div id="pedidoCatalogo" class="grid sm:grid-cols-2 gap-2.5 max-h-[540px] overflow-y-auto pr-1">
-                <!-- Inyección JS -->
-              </div>
+              <!-- BOTÓN AZUL DESTACADO: + NUEVO PEDIDO -->
+              <button onclick="abrirModalNuevoPedido()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/25 transition-all cursor-pointer">
+                <span class="text-sm font-black">+</span>
+                <span>Nuevo pedido</span>
+                <span class="text-[10px] opacity-80">▼</span>
+              </button>
 
             </div>
 
-            <!-- COLUMNA DERECHA: REGISTRO DE COMANDA (5 COLS) -->
-            <div class="lg:col-span-5 bg-white rounded-2xl border border-borderLight p-4 md:p-5 space-y-4 shadow-soft sticky top-20">
-              
-              <div class="flex items-center justify-between border-b border-borderLight pb-3">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">🧾</span>
-                  <h3 class="font-extrabold text-sm text-slate-900">Comanda en Preparación</h3>
-                </div>
-                <button onclick="vaciarCarritoPedido()" class="text-[11px] font-bold text-slate-400 hover:text-red-500 cursor-pointer">
-                  Vaciar
-                </button>
-              </div>
+          </div>
 
-              <!-- SELECTOR DE DESTINO: MESA VS DELIVERY -->
-              <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-xl">
-                <button id="btnPedidoMesa" onclick="setPedidoTipo('mesa')" class="py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm">
-                  🍽️ Mesa / Local
-                </button>
-                <button id="btnPedidoDelivery" onclick="setPedidoTipo('delivery')" class="py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-900">
-                  🛵 Delivery / Llevar
-                </button>
-              </div>
+          <!-- 3. BARRA DE SUBFILTROS Y TOTAL DEL TURNO (CON BOTÓN OJO 👁️) -->
+          <div class="bg-white rounded-2xl border border-borderLight px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-soft">
+            
+            <!-- Chips de estado: Todo, Pendiente, En curso, PDV/WEB, Aplicaciones, Agendado -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <span class="text-slate-400 text-xs mr-1">⚙️</span>
+              <button onclick="setPdvStatusFilter('todo')" class="pdv-filter-chip active" data-filter="todo">✓ Todo</button>
+              <button onclick="setPdvStatusFilter('pendiente')" class="pdv-filter-chip" data-filter="pendiente">
+                <span>Pendiente</span>
+                <span id="badgeFilterPendiente" class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono ml-1 font-bold">0</span>
+              </button>
+              <button onclick="setPdvStatusFilter('en_curso')" class="pdv-filter-chip" data-filter="en_curso">
+                <span>En curso</span>
+                <span id="badgeFilterEnCurso" class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono ml-1 font-bold">0</span>
+              </button>
+              <button onclick="setPdvStatusFilter('web')" class="pdv-filter-chip" data-filter="web">PDV / WEB</button>
+              <button onclick="setPdvStatusFilter('agendado')" class="pdv-filter-chip" data-filter="agendado">🗓️ Agendado</button>
+            </div>
 
-              <!-- BOTONES RÁPIDOS DE MESAS POPULARES -->
-              <div id="mesaQuickChips" class="space-y-1.5">
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Atajo Rápido de Mesa</div>
-                <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
-                  <button onclick="setDestinoRapido('Mesa 1')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 1</button>
-                  <button onclick="setDestinoRapido('Mesa 2')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 2</button>
-                  <button onclick="setDestinoRapido('Mesa 3')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 3</button>
-                  <button onclick="setDestinoRapido('Mesa 4')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 4</button>
-                  <button onclick="setDestinoRapido('Mostrador')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mostrador</button>
-                  <button onclick="setDestinoRapido('Barra')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Barra</button>
-                </div>
-                <input id="pedidoDestino" type="text" placeholder="Ej: Mesa 5, Terraza 2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
-              </div>
+            <!-- Total Turno + Ocultar Cifras -->
+            <div class="flex items-center gap-2 text-xs font-mono">
+              <span class="text-slate-500 font-sans font-bold">Total:</span>
+              <span id="pdvTotalTurno" class="font-black text-slate-900 text-sm">$0</span>
+              <button onclick="toggleMaskTotal()" id="btnMaskTotal" class="text-slate-400 hover:text-slate-700 p-1 cursor-pointer" title="Ocultar o mostrar total a la vista del cliente">
+                👁️
+              </button>
+            </div>
 
-              <!-- CAMPOS DE CLIENTE DELIVERY -->
-              <div id="pedidoClienteFields" class="hidden space-y-2">
-                <input id="pedidoClienteNombre" type="text" placeholder="Nombre del cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
-                <input id="pedidoClienteTelefono" type="text" placeholder="WhatsApp (ej: +56912345678)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
-              </div>
+          </div>
 
-              <!-- CARRITO DE ÍTEMS EN VIVO -->
-              <div id="pedidoCarrito" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 divide-y divide-slate-100">
-                <div class="py-8 text-center text-slate-400 space-y-1">
-                  <div class="text-2xl">🍽️</div>
-                  <p class="text-xs font-semibold">Toca cualquier plato de la izquierda para agregarlo.</p>
-                </div>
-              </div>
+          <!-- 4. BANDEJA DE PEDIDOS EN VIVO (TABLA / FEED DE COMANDAS) -->
+          <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+            
+            <!-- VISTA TABLA -->
+            <div id="pdvTableView" class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-borderLight text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">
+                  <tr>
+                    <th class="py-3 px-4">FECHA ↓</th>
+                    <th class="py-3 px-4">ESTADO</th>
+                    <th class="py-3 px-4">TOTAL</th>
+                    <th class="py-3 px-4">CLIENTE / CANAL</th>
+                    <th class="py-3 px-4">PRODUCTOS</th>
+                    <th class="py-3 px-4 text-right">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="pdvOrdersTableBody" class="divide-y divide-slate-100 font-medium">
+                  <!-- Inyección JS -->
+                </tbody>
+              </table>
+            </div>
 
-              <!-- MÉTODO DE PAGO Y NOTAS -->
-              <div class="space-y-2 pt-2 border-t border-borderLight">
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pago</div>
-                <select id="pedidoPago" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600"></select>
-                <input id="pedidoNotas" type="text" placeholder="Notas para cocina (ej: Sin cebolla, extra salsa)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
-              </div>
+            <!-- VISTA TARJETAS (ALTERNATIVA EN GRID) -->
+            <div id="pdvCardsView" class="hidden p-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Inyección JS -->
+            </div>
 
-              <!-- TOTALES Y BOTÓN DISPARADOR -->
-              <div class="space-y-3 pt-3 border-t border-borderLight">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="font-bold text-slate-500">Total a Pagar</span>
-                  <span id="pedidoTotal" class="text-xl font-black text-slate-900 font-mono">$0</span>
-                </div>
-
-                <button onclick="confirmarPedidoManual()" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]">
-                  <span>🔔</span>
-                  <span>Enviar Comanda a Cocina</span>
-                </button>
-              </div>
-
+            <!-- EMPTY STATE CUANDO NO HAY PEDIDOS EN ESTE CANAL -->
+            <div id="pdvEmptyState" class="py-16 text-center text-slate-400 space-y-2">
+              <span class="text-4xl opacity-50 block">🧾</span>
+              <p class="text-sm font-bold text-slate-600">No hay pedidos en este canal actualmente</p>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                Los nuevos pedidos ingresados desde el mostrador, las mesas o la carta online aparecerán aquí en vivo.
+              </p>
+              <button onclick="abrirModalNuevoPedido()" class="mt-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm cursor-pointer">
+                <span>+</span>
+                <span>Registrar Nuevo Pedido</span>
+              </button>
             </div>
 
           </div>
@@ -752,6 +815,195 @@
 
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: + NUEVO PEDIDO / TOMA DE COMANDAS RÁPIDA (POS TÁCTIL) -->
+  <!-- ========================================================================= -->
+  <div id="modalNuevoPedido" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[95vh] my-auto">
+      
+      <!-- HEADER DEL MODAL -->
+      <div class="px-5 py-3.5 bg-slate-50 border-b border-borderLight flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-sm">＋</span>
+          <div>
+            <h3 class="font-extrabold text-sm text-slate-900">Registrar Nuevo Pedido (PDV)</h3>
+            <p class="text-[11px] text-slate-500">Selecciona los platos, define la mesa o dirección y envía directo a cocina</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalNuevoPedido()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer text-lg">
+          ✕
+        </button>
+      </div>
+
+      <!-- BODY DEL MODAL (CATÁLOGO + REGISTRO COMANDA) -->
+      <div class="p-4 md:p-5 overflow-y-auto flex-1 grid lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- COLUMNA IZQUIERDA: CATÁLOGO TÁCTIL (7 COLS) -->
+        <div class="lg:col-span-7 space-y-3">
+          
+          <!-- BUSCADOR RÁPIDO -->
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+            <input id="pedidoBuscar" type="text" placeholder="Buscar plato, trago o extra..." oninput="renderPedidoCatalogo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 focus:bg-white transition-all font-medium">
+          </div>
+
+          <!-- CHIPS DE CATEGORÍAS DESLIZABLES -->
+          <div id="pdvCategoryChips" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <!-- Inyección JS -->
+          </div>
+
+          <!-- GRID DE PLATOS TÁCTILES -->
+          <div id="pedidoCatalogo" class="grid sm:grid-cols-2 gap-2 max-h-[460px] overflow-y-auto pr-1">
+            <!-- Inyección JS -->
+          </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: REGISTRO DE COMANDA (5 COLS) -->
+        <div class="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span class="font-bold text-xs text-slate-800">🧾 Detalle de la Comanda</span>
+            <button onclick="vaciarCarritoPedido()" class="text-[10px] font-bold text-slate-400 hover:text-red-500 cursor-pointer">
+              Vaciar
+            </button>
+          </div>
+
+          <!-- SELECTOR MESA / DELIVERY / MOSTRADOR -->
+          <div class="grid grid-cols-2 gap-1 p-1 bg-slate-200/60 rounded-xl">
+            <button id="btnPedidoMesa" onclick="setPedidoTipo('mesa')" class="py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer">
+              🍽️ Mesa / Local
+            </button>
+            <button id="btnPedidoDelivery" onclick="setPedidoTipo('delivery')" class="py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-900 cursor-pointer">
+              🛵 Delivery / Llevar
+            </button>
+          </div>
+
+          <!-- CHIPS RÁPIDOS DE MESAS -->
+          <div id="mesaQuickChips" class="space-y-1">
+            <div class="flex gap-1 overflow-x-auto no-scrollbar">
+              <button onclick="setDestinoRapido('Mesa 1')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Mesa 1</button>
+              <button onclick="setDestinoRapido('Mesa 2')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Mesa 2</button>
+              <button onclick="setDestinoRapido('Mesa 3')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Mesa 3</button>
+              <button onclick="setDestinoRapido('Mesa 4')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Mesa 4</button>
+              <button onclick="setDestinoRapido('Mostrador')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Mostrador</button>
+              <button onclick="setDestinoRapido('Barra')" class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white hover:bg-brand-50 text-slate-700 border border-slate-200 shrink-0">Barra</button>
+            </div>
+            <input id="pedidoDestino" type="text" placeholder="Ej: Mesa 5, Mostrador, Barra" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+          </div>
+
+          <!-- CAMPOS DE CLIENTE DELIVERY -->
+          <div id="pedidoClienteFields" class="hidden space-y-1.5">
+            <input id="pedidoClienteNombre" type="text" placeholder="Nombre del comensal" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+            <input id="pedidoClienteTelefono" type="text" placeholder="WhatsApp (ej: +56912345678)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+          </div>
+
+          <!-- CARRITO DE ÍTEMS -->
+          <div id="pedidoCarrito" class="space-y-1.5 max-h-[190px] overflow-y-auto pr-1 divide-y divide-slate-200/60">
+            <div class="py-6 text-center text-slate-400 space-y-1">
+              <span class="text-xl">🍽️</span>
+              <p class="text-[11px] font-semibold">Toca cualquier plato de la izquierda para agregarlo.</p>
+            </div>
+          </div>
+
+          <!-- MÉTODO DE PAGO Y NOTAS -->
+          <div class="space-y-1.5 pt-2 border-t border-slate-200">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pago</div>
+            <select id="pedidoPago" class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600"></select>
+            <input id="pedidoNotas" type="text" placeholder="Notas para cocina (ej: Sin cebolla, papas bien doradas)" class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+          </div>
+
+          <!-- TOTALES Y BOTÓN CONFIRMAR -->
+          <div class="pt-2 border-t border-slate-200 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-500">Total a Pagar</span>
+              <span id="pedidoTotal" class="text-lg font-black text-slate-900 font-mono">$0</span>
+            </div>
+            <button onclick="confirmarPedidoManual()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs tracking-wider uppercase shadow-md shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]">
+              <span>🔔</span>
+              <span>Enviar a Cocina</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: APERTURA / CIERRE Y ARQUEO DE CAJA REGISTRADORA -->
+  <!-- ========================================================================= -->
+  <div id="modalCaja" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-borderLight pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center text-xl font-bold">
+            📠
+          </div>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Control de Caja & Turno</h3>
+            <p id="modalCajaStatusSub" class="text-[11px] text-slate-400">Arqueo diario y apertura de operaciones</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalCaja()" class="text-slate-400 hover:text-slate-700 p-1 text-base">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div id="modalCajaStateBox" class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-600">Estado de la Caja:</span>
+            <span id="modalCajaStatePill" class="px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-red-100 text-red-700">CERRADA</span>
+          </div>
+          <div id="modalCajaAperturaDetalle" class="text-[11px] text-slate-400 hidden">
+            Abierta por: <strong class="text-slate-700 font-bold">Administrador</strong> · Monto inicial: <strong id="modalCajaMontoInicialLabel" class="text-slate-900 font-mono font-bold">$0</strong>
+          </div>
+        </div>
+
+        <!-- FORMULARIO DE APERTURA (SI ESTÁ CERRADA) -->
+        <div id="formAbrirCaja" class="space-y-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Monto Inicial en Efectivo (Fondo de Cambio)</label>
+            <input id="inputMontoInicialCaja" type="number" step="1000" placeholder="Ej: 50000" value="50000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-brand-600">
+          </div>
+          <button onclick="ejecutarAperturaCaja()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-emerald-600/20 cursor-pointer transition-all">
+            ✓ Abrir Turno de Caja
+          </button>
+        </div>
+
+        <!-- RESUMEN DE VENTAS Y BOTÓN DE CIERRE (SI ESTÁ ABIERTA) -->
+        <div id="formCerrarCaja" class="space-y-3 hidden">
+          <div class="space-y-1.5 p-3 rounded-xl bg-amber-50/60 border border-amber-200 text-xs">
+            <div class="flex justify-between text-slate-600">
+              <span>Fondo Inicial:</span>
+              <span id="cierreFondoInicial" class="font-mono font-bold">$0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Ventas Efectivo:</span>
+              <span id="cierreVentasEfectivo" class="font-mono font-bold">$0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Ventas Tarjeta / POS:</span>
+              <span id="cierreVentasTarjeta" class="font-mono font-bold">$0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Ventas Transferencia:</span>
+              <span id="cierreVentasTransfer" class="font-mono font-bold">$0</span>
+            </div>
+            <div class="flex justify-between border-t border-amber-200 pt-1.5 text-amber-950 font-black">
+              <span>Total en Caja:</span>
+              <span id="cierreTotalEsperado" class="font-mono text-sm">$0</span>
+            </div>
+          </div>
+          <button onclick="ejecutarCierreCaja()" class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-red-600/20 cursor-pointer transition-all">
+            🔒 Cuadrar y Cerrar Turno
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
   <div id="printArea" class="hidden"></div>
 
@@ -759,6 +1011,35 @@
   <!-- ESTILOS ADICIONALES Y COMPONENTES TÁCTILES -->
   <!-- ========================================================================= -->
   <style>
+    .channel-tab-btn.active {
+      background-color: #FFFFFF !important;
+      color: #0F172A !important;
+      box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.12) !important;
+    }
+    .pdv-filter-chip {
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #64748B;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    .pdv-filter-chip:hover {
+      background: #E2E8F0;
+      color: #1E293B;
+    }
+    .pdv-filter-chip.active {
+      background: #0F172A;
+      color: #FFFFFF;
+      border-color: #0F172A;
+      box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.2);
+    }
     .nav-btn.active {
       background-color: #7C3AED !important;
       color: #FFFFFF !important;
@@ -782,7 +1063,7 @@
       box-shadow: 0 4px 12px -3px rgba(124, 58, 237, 0.35);
     }
     .cat-chip {
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 9999px;
       font-size: 11px;
       font-weight: 700;
@@ -827,6 +1108,13 @@
     let imagenNuevaDataUrl = null;
     let currentCatFilter = 'todas';
     let kdsStationFilter = 'cocina'; // 'cocina', 'barra', 'todas'
+    let pdvChannel = 'mostrador'; // 'mostrador', 'delivery', 'mesas'
+    let pdvStatusFilter = 'todo'; // 'todo', 'pendiente', 'en_curso', 'web', 'agendado'
+    let pdvViewMode = 'table'; // 'table', 'cards'
+    let isTotalMasked = false;
+    let cajaAbierta = false;
+    let cajaMontoInicial = 50000;
+    let cajaAbiertaEn = null;
     let audioEnabled = true;
     let audioCtx = null;
     let knownOrderIds = new Set();
@@ -931,6 +1219,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (tab === 'cocina') renderKdsBoard();
+      if (tab === 'pedidos') renderPdvOrders();
     }
 
     // --- LOGIN ---
@@ -1065,6 +1354,7 @@
 
         renderVentas();
         renderKdsBoard();
+        renderPdvOrders();
       });
     }
 
@@ -1287,10 +1577,315 @@
         document.getElementById('pedidoClienteNombre').value = '';
         document.getElementById('pedidoClienteTelefono').value = '';
         document.getElementById('pedidoNotas').value = '';
+        cerrarModalNuevoPedido();
+        renderPdvOrders();
       }).catch(err => {
         console.error('Error al emitir comanda:', err);
         alert('⚠️ No se pudo enviar el pedido. Verifica tu conexión.');
       });
+    }
+
+    // --- BANDEJA CENTRAL PEDIDOS PDV & GESTIÓN DE CAJA (TIPO OLACLICK) ---
+    function setPdvChannel(channel) {
+      pdvChannel = channel;
+      document.querySelectorAll('.channel-tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-white', 'text-slate-900', 'shadow-sm');
+        btn.classList.add('text-slate-500');
+      });
+      const activeBtn = channel === 'mostrador' ? document.getElementById('btnChannelMostrador')
+                      : channel === 'delivery' ? document.getElementById('btnChannelDelivery')
+                      : document.getElementById('btnChannelMesas');
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-white', 'text-slate-900', 'shadow-sm');
+        activeBtn.classList.remove('text-slate-500');
+      }
+      renderPdvOrders();
+    }
+
+    function setPdvStatusFilter(filter) {
+      pdvStatusFilter = filter;
+      document.querySelectorAll('.pdv-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
+      renderPdvOrders();
+    }
+
+    function setPdvViewMode(mode) {
+      pdvViewMode = mode;
+      const bTable = document.getElementById('btnViewTable');
+      const bCards = document.getElementById('btnViewCards');
+      if (bTable && bCards) {
+        bTable.className = mode === 'table' ? 'p-1.5 rounded-lg bg-white text-slate-900 shadow-xs cursor-pointer font-mono' : 'p-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer font-mono';
+        bCards.className = mode === 'cards' ? 'p-1.5 rounded-lg bg-white text-slate-900 shadow-xs cursor-pointer font-mono' : 'p-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer font-mono';
+      }
+      const tView = document.getElementById('pdvTableView');
+      const cView = document.getElementById('pdvCardsView');
+      if (tView && cView) {
+        tView.classList.toggle('hidden', mode !== 'table');
+        cView.classList.toggle('hidden', mode !== 'cards');
+      }
+      renderPdvOrders();
+    }
+
+    function toggleMaskTotal() {
+      isTotalMasked = !isTotalMasked;
+      const btn = document.getElementById('btnMaskTotal');
+      if (btn) btn.textContent = isTotalMasked ? '🙈' : '👁️';
+      renderPdvOrders();
+    }
+
+    function abrirModalNuevoPedido() {
+      const modal = document.getElementById('modalNuevoPedido');
+      if (modal) modal.classList.remove('hidden');
+      renderPdvCategoryChips();
+      renderPedidoCatalogo();
+    }
+
+    function cerrarModalNuevoPedido() {
+      const modal = document.getElementById('modalNuevoPedido');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function abrirModalCaja() {
+      const modal = document.getElementById('modalCaja');
+      if (modal) modal.classList.remove('hidden');
+      actualizarModalCajaInfo();
+    }
+
+    function cerrarModalCaja() {
+      const modal = document.getElementById('modalCaja');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function actualizarModalCajaInfo() {
+      const statePill = document.getElementById('modalCajaStatePill');
+      const dot = document.getElementById('cajaQuickDot');
+      const detalle = document.getElementById('modalCajaAperturaDetalle');
+      const formAbrir = document.getElementById('formAbrirCaja');
+      const formCerrar = document.getElementById('formCerrarCaja');
+      const banner = document.getElementById('cajaBanner');
+      const bannerTitle = document.getElementById('cajaBannerTitle');
+      const bannerSub = document.getElementById('cajaBannerSub');
+      const bannerBtn = document.getElementById('btnCajaBannerAction');
+
+      if (!statePill) return;
+
+      if (cajaAbierta) {
+        statePill.textContent = 'ABIERTA';
+        statePill.className = 'px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-emerald-100 text-emerald-700';
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        if (detalle) detalle.classList.remove('hidden');
+        const lbl = document.getElementById('modalCajaMontoInicialLabel');
+        if (lbl) lbl.textContent = fmt(cajaMontoInicial);
+        if (formAbrir) formAbrir.classList.add('hidden');
+        if (formCerrar) formCerrar.classList.remove('hidden');
+
+        if (banner) {
+          banner.className = 'bg-emerald-50/90 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-xs transition-all';
+        }
+        if (bannerTitle) {
+          bannerTitle.textContent = 'Tu caja está abierta · Turno en curso';
+          bannerTitle.className = 'text-xs font-black text-emerald-950';
+        }
+        if (bannerSub) {
+          bannerSub.innerHTML = `Apertura registrada con ${fmt(cajaMontoInicial)} de fondo inicial. Registrando ventas de hoy. <a href="javascript:void(0)" onclick="abrirModalCaja()" class="underline font-bold hover:text-emerald-950 ml-1">Cuadrar caja</a>`;
+          bannerSub.className = 'text-[11px] text-emerald-800 mt-0.5';
+        }
+        if (bannerBtn) bannerBtn.textContent = 'Cuadre de caja';
+
+        let vEfectivo = 0, vTarjeta = 0, vTransfer = 0;
+        pedidos.forEach(p => {
+          const pay = (p.payment || '').toLowerCase();
+          const tot = (p.total || 0);
+          if (pay.includes('efectivo')) vEfectivo += tot;
+          else if (pay.includes('transferencia')) vTransfer += tot;
+          else vTarjeta += tot;
+        });
+        const cFondo = document.getElementById('cierreFondoInicial');
+        const cEfec = document.getElementById('cierreVentasEfectivo');
+        const cTarj = document.getElementById('cierreVentasTarjeta');
+        const cTrans = document.getElementById('cierreVentasTransfer');
+        const cTot = document.getElementById('cierreTotalEsperado');
+        if (cFondo) cFondo.textContent = fmt(cajaMontoInicial);
+        if (cEfec) cEfec.textContent = fmt(vEfectivo);
+        if (cTarj) cTarj.textContent = fmt(vTarjeta);
+        if (cTrans) cTrans.textContent = fmt(vTransfer);
+        if (cTot) cTot.textContent = fmt(cajaMontoInicial + vEfectivo + vTarjeta + vTransfer);
+
+      } else {
+        statePill.textContent = 'CERRADA';
+        statePill.className = 'px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-red-100 text-red-700';
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-red-500';
+        if (detalle) detalle.classList.add('hidden');
+        if (formAbrir) formAbrir.classList.remove('hidden');
+        if (formCerrar) formCerrar.classList.add('hidden');
+
+        if (banner) {
+          banner.className = 'bg-amber-50/90 border border-amber-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-xs transition-all';
+        }
+        if (bannerTitle) {
+          bannerTitle.textContent = 'Tu caja está cerrada y ya empezaste tu turno';
+          bannerTitle.className = 'text-xs font-black text-amber-950';
+        }
+        if (bannerSub) {
+          bannerSub.innerHTML = `Para empezar a registrar pedidos y llevar un control exacto de tus ventas de hoy, necesitas abrir tu caja. <a href="javascript:void(0)" onclick="abrirModalCaja()" class="underline font-bold hover:text-amber-950 ml-1">Abrir o cuadrar caja</a>`;
+          bannerSub.className = 'text-[11px] text-amber-800 mt-0.5';
+        }
+        if (bannerBtn) bannerBtn.textContent = 'Abrir caja';
+      }
+    }
+
+    function ejecutarAperturaCaja() {
+      const monto = Number(document.getElementById('inputMontoInicialCaja').value) || 0;
+      cajaAbierta = true;
+      cajaMontoInicial = monto;
+      cajaAbiertaEn = new Date();
+      actualizarModalCajaInfo();
+      cerrarModalCaja();
+    }
+
+    function ejecutarCierreCaja() {
+      if (!confirm('¿Confirmas el arqueo y cierre del turno de caja?')) return;
+      cajaAbierta = false;
+      cajaAbiertaEn = null;
+      actualizarModalCajaInfo();
+      cerrarModalCaja();
+    }
+
+    function isOrderInChannel(o, channel) {
+      const isDelivery = o.type === 'delivery';
+      const table = (o.table || '').toLowerCase();
+      const isMostrador = !isDelivery && (table === 'mostrador' || table === 'barra' || table.includes('mostrador') || table.includes('barra') || table.includes('llevar') || table.includes('retiro') || !table);
+      const isMesa = !isDelivery && !isMostrador;
+
+      if (channel === 'delivery') return isDelivery;
+      if (channel === 'mostrador') return isMostrador;
+      if (channel === 'mesas') return isMesa;
+      return true;
+    }
+
+    function matchesStatusFilter(o, filter) {
+      if (filter === 'todo') return true;
+      if (filter === 'pendiente') return o.status === 'nuevo';
+      if (filter === 'en_curso') return o.status === 'cocina' || o.status === 'listo';
+      if (filter === 'web') return !o.table || o.type === 'delivery';
+      if (filter === 'agendado') return false;
+      return true;
+    }
+
+    function renderPdvOrders() {
+      const tbody = document.getElementById('pdvOrdersTableBody');
+      const cardsContainer = document.getElementById('pdvCardsView');
+      const emptyState = document.getElementById('pdvEmptyState');
+      if (!tbody || !cardsContainer || !emptyState) return;
+
+      const q = (document.getElementById('pdvSearchOrders')?.value || '').toLowerCase().trim();
+
+      let countMostrador = 0, countDelivery = 0, countMesas = 0;
+      let countPendiente = 0, countEnCurso = 0;
+      let totalTurnoHoy = 0;
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      pedidos.forEach(p => {
+        if (new Date(p.createdAt) >= hoy) totalTurnoHoy += (p.total || 0);
+
+        const isActive = p.status !== 'despachado';
+        if (isActive) {
+          if (isOrderInChannel(p, 'mostrador')) countMostrador++;
+          if (isOrderInChannel(p, 'delivery')) countDelivery++;
+          if (isOrderInChannel(p, 'mesas')) countMesas++;
+        }
+        if (p.status === 'nuevo') countPendiente++;
+        if (p.status === 'cocina') countEnCurso++;
+      });
+
+      const bMost = document.getElementById('badgeChannelMostrador');
+      const bDel = document.getElementById('badgeChannelDelivery');
+      const bMes = document.getElementById('badgeChannelMesas');
+      const bPend = document.getElementById('badgeFilterPendiente');
+      const bCur = document.getElementById('badgeFilterEnCurso');
+      const tTurno = document.getElementById('pdvTotalTurno');
+
+      if (bMost) bMost.textContent = countMostrador;
+      if (bDel) bDel.textContent = countDelivery;
+      if (bMes) bMes.textContent = countMesas;
+      if (bPend) bPend.textContent = countPendiente;
+      if (bCur) bCur.textContent = countEnCurso;
+      if (tTurno) tTurno.textContent = isTotalMasked ? '$ ••••••' : fmt(totalTurnoHoy);
+
+      const filtrados = pedidos.filter(p => {
+        const inChan = isOrderInChannel(p, pdvChannel);
+        const inStatus = matchesStatusFilter(p, pdvStatusFilter);
+        const inQuery = !q || (p.id || '').toLowerCase().includes(q) || (p.customer || '').toLowerCase().includes(q) || (p.table || '').toLowerCase().includes(q);
+        return inChan && inStatus && inQuery;
+      });
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '';
+        cardsContainer.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      // Render Filas Tabla
+      tbody.innerHTML = filtrados.map(o => {
+        const date = new Date(o.createdAt);
+        const timeStr = date.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+        const isNew = o.status === 'nuevo';
+        const isCocina = o.status === 'cocina';
+        const isListo = o.status === 'listo';
+
+        const statusPill = isNew ? `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-black border border-amber-200">🟡 Pendiente</span>`
+                         : isCocina ? `<span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full text-[10px] font-black border border-blue-200">🔵 En cocina</span>`
+                         : isListo ? `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-[10px] font-black border border-emerald-200">🟢 Listo</span>`
+                         : `<span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full text-[10px] font-black border border-slate-200">⚪ Entregado</span>`;
+
+        const channelBadge = o.type === 'delivery' ? `<span class="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md text-[10px] border border-emerald-200">🛵 Delivery</span>`
+                           : `<span class="bg-amber-50 text-amber-800 font-bold px-2 py-0.5 rounded-md text-[10px] border border-amber-200">🍽️ ${o.table || 'Mostrador'}</span>`;
+
+        const itemsSummary = (o.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3 px-4 font-mono">
+              <div class="font-black text-slate-900">${timeStr}</div>
+              <div class="text-[10px] text-slate-400 font-normal">⏱️ ${diffMin}m · ${o.id}</div>
+            </td>
+            <td class="py-3 px-4">
+              ${statusPill}
+            </td>
+            <td class="py-3 px-4 font-mono">
+              <div class="font-black text-slate-900 text-xs">${fmt(o.total)}</div>
+              <div class="text-[10px] text-slate-400 font-sans">${o.payment || 'Efectivo'}</div>
+            </td>
+            <td class="py-3 px-4">
+              <div class="font-bold text-slate-800">${o.customer || 'Comensal'}</div>
+              <div class="mt-0.5">${channelBadge} ${o.address ? `<span class="text-[10px] text-slate-400 ml-1">📍 ${o.address}</span>` : ''}</div>
+            </td>
+            <td class="py-3 px-4 max-w-xs truncate text-slate-600 font-sans">
+              <span title="${itemsSummary}">${itemsSummary}</span>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="printTicket('${o.docId}')" class="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer" title="Imprimir comanda térmica">🖨️</button>
+                ${isNew ? `
+                  <button onclick="changeOrderStatus('${o.docId}', 'cocina')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] cursor-pointer">Aceptar</button>
+                ` : isCocina ? `
+                  <button onclick="changeOrderStatus('${o.docId}', 'listo')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer">Listo</button>
+                ` : isListo ? `
+                  <button onclick="changeOrderStatus('${o.docId}', 'despachado')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-[10px] cursor-pointer">Entregar</button>
+                ` : `
+                  <span class="text-[10px] text-slate-400">Cerrado</span>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      cardsContainer.innerHTML = filtrados.map(o => createKdsOrderCard(o, o.items || []).outerHTML).join('');
     }
 
     // =========================================================================
