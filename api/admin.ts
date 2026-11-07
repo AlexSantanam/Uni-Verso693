@@ -424,10 +424,12 @@ const DEFAULT_SETTINGS: Settings = {
 const DEFAULT_CATALOG: Module[] = [
   { id: 'ebs693', category: 'Diagnóstico', name: 'Diagnóstico EBS 693', description: 'Sesión de 45 minutos y hoja de ruta priorizada con ROI estimado.', price: 197000, unit: 'proyecto' },
   { id: 'audit-pro', category: 'Diagnóstico', name: 'AUDIT 693 PRO - Informe de Fugas de Dinero', description: 'Informe PDF con análisis del sitio, competencia y oportunidades de IA.', price: 19990, unit: 'proyecto' },
-  { id: 'agente-whatsapp', category: 'Agentes de IA', name: 'Agente de IA para WhatsApp Business (RAG)', description: 'Entrenamiento con base de conocimiento propia, calificación de prospectos y derivación a ejecutivos humanos (Ref. comercio $390.000).', price: 490000, unit: 'proyecto' },
+  { id: 'agente-whatsapp', category: 'Agentes de IA', name: 'Agente de IA para WhatsApp Business (RAG)', description: 'Entrenamiento con base de conocimiento propia, calificación de prospectos y derivación a ejecutivos humanos.', price: 490000, unit: 'proyecto' },
   { id: 'agente-web', category: 'Agentes de IA', name: 'Agente de IA para Sitio Web / Widget 24/7', description: 'Chat interactivo flotante en sitio web con información oficial de la empresa, catálogo de productos y captura de leads.', price: 490000, unit: 'proyecto' },
   { id: 'agente-omnicanal', category: 'Agentes de IA', name: 'Agente de IA Omnicanal Pro (WhatsApp + Web + CRM)', description: 'Solución integral omnicanal con automatización de flujos en n8n, agendamiento y sincronización de base de datos.', price: 690000, unit: 'proyecto' },
   { id: 'agente-mantencion', category: 'Agentes de IA', name: 'Consumo Mensual de Tokens & Mantención IA', description: 'Cuota fija mensual protegida de tokens de modelo LLM, calibración de respuestas y monitoreo continuo.', price: 59000, unit: 'mes' },
+  { id: 'restaurante-qr', category: 'Plataformas', name: 'Plataforma Gastronómica & Menú QR (Estilo OlaClick)', description: 'Carta digital interactiva QR, pantalla de cocina KDS en tiempo real, pedidos a WhatsApp y panel administrativo sin comisiones.', price: 250000, unit: 'proyecto' },
+  { id: 'restaurante-arriendo', category: 'Plataformas', name: 'Arriendo Mensual Plataforma Gastronómica QR', description: 'Uso de menú digital QR, pantalla de cocina KDS, cupones y soporte técnico mensual (0% comisiones por pedido).', price: 29000, unit: 'mes' },
   { id: 'automatizacion', category: 'Automatización', name: 'Automatización de proceso', description: 'Flujo automatizado entre sistemas (n8n, Make o código a medida).', price: 0, unit: 'proyecto' },
   { id: 'integracion', category: 'Automatización', name: 'Integración con CRM, ERP o API', description: 'Conexión de datos entre sistemas existentes.', price: 0, unit: 'proyecto' },
   { id: 'dashboard', category: 'Software a medida', name: 'Panel de reportes', description: 'Dashboard con indicadores que se actualizan solos.', price: 0, unit: 'proyecto' },
@@ -446,7 +448,24 @@ const getSettings = async (): Promise<Settings> => {
   const saved = (await redis.get<Partial<Settings>>(K.settings)) ?? {};
   return { ...DEFAULT_SETTINGS, ...saved, terms: cleanTerms(saved.terms) };
 };
-const getCatalog = async () => (await redis.get<Module[]>(K.catalog)) ?? DEFAULT_CATALOG;
+const getCatalog = async (): Promise<Module[]> => {
+  const saved = await redis.get<Module[]>(K.catalog);
+  if (!saved || !Array.isArray(saved) || saved.length === 0) return DEFAULT_CATALOG;
+
+  const savedIds = new Set(saved.map((m) => m.id));
+  const missing = DEFAULT_CATALOG.filter((m) => !savedIds.has(m.id));
+
+  const defaultsById = new Map(DEFAULT_CATALOG.map((m) => [m.id, m]));
+  const updatedSaved = saved.map((m) => {
+    const def = defaultsById.get(m.id);
+    if (def && (m.category === 'Agentes de IA' || m.category === 'Diagnóstico' || m.category === 'Plataformas' || m.id === 'setup-db-cloud')) {
+      return { ...m, price: def.price, description: def.description, category: def.category };
+    }
+    return m;
+  });
+
+  return missing.length > 0 ? [...updatedSaved, ...missing] : updatedSaved;
+};
 
 // ---------- validation helpers ----------
 const str = (v: unknown, n: number) => (typeof v === 'string' ? v.trim().slice(0, n) : '');

@@ -64,6 +64,16 @@ const PRESET_PLANS: PresetPlan[] = [
     features: ['Hasta 10 secciones o Catálogo', 'Filtros y código QR', 'Armado de pedidos a WhatsApp', 'Panel de administración', 'Hosting + Dominio .CL']
   },
   {
+    id: 'restaurante-qr',
+    name: 'Plataforma Gastronómica QR',
+    tag: 'Estilo OlaClick',
+    basePrice: 250000,
+    sections: 'Carta QR + Cocina KDS',
+    deliveryDays: 7,
+    description: 'Sistema integral para restaurantes: Menú QR interactivo, pantalla de cocina KDS en vivo y pedidos directos sin comisiones.',
+    features: ['Carta digital QR autoadministrable', 'Pantalla de cocina KDS en tiempo real', 'Pedidos directos a WhatsApp', 'Rango delivery con recargo automático', 'Cupones de descuento y CRM']
+  },
+  {
     id: 'store',
     name: 'Plan Store',
     tag: 'E-Commerce 24/7',
