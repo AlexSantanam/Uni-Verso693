@@ -794,10 +794,10 @@ export const PaginasWeb: React.FC = () => {
                 </div>
                 <div className="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800 text-xs">
                   <span className="text-slate-400 block text-[10px]">Cuota mensual tokens & mantención:</span>
-                  <span className="font-mono font-extrabold text-cyan-300 text-sm">+$59.000 CLP / mes</span>
+                  <span className="font-mono font-extrabold text-cyan-300 text-sm">+$29.000 CLP / mes</span>
                 </div>
                 <a
-                  href={whatsappLink('Hola UNIVERSO693, me interesa implementar el Agente de IA 24/7 ($490.000 setup + $59.000/mes) para mi empresa.')}
+                  href={whatsappLink('Hola UNIVERSO693, me interesa implementar el Agente de IA 24/7 ($490.000 setup + $29.000/mes) para mi empresa.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 px-4 text-xs shadow-lg transition-all"

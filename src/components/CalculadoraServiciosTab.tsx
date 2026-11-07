@@ -144,7 +144,7 @@ export const CalculadoraServiciosTab: React.FC = () => {
 
   // Addons setup y mensual
   const aiSetupCost = includeAI ? 490000 : 0;
-  const aiMonthlyCost = includeAI ? 59000 : 0;
+  const aiMonthlyCost = includeAI ? 29000 : 0;
 
   const webpaySetupCost = includeWebpay ? 45000 : 0;
   const extraHoursCost = extraHours * 15000;
@@ -264,7 +264,7 @@ export const CalculadoraServiciosTab: React.FC = () => {
 • Incluye: Hosting cloud + Dominio .CL por el Año 1 y 30 días de soporte post-entrega.
 • A partir del Año 2: Renovación de hosting/dominio por solo ${clp(contadoAnualRenewal)}/año (apenas ~$5.000/mes; *NO vuelves a pagar el sitio*).
 ${includeContadoMaintenance ? `• 🛡️ *Plan de Mantención Técnica Opcional:* ${clp(contadoMaintenanceMonthly)} / mes (${contadoMaintenancePct}% del valor de compra). Incluye monitoreo 24/7, respaldos cloud automáticos, soporte prioritario por WhatsApp y afinamiento.` : ''}
-${includeAI ? `\n🤖 *Módulo Agente IA 24/7:* Incluido con setup de $490.000 + IVA y mantención fija de $59.000/mes de tokens.` : ''}
+${includeAI ? `\n🤖 *Módulo Agente IA 24/7:* Incluido con setup de $490.000 + IVA y mantención fija de $29.000/mes de tokens.` : ''}
 ${domainScenario === 'has-domain' ? `\n🌐 *Dominio Propio:* Ya cuentas con dominio, te aplicamos un descuento de -$10.000 en el primer pago y te enviamos la guía DNS.` : `\n🌐 *Dominio:* Gestionamos tu .CL en NIC Chile a costo $0 dentro del plan.`}
 
 ¿Cuál de las 3 alternativas se adapta mejor a tu flujo de caja para coordinar la partida?`;
@@ -300,7 +300,7 @@ MODALIDAD 3: COMPRA DIRECTA (PAGO ÚNICO CONTADO)
 • Renovación Técnica (Año 2 en adelante): Solo ${clp(contadoAnualRenewal)} al año (apenas ~$5.000/mes; no se vuelve a pagar el desarrollo).
 • Garantía y Soporte: 30 días corridos de afinamiento continuo (posteriores a $15.000/hora).
 ${includeContadoMaintenance ? `• Plan de Mantención Técnica Opcional: ${clp(contadoMaintenanceMonthly)} / mes (${contadoMaintenancePct}% del monto de compra). Cubre monitoreo 24/7 de caídas, respaldos automáticos, soporte prioritario por WhatsApp y mantención preventiva.` : ''}
-${includeAI ? `\n• Módulo Agente IA 24/7: Setup de $490.000 + IVA y mantención fija de $59.000/mes de tokens.` : ''}
+${includeAI ? `\n• Módulo Agente IA 24/7: Setup de $490.000 + IVA y mantención fija de $29.000/mes de tokens.` : ''}
 
 Emitimos Factura Electrónica formal con IVA según normativa tributaria vigente.
 
@@ -552,7 +552,7 @@ Ingeniería de Software & Agentes de IA`;
               </div>
               <div className="text-right shrink-0">
                 <div className="font-bold text-xs text-white">+$490.000 + IVA</div>
-                <div className="text-[10px] text-brand-400 font-semibold">+ $59.000/mes tokens</div>
+                <div className="text-[10px] text-brand-400 font-semibold">+ $29.000/mes tokens</div>
               </div>
             </label>
 
@@ -907,7 +907,7 @@ Ingeniería de Software & Agentes de IA`;
             </li>
             <li className="flex items-start gap-1.5">
               <span className="text-amber-400 font-bold shrink-0">•</span>
-              <span><strong>La IA siempre cobra $59.000/mes:</strong> Si el cliente pide Agente de IA, NUNCA se regala la mensualidad de tokens porque los modelos de IA y servidores se facturan por consulta.</span>
+              <span><strong>La IA siempre cobra $29.000/mes:</strong> Si el cliente pide Agente de IA, NUNCA se regala la mensualidad de tokens porque los modelos de IA y servidores se facturan por consulta.</span>
             </li>
             <li className="flex items-start gap-1.5">
               <span className="text-amber-400 font-bold shrink-0">•</span>

@@ -103,7 +103,7 @@ export const ServiceDetail: React.FC = () => {
                   <div className="pt-2">
                     <div className="text-3xl font-black text-white">$490.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
                     <div className="text-xs text-cyan-300 font-mono font-semibold mt-1">
-                      {es ? '+ $59.000 CLP/mes tokens & mantención' : '+ $59,000 CLP/mo tokens & maintenance'}
+                      {es ? '+ $29.000 CLP/mes tokens & mantención' : '+ $29,000 CLP/mo tokens & maintenance'}
                     </div>
                   </div>
                   <ul className="text-xs text-slate-300 space-y-2 pt-3 border-t border-slate-800">
