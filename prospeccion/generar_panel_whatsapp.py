@@ -22,7 +22,7 @@ def generate_whatsapp_panel():
         msg = (
             f"Hola {lead['Contacto']}, buen día. Te escribe Alexis Santana de UNIVERSO693 SpA.\n\n"
             f"Te envié un correo breve con una propuesta para {lead['Nombre_Empresa']}: {angulo_custom}.\n\n"
-            f"Tenemos una modalidad de arriendo mensual desde $45.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.\n\n"
+            f"Tenemos una modalidad de arriendo mensual desde $15.000 sin costo de desarrollo inicial, para que no tengan que desembolsar capital fuerte.\n\n"
             f"Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!"
         )
         

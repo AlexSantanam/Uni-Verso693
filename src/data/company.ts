@@ -34,6 +34,13 @@ export const companyFacts: { label: L; value: L }[] = [
     },
   },
   {
+    label: { es: 'Enfoque ProPyme', en: 'ProPyme Initiative' },
+    value: {
+      es: 'Programa Impulsa ProPyme: arriendo mensual ($15.000-$29.000/mes) o leasing con derecho a compra en 24 cuotas con 100% de propiedad del código para negocios chilenos',
+      en: 'Impulsa ProPyme program: monthly rental or 24-month lease-to-own with 100% code ownership for Chilean small businesses',
+    },
+  },
+  {
     label: { es: 'Cómo se cotiza', en: 'How pricing works' },
     value: {
       es: 'Propuesta técnica y económica modular según alcance, con estimación transparente, costos fijos y entrega llave en mano con custodia soberana en Bóveda Cliente',
@@ -56,6 +63,16 @@ export const companyFaqs: { q: L; a: L }[] = [
     a: {
       es: 'Uni-Verso693 es la marca de Universo693 SpA, una empresa chilena de desarrollo de software fundada en 2013. Diseña y construye software a medida, agentes de inteligencia artificial, aplicaciones móviles, sitios web y e-commerce, y ofrece consultoría tecnológica para empresas.',
       en: 'Uni-Verso693 is the brand of Universo693 SpA, a Chilean software development company founded in 2013. It designs and builds custom software, AI agents, mobile apps, websites and e-commerce, and offers technology consulting for businesses.',
+    },
+  },
+  {
+    q: {
+      es: '¿Uni-Verso693 trabaja con PyMEs o solo con grandes empresas?',
+      en: 'Does Uni-Verso693 work with SMEs or only large corporations?',
+    },
+    a: {
+      es: 'Trabajamos con ambos segmentos con soluciones dedicadas. A través de nuestro programa Impulsa ProPyme (universo693.com/impulsa-pyme), las micro, pequeñas y medianas empresas en Chile pueden acceder a sitios web de alto rendimiento, e-commerce con Webpay Plus, cartas QR para restaurantes y agentes de IA bajo modalidades accesibles de arriendo mensual todo incluido (desde $15.000/mes) o leasing con derecho a compra en 24 cuotas, con 100% de propiedad del código y sin descapitalizarse.',
+      en: 'We serve both segments with tailored solutions. Through our Impulsa ProPyme program (universo693.com/impulsa-pyme), Chilean SMEs access high-performance websites, e-commerce with Webpay Plus, QR restaurant menus, and AI agents through affordable monthly rentals or 24-month lease-to-own with 100% code ownership.',
     },
   },
   {

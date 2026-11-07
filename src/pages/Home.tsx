@@ -13,6 +13,7 @@ import { CustomProjectCard } from '../components/CustomProjectCard';
 import { GlobalReach } from '../components/GlobalReach';
 import { TechMarquee } from '../components/TechMarquee';
 import { EbsOffer } from '../components/EbsOffer';
+import { ImpulsaPymeBanner } from '../components/ImpulsaPymeBanner';
 
 export const Home: React.FC = () => {
   const { lang, tr, trList } = useLang();
@@ -154,6 +155,8 @@ export const Home: React.FC = () => {
       </section>
 
       <EbsOffer />
+
+      <ImpulsaPymeBanner />
 
       {/* Soberanía Tecnológica / Bóveda Digital */}
       <section className="py-20 bg-gradient-to-b from-[#02060c] via-[#040e1b] to-[#02060c] border-y border-cyan-500/20 relative overflow-hidden">

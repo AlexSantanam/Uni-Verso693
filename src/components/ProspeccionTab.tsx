@@ -831,10 +831,10 @@ export const ProspeccionTab: React.FC<{
 
 Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
 
-Trabajamos con tarifas transparentes basadas en porcentajes para cuidar su flujo de caja:
-• 1. Compra Directa Contado: desde $600.000 + IVA (100% código propio en Bóveda Digital desde el Día 1).
-• 2. Leasing con Derecho a Compra: en 24 cuotas ($39.000 a $65.000/mes) o 12 cuotas ($69.000 a $115.000/mes), con 100% de propiedad al terminar.
-• 3. Arriendo Mensual Todo Incluido: desde $45.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
+Trabajamos con tarifas transparentes y accesibles para cuidar su flujo de caja:
+• 1. Compra Directa Contado: desde $150.000 a $285.000 IVA Inc. (100% código propio en Bóveda Digital desde el Día 1).
+• 2. Leasing con Derecho a Compra: en 24 cuotas ($14.000 a $27.000/mes) o 12 cuotas ($22.000 a $42.000/mes), con 100% de propiedad al terminar.
+• 3. Arriendo Mensual Todo Incluido: desde $15.000 a $29.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
 
 👉 Puedes revisar los planes y simular en vivo acá:
 https://universo693.com/impulsa-pyme
@@ -861,10 +861,10 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
 
 Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
 
-Trabajamos con tarifas transparentes basadas en porcentajes para cuidar su flujo de caja:
-• 1. Compra Directa Contado: desde $600.000 + IVA (100% código propio en Bóveda Digital desde el Día 1).
-• 2. Leasing con Derecho a Compra: en 24 cuotas ($39.000 a $65.000/mes) o 12 cuotas ($69.000 a $115.000/mes), con 100% de propiedad al terminar.
-• 3. Arriendo Mensual Todo Incluido: desde $45.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
+Trabajamos con tarifas transparentes y accesibles para cuidar su flujo de caja:
+• 1. Compra Directa Contado: desde $150.000 a $285.000 IVA Inc. (100% código propio en Bóveda Digital desde el Día 1).
+• 2. Leasing con Derecho a Compra: en 24 cuotas ($14.000 a $27.000/mes) o 12 cuotas ($22.000 a $42.000/mes), con 100% de propiedad al terminar.
+• 3. Arriendo Mensual Todo Incluido: desde $15.000 a $29.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
 
 👉 Puedes revisar los planes y simular en vivo acá:
 https://universo693.com/impulsa-pyme
@@ -916,22 +916,22 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
         </tr>
         <tr style="background-color: #F0FDF4;">
           <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #166534;">1. Compra Directa Contado</td>
-          <td style="padding: 10px; border: 1px solid #E2E8F0;"><strong>$600.000 a $1.000.000 CLP</strong> + IVA</td>
-          <td style="padding: 10px; border: 1px solid #E2E8F0;">Traspaso inmediato de repositorio en GitHub y llaves maestras en Bóveda Digital desde el Día 1.</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;"><strong>$150.000 a $285.000 CLP</strong> IVA Incluido</td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Planes Start, Pro, Plus y Store con Webpay. Traspaso inmediato de llaves maestras en Bóveda Digital desde el Día 1.</td>
         </tr>
         <tr>
           <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">2. Leasing a 24 Meses</td>
-          <td style="padding: 10px; border: 1px solid #E2E8F0;">24 cuotas de <strong>$39.000 a $65.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~6.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">24 cuotas de <strong>$14.000 a $27.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~9% del valor base / cuotas mínimas)</span></td>
           <td style="padding: 10px; border: 1px solid #E2E8F0;">Incluye hosting años 1 y 2. Al mes 25 el código es 100% de su empresa sin costo de traspaso.</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
           <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">3. Leasing a 12 Meses</td>
-          <td style="padding: 10px; border: 1px solid #E2E8F0;">12 cuotas de <strong>$69.000 a $115.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~11.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">12 cuotas de <strong>$22.000 a $42.000 CLP</strong><br><span style="font-size: 11px; color: #718096;">(~14.5% del valor base con hosting año 1)</span></td>
           <td style="padding: 10px; border: 1px solid #E2E8F0;">Incluye hosting año 1. Al mes 13 el código es 100% de su empresa.</td>
         </tr>
         <tr>
           <td style="padding: 10px; border: 1px solid #E2E8F0; font-weight: bold; color: #2B6CB0;">4. Arriendo Perpetuo (SaaS)</td>
-          <td style="padding: 10px; border: 1px solid #E2E8F0;">Desde <strong>$45.000 CLP / mes</strong><br><span style="font-size: 11px; color: #718096;">(4.5% del valor base)</span></td>
+          <td style="padding: 10px; border: 1px solid #E2E8F0;">Desde <strong>$15.000 a $29.000 CLP / mes</strong><br><span style="font-size: 11px; color: #718096;">(~10% proporcional con piso de servidor)</span></td>
           <td style="padding: 10px; border: 1px solid #E2E8F0;">Hosting de alta velocidad, SSL y soporte continuo incluidos. Sin descapitalización.</td>
         </tr>
       </table>
@@ -1151,7 +1151,7 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
             </span>
           </div>
           <p className="text-slate-400 text-sm mt-1">
-            Captación de Pymes en Chile con modalidades de Arriendo ($45.000/mes), Leasing y Venta directa.
+            Captación de Pymes en Chile con modalidades de Arriendo (desde $15.000/mes), Leasing y Venta directa.
           </p>
         </div>
 

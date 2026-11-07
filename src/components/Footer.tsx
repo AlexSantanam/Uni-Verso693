@@ -72,6 +72,16 @@ export const Footer: React.FC = () => {
                   <span>🔑</span> {lang === 'es' ? 'Bóveda Cliente' : 'Client Vault'}
                 </Link>
               </li>
+              <li>
+                <a href="/llms.txt" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5 text-xs text-slate-400">
+                  <span>🤖</span> llms.txt (AI Engine Manifest)
+                </a>
+              </li>
+              <li>
+                <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5 text-xs text-slate-400">
+                  <span>🗺️</span> Sitemap XML
+                </a>
+              </li>
             </ul>
           </div>
         </div>

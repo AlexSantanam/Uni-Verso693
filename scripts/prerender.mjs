@@ -68,6 +68,7 @@ ${allPages
 </urlset>
 `;
 fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
+fs.writeFileSync(path.resolve('public', 'sitemap.xml'), sitemap);
 fs.rmSync(path.resolve('dist-ssr'), { recursive: true, force: true });
 
 console.log(`prerendered ${allPages.length} pages (${allPages.filter((p) => !p.noindex).length} in sitemap) + 404.html, sitemap.xml for ${SITE_URL}`);
