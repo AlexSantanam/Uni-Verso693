@@ -22,9 +22,12 @@ Plantilla oficial estandarizada de **UNIVERSO693 SpA** para entrega de cartas di
 
 | Archivo | Para quién | Necesita login |
 |---|---|---|
-| `index.html` | El cliente (escanea el QR o entra por el link) | No |
+| `index.html` | El cliente (escanea el QR de su mesa o entra por el link) | No |
+| `bienvenida.html` | El link para bio de Instagram / Google Business / flyers — antesala antes de la carta | No |
 | `panel.html` | El dueño / recepción — carta, precios, stock, estado del local | Sí |
 | `cocina.html` | Cocina / barra — tablero de pedidos en vivo (KDS) | Sí |
+
+Los QR de las mesas (generados con `generador-qrs.html`) apuntan directo a `index.html?mesa=N` — quien ya está sentado no necesita la antesala. `bienvenida.html` es para los canales donde la persona todavía no decidió pedir (redes sociales, Google), con botones a Menú, WhatsApp, Instagram y la clave del WiFi.
 
 Los tres leen y escriben la misma base de datos en **Firebase Firestore**, así que un cambio de precio en `panel.html` se ve al instante en `index.html`, y un pedido nuevo del cliente aparece al instante en `cocina.html` y `panel.html` — sin recargar, sin estar en el mismo navegador ni el mismo WiFi.
 
@@ -32,14 +35,14 @@ Los tres leen y escriben la misma base de datos en **Firebase Firestore**, así 
 
 ## 🚀 Cómo configurar y desplegar un nuevo cliente en 10 minutos
 
-### Paso 0: Crear el backend en Firebase (una vez por cliente, ~3 minutos)
-1. Entra a [console.firebase.google.com](https://console.firebase.google.com/) y crea un proyecto nuevo (gratis, plan Spark, no pide tarjeta).
-2. **Compilación -> Firestore Database -> Crear base de datos** (modo producción, región `southamerica-east1`).
-3. **Compilación -> Authentication -> Comenzar -> habilita "Correo electrónico/Contraseña"**, y crea el primer usuario (el dueño o quien reciba pedidos): su correo + una clave.
-4. **Configuración del proyecto** (ícono de engranaje) **-> Tus apps -> Agregar app Web (`</>`)** -> copia el objeto `firebaseConfig`.
-5. Pega ese objeto en `firebase-config.js` (reemplaza los valores de ejemplo).
-6. En **Firestore Database -> pestaña Reglas**, pega el contenido completo de `firestore.rules` (incluido en esta carpeta) y publica.
-7. Abre `index.html` una vez en el navegador: la primera carga siembra automáticamente la carta de `config.js` dentro de Firestore (solo pasa una vez, si la base está vacía). De ahí en adelante, Firestore manda — los cambios se hacen desde `panel.html`.
+### Paso 0: Dar de alta al cliente en el backend compartido "Zoco" (~2 minutos, NO crear un proyecto nuevo)
+`firebase-config.js` ya viene apuntando al proyecto compartido `universo693-zoco`, que aloja a todos los clientes en la misma base de datos (separados por `restaurantId`). **No lo toques** — solo haz esto:
+
+1. Crea el usuario del cliente en [Authentication -> Usuarios -> Agregar usuario](https://console.firebase.google.com/project/universo693-zoco/authentication/users) (su correo + una clave). Copia el **UID** que te muestra la tabla.
+2. En [Firestore Database -> Datos](https://console.firebase.google.com/project/universo693-zoco/firestore/databases/-default-/data), crea el documento `restaurantes/<restaurantId>` (mismo `restaurantId` que vas a poner en el Paso 1) con un campo `ownerUids` (tipo *array*) que contenga ese UID. Sin este paso, ese usuario no puede editar nada — cada restaurante solo lo pueden tocar los UID que estén en su propio `ownerUids`.
+3. Abre `index.html` una vez en el navegador: la primera carga siembra automáticamente la carta de `config.js` dentro de Firestore para ese `restaurantId` (solo pasa una vez, si ese restaurante está vacío). De ahí en adelante, Firestore manda — los cambios se hacen desde `panel.html`.
+
+Las reglas de seguridad (`firestore.rules`) y la base de datos del proyecto compartido ya están publicadas — no hay que volver a subirlas por cada cliente.
 
 ### Paso 1: Editar `config.js`
 Abre el archivo `config.js` y personaliza los campos:

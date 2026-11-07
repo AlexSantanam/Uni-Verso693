@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel del Dueño · Recepción & Carta</title>
+  <title>Zoco OS · Gestión Gastronómica</title>
 
-  <meta name="theme-color" content="#181310" />
+  <meta name="theme-color" content="#0F172A" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,225 +18,926 @@
         extend: {
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            serif: ['"Playfair Display"', 'Georgia', 'serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            ember: '#C85A32',
-            darkwood: '#181310',
-            warmcard: '#221C18',
-            gold: '#E9C46A'
+            brand: {
+              50: '#F5F3FF',
+              100: '#EDE9FE',
+              500: '#8B5CF6',
+              600: '#7C3AED',
+              700: '#6D28D9',
+              900: '#4C1D95',
+            },
+            sidebar: '#0F172A',
+            surface: '#FFFFFF',
+            canvas: '#F8FAFC',
+            borderLight: '#E2E8F0',
+            gold: '#D97706'
+          },
+          boxShadow: {
+            soft: '0 2px 10px -2px rgba(15, 23, 42, 0.06), 0 8px 24px -6px rgba(15, 23, 42, 0.08)',
+            elevated: '0 20px 30px -10px rgba(15, 23, 42, 0.12)',
           }
         }
       }
     }
   </script>
 
+  <style>
+    /* Estilos globales y scrollbar sutil */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Alerta visual pulsante para pedidos nuevos */
+    @keyframes pulseCard {
+      0%, 100% { border-color: #F59E0B; box-shadow: 0 0 16px rgba(245, 158, 11, 0.25); }
+      50% { border-color: #EF4444; box-shadow: 0 0 24px rgba(239, 68, 68, 0.35); }
+    }
+    .order-alert-pulse {
+      animation: pulseCard 1.6s infinite ease-in-out;
+    }
+
+    /* Impresión de tickets térmicos */
+    @media print {
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 72mm;
+        margin: 0;
+        padding: 4mm;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #000;
+        background: #fff;
+      }
+    }
+  </style>
+
   <script src="config.js"></script>
 
-  <!-- Firebase (productos, categorías, estado del local y pedidos) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="firebase-init.js"></script>
 </head>
-<body class="bg-darkwood text-[#F4EFEA] antialiased min-h-screen font-sans">
+<body class="bg-canvas text-slate-800 antialiased min-h-screen font-sans selection:bg-brand-600 selection:text-white flex flex-col md:flex-row overflow-x-hidden">
 
-  <!-- CANDADO DE ACCESO -->
-  <div id="loginGate" class="fixed inset-0 z-[999] bg-darkwood flex items-center justify-center p-4">
-    <form id="loginForm" class="w-full max-w-sm bg-warmcard border border-white/10 rounded-2xl p-6 space-y-3 shadow-2xl">
-      <div class="text-center space-y-1 mb-2">
-        <div class="text-2xl">🔐</div>
-        <h2 class="font-serif text-lg font-bold text-white">Panel del Dueño</h2>
-        <p class="text-[11px] text-stone-400" id="loginBrandLabel">Carta, precios, stock y pedidos en vivo.</p>
+  <!-- ========================================================================= -->
+  <!-- CANDADO DE ACCESO / LOGIN -->
+  <!-- ========================================================================= -->
+  <div id="loginGate" class="fixed inset-0 z-[999] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-8 space-y-4 shadow-elevated border border-slate-100">
+      <div class="text-center space-y-1.5 mb-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-3xl shadow-sm">🦉</div>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Zoco OS</h2>
+        <p class="text-xs text-slate-500 font-medium" id="loginBrandLabel">Gestión Integral Gastronómica</p>
       </div>
-      <input id="loginEmail" type="email" required placeholder="correo@tulocal.cl" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
-      <input id="loginPass" type="password" required placeholder="Contraseña" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
-      <p id="loginError" class="hidden text-[11px] text-red-400 font-bold"></p>
-      <button type="submit" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs shadow transition-all cursor-pointer">Ingresar</button>
-    </form>
+      <form id="loginForm" class="space-y-3">
+        <div>
+          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Correo Administrador</label>
+          <input id="loginEmail" type="email" required placeholder="admin@tulocal.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white transition-all" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Contraseña</label>
+          <input id="loginPass" type="password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white transition-all" />
+        </div>
+        <p id="loginError" class="hidden text-xs text-red-500 font-bold bg-red-50 p-2.5 rounded-xl border border-red-200"></p>
+        <button type="submit" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs tracking-wide shadow-lg shadow-brand-600/30 transition-all cursor-pointer">
+          Ingresar al Panel
+        </button>
+      </form>
+      <div class="pt-2 text-center text-[11px] text-slate-400">
+        Demo operativa · Credenciales predeterminadas en tu local
+      </div>
+    </div>
   </div>
 
-  <!-- APP DEL PANEL (oculta hasta iniciar sesión) -->
-  <div id="panelApp" class="hidden">
+  <!-- ========================================================================= -->
+  <!-- APLICACIÓN PRINCIPAL (SIDEBAR + MAIN CONTENT) -->
+  <!-- ========================================================================= -->
+  <div id="panelApp" class="hidden w-full min-h-screen flex flex-col md:flex-row bg-canvas">
 
-    <header class="sticky top-0 z-40 bg-darkwood/95 backdrop-blur-md border-b border-white/10">
-      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-ember/20 border border-ember/40 flex items-center justify-center text-xl shadow">🔐</div>
-          <div>
-            <h1 id="brandName" class="font-serif text-lg font-bold leading-none text-white tracking-wide">Panel del Dueño</h1>
-            <p class="text-[11px] text-stone-400 mt-1">Recepción, carta y pedidos — autoadministrable</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <a href="index.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-200 font-bold border border-white/10 flex items-center gap-1.5">📱 Ver Carta Cliente ↗</a>
-          <a href="cocina.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-amber-950/60 hover:bg-amber-900/60 text-amber-300 font-bold border border-amber-600/50 flex items-center gap-1.5">👨‍🍳 Pantalla de Cocina ↗</a>
-          <button onclick="firebase.auth().signOut()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-red-900/40 text-stone-400 hover:text-red-300 font-bold border border-white/10 cursor-pointer">🚪 Salir</button>
-        </div>
-      </div>
+    <!-- BACKDROP MÓVIL PARA SIDEBAR -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
-      <!-- PESTAÑAS -->
-      <div class="max-w-5xl mx-auto px-4 flex gap-2 overflow-x-auto no-scrollbar pb-2">
-        <button class="panel-tab-btn" data-tab="negocio" onclick="switchTab('negocio')">🏪 Negocio</button>
-        <button class="panel-tab-btn" data-tab="productos" onclick="switchTab('productos')">🍽️ Productos</button>
-        <button class="panel-tab-btn" data-tab="categorias" onclick="switchTab('categorias')">🗂️ Categorías</button>
-        <button class="panel-tab-btn" data-tab="clientes" onclick="switchTab('clientes')">👥 Clientes</button>
-        <button class="panel-tab-btn" data-tab="descuentos" onclick="switchTab('descuentos')">🏷️ Descuentos</button>
-      </div>
-    </header>
-
-    <main class="max-w-5xl mx-auto px-4 py-6 space-y-5">
-
-      <!-- TAB: NEGOCIO -->
-      <section id="tab-negocio" class="panel-pane space-y-4">
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-white flex items-center justify-between">
-            🚦 Estado del Local
-            <span id="estadoLabel" class="text-xs font-mono"></span>
-          </h2>
-          <div class="flex gap-2">
-            <button id="btnAbrir" onclick="setEstado(true)" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer">🟢 Recibiendo Pedidos</button>
-            <button id="btnPausar" onclick="setEstado(false)" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs cursor-pointer">⏸️ Pausar Pedidos</button>
-          </div>
-        </div>
-
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-white">📢 Banner de Oferta en Vivo</h2>
-          <p class="text-[11px] text-stone-400">Se muestra arriba de la carta del cliente al instante. Déjalo vacío para ocultarlo.</p>
-          <div class="flex gap-2">
-            <input id="promoInput" type="text" placeholder="Ej: 15% dcto en pedidos online hoy" class="flex-1 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" />
-            <button onclick="publicarPromo()" class="px-4 py-2 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">Publicar</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB: PRODUCTOS -->
-      <section id="tab-productos" class="panel-pane space-y-4 hidden">
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-white">➕ Agregar Plato Nuevo</h2>
-          <div class="grid sm:grid-cols-2 gap-2">
-            <input id="newName" type="text" placeholder="Nombre del plato" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <select id="newCat" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember"></select>
-            <input id="newPrice" type="number" step="500" placeholder="Precio CLP" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <input id="newBadge" type="text" placeholder="Etiqueta (ej: Nuevo, Favorito)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <input id="newImg" type="text" placeholder="URL de la foto (opcional)" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <textarea id="newDesc" placeholder="Descripción breve" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember" rows="2"></textarea>
-          </div>
-          <button onclick="agregarPlato()" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Agregar al Catálogo</button>
-          <p class="text-[10px] text-stone-500">Los modificadores (punto de cocción, extras, etc.) para platos complejos se configuran directo en Firestore o pídenos ayuda — esta vista cubre precio, stock y datos básicos.</p>
-        </div>
-
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
-          <h2 class="font-bold text-sm text-white mb-1">🏷️ Catálogo (precio, stock y categoría en vivo)</h2>
-          <div id="productosList" class="divide-y divide-white/5"></div>
-        </div>
-      </section>
-
-      <!-- TAB: CLIENTES (CRM) -->
-      <section id="tab-clientes" class="panel-pane space-y-4 hidden">
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <h2 class="font-bold text-sm text-white">👥 Clientes que han pedido delivery</h2>
-            <div class="flex gap-3 text-[11px] text-stone-400">
-              <span>🆕 Nuevo</span>
-              <span>⭐ Frecuente</span>
-              <span>✅ Activo</span>
-              <span>💤 Inactivo (+45 días)</span>
+    <!-- --------------------------------------------------------------------- -->
+    <!-- 1. SIDEBAR LATERAL PROFESIONAL (ESTRUCTURA TIPO SAAS / OLACLICK) -->
+    <!-- --------------------------------------------------------------------- -->
+    <aside id="mainSidebar" class="fixed top-0 bottom-0 left-0 w-64 bg-sidebar text-slate-300 z-50 flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 md:static md:h-screen shrink-0 border-r border-slate-800">
+      
+      <!-- HEADER DEL SIDEBAR: BRAND Y NOMBRE DEL LOCAL -->
+      <div>
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center text-xl font-black shadow-md shadow-brand-500/20">
+              🦉
+            </div>
+            <div class="overflow-hidden">
+              <h1 class="text-sm font-black text-white tracking-wide truncate">Zoco OS</h1>
+              <p id="restNameSidebar" class="text-[11px] text-slate-400 truncate font-semibold">Fravioli, Street Food</p>
             </div>
           </div>
-          <input id="clientesSearch" type="text" placeholder="Buscar por nombre o teléfono..." oninput="renderClientesList()" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-          <p class="text-[10px] text-stone-500">Se crean solos cuando alguien pide por delivery desde la carta. Los pedidos de mesa no quedan fichados (no se les pide teléfono).</p>
+          <button onclick="toggleSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
+            ✕
+          </button>
         </div>
 
-        <div class="bg-warmcard rounded-2xl border border-amber-700/40 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-amber-300">📣 Campaña de Reconquista (clientes 💤 inactivos)</h2>
-          <p class="text-[11px] text-stone-400">Mensaje sugerido — edítalo si quieres, se usa para todos los botones "Enviar" de abajo.</p>
-          <textarea id="reconquistaMsg" rows="2" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember"></textarea>
-          <div id="reconquistaList" class="space-y-2"></div>
-        </div>
+        <!-- LISTA DE NAVEGACIÓN PRINCIPAL -->
+        <nav class="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-270px)]">
+          
+          <!-- PEDIDOS PDV -->
+          <button onclick="switchTab('pedidos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="pedidos">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📋</span>
+              <span>Pedidos PDV</span>
+            </div>
+            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono font-bold">Caja</span>
+          </button>
 
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
-          <div id="clientesList" class="divide-y divide-white/5"></div>
-        </div>
-      </section>
+          <!-- COCINA KDS -->
+          <button onclick="switchTab('cocina')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="cocina">
+            <div class="flex items-center gap-3">
+              <span class="text-base">👨‍🍳</span>
+              <span>Cocina (KDS)</span>
+            </div>
+            <span id="badgeKdsCount" class="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-mono font-black animate-pulse">0</span>
+          </button>
 
-      <!-- TAB: DESCUENTOS -->
-      <section id="tab-descuentos" class="panel-pane space-y-4 hidden">
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-white">➕ Nuevo Código de Descuento</h2>
-          <div class="grid sm:grid-cols-2 gap-2">
-            <input id="newDescCodigo" type="text" placeholder="Código (ej: BIENVENIDO10)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-ember">
-            <select id="newDescTipo" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-              <option value="porcentaje">% Porcentaje</option>
-              <option value="monto">$ Monto fijo</option>
-            </select>
-            <input id="newDescValor" type="number" placeholder="Valor (ej: 10 o 2000)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <input id="newDescMinimo" type="number" step="500" placeholder="Pedido mínimo (opcional)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <input id="newDescUsosMax" type="number" placeholder="Límite de usos (opcional)" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+          <!-- VENTAS -->
+          <button onclick="switchTab('ventas')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="ventas">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📊</span>
+              <span>Ventas & Caja</span>
+            </div>
+          </button>
+
+          <!-- MENÚ Y CARTA -->
+          <button onclick="switchTab('productos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="productos">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🍽️</span>
+              <span>Menú & Carta</span>
+            </div>
+            <span id="badgePlatosCount" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono">0</span>
+          </button>
+
+          <!-- CATEGORÍAS -->
+          <button onclick="switchTab('categorias')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="categorias">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🗂️</span>
+              <span>Categorías</span>
+            </div>
+          </button>
+
+          <!-- CLIENTES CRM -->
+          <button onclick="switchTab('clientes')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="clientes">
+            <div class="flex items-center gap-3">
+              <span class="text-base">👥</span>
+              <span>Clientes (CRM)</span>
+            </div>
+          </button>
+
+          <!-- MARKETING / CUPONES -->
+          <button onclick="switchTab('descuentos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="descuentos">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🏷️</span>
+              <span>Descuentos</span>
+            </div>
+          </button>
+
+          <!-- CONFIGURACIÓN / NEGOCIO -->
+          <button onclick="switchTab('negocio')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="negocio">
+            <div class="flex items-center gap-3">
+              <span class="text-base">⚙️</span>
+              <span>Configuración</span>
+            </div>
+          </button>
+
+        </nav>
+      </div>
+
+      <!-- FOOTER DEL SIDEBAR: ESTADO DEL MENÚ EN VIVO + ACCESOS RÁPIDOS -->
+      <div class="p-3 border-t border-slate-800 space-y-2 bg-slate-950/40">
+        
+        <!-- INTERRUPTOR OPERATIVO DEL LOCAL (IGUAL QUE OLACLICK) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2 overflow-hidden">
+            <span id="storeStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+            <div class="overflow-hidden">
+              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Menú Digital</div>
+              <div id="storeStatusText" class="text-xs font-extrabold text-white truncate">Abierto</div>
+            </div>
           </div>
-          <button onclick="agregarDescuento()" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Crear Código</button>
+          <button id="btnToggleStoreQuick" onclick="toggleStoreStatusQuick()" class="px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer transition-all" title="Abrir o pausar recepción de pedidos">
+            Pausar
+          </button>
         </div>
 
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
-          <h2 class="font-bold text-sm text-white mb-1">🏷️ Códigos Activos</h2>
-          <div id="descuentosList" class="divide-y divide-white/5"></div>
+        <!-- ENLACES RÁPIDOS A CARTA Y QR -->
+        <div class="grid grid-cols-2 gap-1.5 pt-1">
+          <a href="index.html" target="_blank" class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all">
+            <span>📱</span>
+            <span>Ver Carta ↗</span>
+          </a>
+          <a href="generador-qrs.html" target="_blank" class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all">
+            <span>🏷️</span>
+            <span>QR Mesas ↗</span>
+          </a>
         </div>
-      </section>
 
-      <!-- TAB: CATEGORÍAS -->
-      <section id="tab-categorias" class="panel-pane space-y-4 hidden">
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
-          <h2 class="font-bold text-sm text-white">➕ Nueva Categoría</h2>
-          <div class="grid grid-cols-[60px_1fr_auto] gap-2">
-            <input id="newCatIcon" type="text" placeholder="🍔" maxlength="4" class="bg-darkwood border border-white/10 rounded-xl px-2 py-2 text-xs text-white text-center focus:outline-none focus:border-ember">
-            <input id="newCatName" type="text" placeholder="Nombre de la categoría" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
-            <button onclick="agregarCategoria()" class="px-4 py-2 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Agregar</button>
+        <!-- LOGOUT -->
+        <button onclick="firebase.auth().signOut()" class="w-full flex items-center justify-center gap-2 py-1.5 text-[11px] font-bold text-slate-500 hover:text-red-400 transition-colors cursor-pointer">
+          <span>🚪 Cerrar Sesión</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- --------------------------------------------------------------------- -->
+    <!-- 2. CONTENIDO PRINCIPAL DINÁMICO -->
+    <!-- --------------------------------------------------------------------- -->
+    <div class="flex-1 flex flex-col min-h-screen overflow-y-auto">
+
+      <!-- TOPBAR SUPERIOR (MÓVIL / ESCRITORIO) -->
+      <header class="bg-white border-b border-borderLight px-5 py-3 sticky top-0 z-30 flex items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button onclick="toggleSidebar(true)" class="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm">
+            ☰
+          </button>
+          <div>
+            <h2 id="topBarTitle" class="text-base font-black text-slate-900 tracking-tight">Punto de Venta (PDV)</h2>
+            <p id="topBarSubtitle" class="text-xs text-slate-500 hidden sm:block">Toma de pedidos en mostrador y mesas</p>
           </div>
         </div>
 
-        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
-          <h2 class="font-bold text-sm text-white mb-1">🗂️ Categorías Activas</h2>
-          <div id="categoriasList" class="divide-y divide-white/5"></div>
-        </div>
-      </section>
+        <!-- ACCIONES RÁPIDAS TOPBAR -->
+        <div class="flex items-center gap-2.5 text-xs font-bold">
+          
+          <!-- INDICADOR EN VIVO FIRESTORE -->
+          <div class="hidden sm:flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full text-[11px]">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Firestore En Vivo</span>
+          </div>
 
-    </main>
+          <!-- AUDIO TOGGLE -->
+          <button id="btnSoundToggle" onclick="toggleAudio()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 border border-slate-200 cursor-pointer transition-colors" title="Activar/Silenciar sonido de comanda">
+            <span id="soundIcon">🔔</span>
+            <span id="soundLabel" class="hidden sm:inline">Sonido ON</span>
+          </button>
+
+          <!-- PANTALLA COMPLETA -->
+          <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer" title="Modo Pantalla Completa">
+            ⛶
+          </button>
+
+          <!-- ENLACE PANTALLA COCINA INDEPENDIENTE -->
+          <a href="cocina.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold border border-brand-200 flex items-center gap-1 transition-colors" title="Abrir KDS exclusivo para tablet de cocina">
+            <span>👨‍🍳</span>
+            <span class="hidden md:inline">KDS Pantalla Completa ↗</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- MAIN CONTAINER -->
+      <main class="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: PEDIDOS PDV (PUNTO DE VENTA Y CAJA / GARZÓN) -->
+        <!-- =================================================================== -->
+        <section id="tab-pedidos" class="panel-pane space-y-5">
+          
+          <div class="grid lg:grid-cols-12 gap-5 items-start">
+            
+            <!-- COLUMNA IZQUIERDA: CATÁLOGO TÁCTIL (7 COLS) -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-borderLight p-4 md:p-5 space-y-4 shadow-soft">
+              
+              <!-- BUSCADOR RÁPIDO -->
+              <div class="relative">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+                <input id="pedidoBuscar" type="text" placeholder="Buscar plato, trago o acompañamiento..." oninput="renderPedidoCatalogo()" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-brand-600 focus:bg-white transition-all">
+              </div>
+
+              <!-- CHIPS DE CATEGORÍAS DESLIZABLES (TIPO OLACLICK / UBER EATS) -->
+              <div id="pdvCategoryChips" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <!-- Inyección JS: Todos, Hamburguesas, Bebidas, etc. -->
+              </div>
+
+              <!-- GRID / LISTADO DE PRODUCTOS TÁCTILES -->
+              <div id="pedidoCatalogo" class="grid sm:grid-cols-2 gap-2.5 max-h-[540px] overflow-y-auto pr-1">
+                <!-- Inyección JS -->
+              </div>
+
+            </div>
+
+            <!-- COLUMNA DERECHA: REGISTRO DE COMANDA (5 COLS) -->
+            <div class="lg:col-span-5 bg-white rounded-2xl border border-borderLight p-4 md:p-5 space-y-4 shadow-soft sticky top-20">
+              
+              <div class="flex items-center justify-between border-b border-borderLight pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">🧾</span>
+                  <h3 class="font-extrabold text-sm text-slate-900">Comanda en Preparación</h3>
+                </div>
+                <button onclick="vaciarCarritoPedido()" class="text-[11px] font-bold text-slate-400 hover:text-red-500 cursor-pointer">
+                  Vaciar
+                </button>
+              </div>
+
+              <!-- SELECTOR DE DESTINO: MESA VS DELIVERY -->
+              <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-xl">
+                <button id="btnPedidoMesa" onclick="setPedidoTipo('mesa')" class="py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-900 shadow-sm">
+                  🍽️ Mesa / Local
+                </button>
+                <button id="btnPedidoDelivery" onclick="setPedidoTipo('delivery')" class="py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-900">
+                  🛵 Delivery / Llevar
+                </button>
+              </div>
+
+              <!-- BOTONES RÁPIDOS DE MESAS POPULARES -->
+              <div id="mesaQuickChips" class="space-y-1.5">
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Atajo Rápido de Mesa</div>
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+                  <button onclick="setDestinoRapido('Mesa 1')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 1</button>
+                  <button onclick="setDestinoRapido('Mesa 2')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 2</button>
+                  <button onclick="setDestinoRapido('Mesa 3')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 3</button>
+                  <button onclick="setDestinoRapido('Mesa 4')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mesa 4</button>
+                  <button onclick="setDestinoRapido('Mostrador')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Mostrador</button>
+                  <button onclick="setDestinoRapido('Barra')" class="mesa-chip px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 border border-slate-200 shrink-0">Barra</button>
+                </div>
+                <input id="pedidoDestino" type="text" placeholder="Ej: Mesa 5, Terraza 2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+              </div>
+
+              <!-- CAMPOS DE CLIENTE DELIVERY -->
+              <div id="pedidoClienteFields" class="hidden space-y-2">
+                <input id="pedidoClienteNombre" type="text" placeholder="Nombre del cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+                <input id="pedidoClienteTelefono" type="text" placeholder="WhatsApp (ej: +56912345678)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+              </div>
+
+              <!-- CARRITO DE ÍTEMS EN VIVO -->
+              <div id="pedidoCarrito" class="space-y-2 max-h-[220px] overflow-y-auto pr-1 divide-y divide-slate-100">
+                <div class="py-8 text-center text-slate-400 space-y-1">
+                  <div class="text-2xl">🍽️</div>
+                  <p class="text-xs font-semibold">Toca cualquier plato de la izquierda para agregarlo.</p>
+                </div>
+              </div>
+
+              <!-- MÉTODO DE PAGO Y NOTAS -->
+              <div class="space-y-2 pt-2 border-t border-borderLight">
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pago</div>
+                <select id="pedidoPago" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600"></select>
+                <input id="pedidoNotas" type="text" placeholder="Notas para cocina (ej: Sin cebolla, extra salsa)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+              </div>
+
+              <!-- TOTALES Y BOTÓN DISPARADOR -->
+              <div class="space-y-3 pt-3 border-t border-borderLight">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-500">Total a Pagar</span>
+                  <span id="pedidoTotal" class="text-xl font-black text-slate-900 font-mono">$0</span>
+                </div>
+
+                <button onclick="confirmarPedidoManual()" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]">
+                  <span>🔔</span>
+                  <span>Enviar Comanda a Cocina</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 2: PANTALLA DE COCINA KDS INTEGRADA (MULTI-ESTACIÓN OLACLICK) -->
+        <!-- =================================================================== -->
+        <section id="tab-cocina" class="panel-pane space-y-4 hidden">
+          
+          <!-- TOP BAR DE ESTACIONES Y ACCIONES DE COCINA (IDÉNTICO A OLACLICK) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-wrap items-center justify-between gap-3 shadow-soft">
+            
+            <!-- SELECTOR DE ESTACIÓN: COCINA PRINCIPAL / BARRA / TODAS -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+              <button onclick="setKdsStationFilter('cocina')" id="btnStationCocina" class="station-tab-btn px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm flex items-center gap-1.5">
+                <span>🍳</span>
+                <span>Cocina Principal</span>
+                <span id="badgeStationCocina" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+              <button onclick="setKdsStationFilter('barra')" id="btnStationBarra" class="station-tab-btn px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
+                <span>🍸</span>
+                <span>Barra / Bebidas</span>
+                <span id="badgeStationBarra" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+              <button onclick="setKdsStationFilter('todas')" id="btnStationTodas" class="station-tab-btn px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
+                <span>⚡</span>
+                <span>Todas</span>
+                <span id="badgeStationTodas" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+              </button>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN MASIVA (MARCAR TODAS, REFRESH, SIMULAR) -->
+            <div class="flex items-center gap-2">
+              <button onclick="marcarTodasListas()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
+                <span>✓</span>
+                <span>Marcar todas listas</span>
+              </button>
+              <button onclick="injectDemoOrder()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer" title="Simular comanda para pruebas">
+                <span>+</span>
+                <span>Simular Comanda</span>
+              </button>
+              <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer" title="Refrescar">
+                ↺
+              </button>
+            </div>
+
+          </div>
+
+          <!-- SUBHEADER CON STATUS DE ACTUALIZACIÓN EN VIVO -->
+          <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+            <p>Aquí es donde los pedidos en estado <strong class="text-blue-600">"En preparación"</strong> entran a la cocina o barra.</p>
+            <div class="flex items-center gap-2 text-[11px] font-mono">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>Recepción automática en tiempo real</span>
+            </div>
+          </div>
+
+          <!-- TABLERO KDS KANBAN (NUEVOS, PREPARANDO, LISTOS) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[500px]">
+            
+            <!-- COLUMNA 1: NUEVOS / POR CONFIRMAR -->
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-col space-y-3 shadow-soft">
+              <div class="flex items-center justify-between border-b border-borderLight pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-slate-900">1. Nuevos / Entrantes</h3>
+                </div>
+                <span id="kdsCountNuevos" class="bg-amber-100 text-amber-800 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+              </div>
+              <div id="kdsColNuevos" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
+                <!-- Inyección JS -->
+              </div>
+            </div>
+
+            <!-- COLUMNA 2: EN FUEGO / PREPARACIÓN -->
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-col space-y-3 shadow-soft">
+              <div class="flex items-center justify-between border-b border-borderLight pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-slate-900">2. En Preparación</h3>
+                </div>
+                <span id="kdsCountCocina" class="bg-blue-100 text-blue-800 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+              </div>
+              <div id="kdsColCocina" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
+                <!-- Inyección JS -->
+              </div>
+            </div>
+
+            <!-- COLUMNA 3: LISTOS PARA SERVIR -->
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-col space-y-3 shadow-soft">
+              <div class="flex items-center justify-between border-b border-borderLight pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-slate-900">3. Listos / Servir</h3>
+                </div>
+                <span id="kdsCountListos" class="bg-emerald-100 text-emerald-800 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+              </div>
+              <div id="kdsColListos" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
+                <!-- Inyección JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 3: VENTAS & MÉTRICAS (CAJA) -->
+        <!-- =================================================================== -->
+        <section id="tab-ventas" class="panel-pane space-y-5 hidden">
+          
+          <!-- FILTRO DE PERÍODO -->
+          <div class="flex gap-2">
+            <button class="periodo-btn active" data-periodo="0" onclick="setPeriodoVentas(0)">Hoy</button>
+            <button class="periodo-btn" data-periodo="7" onclick="setPeriodoVentas(7)">Últimos 7 días</button>
+            <button class="periodo-btn" data-periodo="30" onclick="setPeriodoVentas(30)">Últimos 30 días</button>
+          </div>
+
+          <!-- KPIS PRINCIPALES -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Facturado</div>
+              <div class="text-2xl font-black text-brand-600 mt-1 font-mono" id="kpiTotalVendido">$0</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Comandas Totales</div>
+              <div class="text-2xl font-black text-slate-900 mt-1 font-mono" id="kpiPedidos">0</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket Promedio</div>
+              <div class="text-2xl font-black text-slate-900 mt-1 font-mono" id="kpiTicketProm">$0</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mesa vs Delivery</div>
+              <div class="text-sm font-black text-slate-900 mt-2.5 font-mono" id="kpiMesaDelivery">0 mesa / 0 delivery</div>
+            </div>
+          </div>
+
+          <!-- PLATOS MÁS PEDIDOS -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🏆 Platos Más Vendidos</h3>
+            <div id="topProductosList" class="divide-y divide-slate-100">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 4: PRODUCTOS & CARTA -->
+        <!-- =================================================================== -->
+        <section id="tab-productos" class="panel-pane space-y-5 hidden">
+          
+          <!-- AGREGAR PLATO NUEVO -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">➕ Agregar Plato o Trago Nuevo</h3>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <input id="newName" type="text" placeholder="Nombre del plato (ej: Hamburguesa Doble Queso)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
+              <select id="newCat" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white"></select>
+              <input id="newPrice" type="number" step="500" placeholder="Precio CLP (ej: 8900)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
+              <input id="newBadge" type="text" placeholder="Etiqueta opcional (ej: 🔥 Más Pedido, Nuevo)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
+              <textarea id="newDesc" placeholder="Descripción breve de ingredientes..." class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white" rows="2"></textarea>
+
+              <div class="sm:col-span-2 space-y-2">
+                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Foto del Plato</label>
+                <div class="flex items-center gap-3">
+                  <div id="newImgPreview" class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xl shrink-0 overflow-hidden">📷</div>
+                  <label class="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold text-center cursor-pointer transition-colors">
+                    📁 Subir foto desde el celular o computador
+                    <input id="newImgFile" type="file" accept="image/*" class="hidden" onchange="procesarImagenNueva(event)">
+                  </label>
+                </div>
+                <input id="newImg" type="text" placeholder="O pega una URL de foto web (opcional)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600">
+              </div>
+            </div>
+            <button onclick="agregarPlato()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs tracking-wide shadow-md shadow-brand-600/20 cursor-pointer transition-all">
+              + Guardar Plato en la Carta
+            </button>
+          </div>
+
+          <!-- LISTA DE PRODUCTOS ACTIVOS -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🏷️ Carta en Vivo (Precios, Stock y Modificaciones)</h3>
+            <div id="productosList" class="divide-y divide-slate-100">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 5: CATEGORÍAS -->
+        <!-- =================================================================== -->
+        <section id="tab-categorias" class="panel-pane space-y-5 hidden">
+          
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">➕ Nueva Categoría</h3>
+            <div class="grid grid-cols-[60px_1fr_auto] gap-2">
+              <input id="newCatIcon" type="text" placeholder="🍔" maxlength="4" class="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs text-slate-900 text-center font-bold focus:outline-none focus:border-brand-600">
+              <input id="newCatName" type="text" placeholder="Nombre (ej: Hamburguesas Smash, Tragos)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+              <button onclick="agregarCategoria()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                + Agregar
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🗂️ Categorías Activas</h3>
+            <div id="categoriasList" class="divide-y divide-slate-100">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 6: CLIENTES (CRM) -->
+        <!-- =================================================================== -->
+        <section id="tab-clientes" class="panel-pane space-y-5 hidden">
+          
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h3 class="font-extrabold text-sm text-slate-900">👥 Base de Clientes Frecuentes</h3>
+              <div class="flex gap-2 text-[11px] text-slate-500 font-medium">
+                <span>🆕 Nuevo</span>
+                <span>⭐ Frecuente</span>
+                <span>💤 Inactivo (+45 días)</span>
+              </div>
+            </div>
+            <input id="clientesSearch" type="text" placeholder="Buscar por nombre o teléfono..." oninput="renderClientesList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 font-medium">
+          </div>
+
+          <!-- CAMPAÑA DE RECONQUISTA WHATSAPP -->
+          <div class="bg-amber-50 rounded-2xl border border-amber-200 p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-amber-900">📣 Campaña de Reconquista WhatsApp (Clientes Inactivos)</h3>
+            <p class="text-xs text-amber-700">Envía un mensaje con 1 toque por WhatsApp a clientes que llevan más de 45 días sin pedir.</p>
+            <textarea id="reconquistaMsg" rows="2" class="w-full bg-white border border-amber-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600"></textarea>
+            <div id="reconquistaList" class="space-y-2">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <div id="clientesList" class="divide-y divide-slate-100">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 7: DESCUENTOS Y CUPONES -->
+        <!-- =================================================================== -->
+        <section id="tab-descuentos" class="panel-pane space-y-5 hidden">
+          
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">➕ Crear Nuevo Cupón de Descuento</h3>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <input id="newDescCodigo" type="text" placeholder="CÓDIGO (ej: PROMO15, BIENVENIDO)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 uppercase font-bold focus:outline-none focus:border-brand-600">
+              <select id="newDescTipo" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+                <option value="porcentaje">% Porcentaje de Descuento</option>
+                <option value="monto">$ Monto Fijo en Pesos</option>
+              </select>
+              <input id="newDescValor" type="number" placeholder="Valor (ej: 15 o 3000)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+              <input id="newDescMinimo" type="number" step="500" placeholder="Pedido mínimo opcional (ej: 10000)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+            </div>
+            <button onclick="agregarDescuento()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+              + Activar Cupón
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🏷️ Cupones Activos</h3>
+            <div id="descuentosList" class="divide-y divide-slate-100">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 8: NEGOCIO, HORARIOS Y CONFIGURACIÓN -->
+        <!-- =================================================================== -->
+        <section id="tab-negocio" class="panel-pane space-y-5 hidden">
+          
+          <!-- ESTADO Y PAUSA MANUAL -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
+              <span>🚦 Estado de Recepción de Pedidos</span>
+              <span id="estadoLabel" class="text-xs font-mono font-bold"></span>
+            </h3>
+            <p class="text-xs text-slate-500">Usa estos botones para abrir o cerrar de emergencia (lluvia, feriado, stock agotado). En el día a día se abre y cierra solo según el horario de abajo.</p>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <button id="btnAbrir" onclick="setPausaManual(false)" class="py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                🟢 Quitar Pausa (Reanudar Menú)
+              </button>
+              <button id="btnPausar" onclick="setPausaManual(true)" class="py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                ⏸️ Pausar Menú Inmediatamente
+              </button>
+            </div>
+          </div>
+
+          <!-- HORARIO SEMANAL -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🗓️ Horario Semanal Automático</h3>
+            <div id="horarioForm" class="space-y-2">
+              <!-- Inyección JS -->
+            </div>
+            <button onclick="guardarHorario()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+              Guardar Horario Automático
+            </button>
+          </div>
+
+          <!-- BANNER DE OFERTAS EN VIVO -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">📢 Banner de Oferta en la Carta</h3>
+            <p class="text-xs text-slate-500">Aparece arriba de la carta del comensal. Déjalo en blanco para ocultarlo.</p>
+            <div class="flex gap-2">
+              <input id="promoInput" type="text" placeholder="Ej: 🔥 15% de descuento en delivery hoy" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+              <button onclick="publicarPromo()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                Publicar
+              </button>
+            </div>
+          </div>
+
+          <!-- PALETA DE COLORES -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+            <h3 class="font-extrabold text-sm text-slate-900">🎨 Paleta de Acento del Menú</h3>
+            <div id="paletaSelector" class="grid grid-cols-3 gap-3">
+              <!-- Inyección JS -->
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
   </div>
 
+  <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
+  <div id="printArea" class="hidden"></div>
+
+  <!-- ========================================================================= -->
+  <!-- ESTILOS ADICIONALES Y COMPONENTES TÁCTILES -->
+  <!-- ========================================================================= -->
   <style>
-    .panel-tab-btn {
-      padding: 8px 14px;
-      border-radius: 14px;
+    .nav-btn.active {
+      background-color: #7C3AED !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px -3px rgba(124, 58, 237, 0.4);
+    }
+    .periodo-btn {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .periodo-btn.active {
+      background: #7C3AED;
+      color: #FFFFFF;
+      border-color: #7C3AED;
+      box-shadow: 0 4px 12px -3px rgba(124, 58, 237, 0.35);
+    }
+    .cat-chip {
+      padding: 6px 14px;
+      border-radius: 9999px;
       font-size: 11px;
       font-weight: 700;
       white-space: nowrap;
-      color: #d6d3d1;
-      background: #221C18;
-      border: 1px solid rgba(255,255,255,0.1);
+      color: #475569;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
       cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
     }
-    .panel-tab-btn.active {
-      background: #C85A32;
-      color: #fff;
-      border-color: #C85A32;
+    .cat-chip:hover {
+      background: #EDE9FE;
+      color: #7C3AED;
     }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .cat-chip.active {
+      background: #7C3AED;
+      color: #FFFFFF;
+      border-color: #7C3AED;
+      box-shadow: 0 4px 12px -3px rgba(124, 58, 237, 0.35);
+    }
+    .station-tab-btn.active {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.1) !important;
+    }
   </style>
 
+  <!-- ========================================================================= -->
+  <!-- LÓGICA DE NEGOCIO, FIRESTORE Y AUDIO SINTETIZADO -->
+  <!-- ========================================================================= -->
   <script>
     const CFG = window.RESTAURANTE_CONFIG;
     let categorias = [];
     let productos = [];
     let clientes = [];
     let descuentos = [];
+    let pedidos = [];
+    let periodoVentas = 0;
+    let pedidoCarrito = [];
+    let pedidoTipo = 'mesa';
+    let imagenNuevaDataUrl = null;
+    let currentCatFilter = 'todas';
+    let kdsStationFilter = 'cocina'; // 'cocina', 'barra', 'todas'
+    let audioEnabled = true;
+    let audioCtx = null;
+    let knownOrderIds = new Set();
+    let currentStoreOpen = true;
 
-    document.getElementById('loginBrandLabel').textContent = CFG.nombre + ' · Carta, precios, stock y pedidos en vivo.';
-    document.getElementById('brandName').textContent = 'Panel · ' + CFG.nombre;
+    // --- SINTETIZADOR WEB AUDIO DE CAMPANA DE COCINA (DING-DONG) ---
+    function playKitchenChime() {
+      if (!audioEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        // Tono 1 (880 Hz - A5)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, now);
+        gain1.gain.setValueAtTime(0.25, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.45);
+
+        // Tono 2 (1174.66 Hz - D6)
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1174.66, now + 0.12);
+        gain2.gain.setValueAtTime(0.3, now + 0.12);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.75);
+      } catch (e) {
+        console.warn('Audio no inicializado aún.', e);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      document.getElementById('soundIcon').textContent = audioEnabled ? '🔔' : '🔕';
+      document.getElementById('soundLabel').textContent = audioEnabled ? 'Sonido ON' : 'Silencio';
+      if (audioEnabled) playKitchenChime();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen().catch(err => console.log(err));
+      }
+    }
+
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('mainSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // --- FORMATEO ---
+    function fmt(n) {
+      return '$' + Number(n || 0).toLocaleString('es-CL');
+    }
+
+    function getTimeAgo(date) {
+      const diffMin = Math.floor((Date.now() - new Date(date).getTime()) / 60000);
+      if (diffMin <= 0) return 'Hace instantes';
+      if (diffMin === 1) return 'Hace 1 min';
+      return `Hace ${diffMin} min`;
+    }
+
+    // --- TABS & NAVEGACIÓN ---
+    const TAB_TITLES = {
+      pedidos: { title: 'Punto de Venta (PDV)', sub: 'Toma de pedidos en mesa y mostrador' },
+      cocina: { title: 'Pantalla de Cocina (KDS)', sub: 'Comandas en preparación, timers y barra' },
+      ventas: { title: 'Ventas & Caja Diaria', sub: 'Métricas de facturación, pedidos y ticket promedio' },
+      productos: { title: 'Menú & Platos', sub: 'Precios, fotos, stock y disponibilidad' },
+      categorias: { title: 'Categorías', sub: 'Organización del catálogo gastronómico' },
+      clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
+      descuentos: { title: 'Descuentos & Cupones', sub: 'Promociones para la carta online' },
+      negocio: { title: 'Configuración & Horarios', sub: 'Apertura automática, colores y estado del local' }
+    };
+
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
+      
+      const meta = TAB_TITLES[tab] || { title: 'Panel Zoco', sub: '' };
+      document.getElementById('topBarTitle').textContent = meta.title;
+      document.getElementById('topBarSubtitle').textContent = meta.sub;
+
+      toggleSidebar(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (tab === 'cocina') renderKdsBoard();
+    }
 
     // --- LOGIN ---
+    document.getElementById('restNameSidebar').textContent = CFG.nombre;
+    document.getElementById('loginBrandLabel').textContent = CFG.nombre + ' · Gestión Integral Gastronómica';
+    document.title = 'Zoco · ' + CFG.nombre;
+
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -246,7 +947,6 @@
       firebase.auth().signInWithEmailAndPassword(email, pass).catch((err) => {
         errEl.textContent = 'Correo o contraseña incorrectos.';
         errEl.classList.remove('hidden');
-        console.error(err);
       });
     });
 
@@ -268,39 +968,65 @@
       }
     });
 
-    function fmt(n) {
-      return '$' + Number(n || 0).toLocaleString('es-CL');
-    }
-
-    // --- TABS ---
-    function switchTab(tab) {
-      document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-      document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
-    }
-    switchTab('negocio');
-
-    // --- SUSCRIPCIONES EN VIVO ---
-    function subscribeAll() {
+    // --- SUSCRIPCIONES EN TIEMPO REAL ---
+    let horarioCargado = false;
+    function subscribeAll(forceRefresh) {
+      // Configuración del Restaurante
       window.restRef().onSnapshot(snap => {
         const data = snap.data() || {};
-        const abierto = data.abierto !== false;
-        document.getElementById('estadoLabel').innerHTML = abierto
-          ? '<span class="text-emerald-400">🟢 ABIERTO</span>'
-          : '<span class="text-red-400">⏸️ EN PAUSA</span>';
+        currentStoreOpen = window.calcularAbiertoAhora(data) && !data.pausaManual;
+        const pausado = !!data.pausaManual;
+
+        const dot = document.getElementById('storeStatusDot');
+        const text = document.getElementById('storeStatusText');
+        const quickBtn = document.getElementById('btnToggleStoreQuick');
+        const label = document.getElementById('estadoLabel');
+
+        if (pausado) {
+          dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 shrink-0';
+          text.textContent = 'Pausado (Manual)';
+          quickBtn.textContent = 'Reanudar';
+          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer';
+          label.innerHTML = '<span class="text-red-500">⏸️ PAUSADO A MANO</span>';
+        } else if (currentStoreOpen) {
+          dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0';
+          text.textContent = 'Menú Abierto';
+          quickBtn.textContent = 'Pausar';
+          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
+          label.innerHTML = '<span class="text-emerald-600">🟢 ABIERTO (según horario)</span>';
+        } else {
+          dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500 shrink-0';
+          text.textContent = 'Cerrado (Horario)';
+          quickBtn.textContent = 'Abrir Forzado';
+          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
+          label.innerHTML = '<span class="text-slate-500">🌙 CERRADO (fuera de horario)</span>';
+        }
+
         document.getElementById('promoInput').value = data.promo || '';
+        if (!horarioCargado) {
+          horarioCargado = true;
+          renderHorarioForm(data.horario || {});
+        }
+        renderPaletaSelector(data.paleta || 'brasa');
       });
 
+      // Categorías
       window.categoriasRef().orderBy('orden').onSnapshot(snap => {
         categorias = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
         renderCategoriasList();
         renderCatSelect();
+        renderPdvCategoryChips();
       });
 
+      // Platos / Catálogo
       window.platosRef().orderBy('orden').onSnapshot(snap => {
         productos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        document.getElementById('badgePlatosCount').textContent = productos.length;
         renderProductosList();
+        renderPedidoCatalogo();
       });
 
+      // Clientes CRM
       window.clientesRef().orderBy('ultimaCompra', 'desc').onSnapshot(snap => {
         clientes = snap.docs.map(d => ({
           docId: d.id,
@@ -311,208 +1037,659 @@
         renderReconquistaList();
       });
 
+      // Descuentos
       window.descuentosRef().onSnapshot(snap => {
         descuentos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
         renderDescuentosList();
       });
+
+      // Pedidos en Vivo (Para KDS y Ventas)
+      window.pedidosRef().orderBy('createdAt', 'desc').limit(250).onSnapshot(snap => {
+        const prevIds = knownOrderIds;
+        const nextIds = new Set();
+        let hasNewOrder = false;
+
+        pedidos = snap.docs.map(d => {
+          const data = d.data();
+          nextIds.add(d.id);
+          if (data.status === 'nuevo' && !prevIds.has(d.id)) hasNewOrder = true;
+          return {
+            docId: d.id,
+            ...data,
+            createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : new Date()
+          };
+        });
+
+        knownOrderIds = nextIds;
+        if (hasNewOrder && prevIds.size > 0) playKitchenChime();
+
+        renderVentas();
+        renderKdsBoard();
+      });
     }
 
-    // --- DESCUENTOS ---
-    function renderDescuentosList() {
-      const box = document.getElementById('descuentosList');
-      if (descuentos.length === 0) {
-        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no has creado códigos de descuento.</p>';
-        return;
-      }
-      box.innerHTML = descuentos.map(d => {
-        const valorTxt = d.tipo === 'porcentaje' ? `${d.valor}%` : fmt(d.valor);
-        const usos = d.usosMax ? `${d.usosActuales || 0}/${d.usosMax} usos` : `${d.usosActuales || 0} usos (sin límite)`;
-        const activo = d.activo !== false;
-        return `
-          <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
-            <div class="flex-1 min-w-[140px]">
-              <div class="text-gold font-mono font-bold">${d.docId}</div>
-              <div class="text-[10px] text-stone-500">${valorTxt} de descuento · ${usos}${d.minimoCompra ? ' · mín. ' + fmt(d.minimoCompra) : ''}</div>
-            </div>
-            <button onclick="toggleDescuentoActivo('${d.docId}', ${!activo})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold ${activo ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-red-950 text-red-300 border border-red-800'}">
-              ${activo ? '🟢 Activo' : '🔴 Desactivado'}
-            </button>
-            <button onclick="eliminarDescuento('${d.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold px-1">Eliminar</button>
-          </div>
-        `;
-      }).join('');
+    // --- ACCESO RÁPIDO TOGGLE ESTADO DEL RESTAURANTE ---
+    function toggleStoreStatusQuick() {
+      window.restRef().get().then(snap => {
+        const data = snap.data() || {};
+        const isPaused = !!data.pausaManual;
+        window.restRef().set({ pausaManual: !isPaused }, { merge: true });
+      });
     }
 
-    function toggleDescuentoActivo(docId, nextValue) {
-      window.descuentosRef().doc(docId).update({ activo: nextValue });
+    // =========================================================================
+    // SECCIÓN 1: PEDIDOS PDV (PUNTO DE VENTA Y CAJA)
+    // =========================================================================
+    document.getElementById('pedidoPago').innerHTML = CFG.metodosPago.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
+
+    function renderPdvCategoryChips() {
+      const container = document.getElementById('pdvCategoryChips');
+      const allBtn = `<button onclick="filterPdvCategory('todas')" class="cat-chip ${currentCatFilter === 'todas' ? 'active' : ''}">✨ Todos</button>`;
+      const catBtns = categorias.map(c => `
+        <button onclick="filterPdvCategory('${c.id}')" class="cat-chip ${currentCatFilter === c.id ? 'active' : ''}">
+          <span>${c.icono || '🍽️'}</span>
+          <span>${c.nombre}</span>
+        </button>
+      `).join('');
+      container.innerHTML = allBtn + catBtns;
     }
 
-    function eliminarDescuento(docId) {
-      if (!confirm('¿Eliminar este código de descuento?')) return;
-      window.descuentosRef().doc(docId).delete();
+    function filterPdvCategory(catId) {
+      currentCatFilter = catId;
+      renderPdvCategoryChips();
+      renderPedidoCatalogo();
     }
 
-    function agregarDescuento() {
-      const codigo = document.getElementById('newDescCodigo').value.trim().toUpperCase();
-      const tipo = document.getElementById('newDescTipo').value;
-      const valor = Number(document.getElementById('newDescValor').value);
-      const minimoCompra = Number(document.getElementById('newDescMinimo').value) || 0;
-      const usosMax = Number(document.getElementById('newDescUsosMax').value) || 0;
+    function renderPedidoCatalogo() {
+      const box = document.getElementById('pedidoCatalogo');
+      const q = (document.getElementById('pedidoBuscar').value || '').toLowerCase().trim();
 
-      if (!codigo || !valor || valor <= 0) {
-        alert('Completa al menos el código y un valor mayor a 0.');
-        return;
-      }
-
-      window.descuentosRef().doc(codigo).set({
-        tipo, valor, minimoCompra, usosMax,
-        usosActuales: 0,
-        activo: true,
-        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+      const disponibles = productos.filter(p => {
+        if (p.disponible === false) return false;
+        if (p.controlStock && (p.stock || 0) <= 0) return false;
+        const matchesCategory = currentCatFilter === 'todas' || p.cat === currentCatFilter;
+        const matchesQuery = !q || p.name.toLowerCase().includes(q) || (p.desc || '').toLowerCase().includes(q);
+        return matchesCategory && matchesQuery;
       });
 
-      document.getElementById('newDescCodigo').value = '';
-      document.getElementById('newDescValor').value = '';
-      document.getElementById('newDescMinimo').value = '';
-      document.getElementById('newDescUsosMax').value = '';
-    }
-
-    // --- CLIENTES (CRM) ---
-    function segmentoCliente(c) {
-      if (!c.ultimaCompra) return { label: '🆕 Nuevo', diasInactivo: 0 };
-      const dias = Math.floor((Date.now() - c.ultimaCompra.getTime()) / 86400000);
-      if (c.totalPedidos <= 1) return { label: '🆕 Nuevo', diasInactivo: dias };
-      if (dias > 45) return { label: '💤 Inactivo', diasInactivo: dias };
-      if (c.totalPedidos >= 3 && dias <= 30) return { label: '⭐ Frecuente', diasInactivo: dias };
-      return { label: '✅ Activo', diasInactivo: dias };
-    }
-
-    // Mensaje por defecto de reconquista (editable por el dueño)
-    document.getElementById('reconquistaMsg').value =
-      `Hola! Te extrañamos en ${CFG.nombre} 🔥 Hace tiempo no te vemos por acá. Vuelve esta semana y te tenemos un descuento especial. ¿Te paso la carta?`;
-    document.getElementById('reconquistaMsg').addEventListener('input', renderReconquistaList);
-
-    function renderReconquistaList() {
-      const box = document.getElementById('reconquistaList');
-      const mensaje = document.getElementById('reconquistaMsg').value;
-      const inactivos = clientes.filter(c => segmentoCliente(c).label === '💤 Inactivo');
-
-      if (inactivos.length === 0) {
-        box.innerHTML = '<p class="text-[11px] text-stone-500">Ningún cliente inactivo por ahora. 🎉</p>';
-        return;
-      }
-
-      box.innerHTML = inactivos.map(c => {
-        const telLimpio = window.normalizarTelefono(c.telefono);
-        const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
-        return `
-          <div class="flex items-center justify-between gap-2 text-xs bg-darkwood/60 rounded-xl px-3 py-2">
-            <span class="text-white font-semibold">${c.nombre || 'Sin nombre'} <span class="text-stone-500 font-normal">· ${segmentoCliente(c).diasInactivo} días sin pedir</span></span>
-            <a href="${url}" target="_blank" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-white">💬 Enviar</a>
+      if (disponibles.length === 0) {
+        box.innerHTML = `
+          <div class="sm:col-span-2 py-10 text-center text-slate-400 space-y-1">
+            <span class="text-3xl">🔍</span>
+            <p class="text-xs font-semibold">No hay productos que coincidan con el filtro.</p>
           </div>
         `;
-      }).join('');
-    }
-
-    function renderClientesList() {
-      const box = document.getElementById('clientesList');
-      const q = (document.getElementById('clientesSearch').value || '').toLowerCase().trim();
-
-      const filtrados = clientes.filter(c =>
-        !q || (c.nombre || '').toLowerCase().includes(q) || (c.telefono || '').includes(q)
-      );
-
-      if (filtrados.length === 0) {
-        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay clientes fichados (o ninguno coincide con la búsqueda).</p>';
         return;
       }
 
-      box.innerHTML = filtrados.map(c => {
-        const seg = segmentoCliente(c);
-        const fecha = c.ultimaCompra ? c.ultimaCompra.toLocaleDateString('es-CL') : '—';
-        const telLimpio = window.normalizarTelefono(c.telefono);
+      box.innerHTML = disponibles.map(p => {
+        const catObj = categorias.find(c => c.id === p.cat) || {};
+        const fallbackIcon = catObj.icono || '🍽️';
         return `
-          <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
-            <div class="flex-1 min-w-[140px]">
-              <div class="text-white font-semibold">${c.nombre || 'Sin nombre'}</div>
-              <div class="text-[10px] text-stone-500">${c.telefono || ''} · Última compra: ${fecha}</div>
+          <div onclick="agregarAlPedido('${p.docId}')" class="group bg-slate-50 hover:bg-brand-50/50 border border-slate-200 hover:border-brand-300 rounded-2xl p-3 flex items-center justify-between gap-3 cursor-pointer transition-all active:scale-[0.98]">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-xs">
+                ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : fallbackIcon}
+              </div>
+              <div class="overflow-hidden">
+                <h4 class="text-xs font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">${p.name}</h4>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-xs font-black text-brand-600 font-mono">${fmt(p.price)}</span>
+                  ${p.controlStock ? `<span class="text-[9px] bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded font-mono font-bold">${p.stock} disp</span>` : ''}
+                </div>
+              </div>
             </div>
-            <span class="px-2 py-1 rounded-lg bg-darkwood border border-white/10 text-[10px] font-bold">${seg.label}</span>
-            <span class="text-stone-400 font-mono text-[11px]">${c.totalPedidos || 0}x · ${fmt(c.totalGastado)}</span>
-            <a href="https://wa.me/${telLimpio}" target="_blank" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">💬 WhatsApp</a>
+            <button class="w-8 h-8 rounded-xl bg-white group-hover:bg-brand-600 border border-slate-200 group-hover:border-brand-600 text-slate-600 group-hover:text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs transition-colors">
+              +
+            </button>
           </div>
         `;
       }).join('');
     }
 
-    // --- NEGOCIO ---
-    function setEstado(abierto) {
-      window.restRef().set({ abierto }, { merge: true });
+    function agregarAlPedido(docId) {
+      const p = productos.find(x => x.docId === docId);
+      if (!p) return;
+      const existente = pedidoCarrito.find(i => i.docId === docId);
+      if (existente) {
+        existente.qty += 1;
+      } else {
+        pedidoCarrito.push({ docId: p.docId, name: p.name, price: p.price, qty: 1, cat: p.cat, controlStock: !!p.controlStock });
+      }
+      renderPedidoCarrito();
     }
 
-    function publicarPromo() {
-      const promo = document.getElementById('promoInput').value.trim();
-      window.restRef().set({ promo }, { merge: true });
+    function cambiarCantidadPedido(docId, delta) {
+      const item = pedidoCarrito.find(i => i.docId === docId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) pedidoCarrito = pedidoCarrito.filter(i => i.docId !== docId);
+      renderPedidoCarrito();
     }
 
-    // --- CATEGORÍAS ---
-    function renderCatSelect() {
-      const sel = document.getElementById('newCat');
-      sel.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icono || ''} ${c.nombre}</option>`).join('');
+    function vaciarCarritoPedido() {
+      pedidoCarrito = [];
+      renderPedidoCarrito();
     }
 
-    function renderCategoriasList() {
-      const box = document.getElementById('categoriasList');
-      if (categorias.length === 0) {
-        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay categorías. Agrega la primera arriba.</p>';
+    function renderPedidoCarrito() {
+      const box = document.getElementById('pedidoCarrito');
+      if (pedidoCarrito.length === 0) {
+        box.innerHTML = `
+          <div class="py-8 text-center text-slate-400 space-y-1">
+            <div class="text-2xl">🍽️</div>
+            <p class="text-xs font-semibold">Toca cualquier plato de la izquierda para agregarlo.</p>
+          </div>
+        `;
+        document.getElementById('pedidoTotal').textContent = fmt(0);
         return;
       }
-      box.innerHTML = categorias.map(c => `
-        <div class="flex items-center justify-between gap-2 py-2.5 text-xs">
-          <span class="text-white font-semibold">${c.icono || ''} ${c.nombre}</span>
-          <button onclick="eliminarCategoria('${c.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold">Eliminar</button>
+      let total = 0;
+      box.innerHTML = pedidoCarrito.map(i => {
+        total += i.price * i.qty;
+        return `
+          <div class="py-2.5 flex items-center justify-between gap-2 text-xs">
+            <div class="flex-1 overflow-hidden">
+              <div class="font-bold text-slate-800 truncate">${i.name}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${fmt(i.price)} c/u</div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-100 rounded-lg p-1 border border-slate-200">
+              <button onclick="cambiarCantidadPedido('${i.docId}', -1)" class="w-6 h-6 rounded bg-white hover:bg-slate-200 text-slate-800 font-black cursor-pointer shadow-xs flex items-center justify-center">-</button>
+              <span class="font-mono font-bold text-slate-800 w-5 text-center">${i.qty}</span>
+              <button onclick="cambiarCantidadPedido('${i.docId}', 1)" class="w-6 h-6 rounded bg-white hover:bg-slate-200 text-slate-800 font-black cursor-pointer shadow-xs flex items-center justify-center">+</button>
+            </div>
+            <span class="font-mono font-black text-slate-900 w-16 text-right">${fmt(i.price * i.qty)}</span>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('pedidoTotal').textContent = fmt(total);
+    }
+
+    function setPedidoTipo(tipo) {
+      pedidoTipo = tipo;
+      const esDelivery = tipo === 'delivery';
+      document.getElementById('btnPedidoMesa').className = 'py-2 rounded-lg text-xs font-bold transition-all ' + (esDelivery ? 'text-slate-500 hover:text-slate-900' : 'bg-white text-slate-900 shadow-sm');
+      document.getElementById('btnPedidoDelivery').className = 'py-2 rounded-lg text-xs font-bold transition-all ' + (esDelivery ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900');
+      document.getElementById('mesaQuickChips').classList.toggle('hidden', esDelivery);
+      document.getElementById('pedidoClienteFields').classList.toggle('hidden', !esDelivery);
+      document.getElementById('pedidoDestino').placeholder = esDelivery ? 'Dirección de entrega' : 'Ej: Mesa 5, Mostrador';
+    }
+
+    function setDestinoRapido(nombre) {
+      document.getElementById('pedidoDestino').value = nombre;
+    }
+
+    function confirmarPedidoManual() {
+      if (pedidoCarrito.length === 0) {
+        alert('Agrega al menos un plato a la comanda.');
+        return;
+      }
+      const destino = document.getElementById('pedidoDestino').value.trim();
+      const esDelivery = pedidoTipo === 'delivery';
+      const clienteNombre = document.getElementById('pedidoClienteNombre').value.trim();
+      const clienteTelefono = document.getElementById('pedidoClienteTelefono').value.trim();
+      const payObj = CFG.metodosPago.find(m => m.id === document.getElementById('pedidoPago').value);
+      const notas = document.getElementById('pedidoNotas').value.trim();
+
+      const subtotal = pedidoCarrito.reduce((s, i) => s + i.price * i.qty, 0);
+      const ticketId = '#CMD-' + Math.floor(100 + Math.random() * 900);
+
+      const orderPayload = {
+        id: ticketId,
+        status: 'cocina', // Entra directo a cocina
+        type: esDelivery ? 'delivery' : 'mesa',
+        table: esDelivery ? null : (destino || 'Mostrador'),
+        address: esDelivery ? (destino || 'Retiro en local') : null,
+        customer: esDelivery ? (clienteNombre || 'Cliente Telefónico') : 'Salón / Garzón',
+        items: pedidoCarrito.map(i => ({
+          name: i.name,
+          qty: i.qty,
+          mods: [],
+          price: i.price * i.qty,
+          cat: i.cat || ''
+        })),
+        subtotal: subtotal,
+        tip: 0,
+        deliveryFee: 0,
+        discountCode: null,
+        discountAmount: 0,
+        total: subtotal,
+        payment: payObj ? payObj.nombre : 'Por definir',
+        notes: notas
+      };
+
+      window.pedidosRef().add({
+        ...orderPayload,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        playKitchenChime();
+        pedidoCarrito.forEach(i => {
+          if (i.controlStock) {
+            window.platosRef().doc(i.docId).update({ stock: firebase.firestore.FieldValue.increment(-i.qty) });
+          }
+        });
+        if (esDelivery && clienteTelefono) {
+          const tel = window.normalizarTelefono(clienteTelefono);
+          if (tel) {
+            window.clientesRef().doc(tel).set({
+              nombre: clienteNombre || 'Cliente',
+              telefono: clienteTelefono,
+              totalPedidos: firebase.firestore.FieldValue.increment(1),
+              totalGastado: firebase.firestore.FieldValue.increment(subtotal),
+              ultimaCompra: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }
+        }
+
+        pedidoCarrito = [];
+        renderPedidoCarrito();
+        document.getElementById('pedidoDestino').value = '';
+        document.getElementById('pedidoClienteNombre').value = '';
+        document.getElementById('pedidoClienteTelefono').value = '';
+        document.getElementById('pedidoNotas').value = '';
+      }).catch(err => {
+        console.error('Error al emitir comanda:', err);
+        alert('⚠️ No se pudo enviar el pedido. Verifica tu conexión.');
+      });
+    }
+
+    // =========================================================================
+    // SECCIÓN 2: PANTALLA DE COCINA KDS (INTEGRADA + MULTI-ESTACIÓN)
+    // =========================================================================
+    function setKdsStationFilter(station) {
+      kdsStationFilter = station;
+      document.querySelectorAll('.station-tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (station === 'cocina') document.getElementById('btnStationCocina').classList.add('active');
+      if (station === 'barra') document.getElementById('btnStationBarra').classList.add('active');
+      if (station === 'todas') document.getElementById('btnStationTodas').classList.add('active');
+      renderKdsBoard();
+    }
+
+    function isBeverageItem(item) {
+      const name = (item.name || '').toLowerCase();
+      const cat = (item.cat || '').toLowerCase();
+      const keywords = ['bebida', 'trago', 'cerveza', 'coca', 'fanta', 'sprite', 'jugo', 'agua', 'pisco', 'mojito', 'vino', 'cocktail', 'cafe', 'café', 'té', 'infusion'];
+      return cat === 'bebidas' || cat === 'tragos' || keywords.some(k => name.includes(k));
+    }
+
+    function filterOrderItemsByStation(order, station) {
+      if (station === 'todas') return order.items || [];
+      if (station === 'barra') return (order.items || []).filter(isBeverageItem);
+      // 'cocina': todo lo que no sea barra
+      return (order.items || []).filter(i => !isBeverageItem(i));
+    }
+
+    function renderKdsBoard() {
+      const colNuevos = document.getElementById('kdsColNuevos');
+      const colCocina = document.getElementById('kdsColCocina');
+      const colListos = document.getElementById('kdsColListos');
+      if (!colNuevos || !colCocina || !colListos) return;
+
+      colNuevos.innerHTML = '';
+      colCocina.innerHTML = '';
+      colListos.innerHTML = '';
+
+      let countN = 0, countC = 0, countL = 0;
+      let countCocinaStation = 0, countBarraStation = 0, countTotalStation = 0;
+
+      // Filtrado por estación y renderizado
+      pedidos.forEach(o => {
+        const stationItems = filterOrderItemsByStation(o, kdsStationFilter);
+        const hasBarra = (o.items || []).some(isBeverageItem);
+        const hasCocina = (o.items || []).some(i => !isBeverageItem(i));
+
+        if (o.status === 'nuevo' || o.status === 'cocina') {
+          if (hasCocina) countCocinaStation++;
+          if (hasBarra) countBarraStation++;
+          countTotalStation++;
+        }
+
+        // Si la estación actual no tiene ítems en este pedido, se omite
+        if (stationItems.length === 0) return;
+
+        if (o.status === 'nuevo') countN++;
+        if (o.status === 'cocina') countC++;
+        if (o.status === 'listo') countL++;
+
+        // Tarjeta de comanda
+        const card = createKdsOrderCard(o, stationItems);
+
+        if (o.status === 'nuevo') colNuevos.appendChild(card);
+        else if (o.status === 'cocina') colCocina.appendChild(card);
+        else if (o.status === 'listo') colListos.appendChild(card);
+      });
+
+      // Contadores
+      document.getElementById('kdsCountNuevos').textContent = countN;
+      document.getElementById('kdsCountCocina').textContent = countC;
+      document.getElementById('kdsCountListos').textContent = countL;
+      document.getElementById('badgeKdsCount').textContent = countN + countC;
+
+      document.getElementById('badgeStationCocina').textContent = countCocinaStation;
+      document.getElementById('badgeStationBarra').textContent = countBarraStation;
+      document.getElementById('badgeStationTodas').textContent = countTotalStation;
+
+      // Placeholders estéticos si están vacías (Estilo OlaClick)
+      if (countN === 0) renderEmptyKdsColumn(colNuevos, 'Sin órdenes pendientes');
+      if (countC === 0) renderEmptyKdsColumn(colCocina, 'Cocina al día');
+      if (countL === 0) renderEmptyKdsColumn(colListos, 'Sin pedidos para entregar');
+    }
+
+    function renderEmptyKdsColumn(container, title) {
+      container.innerHTML = `
+        <div class="h-44 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-4 text-center text-slate-400 space-y-1">
+          <span class="text-2xl opacity-60">🧾</span>
+          <p class="text-xs font-bold text-slate-500">${title}</p>
+          <p class="text-[10px] text-slate-400">Los tickets entrarán automáticamente aquí.</p>
+        </div>
+      `;
+    }
+
+    function createKdsOrderCard(o, itemsToShow) {
+      const card = document.createElement('div');
+      const isNew = o.status === 'nuevo';
+      const isMesa = o.type === 'mesa';
+      const elapsedMin = Math.floor((Date.now() - new Date(o.createdAt).getTime()) / 60000);
+
+      // Color de urgencia del temporizador
+      let timerClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      if (elapsedMin >= 10 && elapsedMin < 20) timerClass = 'bg-amber-100 text-amber-800 border-amber-200';
+      else if (elapsedMin >= 20) timerClass = 'bg-red-100 text-red-800 border-red-200 animate-pulse';
+
+      card.className = `bg-white rounded-2xl border ${isNew ? 'order-alert-pulse border-amber-400' : 'border-slate-200'} p-3.5 space-y-3 shadow-sm hover:shadow-md transition-all`;
+
+      card.innerHTML = `
+        <!-- HEADER COMANDA -->
+        <div class="flex items-start justify-between border-b border-slate-100 pb-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-black text-sm text-slate-900">${o.id}</span>
+              ${isMesa ? `<span class="bg-amber-100 text-amber-800 font-mono text-[10px] font-black px-2 py-0.5 rounded-full">🍽️ ${o.table || 'MESA'}</span>`
+                      : `<span class="bg-emerald-100 text-emerald-800 font-mono text-[10px] font-black px-2 py-0.5 rounded-full">🛵 DELIVERY</span>`}
+            </div>
+            <div class="text-[11px] text-slate-500 mt-0.5 font-medium">
+              ${o.customer || 'Comensal'} ${!isMesa && o.address ? `· <span class="text-slate-400 font-normal">📍 ${o.address}</span>` : ''}
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="px-2 py-0.5 rounded-full font-mono text-[10px] font-black border ${timerClass}">
+              ⏱️ ${elapsedMin} min
+            </span>
+            <button onclick="printTicket('${o.docId}')" class="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 cursor-pointer" title="Imprimir Comanda">
+              🖨️
+            </button>
+          </div>
+        </div>
+
+        <!-- LISTADO DE ÍTEMS PARA ESTA ESTACIÓN -->
+        <div class="space-y-1.5 py-1">
+          ${itemsToShow.map(item => `
+            <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+              <div class="flex items-start justify-between gap-2 text-xs">
+                <span class="font-bold text-slate-900"><span class="text-brand-600 font-mono font-black">${item.qty}x</span> ${item.name}</span>
+              </div>
+              ${item.mods && item.mods.length > 0 ? `
+                <div class="text-[10px] text-slate-500 pl-4 mt-0.5 font-medium">
+                  ${item.mods.map(m => `<div>• ${m}</div>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+
+        ${o.notes ? `
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-2 text-[11px] text-amber-900 font-medium">
+            <strong>Nota:</strong> ${o.notes}
+          </div>
+        ` : ''}
+
+        <!-- BOTÓN DE AVANCE DE ESTADO -->
+        <div class="pt-1">
+          ${o.status === 'nuevo' ? `
+            <button onclick="changeOrderStatus('${o.docId}', 'cocina')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer">
+              🔥 Pasar a Cocina
+            </button>
+          ` : o.status === 'cocina' ? `
+            <button onclick="changeOrderStatus('${o.docId}', 'listo')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer">
+              ✓ Marcar Listo
+            </button>
+          ` : `
+            <button onclick="changeOrderStatus('${o.docId}', 'despachado')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer">
+              🚀 Despachar / Entregado
+            </button>
+          `}
+        </div>
+      `;
+      return card;
+    }
+
+    function changeOrderStatus(docId, nextStatus) {
+      window.pedidosRef().doc(docId).update({ status: nextStatus }).catch(err => {
+        console.error('Error al actualizar estado:', err);
+        alert('No se pudo actualizar el estado de la comanda.');
+      });
+    }
+
+    function marcarTodasListas() {
+      const enCocina = pedidos.filter(p => p.status === 'cocina' || p.status === 'nuevo');
+      if (enCocina.length === 0) {
+        alert('No hay órdenes en cocina para marcar como listas.');
+        return;
+      }
+      if (!confirm(`¿Marcar las ${enCocina.length} órdenes en preparación como listas para servir?`)) return;
+      const batch = firebase.firestore().batch();
+      enCocina.forEach(p => {
+        batch.update(window.pedidosRef().doc(p.docId), { status: 'listo' });
+      });
+      batch.commit();
+    }
+
+    function injectDemoOrder() {
+      const mesas = ['Mesa 1', 'Mesa 4', 'Barra', 'Mesa 8', 'Delivery Retiro'];
+      const demoMesa = mesas[Math.floor(Math.random() * mesas.length)];
+      const samplePlatos = productos.slice(0, 3);
+      if (samplePlatos.length === 0) return;
+
+      const randomPlato = samplePlatos[Math.floor(Math.random() * samplePlatos.length)];
+      const ticketId = '#TEST-' + Math.floor(100 + Math.random() * 900);
+
+      window.pedidosRef().add({
+        id: ticketId,
+        status: 'cocina',
+        type: demoMesa.includes('Delivery') ? 'delivery' : 'mesa',
+        table: demoMesa,
+        customer: 'Cliente Demo',
+        items: [
+          { name: randomPlato.name, qty: 2, mods: ['Sin picante', 'Papas crocantes'], price: randomPlato.price * 2, cat: randomPlato.cat || '' }
+        ],
+        subtotal: randomPlato.price * 2,
+        total: randomPlato.price * 2,
+        payment: 'Débito / POS',
+        notes: 'Comanda de prueba para auditoría visual KDS',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        playKitchenChime();
+      });
+    }
+
+    // --- IMPRESIÓN TÉRMICA ESC/POS ---
+    function printTicket(docId) {
+      const o = pedidos.find(p => p.docId === docId);
+      if (!o) return;
+
+      const pArea = document.getElementById('printArea');
+      pArea.innerHTML = `
+        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 8px;">
+          <h2 style="font-size: 14px; margin: 0; font-weight: 900;">${CFG.nombre}</h2>
+          <p style="font-size: 10px; margin: 2px 0 0;">COMANDA DE COCINA</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px;">
+          <span>${o.id}</span>
+          <span>${o.type === 'mesa' ? (o.table || 'MESA') : 'DELIVERY'}</span>
+        </div>
+        <div style="font-size: 10px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px;">
+          <div>HORA: ${new Date(o.createdAt).toLocaleTimeString('es-CL')}</div>
+          <div>CLIENTE: ${o.customer || 'Salón'}</div>
+          ${o.address ? `<div>DIRECCIÓN: ${o.address}</div>` : ''}
+        </div>
+        <div style="margin-bottom: 10px;">
+          ${(o.items || []).map(i => `
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin: 4px 0;">
+              <span>${i.qty}x ${i.name}</span>
+              <span>${fmt(i.price)}</span>
+            </div>
+            ${i.mods && i.mods.length > 0 ? `<div style="font-size: 9px; padding-left: 10px;">• ${i.mods.join('<br>• ')}</div>` : ''}
+          `).join('')}
+        </div>
+        ${o.notes ? `<div style="border-top: 1px dashed #000; padding-top: 4px; font-size: 10px; font-weight: bold;">NOTA: ${o.notes}</div>` : ''}
+        <div style="border-top: 1px solid #000; margin-top: 8px; padding-top: 4px; text-align: right; font-weight: 900; font-size: 13px;">
+          TOTAL: ${fmt(o.total)}
+        </div>
+      `;
+      window.print();
+    }
+
+    // =========================================================================
+    // SECCIÓN 3: VENTAS & MÉTRICAS
+    // =========================================================================
+    function setPeriodoVentas(dias) {
+      periodoVentas = dias;
+      renderVentas();
+    }
+
+    function renderVentas() {
+      document.querySelectorAll('.periodo-btn').forEach(b => b.classList.toggle('active', Number(b.dataset.periodo) === periodoVentas));
+
+      const desde = new Date();
+      desde.setDate(desde.getDate() - periodoVentas);
+      desde.setHours(0, 0, 0, 0);
+
+      const enRango = pedidos.filter(p => p.createdAt >= desde);
+      const totalVendido = enRango.reduce((s, p) => s + (p.total || 0), 0);
+      const nPedidos = enRango.length;
+      const ticketProm = nPedidos > 0 ? Math.round(totalVendido / nPedidos) : 0;
+      const nMesa = enRango.filter(p => p.type === 'mesa').length;
+      const nDelivery = enRango.filter(p => p.type === 'delivery').length;
+
+      document.getElementById('kpiTotalVendido').textContent = fmt(totalVendido);
+      document.getElementById('kpiPedidos').textContent = nPedidos;
+      document.getElementById('kpiTicketProm').textContent = fmt(ticketProm);
+      document.getElementById('kpiMesaDelivery').textContent = `${nMesa} mesa / ${nDelivery} delivery`;
+
+      const conteoProductos = {};
+      enRango.forEach(p => {
+        (p.items || []).forEach(item => {
+          conteoProductos[item.name] = (conteoProductos[item.name] || 0) + (item.qty || 1);
+        });
+      });
+
+      const topList = document.getElementById('topProductosList');
+      const top = Object.entries(conteoProductos).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      if (top.length === 0) {
+        topList.innerHTML = '<p class="text-xs text-slate-400 py-3">Sin comandas en este período todavía.</p>';
+        return;
+      }
+      topList.innerHTML = top.map(([nombre, cantidad], idx) => `
+        <div class="py-2.5 flex items-center justify-between text-xs">
+          <span class="text-slate-800 font-bold">${idx + 1}. ${nombre}</span>
+          <span class="text-brand-600 font-mono font-black">${cantidad}x</span>
         </div>
       `).join('');
     }
 
-    function agregarCategoria() {
-      const nombre = document.getElementById('newCatName').value.trim();
-      const icono = document.getElementById('newCatIcon').value.trim() || '🍽️';
-      if (!nombre) return;
-      const id = nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      window.categoriasRef().doc(id).set({ id, nombre, icono, orden: categorias.length });
-      document.getElementById('newCatName').value = '';
-      document.getElementById('newCatIcon').value = '';
+    // =========================================================================
+    // SECCIÓN 4: PRODUCTOS, STOCK Y FOTOS
+    // =========================================================================
+    function redimensionarImagen(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 640;
+          const scale = Math.min(1, maxW / img.width);
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          callback(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
-    function eliminarCategoria(docId) {
-      if (!confirm('¿Eliminar esta categoría? Los platos que la usan quedarán sin categoría visible.')) return;
-      window.categoriasRef().doc(docId).delete();
+    function procesarImagenNueva(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        imagenNuevaDataUrl = dataUrl;
+        document.getElementById('newImgPreview').innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+      });
     }
 
-    // --- PRODUCTOS ---
+    function procesarImagenExistente(event, docId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        window.platosRef().doc(docId).update({ img: dataUrl });
+      });
+    }
+
     function renderProductosList() {
       const box = document.getElementById('productosList');
       if (productos.length === 0) {
-        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no hay platos cargados.</p>';
+        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Aún no hay platos cargados.</p>';
         return;
       }
-      box.innerHTML = productos.map(p => `
-        <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
-          <div class="flex-1 min-w-[140px]">
-            <div class="text-white font-semibold">${p.name}</div>
-            <div class="text-[10px] text-stone-500">${(categorias.find(c => c.id === p.cat) || {}).nombre || p.cat || 'Sin categoría'}</div>
+      box.innerHTML = productos.map(p => {
+        const stockBajo = p.controlStock && (p.stock || 0) <= (p.stockMinimo || 3);
+        const sinStock = p.controlStock && (p.stock || 0) <= 0;
+        const disponibilidadHTML = p.controlStock
+          ? `<div class="flex items-center gap-1">
+               <input type="number" value="${p.stock || 0}" min="0" onchange="actualizarStock('${p.docId}', this.value)" class="w-16 bg-slate-50 border ${sinStock ? 'border-red-500 text-red-600' : stockBajo ? 'border-amber-500 text-amber-600' : 'border-slate-200 text-slate-900'} rounded-lg px-2 py-1.5 font-mono font-bold text-xs">
+               <span class="text-[10px] text-slate-400">stock</span>
+             </div>`
+          : `<button onclick="toggleDisponible('${p.docId}', ${p.disponible === false})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-colors ${p.disponible === false ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}">
+               ${p.disponible === false ? '🔴 Agotado' : '🟢 Disponible'}
+             </button>`;
+
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-3 text-xs">
+            <label class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-lg shrink-0 overflow-hidden cursor-pointer relative" title="Cambiar foto">
+              ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : '📷'}
+              <input type="file" accept="image/*" class="hidden" onchange="procesarImagenExistente(event, '${p.docId}')">
+            </label>
+            <div class="flex-1 min-w-[150px]">
+              <div class="text-slate-900 font-bold">${p.name} ${sinStock ? '<span class="text-red-500 text-[10px]">· sin stock</span>' : stockBajo ? '<span class="text-amber-500 text-[10px]">· stock bajo</span>' : ''}</div>
+              <div class="text-[10px] text-slate-400">${(categorias.find(c => c.id === p.cat) || {}).nombre || p.cat || 'Sin categoría'}</div>
+            </div>
+            <input type="number" value="${p.price}" step="500" onchange="actualizarPrecio('${p.docId}', this.value)" class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-brand-600 font-mono font-black text-xs">
+            <select onchange="actualizarCategoria('${p.docId}', this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700">
+              ${categorias.map(c => `<option value="${c.id}" ${c.id === p.cat ? 'selected' : ''}>${c.nombre}</option>`).join('')}
+            </select>
+            ${disponibilidadHTML}
+            <button onclick="toggleControlStock('${p.docId}', ${!p.controlStock})" class="text-[10px] text-slate-400 hover:text-slate-700 px-1 cursor-pointer" title="Alternar control numérico de stock">
+              ${p.controlStock ? '🔢→🔘' : '🔘→🔢'}
+            </button>
+            <button onclick="eliminarPlato('${p.docId}')" class="text-slate-400 hover:text-red-500 text-[11px] font-bold px-1 cursor-pointer">Eliminar</button>
           </div>
-          <input type="number" value="${p.price}" step="500" onchange="actualizarPrecio('${p.docId}', this.value)" class="w-24 bg-darkwood border border-white/10 rounded-lg px-2 py-1.5 text-gold font-mono font-bold text-xs">
-          <select onchange="actualizarCategoria('${p.docId}', this.value)" class="bg-darkwood border border-white/10 rounded-lg px-2 py-1.5 text-xs text-stone-200">
-            ${categorias.map(c => `<option value="${c.id}" ${c.id === p.cat ? 'selected' : ''}>${c.nombre}</option>`).join('')}
-          </select>
-          <button onclick="toggleDisponible('${p.docId}', ${p.disponible === false})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold ${p.disponible === false ? 'bg-red-950 text-red-300 border border-red-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">
-            ${p.disponible === false ? '🔴 Agotado' : '🟢 Disponible'}
-          </button>
-          <button onclick="eliminarPlato('${p.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold px-1">Eliminar</button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    function actualizarStock(docId, value) {
+      const stock = Math.max(0, Number(value) || 0);
+      window.platosRef().doc(docId).update({ stock });
+    }
+
+    function toggleControlStock(docId, nextValue) {
+      window.platosRef().doc(docId).update({
+        controlStock: nextValue,
+        stock: nextValue ? 10 : firebase.firestore.FieldValue.delete(),
+        stockMinimo: nextValue ? 3 : firebase.firestore.FieldValue.delete()
+      });
     }
 
     function actualizarPrecio(docId, value) {
@@ -539,7 +1716,7 @@
       const cat = document.getElementById('newCat').value;
       const price = Number(document.getElementById('newPrice').value) || 0;
       const badge = document.getElementById('newBadge').value.trim() || 'Nuevo';
-      const img = document.getElementById('newImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=80';
+      const img = imagenNuevaDataUrl || document.getElementById('newImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=80';
       const desc = document.getElementById('newDesc').value.trim();
 
       if (!name || !cat) {
@@ -560,7 +1737,245 @@
       document.getElementById('newBadge').value = '';
       document.getElementById('newImg').value = '';
       document.getElementById('newDesc').value = '';
+      document.getElementById('newImgFile').value = '';
+      document.getElementById('newImgPreview').innerHTML = '📷';
+      imagenNuevaDataUrl = null;
     }
+
+    // =========================================================================
+    // SECCIÓN 5: CATEGORÍAS
+    // =========================================================================
+    function renderCatSelect() {
+      const sel = document.getElementById('newCat');
+      sel.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icono || ''} ${c.nombre}</option>`).join('');
+    }
+
+    function renderCategoriasList() {
+      const box = document.getElementById('categoriasList');
+      if (categorias.length === 0) {
+        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Aún no hay categorías registradas.</p>';
+        return;
+      }
+      box.innerHTML = categorias.map(c => `
+        <div class="flex items-center justify-between gap-2 py-2.5 text-xs">
+          <span class="text-slate-800 font-bold">${c.icono || ''} ${c.nombre}</span>
+          <button onclick="eliminarCategoria('${c.docId}')" class="text-slate-400 hover:text-red-500 text-[11px] font-bold cursor-pointer">Eliminar</button>
+        </div>
+      `).join('');
+    }
+
+    function agregarCategoria() {
+      const nombre = document.getElementById('newCatName').value.trim();
+      const icono = document.getElementById('newCatIcon').value.trim() || '🍽️';
+      if (!nombre) return;
+      const id = nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      window.categoriasRef().doc(id).set({ id, nombre, icono, orden: categorias.length });
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatIcon').value = '';
+    }
+
+    function eliminarCategoria(docId) {
+      if (!confirm('¿Eliminar esta categoría?')) return;
+      window.categoriasRef().doc(docId).delete();
+    }
+
+    // =========================================================================
+    // SECCIÓN 6: CLIENTES (CRM)
+    // =========================================================================
+    function segmentoCliente(c) {
+      if (!c.ultimaCompra) return { label: '🆕 Nuevo', diasInactivo: 0 };
+      const dias = Math.floor((Date.now() - c.ultimaCompra.getTime()) / 86400000);
+      if (c.totalPedidos <= 1) return { label: '🆕 Nuevo', diasInactivo: dias };
+      if (dias > 45) return { label: '💤 Inactivo', diasInactivo: dias };
+      if (c.totalPedidos >= 3 && dias <= 30) return { label: '⭐ Frecuente', diasInactivo: dias };
+      return { label: '✅ Activo', diasInactivo: dias };
+    }
+
+    document.getElementById('reconquistaMsg').value =
+      `Hola! Te extrañamos en ${CFG.nombre} 🔥 Hace tiempo no te vemos por acá. Vuelve esta semana y te tenemos un descuento especial. ¿Te paso la carta?`;
+    document.getElementById('reconquistaMsg').addEventListener('input', renderReconquistaList);
+
+    function renderReconquistaList() {
+      const box = document.getElementById('reconquistaList');
+      const mensaje = document.getElementById('reconquistaMsg').value;
+      const inactivos = clientes.filter(c => segmentoCliente(c).label === '💤 Inactivo');
+
+      if (inactivos.length === 0) {
+        box.innerHTML = '<p class="text-[11px] text-amber-700">Ningún cliente inactivo por ahora. 🎉</p>';
+        return;
+      }
+
+      box.innerHTML = inactivos.map(c => {
+        const telLimpio = window.normalizarTelefono(c.telefono);
+        const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
+        return `
+          <div class="flex items-center justify-between gap-2 text-xs bg-white rounded-xl px-3 py-2 border border-amber-200">
+            <span class="text-slate-800 font-bold">${c.nombre || 'Cliente'} <span class="text-slate-400 font-normal">· ${segmentoCliente(c).diasInactivo} días inactivo</span></span>
+            <a href="${url}" target="_blank" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs">💬 WhatsApp</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderClientesList() {
+      const box = document.getElementById('clientesList');
+      const q = (document.getElementById('clientesSearch').value || '').toLowerCase().trim();
+
+      const filtrados = clientes.filter(c =>
+        !q || (c.nombre || '').toLowerCase().includes(q) || (c.telefono || '').includes(q)
+      );
+
+      if (filtrados.length === 0) {
+        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Sin clientes fichados aún.</p>';
+        return;
+      }
+
+      box.innerHTML = filtrados.map(c => {
+        const seg = segmentoCliente(c);
+        const fecha = c.ultimaCompra ? c.ultimaCompra.toLocaleDateString('es-CL') : '—';
+        const telLimpio = window.normalizarTelefono(c.telefono);
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-3 text-xs">
+            <div class="flex-1 min-w-[140px]">
+              <div class="text-slate-900 font-bold">${c.nombre || 'Sin nombre'}</div>
+              <div class="text-[10px] text-slate-400">${c.telefono || ''} · Última compra: ${fecha}</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-bold">${seg.label}</span>
+            <span class="text-slate-500 font-mono text-[11px]">${c.totalPedidos || 0}x · ${fmt(c.totalGastado)}</span>
+            <a href="https://wa.me/${telLimpio}" target="_blank" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200">💬 Contactar</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // SECCIÓN 7: DESCUENTOS
+    // =========================================================================
+    function renderDescuentosList() {
+      const box = document.getElementById('descuentosList');
+      if (descuentos.length === 0) {
+        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Aún no has creado códigos de descuento.</p>';
+        return;
+      }
+      box.innerHTML = descuentos.map(d => {
+        const valorTxt = d.tipo === 'porcentaje' ? `${d.valor}%` : fmt(d.valor);
+        const activo = d.activo !== false;
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-3 text-xs">
+            <div class="flex-1 min-w-[140px]">
+              <div class="text-brand-600 font-mono font-black">${d.docId}</div>
+              <div class="text-[10px] text-slate-400">${valorTxt} de descuento ${d.minimoCompra ? ' · mín. ' + fmt(d.minimoCompra) : ''}</div>
+            </div>
+            <button onclick="toggleDescuentoActivo('${d.docId}', ${!activo})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer ${activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'}">
+              ${activo ? '🟢 Activo' : '🔴 Desactivado'}
+            </button>
+            <button onclick="eliminarDescuento('${d.docId}')" class="text-slate-400 hover:text-red-500 text-[11px] font-bold px-1 cursor-pointer">Eliminar</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleDescuentoActivo(docId, nextValue) {
+      window.descuentosRef().doc(docId).update({ activo: nextValue });
+    }
+
+    function eliminarDescuento(docId) {
+      if (!confirm('¿Eliminar este código de descuento?')) return;
+      window.descuentosRef().doc(docId).delete();
+    }
+
+    function agregarDescuento() {
+      const codigo = document.getElementById('newDescCodigo').value.trim().toUpperCase();
+      const tipo = document.getElementById('newDescTipo').value;
+      const valor = Number(document.getElementById('newDescValor').value);
+      const minimoCompra = Number(document.getElementById('newDescMinimo').value) || 0;
+
+      if (!codigo || !valor || valor <= 0) {
+        alert('Completa al menos el código y un valor válido.');
+        return;
+      }
+
+      window.descuentosRef().doc(codigo).set({
+        tipo, valor, minimoCompra,
+        usosActuales: 0,
+        activo: true,
+        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      document.getElementById('newDescCodigo').value = '';
+      document.getElementById('newDescValor').value = '';
+      document.getElementById('newDescMinimo').value = '';
+    }
+
+    // =========================================================================
+    // SECCIÓN 8: CONFIGURACIÓN, HORARIOS Y PALETA
+    // =========================================================================
+    const PALETAS = [
+      { id: 'brasa', nombre: 'Brasa', color: '#C85A32' },
+      { id: 'oceano', nombre: 'Océano', color: '#0E7490' },
+      { id: 'bosque', nombre: 'Bosque', color: '#3F6B38' }
+    ];
+
+    function renderPaletaSelector(actual) {
+      const box = document.getElementById('paletaSelector');
+      box.innerHTML = PALETAS.map(p => `
+        <button onclick="setPaleta('${p.id}')" class="py-3 rounded-xl border-2 flex flex-col items-center gap-1.5 text-[11px] font-bold cursor-pointer transition-all ${p.id === actual ? 'border-brand-600 bg-brand-50/50' : 'border-slate-200 hover:border-slate-300'}">
+          <span class="w-6 h-6 rounded-full block shadow-xs" style="background:${p.color}"></span>
+          <span class="text-slate-700">${p.nombre}</span>
+        </button>
+      `).join('');
+    }
+
+    function setPaleta(id) {
+      window.restRef().set({ paleta: id }, { merge: true });
+    }
+
+    function setPausaManual(pausado) {
+      window.restRef().set({ pausaManual: pausado }, { merge: true });
+    }
+
+    function renderHorarioForm(horarioGuardado) {
+      const box = document.getElementById('horarioForm');
+      box.innerHTML = window.DIAS_SEMANA.map(dia => {
+        const cfg = horarioGuardado[dia] || { abre: '12:30', cierra: '23:00', cerrado: dia === 'lun' };
+        return `
+          <div class="grid grid-cols-[70px_1fr_1fr_auto] gap-2 items-center text-xs" data-dia="${dia}">
+            <span class="font-bold text-slate-700">${window.DIAS_SEMANA_LABEL[dia]}</span>
+            <input type="time" class="horario-abre bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-900 text-xs" value="${cfg.abre || '12:30'}" ${cfg.cerrado ? 'disabled' : ''}>
+            <input type="time" class="horario-cierra bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-900 text-xs" value="${cfg.cierra || '23:00'}" ${cfg.cerrado ? 'disabled' : ''}>
+            <label class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium cursor-pointer">
+              <input type="checkbox" class="horario-cerrado accent-brand-600" ${cfg.cerrado ? 'checked' : ''} onchange="this.closest('[data-dia]').querySelectorAll('input[type=time]').forEach(i => i.disabled = this.checked)">
+              Cerrado
+            </label>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function guardarHorario() {
+      const horario = {};
+      document.querySelectorAll('#horarioForm [data-dia]').forEach(row => {
+        const dia = row.dataset.dia;
+        horario[dia] = {
+          abre: row.querySelector('.horario-abre').value,
+          cierra: row.querySelector('.horario-cierra').value,
+          cerrado: row.querySelector('.horario-cerrado').checked
+        };
+      });
+      window.restRef().set({ horario }, { merge: true }).then(() => {
+        alert('✅ Horario guardado. El local abrirá y cerrará solo automáticamente.');
+      });
+    }
+
+    function publicarPromo() {
+      const promo = document.getElementById('promoInput').value.trim();
+      window.restRef().set({ promo }, { merge: true }).then(() => {
+        alert('📢 Banner de oferta actualizado en la carta.');
+      });
+    }
+
+    // Inicialización del primer tab
+    switchTab('pedidos');
   </script>
 </body>
 </html>

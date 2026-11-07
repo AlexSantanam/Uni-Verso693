@@ -31,6 +31,10 @@ window.RESTAURANTE_CONFIG = {
   pedidoMinimoDelivery: 6000,
   envioGratis: false,
 
+  // WiFi del local, mostrado en bienvenida.html (déjalo vacío "" para ocultar esa tarjeta)
+  wifiNombre: "LaBrasaYLena_Clientes",
+  wifiClave: "parrilla2026",
+
   // Métodos de Pago Permitidos
   metodosPago: [
     { id: "tarjeta", nombre: "💳 Tarjeta Débito/Crédito (Llevar POS a la mesa)", requiereVuelto: false },

@@ -15,6 +15,7 @@
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
+      document.documentElement.setAttribute('data-palette', 'brasa'); // la real llega de Firestore (definida por el dueño), esto es solo para que no haya parpadeo
     })();
   </script>
   
@@ -64,6 +65,13 @@
       --c-warmcard: 255 255 255;
       --c-gold: 165 110 20;
     }
+
+    /* Paletas de marca: cambian solo el color de acento (ember/gold), no el
+       fondo claro/oscuro, que lo sigue controlando el toggle de tema. */
+    [data-palette="oceano"] { --c-ember: 14 116 144; --c-gold: 45 180 178; }
+    [data-theme="light"][data-palette="oceano"] { --c-gold: 11 106 105; }
+    [data-palette="bosque"] { --c-ember: 63 107 56; --c-gold: 168 143 54; }
+    [data-theme="light"][data-palette="bosque"] { --c-gold: 120 101 35; }
 
     /* La paleta neutra de Tailwind (white/stone/black) no usa variables, así que
        se invierte a mano solo para el modo claro. Dark mode no necesita nada: ya
@@ -512,11 +520,28 @@
 
       setServiceMode(urlParams.get('modo') === 'delivery' ? 'delivery' : 'mesa');
 
-      // 4. Sembrar Firestore la primera vez, luego suscribirse en vivo.
-      //    Desde aquí en adelante, cualquier cambio hecho en panel.html
-      //    (precio, stock, nuevo plato, categoría) se refleja solo, sin recargar.
-      await window.seedIfEmpty();
+      // 4. Pintar la marca con lo que ya tenemos (CFG), sin esperar a Firestore.
+      //    Importante: esto va ANTES del seedIfEmpty — si Firestore no responde
+      //    (credenciales de ejemplo, sin red, etc.) eso no debe bloquear la
+      //    pintura inicial ni las suscripciones de más abajo.
+      let ultimoEstadoNegocio = {};
+      function pintarEstadoNegocio() {
+        const abierto = window.calcularAbiertoAhora(ultimoEstadoNegocio);
+        document.getElementById('brandAddress').innerHTML = `${CFG.direccion} · <span class="${abierto ? 'text-emerald-400' : 'text-red-400'} font-bold">● ${abierto ? 'Cocina Abierta' : 'Cerrado Temporalmente'}</span>`;
+      }
+      pintarEstadoNegocio();
+      // El horario depende de la hora actual, no solo de lo que diga Firestore,
+      // así que se vuelve a evaluar cada minuto aunque nadie cambie nada en el panel.
+      setInterval(pintarEstadoNegocio, 60000);
 
+      // 5. Sembrar Firestore la primera vez (sin bloquear lo de abajo: si esto
+      //    demora o falla por red/credenciales, las suscripciones en vivo
+      //    igual deben quedar activas y mostrar datos apenas lleguen).
+      window.seedIfEmpty();
+
+      // 6. Suscribirse en vivo. Desde aquí en adelante, cualquier cambio hecho
+      //    en panel.html (precio, stock, nuevo plato, categoría) se refleja
+      //    solo, sin recargar.
       window.categoriasRef().orderBy('orden').onSnapshot(snap => {
         const extra = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         categorias = [{ id: 'todos', nombre: '🔥 Toda la Carta', icono: '🔥' }, ...extra];
@@ -526,14 +551,15 @@
       window.platosRef().orderBy('orden').onSnapshot(snap => {
         platos = snap.docs
           .map(d => ({ docId: d.id, ...d.data() }))
-          .filter(p => p.disponible !== false);
+          .filter(p => p.disponible !== false && (!p.controlStock || (p.stock || 0) > 0));
         renderMenu();
       });
 
       window.restRef().onSnapshot(snap => {
         const data = snap.data() || {};
-        const abierto = data.abierto !== false;
-        document.getElementById('brandAddress').innerHTML = `${CFG.direccion} · <span class="${abierto ? 'text-emerald-400' : 'text-red-400'} font-bold">● ${abierto ? 'Cocina Abierta' : 'Cerrado Temporalmente'}</span>`;
+        ultimoEstadoNegocio = data;
+        pintarEstadoNegocio();
+        document.documentElement.setAttribute('data-palette', data.paleta || 'brasa');
 
         const promoBar = document.getElementById('promoBar');
         if (data.promo) {
@@ -795,6 +821,8 @@
 
       cart.push({
         dishId: activeModDish.id,
+        platoDocId: activeModDish.docId,
+        controlStock: !!activeModDish.controlStock,
         name: activeModDish.name,
         basePrice: activeModDish.price,
         unitTotal: unitTotal,
@@ -1063,6 +1091,14 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         actualizarFichaCliente(total);
+        // Descuenta el stock de los platos que lo controlan (ej: "quedan 5 porciones de cazuela")
+        cart.forEach(item => {
+          if (item.controlStock && item.platoDocId) {
+            window.platosRef().doc(item.platoDocId).update({
+              stock: firebase.firestore.FieldValue.increment(-item.qty)
+            }).catch(err => console.error('Error descontando stock:', err));
+          }
+        });
         if (descuentoAplicado) {
           window.descuentosRef().doc(descuentoAplicado.codigo).update({
             usosActuales: firebase.firestore.FieldValue.increment(1)

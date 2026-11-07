@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pantalla de Cocina & KDS · La Brasa & Leña</title>
+  <title>Pantalla de Cocina & KDS · Fravioli, Street Food</title>
   
-  <meta name="theme-color" content="#0F172A" />
+  <meta name="theme-color" content="#F7F6FB" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
-  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -20,11 +20,12 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            kdsBg: '#090D16',
-            kdsCard: '#131B2E',
-            kdsBorder: '#23304E',
-            ember: '#C85A32',
-            gold: '#E9C46A'
+            /* Paleta propia de Zoco, modo claro (igual criterio que panel.html) */
+            kdsBg: '#F7F6FB',
+            kdsCard: '#FFFFFF',
+            kdsBorder: '#ECEAF3',
+            ember: '#7C3AED',
+            gold: '#A16207'
           }
         }
       }
@@ -49,12 +50,31 @@
       }
     }
     @keyframes pulseAlert {
-      0%, 100% { border-color: #EF4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-      50% { border-color: #F59E0B; box-shadow: 0 0 25px rgba(245, 158, 11, 0.6); }
+      0%, 100% { border-color: #EF4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.25); }
+      50% { border-color: #F59E0B; box-shadow: 0 0 25px rgba(245, 158, 11, 0.35); }
     }
     .order-new-alert {
       animation: pulseAlert 1.5s infinite;
     }
+
+    body {
+      background-image: radial-gradient(circle at 15% -10%, rgba(124,58,237,0.06), transparent 40%);
+      background-attachment: fixed;
+    }
+    .bg-kdsCard { box-shadow: 0 1px 2px 0 rgba(31,27,46,0.04), 0 8px 24px -12px rgba(31,27,46,0.10); }
+
+    /* La plantilla fue escrita para fondo oscuro (text-white/slate-X, bg-slate-800).
+       En modo claro se invierten a esta escala neutra-violeta, sin tocar el HTML. */
+    .text-white { color: #1F1B2E !important; }
+    .text-slate-100 { color: #1F1B2E !important; }
+    .text-slate-200 { color: #4A4458 !important; }
+    .text-slate-300 { color: #5C5568 !important; }
+    .text-slate-400 { color: #837C91 !important; }
+    .text-slate-500 { color: #A39DAD !important; }
+    .bg-slate-700 { background-color: #EDEAF5 !important; }
+    .bg-slate-800 { background-color: #F1EFF7 !important; color: #5C5568 !important; }
+    .hover\:bg-slate-700:hover { background-color: #E7E3F2 !important; }
+    .bg-ember.text-white { color: #fff !important; }
   </style>
 
   <script src="config.js"></script>
@@ -101,7 +121,7 @@
             </span>
           </div>
           <p class="text-xs text-slate-400">
-            La Brasa & Leña · Sistema Integral de Comandas y Despacho
+            Fravioli, Street Food · Sistema Integral de Comandas y Despacho
           </p>
         </div>
       </div>
@@ -133,18 +153,18 @@
         </button>
 
         <!-- Enlace a la Carta del Cliente -->
-        <a href="index.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-cyan-800/60 flex items-center gap-1">
+        <a href="index.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-700 font-bold border border-cyan-200 flex items-center gap-1">
           <span>📱</span>
           <span>Ver Carta Cliente ↗</span>
         </a>
 
         <!-- Enlace al Panel del Dueño -->
-        <a href="panel.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold border border-emerald-800/60 flex items-center gap-1">
+        <a href="panel.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-700 font-bold border border-emerald-200 flex items-center gap-1">
           <span>🔐</span>
           <span>Panel Dueño ↗</span>
         </a>
 
-        <button onclick="firebase.auth().signOut()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-red-900/50 text-slate-400 hover:text-red-300 font-bold border border-kdsBorder cursor-pointer" title="Cerrar sesión">
+        <button onclick="firebase.auth().signOut()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-red-100 text-slate-400 hover:text-red-600 font-bold border border-kdsBorder cursor-pointer" title="Cerrar sesión">
           <span>🚪</span>
         </button>
       </div>
@@ -152,19 +172,40 @@
     </div>
   </header>
 
-  <!-- BANNER EXPLICATIVO PARA REUNIONES DE VENTA -->
-  <div class="bg-gradient-to-r from-cyan-950/70 via-slate-900 to-amber-950/70 border-b border-cyan-800/40 px-4 py-2 text-xs">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-slate-300">
+  <!-- BARRA DE FILTRADO POR ESTACIÓN Y ACCIONES RÁPIDAS (TIPO OLACLICK) -->
+  <div class="bg-kdsCard border-b border-kdsBorder px-4 py-2.5 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Selector de Estaciones: Cocina Principal / Barra / Todas -->
+      <div class="flex items-center gap-1.5 p-1 bg-slate-200/60 rounded-xl">
+        <button onclick="setStationFilter('cocina')" id="btnKdsCocina" class="station-kds-btn px-4 py-1.5 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm flex items-center gap-1.5 cursor-pointer">
+          <span>🍳</span>
+          <span>Cocina Principal</span>
+          <span id="badgeKdsCocina" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+        </button>
+        <button onclick="setStationFilter('barra')" id="btnKdsBarra" class="station-kds-btn px-4 py-1.5 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer">
+          <span>🍸</span>
+          <span>Barra / Bebidas</span>
+          <span id="badgeKdsBarra" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+        </button>
+        <button onclick="setStationFilter('todas')" id="btnKdsTodas" class="station-kds-btn px-4 py-1.5 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer">
+          <span>⚡</span>
+          <span>Todas</span>
+          <span id="badgeKdsTodas" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.2 rounded-full font-mono">0</span>
+        </button>
+      </div>
+
+      <!-- Acciones Rápidas -->
       <div class="flex items-center gap-2">
-        <span class="bg-cyan-900 text-cyan-200 font-bold px-2 py-0.5 rounded text-[10px]">TIPS DE CIERRE</span>
-        <span>
-          <strong>Cómo funciona para el restaurante:</strong> Cuando un comensal escanea el QR en la mesa o pide a domicilio en la web, el pedido <strong>entra aquí al instante sin comisiones de apps externas</strong>.
-        </span>
+        <button onclick="marcarTodasListas()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
+          <span>✓</span>
+          <span>Marcar todas listas</span>
+        </button>
+        <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold border border-kdsBorder cursor-pointer" title="Modo Pantalla Completa (F11)">
+          ⛶
+        </button>
       </div>
-      <div class="flex items-center gap-2 text-[11px]">
-        <span class="text-slate-400">Abre la carta en otra ventana para probar el envío en vivo:</span>
-        <button onclick="openSplitScreen()" class="text-cyan-400 underline font-bold hover:text-cyan-300">Abrir Vista Dividida ⚡</button>
-      </div>
+
     </div>
   </div>
 
@@ -173,11 +214,11 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
 
       <!-- COLUMNA 1: NUEVOS / POR CONFIRMAR -->
-      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
-        <div class="bg-amber-950/40 border-b border-amber-800/40 px-4 py-3 flex items-center justify-between">
+      <div class="flex flex-col bg-kdsCard rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-amber-50 border-b border-amber-100 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
-            <h2 class="text-xs font-black tracking-wider text-amber-200 uppercase">1. Nuevos / Entrantes</h2>
+            <h2 class="text-xs font-black tracking-wider text-amber-700 uppercase">1. Nuevos / Entrantes</h2>
           </div>
           <span id="countNuevos" class="bg-amber-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -187,11 +228,11 @@
       </div>
 
       <!-- COLUMNA 2: EN FUEGO / EN PREPARACIÓN -->
-      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
-        <div class="bg-blue-950/40 border-b border-blue-800/40 px-4 py-3 flex items-center justify-between">
+      <div class="flex flex-col bg-kdsCard rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-blue-50 border-b border-blue-100 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-400"></span>
-            <h2 class="text-xs font-black tracking-wider text-blue-200 uppercase">2. En Preparación</h2>
+            <h2 class="text-xs font-black tracking-wider text-blue-700 uppercase">2. En Preparación</h2>
           </div>
           <span id="countCocina" class="bg-blue-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -201,11 +242,11 @@
       </div>
 
       <!-- COLUMNA 3: LISTOS PARA SERVIR O REPARTO -->
-      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
-        <div class="bg-emerald-950/40 border-b border-emerald-800/40 px-4 py-3 flex items-center justify-between">
+      <div class="flex flex-col bg-kdsCard rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-emerald-50 border-b border-emerald-100 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-            <h2 class="text-xs font-black tracking-wider text-emerald-200 uppercase">3. Listos / Servir</h2>
+            <h2 class="text-xs font-black tracking-wider text-emerald-700 uppercase">3. Listos / Servir</h2>
           </div>
           <span id="countListos" class="bg-emerald-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
         </div>
@@ -215,13 +256,13 @@
       </div>
 
       <!-- COLUMNA 4: DESPACHADOS / HISTORIAL TURNO -->
-      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
-        <div class="bg-slate-900 border-b border-kdsBorder px-4 py-3 flex items-center justify-between">
+      <div class="flex flex-col bg-kdsCard rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-slate-100 border-b border-kdsBorder px-4 py-3 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-slate-500"></span>
-            <h2 class="text-xs font-black tracking-wider text-slate-300 uppercase">4. Despachados</h2>
+            <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+            <h2 class="text-xs font-black tracking-wider text-slate-600 uppercase">4. Despachados</h2>
           </div>
-          <span id="countDespachados" class="bg-slate-700 text-slate-200 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+          <span id="countDespachados" class="bg-slate-300 text-slate-700 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
         </div>
         <div id="colDespachados" class="p-3 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-220px)] opacity-75">
           <!-- Inyección JS -->
@@ -361,6 +402,57 @@
       });
     }
 
+    let currentStationFilter = 'cocina'; // 'cocina', 'barra', 'todas'
+
+    function setStationFilter(station) {
+      currentStationFilter = station;
+      document.querySelectorAll('.station-kds-btn').forEach(b => {
+        b.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+        b.classList.add('text-slate-500');
+      });
+      const activeBtn = station === 'cocina' ? document.getElementById('btnKdsCocina') : (station === 'barra' ? document.getElementById('btnKdsBarra') : document.getElementById('btnKdsTodas'));
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+        activeBtn.classList.remove('text-slate-500');
+      }
+      renderBoard();
+    }
+
+    function isBeverageItem(item) {
+      const name = (item.name || '').toLowerCase();
+      const cat = (item.cat || '').toLowerCase();
+      const keywords = ['bebida', 'trago', 'cerveza', 'coca', 'fanta', 'sprite', 'jugo', 'agua', 'pisco', 'mojito', 'vino', 'cocktail', 'cafe', 'café', 'té', 'infusion'];
+      return cat === 'bebidas' || cat === 'tragos' || keywords.some(k => name.includes(k));
+    }
+
+    function filterOrderItemsByStation(order, station) {
+      if (station === 'todas') return order.items || [];
+      if (station === 'barra') return (order.items || []).filter(isBeverageItem);
+      return (order.items || []).filter(i => !isBeverageItem(i));
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen().catch(err => console.log(err));
+      }
+    }
+
+    function marcarTodasListas() {
+      const enCocina = orders.filter(p => p.status === 'cocina' || p.status === 'nuevo');
+      if (enCocina.length === 0) {
+        alert('No hay comandas en preparación para marcar como listas.');
+        return;
+      }
+      if (!confirm(`¿Marcar las ${enCocina.length} comandas en preparación como listas para servir?`)) return;
+      const batch = firebase.firestore().batch();
+      enCocina.forEach(p => {
+        batch.update(window.pedidosRef().doc(p.docId), { status: 'listo' });
+      });
+      batch.commit();
+    }
+
     function renderBoard() {
       const colNuevos = document.getElementById('colNuevos');
       const colCocina = document.getElementById('colCocina');
@@ -373,13 +465,32 @@
       colDespachados.innerHTML = '';
 
       let countN = 0, countC = 0, countL = 0, countD = 0;
+      let countCocinaStation = 0, countBarraStation = 0, countTodasStation = 0;
       let totalVentas = 0;
 
       orders.forEach(o => {
         totalVentas += (o.total || 0);
 
+        const hasBarra = (o.items || []).some(isBeverageItem);
+        const hasCocina = (o.items || []).some(i => !isBeverageItem(i));
+
+        if (o.status === 'nuevo' || o.status === 'cocina') {
+          if (hasCocina) countCocinaStation++;
+          if (hasBarra) countBarraStation++;
+          countTodasStation++;
+        }
+
+        const itemsToShow = filterOrderItemsByStation(o, currentStationFilter);
+        if (itemsToShow.length === 0) return;
+
         const card = document.createElement('div');
         const isNew = o.status === 'nuevo';
+        const elapsedMin = Math.floor((Date.now() - new Date(o.createdAt).getTime()) / 60000);
+
+        let timerBadgeColor = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+        if (elapsedMin >= 10 && elapsedMin < 20) timerBadgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
+        else if (elapsedMin >= 20) timerBadgeColor = 'bg-red-100 text-red-800 border-red-300 animate-pulse';
+
         card.className = `bg-kdsCard border ${isNew ? 'order-new-alert' : 'border-kdsBorder'} rounded-2xl p-4 shadow-lg flex flex-col justify-between space-y-3 transition-all`;
 
         const isMesa = o.type === 'mesa';
@@ -396,8 +507,9 @@
                   <span class="font-mono font-black text-sm text-white">${o.id}</span>
                   ${typeBadge}
                 </div>
-                <div class="text-[11px] text-slate-400 mt-0.5 font-mono">
-                  ${new Date(o.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} · <strong class="text-gold">${getTimeAgo(o.createdAt)}</strong>
+                <div class="text-[11px] text-slate-400 mt-0.5 font-mono flex items-center gap-1.5">
+                  <span>${new Date(o.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span class="px-1.5 py-0.2 rounded-md font-bold text-[9px] border ${timerBadgeColor}">⏱️ ${elapsedMin}m</span>
                 </div>
               </div>
               <button onclick="printTicket('${o.docId}')" title="Imprimir Comanda" class="text-slate-400 hover:text-white bg-kdsBg border border-kdsBorder p-1.5 rounded-lg text-xs cursor-pointer">
@@ -411,9 +523,9 @@
               ${!isMesa && o.address ? `<div class="text-[11px] text-slate-400 leading-tight">📍 ${o.address}</div>` : ''}
             </div>
 
-            <!-- Lista de Platos para Cocina -->
+            <!-- Lista de Platos para esta Estación -->
             <div class="space-y-1.5 py-1 text-xs">
-              ${o.items.map(item => `
+              ${itemsToShow.map(item => `
                 <div class="bg-kdsBg/70 p-2 rounded-xl border border-kdsBorder/60">
                   <div class="flex justify-between items-baseline">
                     <span class="font-bold text-white"><span class="text-amber-400 font-mono">${item.qty}x</span> ${item.name}</span>
@@ -430,7 +542,7 @@
 
             <!-- Notas de Cocina -->
             ${o.notes ? `
-              <div class="p-2 rounded-xl bg-amber-950/30 border border-amber-800/40 text-[11px] text-amber-200">
+              <div class="p-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
                 <strong>📝 Nota Cocina:</strong> ${o.notes}
               </div>
             ` : ''}
@@ -467,6 +579,13 @@
       document.getElementById('countCocina').textContent = countC;
       document.getElementById('countListos').textContent = countL;
       document.getElementById('countDespachados').textContent = countD;
+
+      const bCocina = document.getElementById('badgeKdsCocina');
+      const bBarra = document.getElementById('badgeKdsBarra');
+      const bTodas = document.getElementById('badgeKdsTodas');
+      if (bCocina) bCocina.textContent = countCocinaStation;
+      if (bBarra) bBarra.textContent = countBarraStation;
+      if (bTodas) bTodas.textContent = countTodasStation;
 
       document.getElementById('statTotalOrdenes').textContent = orders.length;
       document.getElementById('statVentasTurno').textContent = fmt(totalVentas);
@@ -512,8 +631,8 @@
         id: 'BRA-' + num,
         status: 'nuevo',
         type: isMesa ? 'mesa' : 'delivery',
-        table: isMesa ? demoTables[Math.floor(Math.random() * demoTables.length)] : undefined,
-        address: !isMesa ? '1 Norte #1250, Viña del Mar' : undefined,
+        table: isMesa ? demoTables[Math.floor(Math.random() * demoTables.length)] : null,
+        address: !isMesa ? '1 Norte #1250, Viña del Mar' : null,
         customer: demoNames[Math.floor(Math.random() * demoNames.length)],
         items: [
           { name: 'Bife de Chorizo Angus (400g)', qty: 1, mods: ['Término Medio', 'Papas Rústicas', '+ Chimichurri'], price: 19900 },

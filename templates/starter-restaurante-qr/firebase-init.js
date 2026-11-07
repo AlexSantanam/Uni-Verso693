@@ -35,6 +35,34 @@
     return (tel || '').replace(/\D/g, '');
   };
 
+  // Días de la semana en el mismo orden que Date.getDay() (0 = domingo).
+  window.DIAS_SEMANA = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+  window.DIAS_SEMANA_LABEL = { dom: 'Domingo', lun: 'Lunes', mar: 'Martes', mie: 'Miércoles', jue: 'Jueves', vie: 'Viernes', sab: 'Sábado' };
+
+  /**
+   * Determina si el local está abierto AHORA MISMO, combinando la pausa
+   * manual (prioridad, para emergencias) con el horario semanal configurado
+   * en panel.html. Si todavía no se configuró ningún horario, se mantiene
+   * el comportamiento anterior (abierto por defecto) para no romper demos.
+   */
+  window.calcularAbiertoAhora = function calcularAbiertoAhora(data) {
+    if (data.pausaManual) return false;
+    const horario = data.horario;
+    if (!horario) return true;
+
+    const now = new Date();
+    const diaKey = window.DIAS_SEMANA[now.getDay()];
+    const cfgDia = horario[diaKey];
+    if (!cfgDia || cfgDia.cerrado || !cfgDia.abre || !cfgDia.cierra) return false;
+
+    const [hA, mA] = cfgDia.abre.split(':').map(Number);
+    const [hC, mC] = cfgDia.cierra.split(':').map(Number);
+    const minutosAhora = now.getHours() * 60 + now.getMinutes();
+    const minutosApertura = hA * 60 + mA;
+    const minutosCierre = hC * 60 + mC;
+    return minutosAhora >= minutosApertura && minutosAhora < minutosCierre;
+  };
+
   /**
    * Siembra Firestore con el catálogo de config.js SOLO la primera vez
    * (si las colecciones están vacías). Así cualquier demo nuevo funciona
