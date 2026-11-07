@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pantalla de Cocina & KDS · La Brasa & Leña</title>
+  
+  <meta name="theme-color" content="#0F172A" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            kdsBg: '#090D16',
+            kdsCard: '#131B2E',
+            kdsBorder: '#23304E',
+            ember: '#C85A32',
+            gold: '#E9C46A'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 72mm;
+        margin: 0;
+        padding: 3mm;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #000;
+        background: #fff;
+      }
+    }
+    @keyframes pulseAlert {
+      0%, 100% { border-color: #EF4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+      50% { border-color: #F59E0B; box-shadow: 0 0 25px rgba(245, 158, 11, 0.6); }
+    }
+    .order-new-alert {
+      animation: pulseAlert 1.5s infinite;
+    }
+  </style>
+
+  <script src="config.js"></script>
+</head>
+<body class="bg-kdsBg text-slate-100 min-h-screen font-sans flex flex-col selection:bg-ember selection:text-white">
+
+  <!-- TOP BAR KDS / SISTEMA DE COCINA Y CAJA -->
+  <header class="bg-kdsCard border-b border-kdsBorder px-4 py-3 sticky top-0 z-30 shadow-xl">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Identidad y Modo Cocina -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-ember/20 border border-ember/40 flex items-center justify-center text-xl shadow">
+          👨‍🍳
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-extrabold text-white tracking-wide">PANTALLA DE COCINA & BARRA (KDS)</h1>
+            <span class="bg-emerald-950 text-emerald-400 border border-emerald-700/60 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              EN VIVO
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            La Brasa & Leña · Sistema Integral de Comandas y Despacho
+          </p>
+        </div>
+      </div>
+
+      <!-- Métricas del Turno y Botones de Control -->
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="hidden sm:flex items-center gap-3 bg-kdsBg/80 px-3 py-1.5 rounded-xl border border-kdsBorder">
+          <div>
+            <span class="text-slate-400 text-[10px] block">VENTAS TURNO:</span>
+            <span id="statVentasTurno" class="text-gold font-extrabold text-sm">$0</span>
+          </div>
+          <div class="h-6 w-px bg-kdsBorder"></div>
+          <div>
+            <span class="text-slate-400 text-[10px] block">ÓRDENES:</span>
+            <span id="statTotalOrdenes" class="text-white font-extrabold text-sm">0</span>
+          </div>
+        </div>
+
+        <!-- Botón de Audio Alerta -->
+        <button id="btnSoundToggle" onclick="toggleAudio()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold flex items-center gap-1.5 border border-kdsBorder cursor-pointer">
+          <span id="soundIcon">🔔</span>
+          <span id="soundLabel">Audio Activo</span>
+        </button>
+
+        <!-- Botón Simular Pedido Entrante -->
+        <button onclick="injectDemoOrder()" class="px-3.5 py-2 rounded-xl bg-ember hover:bg-ember/90 text-white font-bold flex items-center gap-1.5 shadow-lg cursor-pointer">
+          <span>+</span>
+          <span>Simular Comanda</span>
+        </button>
+
+        <!-- Enlace a la Carta del Cliente -->
+        <a href="index.html" target="_blank" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold border border-cyan-800/60 flex items-center gap-1">
+          <span>📱</span>
+          <span>Ver Carta Cliente ↗</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- BANNER EXPLICATIVO PARA REUNIONES DE VENTA -->
+  <div class="bg-gradient-to-r from-cyan-950/70 via-slate-900 to-amber-950/70 border-b border-cyan-800/40 px-4 py-2 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-slate-300">
+      <div class="flex items-center gap-2">
+        <span class="bg-cyan-900 text-cyan-200 font-bold px-2 py-0.5 rounded text-[10px]">TIPS DE CIERRE</span>
+        <span>
+          <strong>Cómo funciona para el restaurante:</strong> Cuando un comensal escanea el QR en la mesa o pide a domicilio en la web, el pedido <strong>entra aquí al instante sin comisiones de apps externas</strong>.
+        </span>
+      </div>
+      <div class="flex items-center gap-2 text-[11px]">
+        <span class="text-slate-400">Abre la carta en otra ventana para probar el envío en vivo:</span>
+        <button onclick="openSplitScreen()" class="text-cyan-400 underline font-bold hover:text-cyan-300">Abrir Vista Dividida ⚡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLERO KANBAN DE COCINA: 4 COLUMNAS OPERATIVAS -->
+  <main class="max-w-7xl mx-auto px-4 py-5 flex-1 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
+
+      <!-- COLUMNA 1: NUEVOS / POR CONFIRMAR -->
+      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-amber-950/40 border-b border-amber-800/40 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+            <h2 class="text-xs font-black tracking-wider text-amber-200 uppercase">1. Nuevos / Entrantes</h2>
+          </div>
+          <span id="countNuevos" class="bg-amber-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="colNuevos" class="p-3 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-220px)]">
+          <!-- Inyección JS -->
+        </div>
+      </div>
+
+      <!-- COLUMNA 2: EN FUEGO / EN PREPARACIÓN -->
+      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-blue-950/40 border-b border-blue-800/40 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-400"></span>
+            <h2 class="text-xs font-black tracking-wider text-blue-200 uppercase">2. En Preparación</h2>
+          </div>
+          <span id="countCocina" class="bg-blue-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="colCocina" class="p-3 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-220px)]">
+          <!-- Inyección JS -->
+        </div>
+      </div>
+
+      <!-- COLUMNA 3: LISTOS PARA SERVIR O REPARTO -->
+      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-emerald-950/40 border-b border-emerald-800/40 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+            <h2 class="text-xs font-black tracking-wider text-emerald-200 uppercase">3. Listos / Servir</h2>
+          </div>
+          <span id="countListos" class="bg-emerald-400 text-slate-950 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="colListos" class="p-3 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-220px)]">
+          <!-- Inyección JS -->
+        </div>
+      </div>
+
+      <!-- COLUMNA 4: DESPACHADOS / HISTORIAL TURNO -->
+      <div class="flex flex-col bg-kdsCard/60 rounded-2xl border border-kdsBorder overflow-hidden">
+        <div class="bg-slate-900 border-b border-kdsBorder px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-slate-500"></span>
+            <h2 class="text-xs font-black tracking-wider text-slate-300 uppercase">4. Despachados</h2>
+          </div>
+          <span id="countDespachados" class="bg-slate-700 text-slate-200 font-mono font-black text-xs px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <div id="colDespachados" class="p-3 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-220px)] opacity-75">
+          <!-- Inyección JS -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ÁREA OCULTA PARA IMPRESIÓN TÉRMICA DE TICKET -->
+  <div id="printArea" class="hidden"></div>
+
+  <!-- SONIDO SINTETIZADO CON WEB AUDIO API (CERO DEPENDENCIAS EXTERNAS) -->
+  <script>
+    let audioEnabled = true;
+    let audioCtx = null;
+
+    function playKitchenChime() {
+      if (!audioEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        
+        // Sonido de dos tonos claros: Campana de Cocina (Ding-Dong)
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, now); // A5
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.5);
+
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1174.66, now + 0.15); // D6
+        gain2.gain.setValueAtTime(0.35, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.8);
+      } catch (e) {
+        console.warn('Audio no inicializado aún por interacción del usuario.', e);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      document.getElementById('soundIcon').textContent = audioEnabled ? '🔔' : '🔕';
+      document.getElementById('soundLabel').textContent = audioEnabled ? 'Audio Activo' : 'Silenciado';
+      if (audioEnabled) playKitchenChime();
+    }
+  </script>
+
+  <!-- LÓGICA DE NEGOCIO Y SINCRONIZACIÓN EN TIEMPO REAL -->
+  <script>
+    const KDS_STORAGE_KEY = 'universo693_kds_orders';
+    const CHANNEL_NAME = 'universo693_restaurante_sync';
+    let broadcast = null;
+
+    try {
+      broadcast = new BroadcastChannel(CHANNEL_NAME);
+      broadcast.onmessage = (event) => {
+        if (event.data && event.data.type === 'NEW_ORDER') {
+          handleIncomingOrder(event.data.order);
+        }
+      };
+    } catch (e) {
+      console.log('BroadcastChannel no soportado, usando polling de localStorage.');
+    }
+
+    // Inicializar órdenes base o cargar desde localStorage
+    let orders = loadOrders();
+
+    function loadOrders() {
+      const saved = localStorage.getItem(KDS_STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+      // Si está vacío, cargar pedidos de demostración iniciales
+      return [
+        {
+          id: 'BRA-101',
+          createdAt: new Date(Date.now() - 4 * 60000).toISOString(),
+          status: 'cocina', // 'nuevo' | 'cocina' | 'listo' | 'despachado'
+          type: 'mesa',
+          table: 'Mesa #07 · Terraza',
+          customer: 'Alexis Santana',
+          items: [
+            { name: 'Bife de Chorizo Angus (400g)', qty: 1, mods: ['Término Medio', 'Papas Rústicas', '+ Chimichurri'], price: 19900 },
+            { name: 'Pisco Sour Tabernero', qty: 2, mods: ['Copa Tradicional'], price: 13000 }
+          ],
+          subtotal: 32900,
+          tip: 3290,
+          total: 36190,
+          payment: '💳 Tarjeta Débito (POS a la mesa)',
+          notes: 'Carne bien sellada por fuera por favor.'
+        },
+        {
+          id: 'BRA-102',
+          createdAt: new Date(Date.now() - 12 * 60000).toISOString(),
+          status: 'listo',
+          type: 'delivery',
+          address: 'Av. Libertad 450, Depto 802, Viña del Mar',
+          customer: 'Martín Romero (+56 9 9038 7414)',
+          items: [
+            { name: 'Burger Doble Smoked Bacon', qty: 2, mods: ['Papas Tradicionales', '+ Doble Tocino'], price: 25400 },
+            { name: 'Schop Cerveza Artesanal IPA', qty: 2, mods: [], price: 9800 }
+          ],
+          subtotal: 35200,
+          tip: 3520,
+          deliveryFee: 1500,
+          total: 40220,
+          payment: '💵 Efectivo (Paga con billete de $50.000, enviar vuelto)',
+          notes: 'Tocar timbre 802, portón blanco.'
+        }
+      ];
+    }
+
+    function saveOrders() {
+      localStorage.setItem(KDS_STORAGE_KEY, JSON.stringify(orders));
+      renderBoard();
+    }
+
+    function fmt(n) {
+      return '$' + Number(n).toLocaleString('es-CL');
+    }
+
+    function getTimeAgo(dateStr) {
+      const diffMin = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
+      if (diffMin <= 0) return 'Hace instantes';
+      if (diffMin === 1) return 'Hace 1 min';
+      return `Hace ${diffMin} min`;
+    }
+
+    function handleIncomingOrder(newOrder) {
+      orders.unshift(newOrder);
+      saveOrders();
+      playKitchenChime();
+    }
+
+    function changeOrderStatus(orderId, nextStatus) {
+      const ord = orders.find(o => o.id === orderId);
+      if (ord) {
+        ord.status = nextStatus;
+        saveOrders();
+      }
+    }
+
+    function renderBoard() {
+      const colNuevos = document.getElementById('colNuevos');
+      const colCocina = document.getElementById('colCocina');
+      const colListos = document.getElementById('colListos');
+      const colDespachados = document.getElementById('colDespachados');
+
+      colNuevos.innerHTML = '';
+      colCocina.innerHTML = '';
+      colListos.innerHTML = '';
+      colDespachados.innerHTML = '';
+
+      let countN = 0, countC = 0, countL = 0, countD = 0;
+      let totalVentas = 0;
+
+      orders.forEach(o => {
+        totalVentas += (o.total || 0);
+
+        const card = document.createElement('div');
+        const isNew = o.status === 'nuevo';
+        card.className = `bg-kdsCard border ${isNew ? 'order-new-alert' : 'border-kdsBorder'} rounded-2xl p-4 shadow-lg flex flex-col justify-between space-y-3 transition-all`;
+
+        const isMesa = o.type === 'mesa';
+        const typeBadge = isMesa 
+          ? `<span class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">🍽️ ${o.table || 'MESA'}</span>`
+          : `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">🛵 DELIVERY</span>`;
+
+        card.innerHTML = `
+          <div class="space-y-2">
+            <!-- Header de la Orden -->
+            <div class="flex items-start justify-between border-b border-kdsBorder pb-2">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-mono font-black text-sm text-white">${o.id}</span>
+                  ${typeBadge}
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5 font-mono">
+                  ${new Date(o.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })} · <strong class="text-gold">${getTimeAgo(o.createdAt)}</strong>
+                </div>
+              </div>
+              <button onclick="printTicket('${o.id}')" title="Imprimir Comanda" class="text-slate-400 hover:text-white bg-kdsBg border border-kdsBorder p-1.5 rounded-lg text-xs cursor-pointer">
+                🖨️
+              </button>
+            </div>
+
+            <!-- Cliente / Destino -->
+            <div class="text-xs">
+              <div class="font-bold text-slate-200">${o.customer || 'Comensal Salón'}</div>
+              ${!isMesa && o.address ? `<div class="text-[11px] text-slate-400 leading-tight">📍 ${o.address}</div>` : ''}
+            </div>
+
+            <!-- Lista de Platos para Cocina -->
+            <div class="space-y-1.5 py-1 text-xs">
+              ${o.items.map(item => `
+                <div class="bg-kdsBg/70 p-2 rounded-xl border border-kdsBorder/60">
+                  <div class="flex justify-between items-baseline">
+                    <span class="font-bold text-white"><span class="text-amber-400 font-mono">${item.qty}x</span> ${item.name}</span>
+                    <span class="font-mono text-slate-400 text-[11px]">${fmt(item.price)}</span>
+                  </div>
+                  ${item.mods && item.mods.length > 0 ? `
+                    <div class="text-[10px] text-slate-400 pl-4 mt-0.5 space-y-0.5 font-mono">
+                      ${item.mods.map(m => `<div>• ${m}</div>`).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Notas de Cocina -->
+            ${o.notes ? `
+              <div class="p-2 rounded-xl bg-amber-950/30 border border-amber-800/40 text-[11px] text-amber-200">
+                <strong>📝 Nota Cocina:</strong> ${o.notes}
+              </div>
+            ` : ''}
+
+            <!-- Medio de Pago y Total -->
+            <div class="text-[11px] border-t border-kdsBorder pt-2 font-mono flex justify-between items-center text-slate-300">
+              <span class="truncate max-w-[170px]" title="${o.payment}">${o.payment}</span>
+              <span class="font-black text-gold text-sm">${fmt(o.total)}</span>
+            </div>
+          </div>
+
+          <!-- Botones de Acción de Flujo KDS -->
+          <div class="pt-1">
+            ${getActionButtons(o)}
+          </div>
+        `;
+
+        if (o.status === 'nuevo') {
+          colNuevos.appendChild(card);
+          countN++;
+        } else if (o.status === 'cocina') {
+          colCocina.appendChild(card);
+          countC++;
+        } else if (o.status === 'listo') {
+          colListos.appendChild(card);
+          countL++;
+        } else {
+          colDespachados.appendChild(card);
+          countD++;
+        }
+      });
+
+      document.getElementById('countNuevos').textContent = countN;
+      document.getElementById('countCocina').textContent = countC;
+      document.getElementById('countListos').textContent = countL;
+      document.getElementById('countDespachados').textContent = countD;
+
+      document.getElementById('statTotalOrdenes').textContent = orders.length;
+      document.getElementById('statVentasTurno').textContent = fmt(totalVentas);
+    }
+
+    function getActionButtons(order) {
+      if (order.status === 'nuevo') {
+        return `
+          <button onclick="changeOrderStatus('${order.id}', 'cocina')" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+            <span>🔥</span> Aceptar y Pasar a Cocina
+          </button>
+        `;
+      }
+      if (order.status === 'cocina') {
+        return `
+          <button onclick="changeOrderStatus('${order.id}', 'listo')" class="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+            <span>✓</span> Marcar Listo para Servir
+          </button>
+        `;
+      }
+      if (order.status === 'listo') {
+        return `
+          <button onclick="changeOrderStatus('${order.id}', 'despachado')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow transition-all cursor-pointer flex items-center justify-center gap-1">
+            <span>🚀</span> Marcar Despachado / Cobrado
+          </button>
+        `;
+      }
+      return `
+        <span class="block text-center text-[10px] text-slate-500 font-mono">
+          ✓ Orden Cerrada y Cobrada
+        </span>
+      `;
+    }
+
+    // Simulación de pedido entrante para demostraciones comerciales con clientes
+    function injectDemoOrder() {
+      const demoNames = ['Fernanda Valenzuela', 'Claudio Morales', 'Rodrigo Araya', 'Camila Soto'];
+      const demoTables = ['Mesa #03 · Salón', 'Mesa #08 · Terraza', 'Mesa #12 · VIP', 'Barra #02'];
+      const isMesa = Math.random() > 0.3;
+      const num = Math.floor(100 + Math.random() * 900);
+
+      const fakeOrder = {
+        id: 'BRA-' + num,
+        createdAt: new Date().toISOString(),
+        status: 'nuevo',
+        type: isMesa ? 'mesa' : 'delivery',
+        table: isMesa ? demoTables[Math.floor(Math.random() * demoTables.length)] : undefined,
+        address: !isMesa ? '1 Norte #1250, Viña del Mar' : undefined,
+        customer: demoNames[Math.floor(Math.random() * demoNames.length)],
+        items: [
+          { name: 'Bife de Chorizo Angus (400g)', qty: 1, mods: ['Término Medio', 'Papas Rústicas', '+ Chimichurri'], price: 19900 },
+          { name: 'Volcán de Manjar Casero', qty: 1, mods: [], price: 5500 }
+        ],
+        subtotal: 25400,
+        tip: 2540,
+        total: 27940,
+        payment: '💳 Tarjeta Débito/Crédito (POS)',
+        notes: 'Punto medio exacto por favor.'
+      };
+
+      handleIncomingOrder(fakeOrder);
+    }
+
+    function printTicket(orderId) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+
+      const pArea = document.getElementById('printArea');
+      pArea.innerHTML = `
+        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 4px;">
+          <h2 style="margin: 0; font-size: 14px; font-weight: 800;">LA BRASA & LEÑA</h2>
+          <p style="margin: 2px 0 0; font-size: 10px;">COMANDA KDS COCINA</p>
+          <h3 style="margin: 3px 0 0; font-size: 13px; font-weight: 900;">${o.id}</h3>
+          <p style="margin: 2px 0 0; font-size: 11px; font-weight: 900; background: #000; color: #fff; padding: 2px;">
+            ${o.type === 'mesa' ? o.table.toUpperCase() : 'DELIVERY A DOMICILIO'}
+          </p>
+        </div>
+
+        <div style="border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 4px;">
+          ${o.items.map(item => `
+            <div style="margin-bottom: 5px;">
+              <div style="font-weight: 800; font-size: 12px;">${item.qty}x ${item.name.toUpperCase()}</div>
+              ${item.mods ? item.mods.map(m => `<div style="font-size: 10px; padding-left: 8px;">• ${m}</div>`).join('') : ''}
+            </div>
+          `).join('')}
+          ${o.notes ? `<div style="font-size: 10px; font-weight: bold; margin-top: 4px;">>> NOTA: ${o.notes}</div>` : ''}
+        </div>
+
+        <div style="font-size: 10px;">
+          <div>Subtotal: ${fmt(o.subtotal)}</div>
+          <div>Propina 10%: ${fmt(o.tip || 0)}</div>
+          <div style="font-weight: 900; font-size: 12px; margin-top: 2px;">TOTAL: ${fmt(o.total)}</div>
+          <div style="margin-top: 2px; font-size: 10px;">Medio de Pago: ${o.payment}</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 6px; font-size: 8px; border-top: 1px dashed #000; padding-top: 3px;">
+          UNIVERSO693 SpA · KDS v2.0
+        </div>
+      `;
+
+      pArea.classList.remove('hidden');
+      window.print();
+      setTimeout(() => pArea.classList.add('hidden'), 500);
+    }
+
+    function openSplitScreen() {
+      window.open('index.html', '_blank', 'width=450,height=800,left=50,top=50');
+    }
+
+    // Render inicial
+    renderBoard();
+
+    // Actualizar tiempos cada 30 segundos
+    setInterval(renderBoard, 30000);
+  </script>
+</body>
+</html>

@@ -77,8 +77,15 @@
         </div>
       </div>
 
-      <!-- Selector de Modo: Mesa en Salón vs Delivery / Retiro -->
-      <div class="flex items-center bg-warmcard p-1 rounded-2xl border border-white/10 text-xs">
+      <div class="flex items-center gap-2">
+        <!-- Enlace Directo al Sistema de Cocina / KDS -->
+        <a href="cocina.html" target="_blank" class="hidden sm:flex text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-amber-950/60 text-amber-300 border border-amber-600/50 hover:bg-amber-900/60 items-center gap-1.5 transition-all shadow cursor-pointer">
+          <span>👨‍🍳</span>
+          <span>Ver Pantalla de Cocina (KDS) ↗</span>
+        </a>
+
+        <!-- Selector de Modo: Mesa en Salón vs Delivery / Retiro -->
+        <div class="flex items-center bg-warmcard p-1 rounded-2xl border border-white/10 text-xs">
         <button id="btnModeMesa" onclick="setServiceMode('mesa')" class="px-3 py-1.5 rounded-xl font-bold transition-all bg-ember text-white shadow">
           🍽️ Mesa
         </button>
@@ -227,6 +234,37 @@
         <!-- Inyección JS -->
       </div>
 
+      <!-- Datos de Despacho / Delivery (solo se muestra en modo delivery) -->
+      <div id="deliveryFields" class="hidden bg-darkwood/70 rounded-2xl p-3.5 border border-white/10 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-amber-300 uppercase tracking-wider">🛵 Datos de Entrega a Domicilio:</span>
+          <span class="text-[10px] text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">Rango Activo</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-stone-400 mb-0.5">Nombre de quien recibe:</label>
+            <input id="delivName" type="text" placeholder="Ej: Camila Soto" value="Camila Soto" class="w-full bg-warmcard border border-white/10 rounded-xl px-2.5 py-1.5 text-white focus:outline-none focus:border-ember">
+          </div>
+          <div>
+            <label class="block text-[10px] text-stone-400 mb-0.5">Teléfono WhatsApp:</label>
+            <input id="delivPhone" type="tel" placeholder="+56 9 ..." value="+56 9 9038 7414" class="w-full bg-warmcard border border-white/10 rounded-xl px-2.5 py-1.5 text-white focus:outline-none focus:border-ember">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] text-stone-400 mb-0.5">Dirección y Depto:</label>
+          <input id="delivAddress" type="text" placeholder="Ej: 3 Norte 450, Depto 501" value="Av. San Martín 820, Viña del Mar" class="w-full bg-warmcard border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-ember">
+        </div>
+        <div>
+          <label class="block text-[10px] text-stone-400 mb-0.5">Zona / Rango de Despacho:</label>
+          <select id="delivZone" onchange="updateModalTotals()" class="w-full bg-warmcard border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-ember">
+            <option value="1500" data-zone="Viña Centro / Poniente">Viña Centro / Poniente (+$1.500 despacho)</option>
+            <option value="3000" data-zone="Reñaca / Jardín del Mar">Reñaca / Jardín del Mar (+$3.000 despacho)</option>
+            <option value="4500" data-zone="Concón Costa">Concón Costa (+$4.500 despacho)</option>
+            <option value="0" data-zone="Retiro en Local">Retiro en Local ($0 sin costo)</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Selector de Medio de Pago -->
       <div class="bg-darkwood/70 rounded-2xl p-3 border border-white/10 space-y-2">
         <label class="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">Medio de Pago:</label>
@@ -356,15 +394,18 @@
       const sendBtnText = document.getElementById('btnSendOrderText');
       const destLabel = document.getElementById('modalDestinoLabel');
 
+      const delivFields = document.getElementById('deliveryFields');
       if (mode === 'mesa') {
         banner.classList.remove('hidden');
+        if (delivFields) delivFields.classList.add('hidden');
         ctxLabel.textContent = 'COMANDA ' + currentTable.toUpperCase();
         sendBtnText.textContent = 'Mandar Comanda a Cocina (' + currentTable + ')';
         destLabel.textContent = 'Destino: ' + currentTable;
       } else {
         banner.classList.add('hidden');
+        if (delivFields) delivFields.classList.remove('hidden');
         ctxLabel.textContent = 'PEDIDO DELIVERY / RETIRO';
-        sendBtnText.textContent = 'Enviar Pedido al WhatsApp del Restaurante 📲';
+        sendBtnText.textContent = 'Confirmar y Enviar a Cocina / WhatsApp 📲';
         destLabel.textContent = 'Destino: Reparto a Domicilio o Retiro en Local';
       }
     }
@@ -642,13 +683,20 @@
       const subtotal = cart.reduce((s, item) => s + item.subtotal, 0);
       const isTipChecked = document.getElementById('tipCheckbox').checked;
       const tip = isTipChecked ? Math.round(subtotal * (CFG.propinaSugeridaPct / 100)) : 0;
-      const total = subtotal + tip;
+      
+      let deliveryFee = 0;
+      if (serviceMode === 'delivery') {
+        const zoneSelect = document.getElementById('delivZone');
+        if (zoneSelect) deliveryFee = parseInt(zoneSelect.value) || 0;
+      }
+
+      const total = subtotal + tip + deliveryFee;
 
       document.getElementById('subtotalDisplay').textContent = fmt(subtotal);
       document.getElementById('tipDisplay').textContent = fmt(tip);
       document.getElementById('tipAmountLabel').textContent = '+' + fmt(Math.round(subtotal * (CFG.propinaSugeridaPct / 100)));
       document.getElementById('modalTotal').textContent = fmt(total);
-      return { subtotal, tip, total };
+      return { subtotal, tip, deliveryFee, total };
     }
 
     // --- ENVÍO DE ORDEN Y COMUNICACIÓN ---
@@ -692,6 +740,57 @@
     function processOrder() {
       if (cart.length === 0) return;
       const ticketId = '#BRA-' + Math.floor(100 + Math.random() * 900);
+      const { subtotal, tip, deliveryFee, total } = updateModalTotals();
+      const payObj = CFG.metodosPago.find(m => m.id === selectedPayment);
+      const payName = payObj ? payObj.nombre : 'Por definir';
+
+      let customerName = 'Comensal Salón';
+      let fullAddress = undefined;
+      if (serviceMode === 'delivery') {
+        customerName = (document.getElementById('delivName').value || 'Cliente Delivery') + ' (' + (document.getElementById('delivPhone').value || '') + ')';
+        const zoneSelect = document.getElementById('delivZone');
+        const zoneName = zoneSelect ? zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-zone') : '';
+        fullAddress = (document.getElementById('delivAddress').value || '') + ' · Zona: ' + zoneName;
+      }
+
+      // Estructura completa del pedido sincronizado con KDS
+      const orderPayload = {
+        id: ticketId,
+        createdAt: new Date().toISOString(),
+        status: 'nuevo',
+        type: serviceMode,
+        table: serviceMode === 'mesa' ? currentTable : undefined,
+        address: fullAddress,
+        customer: customerName,
+        items: cart.map(i => ({
+          name: i.name,
+          qty: i.qty,
+          mods: i.selectedOptions.map(o => o.nombre + (o.precio > 0 ? ` (+${fmt(o.precio)})` : '')),
+          price: i.subtotal
+        })),
+        subtotal: subtotal,
+        tip: tip,
+        deliveryFee: deliveryFee,
+        total: total,
+        payment: payName,
+        notes: cart.map(i => i.notes).filter(Boolean).join(', ')
+      };
+
+      // 1. Guardar en localStorage para persistencia del KDS
+      try {
+        const KDS_KEY = 'universo693_kds_orders';
+        const existing = JSON.parse(localStorage.getItem(KDS_KEY) || '[]');
+        existing.unshift(orderPayload);
+        localStorage.setItem(KDS_KEY, JSON.stringify(existing));
+      } catch(e) {}
+
+      // 2. Transmitir en tiempo real al panel KDS de cocina
+      try {
+        const bc = new BroadcastChannel('universo693_restaurante_sync');
+        bc.postMessage({ type: 'NEW_ORDER', order: orderPayload });
+        bc.close();
+      } catch(e) {}
+
       document.getElementById('ticketIdLabel').textContent = ticketId;
       document.getElementById('orderSuccess').classList.remove('hidden');
 
@@ -703,7 +802,7 @@
         updateCartBar();
         renderMenu();
         closeComandaModal();
-        alert('🛎️ ¡Comanda ' + ticketId + ' registrada exitosamente! Cocina ya está preparando tus platos.');
+        alert('🛎️ ¡Comanda ' + ticketId + ' ingresada en Pantalla de Cocina (KDS)! El chef y los garzones ya tienen tu pedido.');
       }, 1200);
     }
 
