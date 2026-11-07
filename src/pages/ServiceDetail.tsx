@@ -95,15 +95,15 @@ export const ServiceDetail: React.FC = () => {
                     <span className="text-[10px] font-black uppercase tracking-wider text-cyan-400 bg-cyan-950 px-2.5 py-0.5 rounded-full border border-cyan-800">
                       Starter PyME
                     </span>
-                    <span className="text-[11px] font-mono text-slate-500 line-through">Ref: $390.000</span>
+                    <span className="text-[11px] font-mono text-cyan-400 font-bold">1 Canal Oficial</span>
                   </div>
                   <h3 className="text-xl font-black text-white">
                     {es ? 'Agente WhatsApp o Web' : 'WhatsApp or Web Agent'}
                   </h3>
                   <div className="pt-2">
-                    <div className="text-3xl font-black text-white">$120.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
+                    <div className="text-3xl font-black text-white">$490.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
                     <div className="text-xs text-cyan-300 font-mono font-semibold mt-1">
-                      {es ? '+ $15.000 CLP/mes tokens & mantención' : '+ $15,000 CLP/mo tokens & maintenance'}
+                      {es ? '+ $59.000 CLP/mes tokens & mantención' : '+ $59,000 CLP/mo tokens & maintenance'}
                     </div>
                   </div>
                   <ul className="text-xs text-slate-300 space-y-2 pt-3 border-t border-slate-800">
@@ -132,9 +132,9 @@ export const ServiceDetail: React.FC = () => {
                     {es ? 'WhatsApp + Web + CRM' : 'WhatsApp + Web + CRM'}
                   </h3>
                   <div className="pt-2">
-                    <div className="text-3xl font-black text-white">$250.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
+                    <div className="text-3xl font-black text-white">$690.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
                     <div className="text-xs text-cyan-300 font-mono font-semibold mt-1">
-                      {es ? '+ $30.000 CLP/mes tokens & mantención' : '+ $30,000 CLP/mo tokens & maintenance'}
+                      {es ? '+ $79.000 CLP/mes tokens & mantención' : '+ $79,000 CLP/mo tokens & maintenance'}
                     </div>
                   </div>
                   <ul className="text-xs text-slate-200 space-y-2 pt-3 border-t border-cyan-900/50">
@@ -160,7 +160,7 @@ export const ServiceDetail: React.FC = () => {
                     {es ? 'Tutor o Agente Especializado' : 'Specialized Agent / Tutor'}
                   </h3>
                   <div className="pt-2">
-                    <div className="text-3xl font-black text-white">Desde $490.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
+                    <div className="text-3xl font-black text-white">Desde $990.000 <span className="text-xs font-normal text-slate-400">+ IVA</span></div>
                     <div className="text-xs text-amber-300 font-mono font-semibold mt-1">
                       {es ? 'Infraestructura & Tokens a Medida' : 'Tailored Tokens & Infra'}
                     </div>

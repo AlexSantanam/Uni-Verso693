@@ -750,7 +750,7 @@ export const PaginasWeb: React.FC = () => {
                     Add-On Oficial · Automatización
                   </span>
                   <span className="text-[11px] font-mono text-cyan-300 font-bold bg-cyan-950/80 px-2.5 py-0.5 rounded-full border border-cyan-800/60">
-                    Ref. Comercio: $390.000 CLP
+                    Integración Empresarial Oficial
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">
@@ -786,18 +786,18 @@ export const PaginasWeb: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-2xl sm:text-3xl font-black text-white">
-                    $120.000 <span className="text-xs font-normal text-slate-400">+ IVA</span>
+                    $490.000 <span className="text-xs font-normal text-slate-400">+ IVA</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 line-through mt-0.5">
-                    Valor Comercio: $390.000 CLP
+                  <div className="text-[11px] text-cyan-400 font-semibold mt-0.5">
+                    Arquitectura RAG + Conexión a Medida
                   </div>
                 </div>
                 <div className="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800 text-xs">
                   <span className="text-slate-400 block text-[10px]">Cuota mensual tokens & mantención:</span>
-                  <span className="font-mono font-extrabold text-cyan-300 text-sm">+$15.000 CLP / mes</span>
+                  <span className="font-mono font-extrabold text-cyan-300 text-sm">+$59.000 CLP / mes</span>
                 </div>
                 <a
-                  href={whatsappLink('Hola UNIVERSO693, me interesa implementar el Agente de IA 24/7 ($120.000 setup + $15.000/mes) para mi empresa.')}
+                  href={whatsappLink('Hola UNIVERSO693, me interesa implementar el Agente de IA 24/7 ($490.000 setup + $59.000/mes) para mi empresa.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3 px-4 text-xs shadow-lg transition-all"

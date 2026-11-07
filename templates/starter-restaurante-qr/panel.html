@@ -83,6 +83,7 @@
         <button class="panel-tab-btn" data-tab="productos" onclick="switchTab('productos')">🍽️ Productos</button>
         <button class="panel-tab-btn" data-tab="categorias" onclick="switchTab('categorias')">🗂️ Categorías</button>
         <button class="panel-tab-btn" data-tab="clientes" onclick="switchTab('clientes')">👥 Clientes</button>
+        <button class="panel-tab-btn" data-tab="descuentos" onclick="switchTab('descuentos')">🏷️ Descuentos</button>
       </div>
     </header>
 
@@ -149,8 +150,38 @@
           <p class="text-[10px] text-stone-500">Se crean solos cuando alguien pide por delivery desde la carta. Los pedidos de mesa no quedan fichados (no se les pide teléfono).</p>
         </div>
 
+        <div class="bg-warmcard rounded-2xl border border-amber-700/40 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-amber-300">📣 Campaña de Reconquista (clientes 💤 inactivos)</h2>
+          <p class="text-[11px] text-stone-400">Mensaje sugerido — edítalo si quieres, se usa para todos los botones "Enviar" de abajo.</p>
+          <textarea id="reconquistaMsg" rows="2" class="w-full bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember"></textarea>
+          <div id="reconquistaList" class="space-y-2"></div>
+        </div>
+
         <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
           <div id="clientesList" class="divide-y divide-white/5"></div>
+        </div>
+      </section>
+
+      <!-- TAB: DESCUENTOS -->
+      <section id="tab-descuentos" class="panel-pane space-y-4 hidden">
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-3">
+          <h2 class="font-bold text-sm text-white">➕ Nuevo Código de Descuento</h2>
+          <div class="grid sm:grid-cols-2 gap-2">
+            <input id="newDescCodigo" type="text" placeholder="Código (ej: BIENVENIDO10)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-ember">
+            <select id="newDescTipo" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+              <option value="porcentaje">% Porcentaje</option>
+              <option value="monto">$ Monto fijo</option>
+            </select>
+            <input id="newDescValor" type="number" placeholder="Valor (ej: 10 o 2000)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <input id="newDescMinimo" type="number" step="500" placeholder="Pedido mínimo (opcional)" class="bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+            <input id="newDescUsosMax" type="number" placeholder="Límite de usos (opcional)" class="sm:col-span-2 bg-darkwood border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-ember">
+          </div>
+          <button onclick="agregarDescuento()" class="w-full py-2.5 rounded-xl bg-ember hover:bg-[#B04B25] text-white font-bold text-xs cursor-pointer">+ Crear Código</button>
+        </div>
+
+        <div class="bg-warmcard rounded-2xl border border-white/10 p-4 space-y-2">
+          <h2 class="font-bold text-sm text-white mb-1">🏷️ Códigos Activos</h2>
+          <div id="descuentosList" class="divide-y divide-white/5"></div>
         </div>
       </section>
 
@@ -200,6 +231,7 @@
     let categorias = [];
     let productos = [];
     let clientes = [];
+    let descuentos = [];
 
     document.getElementById('loginBrandLabel').textContent = CFG.nombre + ' · Carta, precios, stock y pedidos en vivo.';
     document.getElementById('brandName').textContent = 'Panel · ' + CFG.nombre;
@@ -276,7 +308,73 @@
           ultimaCompra: d.data().ultimaCompra && d.data().ultimaCompra.toDate ? d.data().ultimaCompra.toDate() : null
         }));
         renderClientesList();
+        renderReconquistaList();
       });
+
+      window.descuentosRef().onSnapshot(snap => {
+        descuentos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        renderDescuentosList();
+      });
+    }
+
+    // --- DESCUENTOS ---
+    function renderDescuentosList() {
+      const box = document.getElementById('descuentosList');
+      if (descuentos.length === 0) {
+        box.innerHTML = '<p class="text-xs text-stone-500 py-3">Aún no has creado códigos de descuento.</p>';
+        return;
+      }
+      box.innerHTML = descuentos.map(d => {
+        const valorTxt = d.tipo === 'porcentaje' ? `${d.valor}%` : fmt(d.valor);
+        const usos = d.usosMax ? `${d.usosActuales || 0}/${d.usosMax} usos` : `${d.usosActuales || 0} usos (sin límite)`;
+        const activo = d.activo !== false;
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-2 text-xs">
+            <div class="flex-1 min-w-[140px]">
+              <div class="text-gold font-mono font-bold">${d.docId}</div>
+              <div class="text-[10px] text-stone-500">${valorTxt} de descuento · ${usos}${d.minimoCompra ? ' · mín. ' + fmt(d.minimoCompra) : ''}</div>
+            </div>
+            <button onclick="toggleDescuentoActivo('${d.docId}', ${!activo})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold ${activo ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-red-950 text-red-300 border border-red-800'}">
+              ${activo ? '🟢 Activo' : '🔴 Desactivado'}
+            </button>
+            <button onclick="eliminarDescuento('${d.docId}')" class="text-stone-500 hover:text-red-400 text-[11px] font-bold px-1">Eliminar</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleDescuentoActivo(docId, nextValue) {
+      window.descuentosRef().doc(docId).update({ activo: nextValue });
+    }
+
+    function eliminarDescuento(docId) {
+      if (!confirm('¿Eliminar este código de descuento?')) return;
+      window.descuentosRef().doc(docId).delete();
+    }
+
+    function agregarDescuento() {
+      const codigo = document.getElementById('newDescCodigo').value.trim().toUpperCase();
+      const tipo = document.getElementById('newDescTipo').value;
+      const valor = Number(document.getElementById('newDescValor').value);
+      const minimoCompra = Number(document.getElementById('newDescMinimo').value) || 0;
+      const usosMax = Number(document.getElementById('newDescUsosMax').value) || 0;
+
+      if (!codigo || !valor || valor <= 0) {
+        alert('Completa al menos el código y un valor mayor a 0.');
+        return;
+      }
+
+      window.descuentosRef().doc(codigo).set({
+        tipo, valor, minimoCompra, usosMax,
+        usosActuales: 0,
+        activo: true,
+        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      document.getElementById('newDescCodigo').value = '';
+      document.getElementById('newDescValor').value = '';
+      document.getElementById('newDescMinimo').value = '';
+      document.getElementById('newDescUsosMax').value = '';
     }
 
     // --- CLIENTES (CRM) ---
@@ -287,6 +385,33 @@
       if (dias > 45) return { label: '💤 Inactivo', diasInactivo: dias };
       if (c.totalPedidos >= 3 && dias <= 30) return { label: '⭐ Frecuente', diasInactivo: dias };
       return { label: '✅ Activo', diasInactivo: dias };
+    }
+
+    // Mensaje por defecto de reconquista (editable por el dueño)
+    document.getElementById('reconquistaMsg').value =
+      `Hola! Te extrañamos en ${CFG.nombre} 🔥 Hace tiempo no te vemos por acá. Vuelve esta semana y te tenemos un descuento especial. ¿Te paso la carta?`;
+    document.getElementById('reconquistaMsg').addEventListener('input', renderReconquistaList);
+
+    function renderReconquistaList() {
+      const box = document.getElementById('reconquistaList');
+      const mensaje = document.getElementById('reconquistaMsg').value;
+      const inactivos = clientes.filter(c => segmentoCliente(c).label === '💤 Inactivo');
+
+      if (inactivos.length === 0) {
+        box.innerHTML = '<p class="text-[11px] text-stone-500">Ningún cliente inactivo por ahora. 🎉</p>';
+        return;
+      }
+
+      box.innerHTML = inactivos.map(c => {
+        const telLimpio = window.normalizarTelefono(c.telefono);
+        const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
+        return `
+          <div class="flex items-center justify-between gap-2 text-xs bg-darkwood/60 rounded-xl px-3 py-2">
+            <span class="text-white font-semibold">${c.nombre || 'Sin nombre'} <span class="text-stone-500 font-normal">· ${segmentoCliente(c).diasInactivo} días sin pedir</span></span>
+            <a href="${url}" target="_blank" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-white">💬 Enviar</a>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderClientesList() {

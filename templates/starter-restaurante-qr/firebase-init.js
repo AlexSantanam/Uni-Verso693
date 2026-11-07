@@ -28,6 +28,7 @@
   window.categoriasRef = () => restRef().collection('categorias');
   window.pedidosRef = () => restRef().collection('pedidos');
   window.clientesRef = () => restRef().collection('clientes');
+  window.descuentosRef = () => restRef().collection('descuentos');
 
   // Normaliza un teléfono a solo dígitos, para usarlo como ID de documento estable.
   window.normalizarTelefono = function normalizarTelefono(tel) {

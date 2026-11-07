@@ -51,6 +51,15 @@ service cloud.firestore {
         allow create, update: if true;
         allow read, delete: if request.auth != null;
       }
+
+      // Los códigos de descuento son públicos para LEER (el cliente debe poder
+      // validar un código al pagar) y para actualizar el contador de usos al
+      // confirmar un pedido, pero solo el personal autenticado puede crearlos
+      // o eliminarlos desde panel.html.
+      match /descuentos/{codigo} {
+        allow read, update: if true;
+        allow create, delete: if request.auth != null;
+      }
     }
   }
 }

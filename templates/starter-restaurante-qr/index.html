@@ -385,6 +385,16 @@
         </div>
       </div>
 
+      <!-- Código de Descuento -->
+      <div class="bg-darkwood/70 rounded-2xl p-3 border border-white/10 space-y-2">
+        <label class="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">¿Tienes un código de descuento?</label>
+        <div class="flex gap-2">
+          <input id="discountCodeInput" type="text" placeholder="Ej: BIENVENIDO10" class="flex-1 bg-warmcard border border-white/10 rounded-xl px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-ember">
+          <button onclick="aplicarDescuento()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs cursor-pointer">Aplicar</button>
+        </div>
+        <p id="discountFeedback" class="text-[11px] font-semibold hidden"></p>
+      </div>
+
       <!-- Selector de Medio de Pago -->
       <div class="bg-darkwood/70 rounded-2xl p-3 border border-white/10 space-y-2">
         <label class="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">Medio de Pago:</label>
@@ -409,6 +419,10 @@
         <div class="flex justify-between text-stone-400">
           <span>Subtotal consumo:</span>
           <span id="subtotalDisplay">$0</span>
+        </div>
+        <div id="discountLine" class="hidden justify-between text-emerald-400">
+          <span id="discountLineLabel">Descuento:</span>
+          <span id="discountDisplay">-$0</span>
         </div>
         <div class="flex justify-between text-gold">
           <span>Propina 10%:</span>
@@ -467,6 +481,7 @@
     let activeModDish = null;
     let activeModQty = 1;
     let selectedPayment = CFG.metodosPago[0].id;
+    let descuentoAplicado = null; // { codigo, tipo, valor, monto }
 
     // Carta en vivo: se llena desde Firestore (fuente real) en vez de config.js.
     // config.js solo se usa como "semilla" la primera vez que corre el local.
@@ -878,25 +893,92 @@
       const subtotal = cart.reduce((s, item) => s + item.subtotal, 0);
       const isTipChecked = document.getElementById('tipCheckbox').checked;
       const tip = isTipChecked ? Math.round(subtotal * (CFG.propinaSugeridaPct / 100)) : 0;
-      
+
       let deliveryFee = 0;
       if (serviceMode === 'delivery') {
         const zoneSelect = document.getElementById('delivZone');
         if (zoneSelect) deliveryFee = parseInt(zoneSelect.value) || 0;
       }
 
-      const total = subtotal + tip + deliveryFee;
+      let discountAmount = 0;
+      const discountLine = document.getElementById('discountLine');
+      if (descuentoAplicado) {
+        discountAmount = descuentoAplicado.tipo === 'porcentaje'
+          ? Math.round(subtotal * (descuentoAplicado.valor / 100))
+          : descuentoAplicado.valor;
+        discountAmount = Math.min(discountAmount, subtotal);
+        document.getElementById('discountLineLabel').textContent = `Descuento (${descuentoAplicado.codigo}):`;
+        document.getElementById('discountDisplay').textContent = '-' + fmt(discountAmount);
+        discountLine.classList.remove('hidden');
+        discountLine.classList.add('flex');
+      } else {
+        discountLine.classList.add('hidden');
+        discountLine.classList.remove('flex');
+      }
+
+      const total = Math.max(0, subtotal - discountAmount + tip + deliveryFee);
 
       document.getElementById('subtotalDisplay').textContent = fmt(subtotal);
       document.getElementById('tipDisplay').textContent = fmt(tip);
       document.getElementById('tipAmountLabel').textContent = '+' + fmt(Math.round(subtotal * (CFG.propinaSugeridaPct / 100)));
       document.getElementById('modalTotal').textContent = fmt(total);
-      return { subtotal, tip, deliveryFee, total };
+      return { subtotal, tip, deliveryFee, discountAmount, total };
+    }
+
+    // --- CÓDIGOS DE DESCUENTO ---
+    function aplicarDescuento() {
+      const input = document.getElementById('discountCodeInput');
+      const feedback = document.getElementById('discountFeedback');
+      const codigo = input.value.trim().toUpperCase();
+      feedback.classList.remove('hidden');
+
+      if (!codigo) {
+        feedback.textContent = 'Ingresa un código primero.';
+        feedback.className = 'text-[11px] font-semibold text-amber-300';
+        return;
+      }
+
+      const subtotal = cart.reduce((s, item) => s + item.subtotal, 0);
+
+      window.descuentosRef().doc(codigo).get().then(doc => {
+        if (!doc.exists || doc.data().activo === false) {
+          descuentoAplicado = null;
+          feedback.textContent = '❌ Código no válido o inactivo.';
+          feedback.className = 'text-[11px] font-semibold text-red-400';
+          updateModalTotals();
+          return;
+        }
+
+        const d = doc.data();
+        if (d.minimoCompra && subtotal < d.minimoCompra) {
+          descuentoAplicado = null;
+          feedback.textContent = `❌ Pedido mínimo de ${fmt(d.minimoCompra)} para este código.`;
+          feedback.className = 'text-[11px] font-semibold text-red-400';
+          updateModalTotals();
+          return;
+        }
+        if (d.usosMax && (d.usosActuales || 0) >= d.usosMax) {
+          descuentoAplicado = null;
+          feedback.textContent = '❌ Este código ya alcanzó su límite de usos.';
+          feedback.className = 'text-[11px] font-semibold text-red-400';
+          updateModalTotals();
+          return;
+        }
+
+        descuentoAplicado = { codigo, tipo: d.tipo, valor: d.valor };
+        feedback.textContent = '✅ ¡Descuento aplicado!';
+        feedback.className = 'text-[11px] font-semibold text-emerald-400';
+        updateModalTotals();
+      }).catch(err => {
+        console.error('Error validando descuento:', err);
+        feedback.textContent = '⚠️ No pudimos validar el código, intenta de nuevo.';
+        feedback.className = 'text-[11px] font-semibold text-amber-300';
+      });
     }
 
     // --- ENVÍO DE ORDEN Y COMUNICACIÓN ---
     function generateTicketText() {
-      const { subtotal, tip, total } = updateModalTotals();
+      const { subtotal, tip, discountAmount, total } = updateModalTotals();
       const payObj = CFG.metodosPago.find(m => m.id === selectedPayment);
       const payName = payObj ? payObj.nombre : 'Por definir';
 
@@ -919,6 +1001,7 @@
 
       text += `----------------------------------------\n`;
       text += `Subtotal consumo: ${fmt(subtotal)}\n`;
+      if (discountAmount > 0) text += `Descuento (${descuentoAplicado.codigo}): -${fmt(discountAmount)}\n`;
       if (tip > 0) text += `Propina sugerida (${CFG.propinaSugeridaPct}%): ${fmt(tip)}\n`;
       text += `*TOTAL A PAGAR: ${fmt(total)}*\n`;
       text += `----------------------------------------\n`;
@@ -935,12 +1018,12 @@
     function processOrder() {
       if (cart.length === 0) return;
       const ticketId = '#BRA-' + Math.floor(100 + Math.random() * 900);
-      const { subtotal, tip, deliveryFee, total } = updateModalTotals();
+      const { subtotal, tip, deliveryFee, discountAmount, total } = updateModalTotals();
       const payObj = CFG.metodosPago.find(m => m.id === selectedPayment);
       const payName = payObj ? payObj.nombre : 'Por definir';
 
       let customerName = 'Comensal Salón';
-      let fullAddress = undefined;
+      let fullAddress = null; // Firestore no acepta "undefined" en los campos, por eso null y no dejarlo sin asignar
       if (serviceMode === 'delivery') {
         customerName = (document.getElementById('delivName').value || 'Cliente Delivery') + ' (' + (document.getElementById('delivPhone').value || '') + ')';
         const zoneSelect = document.getElementById('delivZone');
@@ -954,7 +1037,7 @@
         createdAt: new Date().toISOString(),
         status: 'nuevo',
         type: serviceMode,
-        table: serviceMode === 'mesa' ? currentTable : undefined,
+        table: serviceMode === 'mesa' ? currentTable : null,
         address: fullAddress,
         customer: customerName,
         items: cart.map(i => ({
@@ -966,6 +1049,8 @@
         subtotal: subtotal,
         tip: tip,
         deliveryFee: deliveryFee,
+        discountCode: descuentoAplicado ? descuentoAplicado.codigo : null,
+        discountAmount: discountAmount,
         total: total,
         payment: payName,
         notes: cart.map(i => i.notes).filter(Boolean).join(', ')
@@ -978,6 +1063,11 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         actualizarFichaCliente(total);
+        if (descuentoAplicado) {
+          window.descuentosRef().doc(descuentoAplicado.codigo).update({
+            usosActuales: firebase.firestore.FieldValue.increment(1)
+          }).catch(err => console.error('Error registrando uso del descuento:', err));
+        }
         document.getElementById('ticketIdLabel').textContent = ticketId;
         document.getElementById('orderSuccess').classList.remove('hidden');
 
@@ -986,6 +1076,9 @@
             sendOrderWhatsApp();
           }
           cart = [];
+          descuentoAplicado = null;
+          document.getElementById('discountCodeInput').value = '';
+          document.getElementById('discountFeedback').classList.add('hidden');
           updateCartBar();
           renderMenu();
           closeComandaModal();
