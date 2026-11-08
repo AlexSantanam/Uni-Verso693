@@ -415,13 +415,17 @@
       <header class="bg-blue-600 text-white px-4 sm:px-6 py-2.5 sticky top-0 z-40 shadow-md">
         <div class="flex items-center justify-between gap-3">
           
-          <!-- IZQUIERDA: BOTÓN MENÚ MÓVIL + ACTUALIZA TU PLAN -->
-          <div class="flex items-center gap-3">
+          <!-- IZQUIERDA: LOGO OLACLICK + BOTÓN ACTUALIZA TU PLAN -->
+          <div class="flex items-center gap-2 sm:gap-3">
             <button onclick="toggleSidebar(true)" class="md:hidden p-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-base">
               ☰
             </button>
-            <button onclick="abrirModalPlanes()" class="px-3.5 py-1.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-black text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer">
-              <span class="text-amber-500">⚡</span>
+            <div class="flex items-center gap-1.5 pr-2">
+              <span class="text-base">📖</span>
+              <span class="font-black text-sm sm:text-base tracking-tight text-white flex items-center">OlaClick<span class="text-amber-300 text-xs ml-0.5">✨</span></span>
+            </div>
+            <button onclick="abrirModalPlanes()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-white text-slate-900 hover:bg-slate-50 font-black text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer border border-white/20">
+              <span class="text-slate-900 font-black">⚡</span>
               <span>Actualiza tu Plan</span>
             </button>
           </div>
@@ -7398,78 +7402,613 @@
   <!-- ========================================================================= -->
   <!-- MODAL: PLANES Y SUSCRIPCIÓN (ACTUALIZA TU PLAN) -->
   <!-- ========================================================================= -->
-  <div id="modalPlanesSuscripcion" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[95vh] overflow-y-auto">
+    <!-- ========================================================================= -->
+  <!-- MODAL / VISTA COMPLETA: MEJORA DE PLAN (ACTUALIZA TU PLAN OLACLICK) -->
+  <!-- ========================================================================= -->
+  <div id="modalPlanesSuscripcion" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md hidden overflow-y-auto">
+    <div class="min-h-screen bg-slate-50 flex flex-col">
       
-      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-        <div>
-          <span class="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider block">PLANES ZOCO OS</span>
-          <h3 class="font-black text-slate-900 text-xl">Elige el plan ideal para tu local</h3>
-        </div>
-        <button type="button" onclick="cerrarModalPlanes()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- PLAN FREE -->
-        <div class="p-5 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <h4 class="font-black text-slate-900 text-sm">Free</h4>
-            <div class="text-2xl font-black text-slate-900">$0 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-            <ul class="text-[11px] text-slate-600 space-y-1.5">
-              <li>✓ Menú digital QR ilimitado</li>
-              <li>✓ Comandas en pantalla KDS</li>
-              <li>✓ Punto de Venta (PDV)</li>
-              <li>✓ 0% comisiones</li>
-            </ul>
+      <!-- Topbar del Checkout de Planes -->
+      <header class="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-lg">⚡</span>
+            <span class="font-black text-xl tracking-tight text-slate-900">OlaClick<span class="text-blue-600">.</span></span>
           </div>
-          <span class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs text-center block">Plan Actual</span>
+
+          <!-- Pasos de compra / Breadcrumb -->
+          <nav class="hidden md:flex items-center gap-2 text-sm font-semibold text-slate-500">
+            <span id="stepTab1" class="text-blue-600 font-bold flex items-center gap-1.5 cursor-pointer" onclick="irAPasoPlanes(1)">
+              <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">1</span>
+              Selecciona tu plan
+            </span>
+            <span class="text-slate-300">›</span>
+            <span id="stepTab2" class="text-slate-400 flex items-center gap-1.5 cursor-pointer" onclick="irAPasoPlanes(2)">
+              <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-xs flex items-center justify-center">2</span>
+              Periodo de facturación
+            </span>
+            <span class="text-slate-300">›</span>
+            <span id="stepTab3" class="text-slate-400 flex items-center gap-1.5 cursor-pointer" onclick="irAPasoPlanes(3)">
+              <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-xs flex items-center justify-center">3</span>
+              Completa tu compra
+            </span>
+          </nav>
         </div>
 
-        <!-- PLAN ADVANCED -->
-        <div class="p-5 rounded-2xl border-2 border-blue-600 bg-blue-50/30 space-y-4 flex flex-col justify-between relative shadow-sm">
-          <div class="absolute -top-3 right-4 px-2 py-0.5 rounded-full bg-blue-600 text-white font-extrabold text-[9px] uppercase tracking-wider">Más Popular</div>
-          <div class="space-y-2">
-            <h4 class="font-black text-blue-700 text-sm">Advanced</h4>
-            <div class="text-2xl font-black text-slate-900">$14.990 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-            <p class="text-[10px] text-amber-600 font-bold">🎫 Cupón: 1MESADVCL ($1.499 primer mes)</p>
-            <ul class="text-[11px] text-slate-700 space-y-1.5 font-medium">
-              <li>✓ Todo lo del plan Free</li>
-              <li>✓ Impresión térmica 80mm multi-estación</li>
-              <li>✓ Chatbot WhatsApp con IA</li>
-              <li>✓ Gestión de Inventario y Stock</li>
-              <li>✓ Soporte prioritario WhatsApp</li>
-            </ul>
-          </div>
-          <button type="button" onclick="mostrarNotificacion('🚀 Redirigiendo a pasarela de pago segura Webpay / Stripe...'); cerrarModalPlanes();" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
-            Elegir Advanced
+        <div class="flex items-center gap-3">
+          <button onclick="cerrarModalPlanes()" class="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition">
+            <span>← Volver al panel</span>
+            <span class="text-sm">✕</span>
           </button>
         </div>
+      </header>
 
-        <!-- PLAN PREMIUM -->
-        <div class="p-5 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <h4 class="font-black text-purple-700 text-sm">Premium</h4>
-            <div class="text-2xl font-black text-slate-900">$24.990 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-            <p class="text-[10px] text-amber-600 font-bold">🎫 Cupón: 1MESPRECL</p>
-            <ul class="text-[11px] text-slate-600 space-y-1.5">
-              <li>✓ Todo lo del plan Advanced</li>
-              <li>✓ Multi-sucursales</li>
-              <li>✓ Conectores oficiales MCP IA</li>
-              <li>✓ Dominio propio personalizado</li>
-              <li>✓ Ejecutivo de onboarding asignado</li>
-            </ul>
-          </div>
-          <button type="button" onclick="mostrarNotificacion('🚀 Redirigiendo a pasarela de pago segura Webpay / Stripe...'); cerrarModalPlanes();" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
-            Elegir Premium
-          </button>
-        </div>
+      <!-- Banner de Oferta Exclusiva -->
+      <div class="bg-[#0b1b36] text-white py-2.5 px-4 text-center text-xs sm:text-sm font-medium flex items-center justify-center gap-2 shadow-inner">
+        <span>🎉</span>
+        <span><strong>¡Oferta Exclusiva!</strong> Con Planes Elite o Impulso, ¡Envío Masivo con IA <strong>GRATIS!</strong></span>
       </div>
+
+      <!-- CONTENEDOR PRINCIPAL -->
+      <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-12">
+        
+        <!-- ========================================== -->
+        <!-- PASO 1: SELECCIONA TU PLAN -->
+        <!-- ========================================== -->
+        <section id="pasoPlanes1" class="space-y-10">
+          
+          <!-- Encabezado -->
+          <div class="text-center max-w-3xl mx-auto space-y-3">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+              Impulsa tu negocio con el Plan ideal
+            </h1>
+            <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-600">
+              <span class="text-slate-500 font-normal">Todos los planes incluyen:</span>
+              <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                Punto de venta
+              </span>
+              <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                Menú Digital
+              </span>
+              <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                CRM para gestión de clientes
+              </span>
+            </div>
+          </div>
+
+          <!-- Cuadrícula de 4 Planes -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            
+            <!-- PLAN 1: IMPULSO -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition">
+              <div class="space-y-4">
+                <div>
+                  <h3 class="text-2xl font-black text-slate-900">Impulso</h3>
+                  <p class="text-xs text-slate-500 mt-1 min-h-[32px]">Tu copiloto IA para un crecimiento sin límites</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400 line-through">$ 179.882</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-3xl font-black text-slate-900">$ 152.900</span>
+                    <span class="text-xs font-semibold text-slate-500">/mes</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 italic mt-1">Ahorra $ 26.982/mes y más de $ 0/mes en complementos incluidos</p>
+                </div>
+                <button onclick="seleccionarPlanCheckout('Impulso', 152900, 179882, 'Tu copiloto IA para un crecimiento sin límites')" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition">
+                  Actualizar ahora
+                </button>
+                <div class="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700 font-medium">
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Menú digital con pedidos y Punto de venta</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span class="font-bold text-slate-900">Pedidos ilimitados</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Soporte Impulso prioritario</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Dominio .com gratis por un año *</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLAN 2: ELITE (MÁS POPULAR) -->
+            <div class="bg-white rounded-2xl border-2 border-cyan-400 p-6 flex flex-col justify-between shadow-md hover:shadow-xl relative transition">
+              <div class="absolute -top-3.5 right-6">
+                <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                  MÁS POPULAR
+                </span>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <h3 class="text-2xl font-black text-slate-900">Elite</h3>
+                  <p class="text-xs text-slate-500 mt-1 min-h-[32px]">Máximo control y personalización</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400 line-through">$ 69.299</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-3xl font-black text-slate-900">$ 58.904</span>
+                    <span class="text-xs font-semibold text-slate-500">/mes</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 italic mt-1">Ahorra $ 10.395/mes y más de $ 0/mes en complementos incluidos</p>
+                </div>
+                <button onclick="seleccionarPlanCheckout('Elite', 58904, 69299, 'Máximo control y personalización')" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition">
+                  Actualizar ahora
+                </button>
+                <div class="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700 font-medium">
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Menú digital con pedidos y Punto de venta</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span class="font-bold text-slate-900">Pedidos ilimitados</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Soporte Elite</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Dominio .com gratis por un año *</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLAN 3: PREMIUM -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition">
+              <div class="space-y-4">
+                <div>
+                  <h3 class="text-2xl font-black text-slate-900">Premium</h3>
+                  <p class="text-xs text-slate-500 mt-1 min-h-[32px]">Automatiza y optimiza tu negocio</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400 line-through">$ 29.412</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-3xl font-black text-slate-900">$ 25.000</span>
+                    <span class="text-xs font-semibold text-slate-500">/mes</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 italic mt-1">Ahorra $ 4.412/mes</p>
+                </div>
+                <button onclick="seleccionarPlanCheckout('Premium', 25000, 29412, 'Automatiza y optimiza tu negocio')" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition">
+                  Actualizar ahora
+                </button>
+                <div class="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700 font-medium">
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Menú digital con pedidos y Punto de venta</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Límite de <strong class="text-slate-900">400 pedidos al mes</strong></span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Soporte Premium</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Dominio .com gratis por un año *</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLAN 4: ADVANCED -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition">
+              <div class="space-y-4">
+                <div>
+                  <h3 class="text-2xl font-black text-slate-900">Advanced</h3>
+                  <p class="text-xs text-slate-500 mt-1 min-h-[32px]">El inicio perfecto para vender más online</p>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-400 line-through">$ 11.764</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-3xl font-black text-slate-900">$ 9.999</span>
+                    <span class="text-xs font-semibold text-slate-500">/mes</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 italic mt-1">Ahorra $ 1.765/mes</p>
+                </div>
+                <button onclick="seleccionarPlanCheckout('Advanced', 9999, 11764, 'El inicio perfecto para vender más online')" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition">
+                  Actualizar ahora
+                </button>
+                <div class="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700 font-medium">
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Menú digital con pedidos y Punto de venta</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Límite de <strong class="text-slate-900">75 pedidos al mes</strong></span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Soporte Advanced</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">✔</span>
+                    <span>Dominio .com gratis por un año *</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECCIÓN DE PRUEBA SOCIAL / TESTIMONIOS -->
+          <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-5 space-y-3">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                Súmate a los más de <span class="text-blue-600">40.000 negocios</span> que ya están viendo resultados con OlaClick.
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Desde heladerías y cafeterías hasta cadenas gastronómicas de múltiples sucursales usan nuestra tecnología diariamente.
+              </p>
+            </div>
+
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Testimonio 1 -->
+              <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 space-y-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">🍦</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Heladería Punto Magico</h4>
+                    <div class="text-amber-400 text-xs">★★★★★</div>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-600 italic">"Muy fácil hacer los pedidos, tanto en mesa como en caja, la facilidad de dividir las cuentas en efectivo y debito es genial."</p>
+              </div>
+
+              <!-- Testimonio 2 -->
+              <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 space-y-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-full bg-emerald-900 text-white flex items-center justify-center font-bold text-xs">🍔</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Restaurante Cosa Nostra</h4>
+                    <div class="text-amber-400 text-xs">★★★★★</div>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-600 italic">"¡Gracias, OlaClick! Su apoyo ha sido fundamental para el crecimiento de nuestro negocio de hamburguesas. ¡Estamos muy agradecidos!"</p>
+              </div>
+
+              <!-- Testimonio 3 -->
+              <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 space-y-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-full bg-orange-900 text-white flex items-center justify-center font-bold text-xs">🔥</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Carbón Sinuano Express</h4>
+                    <div class="text-amber-400 text-xs">★★★★★</div>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-600 italic">"En el restaurante estamos con el mismo sistema desde el inicio de OlaClick. No lo cambiamos por nada."</p>
+              </div>
+
+              <!-- Testimonio 4 -->
+              <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 space-y-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-xs">⚓</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">PUERTO 46</h4>
+                    <div class="text-amber-400 text-xs">★★★★★</div>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-600 italic">"Es muy fácil de manejar y cada día mejora más."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLA COMPARATIVA COMPLETA DE 27 CARACTERÍSTICAS -->
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+            <div class="p-6 border-b border-slate-100">
+              <h3 class="text-xl font-black text-slate-900">Tabla comparativa de funcionalidades</h3>
+              <p class="text-xs text-slate-500">Revisa en detalle qué incluye cada nivel de suscripción para tu restaurante.</p>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50/70">
+                    <th class="p-4 w-1/3 font-bold text-slate-700">Funcionalidad</th>
+                    <th class="p-4 text-center font-bold text-slate-900 w-1/6">
+                      <div class="text-sm font-black">Impulso</div>
+                      <div class="text-blue-600 font-extrabold mt-0.5">$ 152.900/mes</div>
+                      <button onclick="seleccionarPlanCheckout('Impulso', 152900, 179882, 'Tu copiloto IA para un crecimiento sin límites')" class="mt-2 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg w-full">Elegir</button>
+                    </th>
+                    <th class="p-4 text-center font-bold text-slate-900 w-1/6 bg-blue-50/50 border-x border-blue-100">
+                      <span class="text-[9px] bg-emerald-100 text-emerald-800 font-black px-2 py-0.5 rounded-full uppercase">Más Popular</span>
+                      <div class="text-sm font-black mt-1">Elite</div>
+                      <div class="text-blue-600 font-extrabold mt-0.5">$ 58.904/mes</div>
+                      <button onclick="seleccionarPlanCheckout('Elite', 58904, 69299, 'Máximo control y personalización')" class="mt-2 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg w-full">Elegir</button>
+                    </th>
+                    <th class="p-4 text-center font-bold text-slate-900 w-1/6">
+                      <div class="text-sm font-black">Premium</div>
+                      <div class="text-blue-600 font-extrabold mt-0.5">$ 25.000/mes</div>
+                      <button onclick="seleccionarPlanCheckout('Premium', 25000, 29412, 'Automatiza y optimiza tu negocio')" class="mt-2 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg w-full">Elegir</button>
+                    </th>
+                    <th class="p-4 text-center font-bold text-slate-900 w-1/6">
+                      <div class="text-sm font-black">Advanced</div>
+                      <div class="text-blue-600 font-extrabold mt-0.5">$ 9.999/mes</div>
+                      <button onclick="seleccionarPlanCheckout('Advanced', 9999, 11764, 'El inicio perfecto para vender más online')" class="mt-2 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg w-full">Elegir</button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-600">
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Menú digital para pedidos</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Página web con dominio personalizado</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Dominio .com 🦅</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold bg-blue-50/30 border-x border-blue-100">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Menú digital sin publicidad</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Pedidos en OlaClick y WhatsApp</td><td class="text-center font-bold text-slate-800">Ilimitados</td><td class="text-center font-bold text-slate-800 bg-blue-50/30 border-x border-blue-100">Ilimitados</td><td class="text-center text-slate-600">400 pedidos / mes</td><td class="text-center text-slate-600">75 pedidos / mes</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Punto de venta multiplataforma</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Impresión Automática y App</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Soporte técnico</td><td class="text-center text-slate-700 font-semibold">WhatsApp Impulso</td><td class="text-center text-slate-700 font-semibold bg-blue-50/30 border-x border-blue-100">WhatsApp Elite</td><td class="text-center text-slate-700 font-semibold">WhatsApp Premium</td><td class="text-center text-slate-700 font-semibold">WhatsApp Advanced</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Chatbot WhatsApp <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded">✨ IA</span></td><td class="text-center text-slate-800 font-bold">Con IA / 🎁 Gratis</td><td class="text-center text-slate-800 font-bold bg-blue-50/30 border-x border-blue-100">Con IA / 🎁 Gratis</td><td class="text-center text-slate-800 font-bold">Con IA / 🎁 Gratis</td><td class="text-center text-slate-800 font-bold">Con IA / 🎁 Gratis</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Programa de fidelidad</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Recuperador de ventas</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Cierre de caja diario</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Control de Inventario y Stock</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Gestión de entregas y repartidores</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Gestor de cocina (KDS Pantallas)</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Facturación electrónica</td><td class="text-center text-emerald-600 font-bold">🎁 Gratis con plan</td><td class="text-center text-emerald-600 font-bold bg-blue-50/30 border-x border-blue-100">🎁 Gratis con plan</td><td class="text-center text-slate-500">En Complemento*</td><td class="text-center text-slate-500">En Complemento*</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Envío masivo con IA <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded">✨ IA</span></td><td class="text-center text-emerald-600 font-bold">🎁 Gratis con plan</td><td class="text-center text-emerald-600 font-bold bg-blue-50/30 border-x border-blue-100">🎁 Gratis con plan</td><td class="text-center text-slate-500">En Complemento*</td><td class="text-center text-slate-500">En Complemento*</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Integración aplicativos (Rappi, PedidosYa, Uber)</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Chatbot de reseñas automáticas</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Pagos online (Webpay, Tarjetas, Transbank)</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Movimientos de dinero avanzados</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-slate-300 font-bold">—</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">CRM y base de datos de clientes</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Analítica de rendimiento y ventas</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Píxeles de rastreo de marketing (Meta, TikTok, Google)</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Integración de POS externo</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-slate-300 font-bold">—</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Manejo de campañas digitales en WhatsApp</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-slate-300 font-bold bg-blue-50/30 border-x border-blue-100">—</td><td class="text-center text-slate-300 font-bold">—</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Informe consolidado de todas las sucursales</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-slate-300 font-bold bg-blue-50/30 border-x border-blue-100">—</td><td class="text-center text-slate-300 font-bold">—</td><td class="text-center text-slate-300 font-bold">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ACORDEÓN DE PREGUNTAS / CARACTERÍSTICAS -->
+          <div class="space-y-3">
+            <h3 class="text-lg font-black text-slate-900">Preguntas frecuentes y detalles del sistema</h3>
+            
+            <div class="space-y-2">
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>¿Crea tu menú digital con dominio personalizado!</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Tu restaurante tendrá su propia dirección web (ej: tupedido.cl o turestaurante.com) con hosting de alta velocidad, fotos en alta resolución, modificadores ilimitados y sin comisiones por pedido.</p>
+              </details>
+
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>¡Recibe todos los tipos de pedidos!</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Recibe pedidos para consumir en el local (con número de mesa o QR), para llevar (pickup/takeout) o a domicilio (delivery con radio por km o polígono tarifado).</p>
+              </details>
+
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>Obtén un punto de venta para registrar tus pedidos</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Tu equipo de garzones y cajeros pueden cargar comandas rápidamente desde computadores, tablets o celulares con cálculo de propina, división de cuentas y múltiples formas de pago.</p>
+              </details>
+
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>Chatbot WhatsApp con Inteligencia Artificial</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Atiende a tus clientes 24/7 en WhatsApp, responde preguntas del menú, toma pedidos automáticamente y envía el link de seguimiento del delivery.</p>
+              </details>
+
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>Gestión de las entregas y repartidores</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Asigna motoristas propios o conecta con flotas externas. Rastreo GPS en tiempo real para tus clientes y cálculo automático de comisiones de reparto.</p>
+              </details>
+
+              <details class="bg-white rounded-2xl border border-slate-200 p-4 group transition">
+                <summary class="font-bold text-slate-800 text-sm flex items-center justify-between cursor-pointer list-none">
+                  <span>¡Saca provecho a las herramientas de Marketing!</span>
+                  <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">Cupones de descuento, programa de puntos y cashback, mensajes masivos por WhatsApp segmentados por compras pasadas y conexión directa con Google My Business.</p>
+              </details>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PASO 2: PERIODO DE FACTURACIÓN -->
+        <!-- ========================================== -->
+        <section id="pasoPlanes2" class="max-w-3xl mx-auto space-y-8 hidden">
+          <div class="text-center space-y-2">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-widest">Paso 2 de 3</span>
+            <h2 class="text-3xl font-black text-slate-900">Elige el periodo de facturación</h2>
+            <p class="text-xs text-slate-500">Plan seleccionado: <strong id="resumenPlanNombre" class="text-slate-900">Elite</strong></p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            
+            <!-- ANUAL -->
+            <label class="cursor-pointer bg-white rounded-2xl border-2 border-blue-600 p-5 space-y-3 relative shadow-md hover:border-blue-700 transition block">
+              <input type="radio" name="billingPeriod" value="anual" checked onchange="actualizarCalculoPeriodo()" class="absolute top-4 right-4 text-blue-600 focus:ring-blue-500">
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">30% Ahorro</span>
+              <div>
+                <h4 class="text-lg font-black text-slate-900">Anual (12 meses)</h4>
+                <p class="text-xs text-slate-500">Facturado anualmente</p>
+              </div>
+              <div class="text-blue-600 font-black text-2xl" id="precioPeriodoAnual">$ 58.904<span class="text-xs text-slate-500">/mes</span></div>
+              <p class="text-[11px] text-emerald-700 font-semibold">🎁 Incluye Dominio .com GRATIS por 1 año</p>
+            </label>
+
+            <!-- SEMESTRAL -->
+            <label class="cursor-pointer bg-white rounded-2xl border border-slate-200 p-5 space-y-3 relative hover:border-slate-300 transition block">
+              <input type="radio" name="billingPeriod" value="semestral" onchange="actualizarCalculoPeriodo()" class="absolute top-4 right-4 text-blue-600 focus:ring-blue-500">
+              <span class="bg-blue-100 text-blue-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">15% Ahorro</span>
+              <div>
+                <h4 class="text-lg font-black text-slate-900">Semestral (6 meses)</h4>
+                <p class="text-xs text-slate-500">Facturado cada 6 meses</p>
+              </div>
+              <div class="text-slate-900 font-black text-2xl" id="precioPeriodoSemestral">$ 62.000<span class="text-xs text-slate-500">/mes</span></div>
+              <p class="text-[11px] text-slate-500">Flexibilidad a mediano plazo</p>
+            </label>
+
+            <!-- MENSUAL -->
+            <label class="cursor-pointer bg-white rounded-2xl border border-slate-200 p-5 space-y-3 relative hover:border-slate-300 transition block">
+              <input type="radio" name="billingPeriod" value="mensual" onchange="actualizarCalculoPeriodo()" class="absolute top-4 right-4 text-blue-600 focus:ring-blue-500">
+              <span class="bg-slate-100 text-slate-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">Sin compromiso</span>
+              <div>
+                <h4 class="text-lg font-black text-slate-900">Mensual</h4>
+                <p class="text-xs text-slate-500">Renovación mes a mes</p>
+              </div>
+              <div class="text-slate-900 font-black text-2xl" id="precioPeriodoMensual">$ 69.299<span class="text-xs text-slate-500">/mes</span></div>
+              <p class="text-[11px] text-slate-500">Cancela cuando quieras</p>
+            </label>
+
+          </div>
+
+          <div class="flex items-center justify-between pt-6 border-t border-slate-200">
+            <button onclick="irAPasoPlanes(1)" class="text-xs font-bold text-slate-600 hover:text-slate-900 px-4 py-2">
+              ← Cambiar de plan
+            </button>
+            <button onclick="irAPasoPlanes(3)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md transition">
+              Continuar a completar compra →
+            </button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PASO 3: COMPLETA TU COMPRA -->
+        <!-- ========================================== -->
+        <section id="pasoPlanes3" class="max-w-4xl mx-auto space-y-8 hidden">
+          <div class="text-center space-y-2">
+            <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest">Paso 3 de 3</span>
+            <h2 class="text-3xl font-black text-slate-900">Completa tu suscripción</h2>
+            <p class="text-xs text-slate-500">Activación inmediata en tu local con soporte prioritario</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            
+            <!-- Resumen de compra y cupones -->
+            <div class="md:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-sm">
+              <h3 class="text-base font-black text-slate-900 border-b border-slate-100 pb-3">Resumen de la orden</h3>
+              
+              <div class="space-y-3 text-xs">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-800" id="checkoutPlanTitle">Plan Elite (Anual)</span>
+                  <span class="font-black text-slate-900" id="checkoutPlanOriginal">$ 706.848</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-500">
+                  <span>Punto de venta y Menú Digital</span>
+                  <span class="text-emerald-600 font-bold">Incluido</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-500">
+                  <span>Envío masivo con IA</span>
+                  <span class="text-emerald-600 font-bold">Gratis</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-500">
+                  <span>Dominio web personalizado</span>
+                  <span class="text-emerald-600 font-bold">Gratis por 1 año</span>
+                </div>
+                <div id="filaDescuentoCupon" class="flex justify-between items-center text-emerald-700 font-bold hidden bg-emerald-50 p-2 rounded-lg">
+                  <span>Cupón de bienvenida aplicado</span>
+                  <span id="valorDescuentoCupon">- $ 0</span>
+                </div>
+              </div>
+
+              <!-- Cupón de descuento -->
+              <div class="pt-4 border-t border-slate-100 space-y-2">
+                <label class="text-[11px] font-bold text-slate-700">¿Tienes un cupón de descuento?</label>
+                <div class="flex gap-2">
+                  <input type="text" id="inputCodigoCupon" placeholder="Ej: 1MESADVCL o 1MESPRECL" class="flex-1 text-xs border border-slate-200 rounded-xl px-3 py-2 uppercase font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <button onclick="aplicarCuponPlanes()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+                    Aplicar
+                  </button>
+                </div>
+                <p id="msgCuponPlanes" class="text-[11px] text-slate-500">Usa <code class="text-blue-600 font-bold cursor-pointer" onclick="copiarYPegarCupon('1MESADVCL')">1MESADVCL</code> o <code class="text-blue-600 font-bold cursor-pointer" onclick="copiarYPegarCupon('1MESPRECL')">1MESPRECL</code> para pagar $1.499 el primer mes.</p>
+              </div>
+
+              <!-- Total a pagar -->
+              <div class="pt-4 border-t border-slate-100 flex justify-between items-baseline">
+                <div>
+                  <span class="text-xs text-slate-500 font-medium">Total a pagar:</span>
+                  <div class="text-xs text-emerald-600 font-semibold" id="checkoutSubtextoAhorro">Ahorras $ 200.000 con el pago anual</div>
+                </div>
+                <div class="text-3xl font-black text-blue-600" id="checkoutTotalFinal">$ 58.904</div>
+              </div>
+            </div>
+
+            <!-- Métodos de pago y confirmación -->
+            <div class="md:col-span-5 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 space-y-6 shadow-sm">
+              <h3 class="text-base font-black text-slate-900 border-b border-slate-100 pb-3">Método de pago</h3>
+
+              <div class="space-y-3">
+                <label class="flex items-center gap-3 p-3 rounded-xl border-2 border-blue-600 bg-blue-50/20 cursor-pointer">
+                  <input type="radio" name="paymentMethod" value="webpay" checked class="text-blue-600">
+                  <div>
+                    <div class="text-xs font-black text-slate-900">Webpay Plus / Transbank</div>
+                    <div class="text-[10px] text-slate-500">Débito, Redcompra, Crédito en cuotas</div>
+                  </div>
+                </label>
+
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-slate-300 cursor-pointer">
+                  <input type="radio" name="paymentMethod" value="card" class="text-blue-600">
+                  <div>
+                    <div class="text-xs font-black text-slate-900">Tarjeta Internacional</div>
+                    <div class="text-[10px] text-slate-500">Visa, Mastercard, AMEX</div>
+                  </div>
+                </label>
+
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-slate-300 cursor-pointer">
+                  <input type="radio" name="paymentMethod" value="transfer" class="text-blue-600">
+                  <div>
+                    <div class="text-xs font-black text-slate-900">Transferencia Bancaria</div>
+                    <div class="text-[10px] text-slate-500">Factura exenta o con IVA para empresa</div>
+                  </div>
+                </label>
+              </div>
+
+              <button onclick="confirmarActivacionPlan()" class="w-full py-3.5 px-4 rounded-xl font-black text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 transition flex items-center justify-center gap-2">
+                <span>Pagar y Activar Plan 🚀</span>
+              </button>
+
+              <div class="text-center space-y-2">
+                <p class="text-[10px] text-slate-400">🔒 Pago seguro encriptado SSL de 256 bits</p>
+                <button onclick="irAPasoPlanes(2)" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                  ← Volver al paso anterior
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Botón Flotante de WhatsApp para Dudas -->
+      <a href="https://wa.me/56900000000?text=Hola,%20tengo%20dudas%20sobre%20los%20planes%20de%20OlaClick" target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs transition transform hover:scale-105">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"/></svg>
+        <span class="hidden sm:inline">¿Dudas? Habla con un asesor</span>
+      </a>
 
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: SUGERIR IDEA / REPORTAR ERROR -->
   <!-- ========================================================================= -->
   <div id="modalSugerirIdea" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -14343,14 +14882,171 @@
       document.getElementById('modalAyudaSoporte')?.classList.add('hidden');
     }
 
+    let planSeleccionado = {
+      nombre: 'Elite',
+      precioMensual: 58904,
+      precioOriginal: 69299,
+      descripcion: 'Máximo control y personalización',
+      periodo: 'anual',
+      cupon: null,
+      descuento: 0
+    };
+
     function abrirModalPlanes() {
       toggleDropdownPerfil(false);
-      togglePopoverNotificaciones();
+      const pop = document.getElementById('popoverNotificaciones');
+      if (pop) pop.classList.add('hidden');
+      irAPasoPlanes(1);
       document.getElementById('modalPlanesSuscripcion')?.classList.remove('hidden');
     }
 
     function cerrarModalPlanes() {
       document.getElementById('modalPlanesSuscripcion')?.classList.add('hidden');
+    }
+
+    function irAPasoPlanes(paso) {
+      const p1 = document.getElementById('pasoPlanes1');
+      const p2 = document.getElementById('pasoPlanes2');
+      const p3 = document.getElementById('pasoPlanes3');
+      const t1 = document.getElementById('stepTab1');
+      const t2 = document.getElementById('stepTab2');
+      const t3 = document.getElementById('stepTab3');
+      
+      if (p1) p1.classList.toggle('hidden', paso !== 1);
+      if (p2) p2.classList.toggle('hidden', paso !== 2);
+      if (p3) p3.classList.toggle('hidden', paso !== 3);
+      
+      if (t1) {
+        t1.className = (paso === 1) ? 'text-blue-600 font-bold flex items-center gap-1.5 cursor-pointer' : 'text-slate-500 font-semibold flex items-center gap-1.5 cursor-pointer';
+      }
+      if (t2) {
+        t2.className = (paso === 2) ? 'text-blue-600 font-bold flex items-center gap-1.5 cursor-pointer' : (paso > 2 ? 'text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer' : 'text-slate-400 flex items-center gap-1.5 cursor-pointer');
+      }
+      if (t3) {
+        t3.className = (paso === 3) ? 'text-blue-600 font-bold flex items-center gap-1.5 cursor-pointer' : 'text-slate-400 flex items-center gap-1.5 cursor-pointer';
+      }
+
+      const modal = document.getElementById('modalPlanesSuscripcion');
+      if (modal) modal.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function seleccionarPlanCheckout(nombre, precioMensual, precioOriginal, descripcion) {
+      planSeleccionado.nombre = nombre;
+      planSeleccionado.precioMensual = precioMensual;
+      planSeleccionado.precioOriginal = precioOriginal;
+      planSeleccionado.descripcion = descripcion;
+      
+      const nomEl = document.getElementById('resumenPlanNombre');
+      if (nomEl) nomEl.textContent = nombre;
+
+      const elAnual = document.getElementById('precioPeriodoAnual');
+      const elSemestral = document.getElementById('precioPeriodoSemestral');
+      const elMensual = document.getElementById('precioPeriodoMensual');
+      
+      if (elAnual) elAnual.innerHTML = `$ ${precioMensual.toLocaleString('es-CL')}<span class="text-xs text-slate-500">/mes</span>`;
+      if (elSemestral) elSemestral.innerHTML = `$ ${Math.round(precioMensual * 1.08).toLocaleString('es-CL')}<span class="text-xs text-slate-500">/mes</span>`;
+      if (elMensual) elMensual.innerHTML = `$ ${precioOriginal.toLocaleString('es-CL')}<span class="text-xs text-slate-500">/mes</span>`;
+
+      actualizarCalculoPeriodo();
+      irAPasoPlanes(2);
+    }
+
+    function actualizarCalculoPeriodo() {
+      const selectedRadio = document.querySelector('input[name="billingPeriod"]:checked');
+      const periodo = selectedRadio ? selectedRadio.value : 'anual';
+      planSeleccionado.periodo = periodo;
+      
+      let meses = 1;
+      let precioBasePorMes = planSeleccionado.precioMensual;
+      let textoAhorro = '';
+      
+      if (periodo === 'anual') {
+        meses = 12;
+        precioBasePorMes = planSeleccionado.precioMensual;
+        const ahorroTotal = (planSeleccionado.precioOriginal - planSeleccionado.precioMensual) * 12;
+        textoAhorro = `Ahorras $ ${ahorroTotal.toLocaleString('es-CL')} con el pago anual + Dominio gratis`;
+      } else if (periodo === 'semestral') {
+        meses = 6;
+        precioBasePorMes = Math.round(planSeleccionado.precioMensual * 1.08);
+        const ahorroTotal = (planSeleccionado.precioOriginal - precioBasePorMes) * 6;
+        textoAhorro = `Ahorras $ ${ahorroTotal.toLocaleString('es-CL')} pagando semestral`;
+      } else {
+        meses = 1;
+        precioBasePorMes = planSeleccionado.precioOriginal;
+        textoAhorro = 'Facturación mensual sin permanencia';
+      }
+      
+      let subtotal = precioBasePorMes * meses;
+      let totalFinal = subtotal;
+
+      if (planSeleccionado.cupon) {
+        if (planSeleccionado.cupon === '1MESADVCL' || planSeleccionado.cupon === '1MESPRECL') {
+          totalFinal = 1499;
+          planSeleccionado.descuento = subtotal - 1499;
+        } else {
+          planSeleccionado.descuento = Math.round(subtotal * 0.20);
+          totalFinal = subtotal - planSeleccionado.descuento;
+        }
+      }
+
+      const titleEl = document.getElementById('checkoutPlanTitle');
+      const origEl = document.getElementById('checkoutPlanOriginal');
+      const totalEl = document.getElementById('checkoutTotalFinal');
+      const ahorroEl = document.getElementById('checkoutSubtextoAhorro');
+      const filaDesc = document.getElementById('filaDescuentoCupon');
+      const valDesc = document.getElementById('valorDescuentoCupon');
+      
+      if (titleEl) titleEl.textContent = `Plan ${planSeleccionado.nombre} (${periodo.charAt(0).toUpperCase() + periodo.slice(1)})`;
+      if (origEl) origEl.textContent = `$ ${subtotal.toLocaleString('es-CL')}`;
+      if (totalEl) totalEl.textContent = `$ ${totalFinal.toLocaleString('es-CL')}`;
+      if (ahorroEl) ahorroEl.textContent = textoAhorro;
+      
+      if (filaDesc && valDesc) {
+        if (planSeleccionado.cupon) {
+          filaDesc.classList.remove('hidden');
+          valDesc.textContent = `- $ ${planSeleccionado.descuento.toLocaleString('es-CL')}`;
+        } else {
+          filaDesc.classList.add('hidden');
+        }
+      }
+    }
+
+    function aplicarCuponPlanes() {
+      const input = document.getElementById('inputCodigoCupon');
+      const msg = document.getElementById('msgCuponPlanes');
+      if (!input) return;
+      const codigo = input.value.trim().toUpperCase();
+      
+      if (codigo === '1MESADVCL' || codigo === '1MESPRECL') {
+        planSeleccionado.cupon = codigo;
+        actualizarCalculoPeriodo();
+        if (msg) msg.innerHTML = `<span class="text-emerald-600 font-bold">¡Cupón ${codigo} activado! Tu primer mes queda a solo $1.499.</span>`;
+      } else if (codigo.length >= 3) {
+        planSeleccionado.cupon = codigo;
+        actualizarCalculoPeriodo();
+        if (msg) msg.innerHTML = `<span class="text-emerald-600 font-bold">¡Cupón ${codigo} aplicado con éxito (20% OFF)!</span>`;
+      } else {
+        alert('Ingresa un cupón válido (ej: 1MESADVCL o 1MESPRECL)');
+      }
+    }
+
+    function copiarYPegarCupon(cupon) {
+      const input = document.getElementById('inputCodigoCupon');
+      if (input) {
+        input.value = cupon;
+        aplicarCuponPlanes();
+      }
+    }
+
+    function confirmarActivacionPlan() {
+      const planName = planSeleccionado.nombre;
+      const rolBadge = document.querySelector('#dropdownPerfilUsuario .bg-amber-100');
+      if (rolBadge) {
+        rolBadge.className = 'bg-blue-100 text-blue-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-full';
+        rolBadge.textContent = `${planName} - Admin`;
+      }
+      alert(`🎉 ¡Felicitaciones! Has activado exitosamente tu Plan ${planName}. Todas las funcionalidades avanzadas, pedidos ilimitados y soporte prioritario ya están activos para Fravioli, Street Food.`);
+      cerrarModalPlanes();
     }
 
     function abrirModalSugerirIdea(tipo) {
