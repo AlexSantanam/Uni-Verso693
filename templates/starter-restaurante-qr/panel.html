@@ -375,29 +375,26 @@
           </div>
         </button>
 
-        <!-- INTERRUPTOR OPERATIVO DEL LOCAL (IGUAL QUE OLACLICK) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2.5 flex items-center justify-between">
+        <!-- PILL OPERATIVO DEL MENÚ DIGITAL (TIPO OLACLICK: MENÚ DIGITAL CERRADO/ABIERTO >) -->
+        <button id="storePillBtn" onclick="abrirModalHorariosMenuDigital()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-2xl px-3.5 py-2.5 flex items-center justify-between transition-all cursor-pointer text-left shadow-sm">
           <div class="flex items-center gap-2 overflow-hidden">
-            <span id="storeStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
-            <div class="overflow-hidden">
-              <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Menú Digital</div>
-              <div id="storeStatusText" class="text-xs font-extrabold text-white truncate">Abierto</div>
-            </div>
+            <span id="storeStatusDot" class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
+            <span class="text-xs font-bold text-white truncate">
+              Menú Digital: <span id="storeStatusText" class="text-slate-300">Cerrado</span>
+            </span>
           </div>
-          <button id="btnToggleStoreQuick" onclick="toggleStoreStatusQuick()" class="px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer transition-all" title="Abrir o pausar recepción de pedidos">
-            Pausar
-          </button>
-        </div>
+          <span class="text-xs text-slate-400 font-bold ml-1">›</span>
+        </button>
 
-        <!-- ENLACES RÁPIDOS A CARTA Y QR -->
-        <div class="grid grid-cols-2 gap-1.5 pt-1">
-          <a href="index.html" target="_blank" class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all">
-            <span>📱</span>
-            <span>Ver Carta ↗</span>
+        <!-- ENLACES RÁPIDOS (VISTA PREVIA Y QR Y ENLACES - TIPO OLACLICK) -->
+        <div class="grid grid-cols-2 gap-2 pt-0.5">
+          <a href="index.html" target="_blank" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center">
+            <span class="text-sm">👁️</span>
+            <span class="text-[10px] font-bold mt-0.5">Vista previa</span>
           </a>
-          <a href="generador-qrs.html" target="_blank" class="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] font-bold text-slate-300 hover:text-white transition-all">
-            <span>🏷️</span>
-            <span>QR Mesas ↗</span>
+          <a href="generador-qrs.html" target="_blank" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center">
+            <span class="text-sm">🏷️</span>
+            <span class="text-[10px] font-bold mt-0.5">QR y enlaces</span>
           </a>
         </div>
 
@@ -6669,6 +6666,101 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: HORARIOS DEL MENÚ DIGITAL & PAUSAR SERVICIOS (TIPO OLACLICK) -->
+  <!-- ========================================================================= -->
+  <div id="modalHorariosMenuDigital" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      
+      <!-- HEADER -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-black text-slate-900 text-base">Horarios del menú digital</h3>
+        <button type="button" onclick="cerrarModalHorariosMenuDigital()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <!-- ESTADO DE HOY (TIPO CAPTURA: RELOJ + DÍA + BADGE CERRADO/ABIERTO) -->
+      <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-lg">🕒</span>
+          <span id="labelHoyHorario" class="font-extrabold text-xs text-slate-800">Hoy, Sábado 7 nov</span>
+        </div>
+        <button id="btnToggleEstadoHoy" type="button" onclick="toggleEstadoHoyLocal()" class="px-3.5 py-1.5 rounded-full text-xs font-bold border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center gap-1.5 cursor-pointer">
+          <span id="dotEstadoHoy" class="w-2 h-2 rounded-full bg-red-500"></span>
+          <span id="textEstadoHoy">Cerrado</span>
+        </button>
+      </div>
+
+      <!-- SERVICIOS / CANALES DE VENTA (PARA LLEVAR, EN EL LOCAL, A DOMICILIO) -->
+      <div class="space-y-2.5">
+        
+        <!-- PARA LLEVAR (TAKEOUT) -->
+        <div class="p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">
+              🛍️
+            </div>
+            <div>
+              <div class="font-extrabold text-xs text-slate-900">Para llevar</div>
+              <div id="statusServicioLlevar" class="text-[10px] text-emerald-600 font-bold">Activo</div>
+            </div>
+          </div>
+          <button id="btnPausarLlevar" type="button" onclick="toggleServicioCanal('llevar')" class="px-4 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer">
+            Pausar
+          </button>
+        </div>
+
+        <!-- EN EL LOCAL (DINE-IN) -->
+        <div class="p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base">
+              🍽️
+            </div>
+            <div>
+              <div class="font-extrabold text-xs text-slate-900">En el local</div>
+              <div id="statusServicioLocal" class="text-[10px] text-emerald-600 font-bold">Activo</div>
+            </div>
+          </div>
+          <button id="btnPausarLocal" type="button" onclick="toggleServicioCanal('local')" class="px-4 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer">
+            Pausar
+          </button>
+        </div>
+
+        <!-- A DOMICILIO (DELIVERY) -->
+        <div class="p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+              🛵
+            </div>
+            <div>
+              <div class="font-extrabold text-xs text-slate-900">A domicilio</div>
+              <div id="statusServicioDomicilio" class="text-[10px] text-emerald-600 font-bold">Activo</div>
+            </div>
+          </div>
+          <button id="btnPausarDomicilio" type="button" onclick="toggleServicioCanal('domicilio')" class="px-4 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer">
+            Pausar
+          </button>
+        </div>
+
+      </div>
+
+      <!-- NOTA INFORMATIVA (TIPO OLACLICK) -->
+      <div class="flex items-start gap-2 text-[11px] text-slate-500 pt-1">
+        <span class="text-blue-500 font-bold">ⓘ</span>
+        <span>Al pausar un servicio también desactivas los pedidos programados en el menú digital.</span>
+      </div>
+
+      <!-- FOOTER: CONFIGURAR MIS HORARIOS -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+        <span class="text-slate-500 text-[11px]">Gestiona tus horarios de tu menú digital</span>
+        <button type="button" onclick="irAConfigurarHorarios()" class="font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer">
+          <span>🕒</span>
+          <span>Configurar mis horarios</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -7199,24 +7291,31 @@
         const label = document.getElementById('estadoLabel');
 
         if (pausado) {
-          dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 shrink-0';
-          text.textContent = 'Pausado (Manual)';
-          quickBtn.textContent = 'Reanudar';
-          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer';
-          label.innerHTML = '<span class="text-red-500">⏸️ PAUSADO A MANO</span>';
+          if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0';
+          if (text) text.textContent = 'Pausado';
+          if (quickBtn) {
+            quickBtn.textContent = 'Reanudar';
+            quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer';
+          }
+          if (label) label.innerHTML = '<span class="text-amber-500">⏸️ PAUSADO MANUALMENTE</span>';
         } else if (currentStoreOpen) {
-          dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0';
-          text.textContent = 'Menú Abierto';
-          quickBtn.textContent = 'Pausar';
-          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
-          label.innerHTML = '<span class="text-emerald-600">🟢 ABIERTO (según horario)</span>';
+          if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0';
+          if (text) text.textContent = 'Abierto';
+          if (quickBtn) {
+            quickBtn.textContent = 'Pausar';
+            quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
+          }
+          if (label) label.innerHTML = '<span class="text-emerald-600">🟢 ABIERTO</span>';
         } else {
-          dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500 shrink-0';
-          text.textContent = 'Cerrado (Horario)';
-          quickBtn.textContent = 'Abrir Forzado';
-          quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
-          label.innerHTML = '<span class="text-slate-500">🌙 CERRADO (fuera de horario)</span>';
+          if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 shrink-0';
+          if (text) text.textContent = 'Cerrado';
+          if (quickBtn) {
+            quickBtn.textContent = 'Abrir Forzado';
+            quickBtn.className = 'px-2.5 py-1.5 rounded-lg text-[10px] font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer';
+          }
+          if (label) label.innerHTML = '<span class="text-slate-500">🔴 CERRADO</span>';
         }
+        actualizarModalHorariosUI(data);
 
         document.getElementById('promoInput').value = data.promo || '';
         if (!horarioCargado) {
@@ -7303,13 +7402,127 @@
       });
     }
 
-    // --- ACCESO RÁPIDO TOGGLE ESTADO DEL RESTAURANTE ---
-    function toggleStoreStatusQuick() {
+    // --- CONTROL OPERATIVO: HORARIOS DEL MENÚ DIGITAL Y PAUSAR SERVICIOS (TIPO OLACLICK) ---
+    let serviciosCanalesEstado = {
+      llevar: true,
+      local: true,
+      domicilio: true
+    };
+
+    function abrirModalHorariosMenuDigital() {
+      // Calcular fecha de hoy localizada en español
+      const ahora = new Date();
+      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+      const diaNom = dias[ahora.getDay()];
+      const diaNum = ahora.getDate();
+      const mesNom = meses[ahora.getMonth()];
+
+      const labelHoy = document.getElementById('labelHoyHorario');
+      if (labelHoy) labelHoy.textContent = `Hoy, ${diaNom} ${diaNum} ${mesNom}`;
+
+      window.restRef().get().then(snap => {
+        const data = snap.data() || {};
+        actualizarModalHorariosUI(data);
+      });
+
+      document.getElementById('modalHorariosMenuDigital')?.classList.remove('hidden');
+    }
+
+    function cerrarModalHorariosMenuDigital() {
+      document.getElementById('modalHorariosMenuDigital')?.classList.add('hidden');
+    }
+
+    function actualizarModalHorariosUI(data) {
+      data = data || {};
+      const isOpen = window.calcularAbiertoAhora ? (window.calcularAbiertoAhora(data) && !data.pausaManual) : false;
+      const btnHoy = document.getElementById('btnToggleEstadoHoy');
+      const dotHoy = document.getElementById('dotEstadoHoy');
+      const textHoy = document.getElementById('textEstadoHoy');
+
+      if (btnHoy && dotHoy && textHoy) {
+        if (data.pausaManual) {
+          btnHoy.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors flex items-center gap-1.5 cursor-pointer';
+          dotHoy.className = 'w-2 h-2 rounded-full bg-amber-500';
+          textHoy.textContent = 'Pausado';
+        } else if (isOpen) {
+          btnHoy.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer';
+          dotHoy.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          textHoy.textContent = 'Abierto';
+        } else {
+          btnHoy.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center gap-1.5 cursor-pointer';
+          dotHoy.className = 'w-2 h-2 rounded-full bg-red-500';
+          textHoy.textContent = 'Cerrado';
+        }
+      }
+
+      // Sincronizar estado de servicios individuales
+      if (data.serviciosCanales) {
+        serviciosCanalesEstado = Object.assign(serviciosCanalesEstado, data.serviciosCanales);
+      }
+
+      actualizarBotonServicioUI('llevar', serviciosCanalesEstado.llevar);
+      actualizarBotonServicioUI('local', serviciosCanalesEstado.local);
+      actualizarBotonServicioUI('domicilio', serviciosCanalesEstado.domicilio);
+    }
+
+    function actualizarBotonServicioUI(canal, activo) {
+      const nomCapital = canal.charAt(0).toUpperCase() + canal.slice(1);
+      const btn = document.getElementById('btnPausar' + nomCapital);
+      const statusEl = document.getElementById('statusServicio' + nomCapital);
+
+      if (!btn) return;
+
+      if (activo !== false) {
+        btn.textContent = 'Pausar';
+        btn.className = 'px-4 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer';
+        if (statusEl) {
+          statusEl.textContent = 'Activo';
+          statusEl.className = 'text-[10px] text-emerald-600 font-bold';
+        }
+      } else {
+        btn.textContent = 'Activar';
+        btn.className = 'px-4 py-1.5 rounded-xl border border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs transition-colors cursor-pointer';
+        if (statusEl) {
+          statusEl.textContent = 'Pausado';
+          statusEl.className = 'text-[10px] text-red-500 font-bold';
+        }
+      }
+    }
+
+    function toggleEstadoHoyLocal() {
       window.restRef().get().then(snap => {
         const data = snap.data() || {};
         const isPaused = !!data.pausaManual;
-        window.restRef().set({ pausaManual: !isPaused }, { merge: true });
+        const nuevoEstado = !isPaused;
+        window.restRef().set({ pausaManual: nuevoEstado }, { merge: true }).then(() => {
+          mostrarNotificacion(nuevoEstado ? '⏸️ Menú Digital pausado. No se recibirán pedidos.' : '🟢 Menú Digital abierto para recibir pedidos.');
+        });
       });
+    }
+
+    function toggleServicioCanal(canal) {
+      serviciosCanalesEstado[canal] = !serviciosCanalesEstado[canal];
+      const activo = serviciosCanalesEstado[canal];
+
+      const updateObj = { serviciosCanales: serviciosCanalesEstado };
+      window.restRef().set(updateObj, { merge: true }).then(() => {
+        actualizarBotonServicioUI(canal, activo);
+        mostrarNotificacion(activo ? `✅ Canal "${canal}" activado en el menú digital` : `⏸️ Canal "${canal}" pausado`);
+      });
+    }
+
+    function irAConfigurarHorarios() {
+      cerrarModalHorariosMenuDigital();
+      switchTab('configuraciones', 'general');
+      setTimeout(() => {
+        const hForm = document.getElementById('horarioForm');
+        if (hForm) hForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+
+    function toggleStoreStatusQuick() {
+      toggleEstadoHoyLocal();
     }
 
     // =========================================================================
