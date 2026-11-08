@@ -4280,24 +4280,33 @@
               </div>
             </div>
 
-            <!-- TABLA DE TOKENS GENERADOS -->
+            <!-- TOKENS GENERADOS (TIPO OLACLICK CAPTURAS) -->
             <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
               <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                <h4 class="font-black text-slate-900 text-sm">Tokens generados</h4>
-                <span id="badgeContadorTokens" class="text-xs text-slate-400 font-bold">0 tokens</span>
+                <div>
+                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">PARA DESARROLLADORES</span>
+                  <h4 class="font-black text-slate-900 text-sm">Tokens generados</h4>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="badgeContadorTokens" class="text-xs text-slate-400 font-bold">0 tokens</span>
+                  <button type="button" onclick="abrirModalGenerarApiToken()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                    <span>+</span>
+                    <span>Generar token</span>
+                  </button>
+                </div>
               </div>
 
               <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider text-[10px]">
-                      <th class="py-3 px-4">Nombre</th>
-                      <th class="py-3 px-4">Categoría</th>
-                      <th class="py-3 px-4">Scopes</th>
-                      <th class="py-3 px-4">Creado</th>
-                      <th class="py-3 px-4">Último uso</th>
-                      <th class="py-3 px-4">Estado</th>
-                      <th class="py-3 px-4 text-right">Acciones</th>
+                      <th class="py-3 px-4">NOMBRE</th>
+                      <th class="py-3 px-4">CATEGORÍA</th>
+                      <th class="py-3 px-4">SCOPES</th>
+                      <th class="py-3 px-4">CREADO</th>
+                      <th class="py-3 px-4">ÚLTIMO USO</th>
+                      <th class="py-3 px-4">ESTADO</th>
+                      <th class="py-3 px-4 text-right">ACCIONES</th>
                     </tr>
                   </thead>
                   <tbody id="tbodyApiTokens" class="divide-y divide-slate-100 text-slate-700">
@@ -4306,23 +4315,124 @@
                 </table>
               </div>
 
-              <!-- ESTADO VACÍO CUANDO NO HAY TOKENS (TIPO CAPTURA 5) -->
+              <!-- ESTADO VACÍO CUANDO NO HAY TOKENS (TIPO CAPTURA OLACLICK) -->
               <div id="emptyStateTokens" class="p-12 text-center space-y-3">
                 <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold shadow-inner">
                   🗝️
                 </div>
-                <div class="space-y-1">
-                  <h5 class="font-bold text-slate-900 text-sm">No tienes tokens generados aún</h5>
-                  <p class="text-xs text-slate-400 max-w-sm mx-auto">
-                    Haz clic en "+ Generar nuevo token" para crear tu primera API Key segura y conectar sistemas externos.
-                  </p>
-                </div>
+                <p class="text-xs text-slate-500 font-medium">
+                  No tienes tokens de acceso generados aún.
+                </p>
                 <button type="button" onclick="abrirModalGenerarApiToken()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5">
                   <span>+</span>
                   <span>Generar nuevo token</span>
                 </button>
               </div>
 
+            </div>
+
+            <!-- TABLA OFICIAL: INFORMACIÓN SOBRE SCOPES (TIPO OLACLICK CAPTURA 1 Y 2) -->
+            <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+              <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <h4 class="font-black text-slate-900 text-sm">Información sobre scopes</h4>
+                  <p class="text-[11px] text-slate-500">Permisos granulares disponibles para autenticar aplicaciones de terceros y asistentes autónomos</p>
+                </div>
+                <span class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 font-bold px-2 py-0.5 rounded-full">20 scopes oficiales</span>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider text-[10px]">
+                      <th class="py-3 px-5 w-60">SCOPE</th>
+                      <th class="py-3 px-5">DESCRIPCIÓN</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-slate-700">
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">menu:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read menu categories and products</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">menu:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create and update products</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">orders:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read orders</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">orders:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create orders, update order status, items, payments and discounts, and cancel orders</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">promotions:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read active promotions and coupons</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">promotions:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create, update, and delete promotions (coupons)</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">clients:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read client list with filters and pagination</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">clients:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create and update clients</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">addresses:read</td>
+                      <td class="py-3 px-5 text-slate-600">List client delivery addresses</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">addresses:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create, update, and delete client delivery addresses</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">reports:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read reports</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">webhooks:read</td>
+                      <td class="py-3 px-5 text-slate-600">List and view webhook configurations</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">webhooks:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create, update, and delete webhooks</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">companies:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read company information</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">payment-methods:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read the company payment methods</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">stores:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read food-app store open/closed status</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">users:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read the company user list with role filter and pagination</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">fiscal-notes:write</td>
+                      <td class="py-3 px-5 text-slate-600">Create and update fiscal note invoices</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">logistics:write</td>
+                      <td class="py-3 px-5 text-slate-600">Assign riders and update delivery status</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3 px-5 font-mono text-blue-600 font-bold text-xs">cashiers:read</td>
+                      <td class="py-3 px-5 text-slate-600">Read cash register openings and closings</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
           </div>
@@ -5559,36 +5669,138 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-2">Permisos y Alcance (Scopes) *</label>
-          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_pedidos_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>pedidos:read</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_pedidos_write" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>pedidos:write</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_productos_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>productos:read</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_productos_write" class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>productos:write</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_clientes_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>clientes:read</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-              <input type="checkbox" id="scope_inventario_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>inventario:read</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700 col-span-2">
-              <input type="checkbox" id="scope_ventas_read" class="rounded border-slate-300 text-blue-600 accent-blue-600">
-              <span>ventas:read (métricas financieras)</span>
-            </label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block font-bold text-slate-700">Permisos y Alcance (Scopes) *</label>
+            <div class="space-x-2 text-[10px] font-bold">
+              <button type="button" onclick="document.querySelectorAll('.scope-checkbox').forEach(c => c.checked = true)" class="text-blue-600 hover:underline cursor-pointer">Seleccionar todos</button>
+              <span class="text-slate-300">·</span>
+              <button type="button" onclick="document.querySelectorAll('.scope-checkbox').forEach(c => c.checked = false)" class="text-slate-400 hover:underline cursor-pointer">Limpiar</button>
+            </div>
+          </div>
+          
+          <div class="max-h-56 overflow-y-auto space-y-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-[11px]">
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Menú & Carta</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="menu:read" checked class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>menu:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="menu:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>menu:write</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Pedidos & Comandas</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="orders:read" checked class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>orders:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="orders:write" checked class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>orders:write</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Promociones & Descuentos</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="promotions:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>promotions:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="promotions:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>promotions:write</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Clientes & Direcciones</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="clients:read" checked class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>clients:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="clients:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>clients:write</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="addresses:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>addresses:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="addresses:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>addresses:write</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Reportes & Cajas</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="reports:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>reports:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="cashiers:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>cashiers:read</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Webhooks & Logística</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="webhooks:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>webhooks:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="webhooks:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>webhooks:write</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="fiscal-notes:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>fiscal-notes:write</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="logistics:write" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>logistics:write</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="font-extrabold text-[10px] text-slate-400 uppercase tracking-wider mb-1">Empresa & Canales</div>
+              <div class="grid grid-cols-2 gap-1.5">
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="companies:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>companies:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="payment-methods:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>payment-methods:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="stores:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>stores:read</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer font-mono font-medium text-slate-700">
+                  <input type="checkbox" value="users:read" class="scope-checkbox rounded border-slate-300 text-blue-600 accent-blue-600">
+                  <span>users:read</span>
+                </label>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -11628,7 +11840,7 @@
         id: 'tok-1',
         nombre: 'Conector Facturación Electrónica',
         categoria: 'Facturación electrónica',
-        scopes: ['pedidos:read', 'ventas:read'],
+        scopes: ['orders:read', 'fiscal-notes:write', 'reports:read'],
         creado: '02/11/2026',
         ultimoUso: 'Hace 2 horas',
         estado: 'Activo',
@@ -11638,7 +11850,7 @@
         id: 'tok-2',
         nombre: 'Asistente IA Local (Claude Code)',
         categoria: 'Inteligencia Artificial',
-        scopes: ['pedidos:read', 'pedidos:write', 'productos:read', 'productos:write'],
+        scopes: ['menu:read', 'menu:write', 'orders:read', 'orders:write'],
         creado: '05/11/2026',
         ultimoUso: 'Hace 10 min',
         estado: 'Activo',
@@ -11917,13 +12129,9 @@
 
       const categoria = document.getElementById('selectTokenCategoria')?.value || 'General';
       const scopes = [];
-      if (document.getElementById('scope_pedidos_read')?.checked) scopes.push('pedidos:read');
-      if (document.getElementById('scope_pedidos_write')?.checked) scopes.push('pedidos:write');
-      if (document.getElementById('scope_productos_read')?.checked) scopes.push('productos:read');
-      if (document.getElementById('scope_productos_write')?.checked) scopes.push('productos:write');
-      if (document.getElementById('scope_clientes_read')?.checked) scopes.push('clientes:read');
-      if (document.getElementById('scope_inventario_read')?.checked) scopes.push('inventario:read');
-      if (document.getElementById('scope_ventas_read')?.checked) scopes.push('ventas:read');
+      document.querySelectorAll('.scope-checkbox:checked').forEach(c => {
+        if (c.value) scopes.push(c.value);
+      });
 
       if (scopes.length === 0) {
         alert('Selecciona al menos un permiso (scope) para el token.');
