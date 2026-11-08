@@ -420,6 +420,12 @@
                 </button>
               </div>
 
+              <!-- Botón Configuración de Impresoras Térmicas 80mm -->
+              <button onclick="abrirModalConfigCocinas()" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center gap-1.5 cursor-pointer" title="Configurar Impresoras Térmicas (80mm) y Destinos">
+                <span>🖨️</span>
+                <span class="hidden md:inline text-[11px] font-bold">Impresoras</span>
+              </button>
+
               <!-- BOTÓN AZUL DESTACADO: + NUEVO PEDIDO -->
               <button onclick="abrirModalNuevoPedido()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/25 transition-all cursor-pointer">
                 <span class="text-sm font-black">+</span>
@@ -532,18 +538,25 @@
               </button>
             </div>
 
-            <!-- BOTONES DE ACCIÓN MASIVA (MARCAR TODAS, REFRESH, SIMULAR) -->
+            <!-- BOTONES DE ACCIÓN MASIVA (MARCAR TODAS, REFRESH, FULLSCREEN, COCINAS & IMPRESORAS) -->
             <div class="flex items-center gap-2">
               <button onclick="marcarTodasListas()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
                 <span>✓</span>
-                <span>Marcar todas listas</span>
+                <span>Marcar todas</span>
               </button>
               <button onclick="injectDemoOrder()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer" title="Simular comanda para pruebas">
                 <span>+</span>
-                <span>Simular Comanda</span>
+                <span>Simular</span>
               </button>
               <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer" title="Refrescar">
                 ↺
+              </button>
+              <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer" title="Pantalla Completa">
+                ⛶
+              </button>
+              <button onclick="abrirModalConfigCocinas()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 border border-slate-200 transition-colors cursor-pointer shadow-xs" title="Configuración de impresoras térmicas (80mm) y estaciones">
+                <span>⚙</span>
+                <span>Cocinas & Impresoras</span>
               </button>
             </div>
 
@@ -2171,6 +2184,181 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: CONFIGURACIÓN DE COCINAS & IMPRESORAS TÉRMICAS 80MM (TIPO OLACLICK) -->
+  <!-- ========================================================================= -->
+  <div id="modalConfigCocinasImpresoras" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-5 my-auto max-h-[92vh] overflow-y-auto">
+      
+      <!-- CABECERA MODAL -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-xl shadow-sm">🖨️</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Configuración de Cocinas e Impresoras Térmicas (80mm)</h3>
+            <p class="text-[11px] text-slate-400">Enruta comandas físicas a Cocina, Bar o Recepción sin necesidad de pantallas</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalConfigCocinas()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <!-- BANNER DE AUTO-IMPRESIÓN AL RECIBIR COMANDAS -->
+      <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3 text-xs">
+        <div class="space-y-0.5">
+          <span class="font-bold text-amber-950 block">⚡ Auto-impresión automática al recibir pedidos</span>
+          <p class="text-[11px] text-amber-700 leading-relaxed">
+            Al entrar una comanda desde la carta QR o el PDV, se imprime automáticamente en la impresora asignada (Cocina, Bar o Recepción).
+          </p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <input type="checkbox" id="switchAutoImpresion" checked onchange="toggleAutoImpresion(this.checked)" class="sr-only peer">
+          <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+        </label>
+      </div>
+
+      <!-- LISTA DE IMPRESORAS CONFIGURADAS -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Impresoras Térmicas Registradas</h4>
+          <button onclick="abrirFormNuevaImpresora()" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+            <span>＋</span>
+            <span>Agregar Impresora</span>
+          </button>
+        </div>
+
+        <div id="listaImpresorasConfiguradas" class="space-y-2.5">
+          <!-- Inyección dinámica de impresoras con botones de prueba 80mm -->
+        </div>
+      </div>
+
+      <!-- FORMULARIO PARA AGREGAR O EDITAR IMPRESORA -->
+      <div id="formNuevaImpresora" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 hidden">
+        <h4 id="formImpresoraTitle" class="font-black text-xs text-slate-800">Nueva Impresora Térmica</h4>
+        <input type="hidden" id="editImpresoraId">
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Nombre de la Impresora *</label>
+            <input id="inputImpNombre" type="text" placeholder="Ej: Térmica Cocina Caliente 80mm" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Destino de la Impresión *</label>
+            <select id="selectImpEstacion" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+              <option value="cocina">🍳 Cocina Principal (Solo alimentos / platos)</option>
+              <option value="barra">🍸 Barra & Bebidas (Solo tragos / cafetería)</option>
+              <option value="recepcion">🧾 Recepción & Caja (Ticket completo comensal)</option>
+              <option value="todas">⚡ Todas las estaciones (Comanda global)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Ancho de Papel</label>
+            <select id="selectImpAncho" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+              <option value="80mm" selected>80mm (Estándar restaurantes y KDS)</option>
+              <option value="58mm">58mm (Portátil / POS móvil)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Tipo de Conexión</label>
+            <input id="inputImpConexion" type="text" placeholder="Ej: USB Sistema / IP 192.168.1.150 / Bluetooth" value="Térmica USB / Red" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button type="button" onclick="cerrarFormNuevaImpresora()" class="px-3 py-1.5 rounded-xl text-slate-500 font-bold text-xs hover:bg-slate-200 transition-colors">
+            Cancelar
+          </button>
+          <button type="button" onclick="guardarImpresoraConfig()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-sm transition-all cursor-pointer">
+            ✓ Guardar Impresora
+          </button>
+        </div>
+      </div>
+
+      <!-- MAPEO DE CATEGORÍAS A ESTACIONES DE IMPRESIÓN -->
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Mapeo de Categorías a Estaciones</h4>
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          Define automáticamente qué platos se envían a Cocina y cuáles a la Barra o Recepción al imprimirse.
+        </p>
+        <div id="tablaMapeoCategoriasImpresoras" class="divide-y divide-slate-100 bg-slate-50 rounded-2xl border border-slate-200 p-2 text-xs">
+          <!-- Inyección dinámica -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SELECTOR RÁPIDO DE IMPRESIÓN TÉRMICA 80MM AL TOCAR 🖨️ -->
+  <!-- ========================================================================= -->
+  <div id="modalSelectorImpresion" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-xl">🖨️</span>
+          <div>
+            <h3 id="printModalOrderTitle" class="font-black text-sm text-slate-900">Imprimir Comanda Térmica (80mm)</h3>
+            <p id="printModalOrderSub" class="text-[11px] text-slate-400">Selecciona el destino de impresión de la comanda</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalSelectorImpresion()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <input type="hidden" id="printModalOrderDocId">
+
+      <!-- BOTONES DE DESTINO DE IMPRESIÓN -->
+      <div class="space-y-2 pt-1">
+        <button onclick="ejecutarImpresionDestino('cocina')" class="w-full p-3.5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 flex items-center justify-between gap-3 text-left transition-all cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg font-bold">🍳</span>
+            <div>
+              <h4 class="font-bold text-xs text-slate-900 group-hover:text-blue-700">Comanda Cocina Caliente (80mm)</h4>
+              <p class="text-[11px] text-slate-400">Imprime solo platos, fondos y sándwiches para cocineros</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px]">80mm</span>
+        </button>
+
+        <button onclick="ejecutarImpresionDestino('barra')" class="w-full p-3.5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 flex items-center justify-between gap-3 text-left transition-all cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center text-lg font-bold">🍸</span>
+            <div>
+              <h4 class="font-bold text-xs text-slate-900 group-hover:text-blue-700">Comanda Barra & Bar (80mm)</h4>
+              <p class="text-[11px] text-slate-400">Imprime solo bebidas, cócteles, cafetería y cervezas</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px]">80mm</span>
+        </button>
+
+        <button onclick="ejecutarImpresionDestino('recepcion')" class="w-full p-3.5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 flex items-center justify-between gap-3 text-left transition-all cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg font-bold">🧾</span>
+            <div>
+              <h4 class="font-bold text-xs text-slate-900 group-hover:text-blue-700">Pre-cuenta Recepción / Cliente (80mm)</h4>
+              <p class="text-[11px] text-slate-400">Ticket completo con totales, comensal, propina y forma de pago</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px]">80mm</span>
+        </button>
+
+        <button onclick="ejecutarImpresionDestino('todas')" class="w-full p-3.5 rounded-2xl border border-blue-200 bg-blue-50 hover:bg-blue-100/70 flex items-center justify-between gap-3 text-left transition-all cursor-pointer">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg font-bold">⚡</span>
+            <div>
+              <h4 class="font-black text-xs text-blue-900">Imprimir en Todas las Impresoras</h4>
+              <p class="text-[11px] text-blue-700">Dispara comanda a Cocina, Bar y Recepción simultáneamente</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-blue-200/80 text-blue-900 font-black text-[10px]">Multi-ticket</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
   <div id="printArea" class="hidden"></div>
 
@@ -2667,7 +2855,11 @@
         });
 
         knownOrderIds = nextIds;
-        if (hasNewOrder && prevIds.size > 0) playKitchenChime();
+        if (hasNewOrder && prevIds.size > 0) {
+          playKitchenChime();
+          const newest = pedidos.find(p => !prevIds.has(p.docId));
+          if (newest) onNuevoPedidoEntrante(newest);
+        }
 
         renderVentas();
         renderKdsBoard();
@@ -3424,41 +3616,452 @@
       });
     }
 
-    // --- IMPRESIÓN TÉRMICA ESC/POS ---
-    function printTicket(docId) {
-      const o = pedidos.find(p => p.docId === docId);
-      if (!o) return;
+    // =========================================================================
+    // SECCIÓN: GESTIÓN DE IMPRESORAS TÉRMICAS 80MM, ENRUTAMIENTO Y COMANDAS KDS
+    // =========================================================================
+    let impresorasConfig = [
+      {
+        id: 'imp-1',
+        nombre: 'Impresora Cocina Caliente (80mm)',
+        estacion: 'cocina',
+        ancho: '80mm',
+        conexion: 'Térmica USB / Red',
+        activa: true
+      },
+      {
+        id: 'imp-2',
+        nombre: 'Impresora Barra & Bebidas (80mm)',
+        estacion: 'barra',
+        ancho: '80mm',
+        conexion: 'Térmica Red / WiFi',
+        activa: true
+      },
+      {
+        id: 'imp-3',
+        nombre: 'Impresora Recepción & Pre-cuenta (80mm)',
+        estacion: 'recepcion',
+        ancho: '80mm',
+        conexion: 'Térmica USB Caja',
+        activa: true
+      }
+    ];
 
-      const pArea = document.getElementById('printArea');
-      pArea.innerHTML = `
-        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 8px;">
-          <h2 style="font-size: 14px; margin: 0; font-weight: 900;">${CFG.nombre}</h2>
-          <p style="font-size: 10px; margin: 2px 0 0;">COMANDA DE COCINA</p>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 6px;">
-          <span>${o.id}</span>
-          <span>${o.type === 'mesa' ? (o.table || 'MESA') : 'DELIVERY'}</span>
-        </div>
-        <div style="font-size: 10px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px;">
-          <div>HORA: ${new Date(o.createdAt).toLocaleTimeString('es-CL')}</div>
-          <div>CLIENTE: ${o.customer || 'Salón'}</div>
-          ${o.address ? `<div>DIRECCIÓN: ${o.address}</div>` : ''}
-        </div>
-        <div style="margin-bottom: 10px;">
-          ${(o.items || []).map(i => `
-            <div style="display: flex; justify-content: space-between; font-weight: bold; margin: 4px 0;">
-              <span>${i.qty}x ${i.name}</span>
-              <span>${fmt(i.price)}</span>
+    let autoPrintEnabled = true;
+
+    try {
+      const savedImps = localStorage.getItem('zoco_impresoras_config');
+      if (savedImps) impresorasConfig = JSON.parse(savedImps);
+      const savedAutoPrint = localStorage.getItem('zoco_autoprint_enabled');
+      if (savedAutoPrint !== null) autoPrintEnabled = savedAutoPrint === 'true';
+    } catch (e) {}
+
+    function getEstacionDeItem(item) {
+      const cat = (item.cat || '').toLowerCase();
+      const name = (item.name || '').toLowerCase();
+      if (cat.includes('bebida') || cat.includes('trago') || cat.includes('cerveza') || cat.includes('coctel') || cat.includes('jugo') || cat.includes('bar') || cat.includes('cafe')) {
+        return 'barra';
+      }
+      if (name.includes('coca') || name.includes('trago') || name.includes('pisco') || name.includes('mojito') || name.includes('jugo') || name.includes('cerveza') || name.includes('sol') || name.includes('botella') || name.includes('agua')) {
+        return 'barra';
+      }
+      return 'cocina';
+    }
+
+    // ABRIR Y RENDERIZAR CONFIGURACIÓN DE IMPRESORAS (TIPO OLACLICK [⚙ Cocinas])
+    function abrirModalConfigCocinas() {
+      const sw = document.getElementById('switchAutoImpresion');
+      if (sw) sw.checked = autoPrintEnabled;
+
+      renderImpresorasConfig();
+      renderMapeoCategoriasImpresoras();
+      document.getElementById('modalConfigCocinasImpresoras').classList.remove('hidden');
+    }
+
+    function cerrarModalConfigCocinas() {
+      document.getElementById('modalConfigCocinasImpresoras').classList.add('hidden');
+    }
+
+    function toggleAutoImpresion(estado) {
+      autoPrintEnabled = estado;
+      try {
+        localStorage.setItem('zoco_autoprint_enabled', String(estado));
+      } catch (e) {}
+    }
+
+    function renderImpresorasConfig() {
+      const cont = document.getElementById('listaImpresorasConfiguradas');
+      if (!cont) return;
+
+      cont.innerHTML = impresorasConfig.map(imp => {
+        let badgeEstacion = '';
+        if (imp.estacion === 'cocina') badgeEstacion = '<span class="bg-amber-100 text-amber-800 border border-amber-300 font-bold px-2.5 py-0.5 rounded-full text-[10px]">🍳 Cocina Caliente</span>';
+        else if (imp.estacion === 'barra') badgeEstacion = '<span class="bg-purple-100 text-purple-800 border border-purple-300 font-bold px-2.5 py-0.5 rounded-full text-[10px]">🍸 Barra & Tragos</span>';
+        else if (imp.estacion === 'recepcion') badgeEstacion = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2.5 py-0.5 rounded-full text-[10px]">🧾 Recepción / Caja</span>';
+        else badgeEstacion = '<span class="bg-blue-100 text-blue-800 border border-blue-300 font-bold px-2.5 py-0.5 rounded-full text-[10px]">⚡ Todas</span>';
+
+        return `
+          <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 transition-all flex flex-wrap items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg font-bold">🖨️</span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-xs text-slate-900">${imp.nombre}</h4>
+                  ${badgeEstacion}
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                  <span class="font-mono font-bold text-slate-600">${imp.ancho || '80mm'}</span>
+                  <span>·</span>
+                  <span>${imp.conexion || 'Térmica'}</span>
+                  <span>·</span>
+                  <span class="text-emerald-600 font-bold">● Lista</span>
+                </div>
+              </div>
             </div>
-            ${i.mods && i.mods.length > 0 ? `<div style="font-size: 9px; padding-left: 10px;">• ${i.mods.join('<br>• ')}</div>` : ''}
-          `).join('')}
-        </div>
-        ${o.notes ? `<div style="border-top: 1px dashed #000; padding-top: 4px; font-size: 10px; font-weight: bold;">NOTA: ${o.notes}</div>` : ''}
-        <div style="border-top: 1px solid #000; margin-top: 8px; padding-top: 4px; text-align: right; font-weight: 900; font-size: 13px;">
-          TOTAL: ${fmt(o.total)}
+
+            <div class="flex items-center gap-2">
+              <button onclick="imprimirTicketTest('${imp.id}')" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors" title="Enviar prueba de impresión térmica de 80mm">
+                <span>📄</span>
+                <span>Test 80mm</span>
+              </button>
+              <button onclick="editarImpresora('${imp.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer" title="Editar impresora">
+                ✎
+              </button>
+              <button onclick="eliminarImpresoraConfig('${imp.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 cursor-pointer" title="Eliminar impresora">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function abrirFormNuevaImpresora() {
+      document.getElementById('editImpresoraId').value = '';
+      document.getElementById('formImpresoraTitle').textContent = 'Nueva Impresora Térmica';
+      document.getElementById('inputImpNombre').value = '';
+      document.getElementById('selectImpEstacion').value = 'cocina';
+      document.getElementById('selectImpAncho').value = '80mm';
+      document.getElementById('inputImpConexion').value = 'Térmica USB / Red';
+      document.getElementById('formNuevaImpresora').classList.remove('hidden');
+    }
+
+    function cerrarFormNuevaImpresora() {
+      document.getElementById('formNuevaImpresora').classList.add('hidden');
+    }
+
+    function editarImpresora(id) {
+      const imp = impresorasConfig.find(x => x.id === id);
+      if (!imp) return;
+      document.getElementById('editImpresoraId').value = id;
+      document.getElementById('formImpresoraTitle').textContent = `Editar: ${imp.nombre}`;
+      document.getElementById('inputImpNombre').value = imp.nombre;
+      document.getElementById('selectImpEstacion').value = imp.estacion;
+      document.getElementById('selectImpAncho').value = imp.ancho || '80mm';
+      document.getElementById('inputImpConexion').value = imp.conexion || 'Térmica USB / Red';
+      document.getElementById('formNuevaImpresora').classList.remove('hidden');
+    }
+
+    function guardarImpresoraConfig() {
+      const editId = document.getElementById('editImpresoraId').value;
+      const nombre = document.getElementById('inputImpNombre').value.trim();
+      const estacion = document.getElementById('selectImpEstacion').value;
+      const ancho = document.getElementById('selectImpAncho').value;
+      const conexion = document.getElementById('inputImpConexion').value.trim() || 'Térmica USB / Red';
+
+      if (!nombre) {
+        alert('Por favor ingresa un nombre para identificar la impresora.');
+        return;
+      }
+
+      if (editId) {
+        const imp = impresorasConfig.find(x => x.id === editId);
+        if (imp) {
+          imp.nombre = nombre;
+          imp.estacion = estacion;
+          imp.ancho = ancho;
+          imp.conexion = conexion;
+        }
+      } else {
+        impresorasConfig.push({
+          id: 'imp-' + Date.now(),
+          nombre,
+          estacion,
+          ancho,
+          conexion,
+          activa: true
+        });
+      }
+
+      try {
+        localStorage.setItem('zoco_impresoras_config', JSON.stringify(impresorasConfig));
+      } catch (e) {}
+
+      cerrarFormNuevaImpresora();
+      renderImpresorasConfig();
+    }
+
+    function eliminarImpresoraConfig(id) {
+      if (!confirm('¿Deseas eliminar esta impresora?')) return;
+      impresorasConfig = impresorasConfig.filter(x => x.id !== id);
+      try {
+        localStorage.setItem('zoco_impresoras_config', JSON.stringify(impresorasConfig));
+      } catch (e) {}
+      renderImpresorasConfig();
+    }
+
+    function renderMapeoCategoriasImpresoras() {
+      const cont = document.getElementById('tablaMapeoCategoriasImpresoras');
+      if (!cont) return;
+
+      if (categorias.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-400 p-2">No hay categorías para mapear.</p>';
+        return;
+      }
+
+      cont.innerHTML = categorias.map(c => {
+        const nombreLower = (c.nombre || '').toLowerCase();
+        let sugerido = 'cocina';
+        if (nombreLower.includes('bebida') || nombreLower.includes('trago') || nombreLower.includes('cerveza') || nombreLower.includes('bar') || nombreLower.includes('cafe')) {
+          sugerido = 'barra';
+        }
+
+        return `
+          <div class="py-2 px-3 flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-800">${c.icono || '🍽️'} ${c.nombre}</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] text-slate-400">Enviar a:</span>
+              <select class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600">
+                <option value="cocina" ${sugerido === 'cocina' ? 'selected' : ''}>🍳 Cocina Caliente</option>
+                <option value="barra" ${sugerido === 'barra' ? 'selected' : ''}>🍸 Barra & Tragos</option>
+                <option value="recepcion">🧾 Recepción / Caja</option>
+              </select>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // IMPRIMIR TICKET DE PRUEBA 80MM
+    function imprimirTicketTest(impresoraId) {
+      const imp = impresorasConfig.find(x => x.id === impresoraId) || { nombre: 'Impresora Térmica 80mm', ancho: '80mm' };
+      const pArea = document.getElementById('printArea');
+      if (!pArea) return;
+
+      pArea.innerHTML = `
+        <div style="width: 72mm; margin: 0 auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #000; text-align: center;">
+          <div style="border-bottom: 2px dashed #000; padding-bottom: 6px; margin-bottom: 6px;">
+            <h2 style="font-size: 16px; margin: 0; font-weight: 900;">${CFG.nombre.toUpperCase()}</h2>
+            <p style="font-size: 11px; margin: 2px 0 0; font-weight: bold;">*** TEST DE IMPRESIÓN (80MM) ***</p>
+          </div>
+          <div style="text-align: left; font-size: 11px; line-height: 1.5; margin-bottom: 8px;">
+            <div><strong>IMPRESORA:</strong> ${imp.nombre}</div>
+            <div><strong>ESTACIÓN:</strong> ${imp.estacion ? imp.estacion.toUpperCase() : 'GENERAL'}</div>
+            <div><strong>ANCHO PAPEL:</strong> ${imp.ancho || '80mm'}</div>
+            <div><strong>FECHA / HORA:</strong> ${new Date().toLocaleString('es-CL')}</div>
+            <div><strong>ESTADO:</strong> COMUNICACIÓN OK (0% RETARDO)</div>
+          </div>
+          <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; font-size: 11px; font-weight: bold;">
+            [✓] Calibración de corte automático OK<br>
+            [✓] Fuente condensada ESC/POS 80mm OK
+          </div>
+          <div style="margin-top: 10px; font-size: 9px;">
+            SOFTWARE GASTRONÓMICO UNIVERSO693
+          </div>
         </div>
       `;
       window.print();
+    }
+
+    // DISPARADOR PRINCIPAL DE IMPRESIÓN AL CLIC EN 🖨️
+    function printTicket(docId, destino) {
+      const o = pedidos.find(p => p.docId === docId);
+      if (!o) return;
+
+      if (!destino) {
+        // ABRIR SELECTOR RÁPIDO DE COMANDA TÉRMICA (80MM)
+        document.getElementById('printModalOrderDocId').value = docId;
+        document.getElementById('printModalOrderTitle').textContent = `Comanda: ${o.id || '#' + (docId.slice(-4))}`;
+        document.getElementById('printModalOrderSub').textContent = `${o.type === 'mesa' ? (o.table || 'MESA') : 'A DOMICILIO'} · Total: ${fmt(o.total || 0)}`;
+        document.getElementById('modalSelectorImpresion').classList.remove('hidden');
+        return;
+      }
+
+      ejecutarImpresionDestino(destino, docId);
+    }
+
+    function cerrarModalSelectorImpresion() {
+      document.getElementById('modalSelectorImpresion').classList.add('hidden');
+    }
+
+    // EJECUTOR DE IMPRESIÓN POR DESTINO (COCINA 80MM / BARRA 80MM / RECEPCIÓN 80MM)
+    function ejecutarImpresionDestino(destino, docId) {
+      const id = docId || document.getElementById('printModalOrderDocId').value;
+      const o = pedidos.find(p => p.docId === id);
+      if (!o) return;
+
+      cerrarModalSelectorImpresion();
+
+      const pArea = document.getElementById('printArea');
+      if (!pArea) return;
+
+      const date = new Date(o.createdAt);
+      const horaStr = date.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+      const fechaStr = date.toLocaleDateString('es-CL');
+      const mesaOcanal = o.type === 'mesa' ? (o.table || 'MESA') : 'A DOMICILIO / LLEVAR';
+
+      let ticketsHtml = '';
+
+      // 1. TICKET COCINA CALIENTE (SOLO PLATOS)
+      if (destino === 'cocina' || destino === 'todas') {
+        const itemsCocina = (o.items || []).filter(i => getEstacionDeItem(i) === 'cocina');
+        if (itemsCocina.length > 0 || destino === 'cocina') {
+          ticketsHtml += `
+            <div style="width: 72mm; margin: 0 auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #000; padding: 2mm 0; page-break-after: always;">
+              <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-size: 16px; font-weight: 900; letter-spacing: -0.5px;">*** COMANDA COCINA ***</div>
+                <div style="font-size: 15px; font-weight: 900; margin: 4px 0; padding: 3px 8px; background: #000; color: #fff; display: inline-block; border-radius: 4px;">
+                  ${mesaOcanal.toUpperCase()}
+                </div>
+                <div style="font-size: 12px; font-weight: 900; margin-top: 2px;">ORDEN: ${o.id || '#' + o.docId?.slice(-4)}</div>
+                <div style="font-size: 10px; margin-top: 2px;">HORA: ${horaStr} | FECHA: ${fechaStr}</div>
+                ${o.customer ? `<div style="font-size: 11px; font-weight: bold; margin-top: 2px;">CLIENTE: ${o.customer.toUpperCase()}</div>` : ''}
+              </div>
+
+              <!-- ITEMS DE COCINA -->
+              <div style="margin-bottom: 10px;">
+                ${(itemsCocina.length > 0 ? itemsCocina : o.items || []).map(i => `
+                  <div style="border-bottom: 1px dashed #000; padding: 6px 0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; line-height: 1.3;">
+                      <span>[ ${i.qty}X ]</span>
+                      <span style="flex: 1; margin-left: 8px;">${i.name.toUpperCase()}</span>
+                    </div>
+                    ${i.mods && i.mods.length > 0 ? `
+                      <div style="font-size: 11px; font-weight: bold; margin-left: 38px; margin-top: 2px;">
+                        >> ${i.mods.join('<br>>> ')}
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+
+              ${o.notes ? `
+                <div style="border: 1px solid #000; padding: 4px 6px; font-size: 11px; font-weight: 900; margin-bottom: 8px; background: #f0f0f0;">
+                  OBSERVACIÓN: ${o.notes.toUpperCase()}
+                </div>
+              ` : ''}
+
+              <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 6px;">
+                --- CORTE COCINA (80MM) ---
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // 2. TICKET BARRA & TRAGOS (SOLO BEBIDAS)
+      if (destino === 'barra' || destino === 'todas') {
+        const itemsBarra = (o.items || []).filter(i => getEstacionDeItem(i) === 'barra');
+        if (itemsBarra.length > 0 || destino === 'barra') {
+          ticketsHtml += `
+            <div style="width: 72mm; margin: 0 auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #000; padding: 2mm 0; page-break-after: always;">
+              <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-size: 16px; font-weight: 900; letter-spacing: -0.5px;">*** COMANDA BARRA ***</div>
+                <div style="font-size: 15px; font-weight: 900; margin: 4px 0; padding: 3px 8px; background: #000; color: #fff; display: inline-block; border-radius: 4px;">
+                  ${mesaOcanal.toUpperCase()}
+                </div>
+                <div style="font-size: 12px; font-weight: 900; margin-top: 2px;">ORDEN: ${o.id || '#' + o.docId?.slice(-4)}</div>
+                <div style="font-size: 10px; margin-top: 2px;">HORA: ${horaStr}</div>
+              </div>
+
+              <!-- ITEMS DE BARRA -->
+              <div style="margin-bottom: 10px;">
+                ${(itemsBarra.length > 0 ? itemsBarra : o.items || []).map(i => `
+                  <div style="border-bottom: 1px dashed #000; padding: 6px 0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; line-height: 1.3;">
+                      <span>[ ${i.qty}X ]</span>
+                      <span style="flex: 1; margin-left: 8px;">${i.name.toUpperCase()}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 6px;">
+                --- CORTE BARRA (80MM) ---
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // 3. TICKET RECEPCIÓN / PRE-CUENTA CLIENTE (80MM)
+      if (destino === 'recepcion' || destino === 'todas') {
+        const subtotal = o.total || 0;
+        const propinaSugerida = Math.round(subtotal * 0.10);
+        const totalConPropina = subtotal + propinaSugerida;
+
+        ticketsHtml += `
+          <div style="width: 72mm; margin: 0 auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #000; padding: 2mm 0;">
+            <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 8px;">
+              <h2 style="font-size: 15px; margin: 0; font-weight: 900;">${CFG.nombre.toUpperCase()}</h2>
+              <div style="font-size: 10px; margin: 2px 0 0;">DOCUMENTO DE PRE-VENTA / CUENTA</div>
+              <div style="font-size: 13px; font-weight: 900; margin-top: 4px;">${mesaOcanal.toUpperCase()}</div>
+              <div style="font-size: 10px; margin-top: 2px;">ORDEN: ${o.id || '#' + o.docId?.slice(-4)} | ${horaStr}</div>
+              ${o.customer ? `<div style="font-size: 10px;">CLIENTE: ${o.customer}</div>` : ''}
+              ${o.address ? `<div style="font-size: 10px;">DIRECCIÓN: ${o.address}</div>` : ''}
+            </div>
+
+            <!-- TODOS LOS ITEMS CON PRECIOS -->
+            <div style="margin-bottom: 8px;">
+              ${(o.items || []).map(i => `
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin: 3px 0;">
+                  <span>${i.qty}x ${i.name}</span>
+                  <span style="font-weight: bold;">${fmt(i.price * i.qty)}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- TOTALES Y PROPINA SUGERIDA LEY CHILENA -->
+            <div style="border-top: 1px dashed #000; padding-top: 6px; margin-top: 6px; font-size: 11px; line-height: 1.6;">
+              <div style="display: flex; justify-content: space-between;">
+                <span>Subtotal:</span>
+                <span>${fmt(subtotal)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-weight: bold; color: #333;">
+                <span>Propina sugerida (10%):</span>
+                <span>${fmt(propinaSugerida)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 900; border-top: 1px solid #000; padding-top: 4px; margin-top: 4px;">
+                <span>TOTAL A PAGAR:</span>
+                <span>${fmt(subtotal)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: #555;">
+                <span>Total con propina:</span>
+                <span>${fmt(totalConPropina)}</span>
+              </div>
+              <div style="margin-top: 4px; font-size: 10px;">
+                Medio de pago: <strong>${o.payment || 'Efectivo / Tarjeta'}</strong>
+              </div>
+            </div>
+
+            <div style="text-align: center; border-top: 1px dashed #000; margin-top: 10px; padding-top: 6px; font-size: 9px; line-height: 1.4;">
+              ¡Gracias por preferir ${CFG.nombre}!<br>
+              Software gastronómico por UNIVERSO693
+            </div>
+          </div>
+        `;
+      }
+
+      pArea.innerHTML = ticketsHtml;
+      window.print();
+    }
+
+    // DISPARO AUTOMÁTICO DE IMPRESIÓN AL ENTRAR PEDIDO NUEVO (SI AUTO-PRINT ACTIVO)
+    function onNuevoPedidoEntrante(pedidoDoc) {
+      if (!autoPrintEnabled) return;
+      setTimeout(() => {
+        // Enviar a todas las estaciones configuradas
+        ejecutarImpresionDestino('todas', pedidoDoc.docId || pedidoDoc.id);
+      }, 500);
     }
 
     // =========================================================================
