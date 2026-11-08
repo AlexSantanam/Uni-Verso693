@@ -608,7 +608,15 @@ const industryPages: PageSeo[] = industries.map((i) => ({
   ),
 }));
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, internoPage, ebsViewPage, auditoriaPage];
+const pagoPage: PageSeo = {
+  path: '/pago',
+  title: 'Portal de Pagos y Facturación | Uni-Verso693 & Sokify',
+  description: clip('Paga tus planes de Sokify y servicios de Uni-Verso693 con Mercado Pago (tarjetas de crédito, débito, Webpay) o transferencia bancaria.'),
+  priority: 0.6,
+  jsonLd: graph(breadcrumb([{ name: 'Portal de Pagos', path: '/pago' }])),
+};
+
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
