@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zoco OS · Gestión Gastronómica</title>
+  <title>Zoco OS · Panel de Control Gastronómico</title>
 
   <meta name="theme-color" content="#0F172A" />
 
@@ -131,7 +131,7 @@
     <div id="sidebarBackdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
     <!-- --------------------------------------------------------------------- -->
-    <!-- 1. SIDEBAR LATERAL PROFESIONAL (ESTRUCTURA TIPO SAAS / OLACLICK) -->
+    <!-- 1. SIDEBAR LATERAL PROFESIONAL (ESTRUCTURA TIPO SAAS / ZOCO) -->
     <!-- --------------------------------------------------------------------- -->
     <aside id="mainSidebar" class="fixed top-0 bottom-0 left-0 w-64 bg-sidebar text-slate-300 z-50 flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 md:static md:h-screen shrink-0 border-r border-slate-800">
       
@@ -139,9 +139,7 @@
       <div>
         <div class="p-4 border-b border-slate-800 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center text-xl font-black shadow-md shadow-brand-500/20">
-              🦉
-            </div>
+            <img src="assets/zoco-avatar.jpg" alt="Zoco OS" class="w-10 h-10 rounded-2xl object-cover shadow-md shadow-purple-500/30 border border-purple-500/40">
             <div class="overflow-hidden">
               <h1 class="text-sm font-black text-white tracking-wide truncate">Zoco OS</h1>
               <p id="restNameSidebar" class="text-[11px] text-slate-400 truncate font-semibold">Fravioli, Street Food</p>
@@ -164,7 +162,7 @@
             <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono font-bold">Caja</span>
           </button>
 
-          <!-- VENTAS (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- VENTAS (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleVentasSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="ventas">
               <div class="flex items-center gap-3">
@@ -186,7 +184,7 @@
             </div>
           </div>
 
-          <!-- MÓDULO FINANCIERO (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- MÓDULO FINANCIERO (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleFinanzasSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="finanzas">
               <div class="flex items-center gap-3">
@@ -205,7 +203,7 @@
             </div>
           </div>
 
-          <!-- MENÚ (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- MENÚ (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleMenuSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="productos">
               <div class="flex items-center gap-3">
@@ -245,7 +243,7 @@
             <span id="badgeInventarioAlerta" class="hidden text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-mono font-bold animate-pulse">0</span>
           </button>
 
-          <!-- CHATBOT WHATSAPP (EXACTO A OLACLICK) -->
+          <!-- CHATBOT WHATSAPP (EXACTO A ZOCO) -->
           <button onclick="switchTab('chatbot')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="chatbot">
             <div class="flex items-center gap-3">
               <span class="text-base">🤖</span>
@@ -270,7 +268,7 @@
             </div>
           </button>
 
-          <!-- MARKETING (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- MARKETING (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleMarketingSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="marketing">
               <div class="flex items-center gap-3">
@@ -302,7 +300,7 @@
             </div>
           </div>
 
-          <!-- CONFIGURACIONES (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- CONFIGURACIONES (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleConfiguracionesSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="configuraciones">
               <div class="flex items-center gap-3">
@@ -330,7 +328,7 @@
             </div>
           </div>
 
-          <!-- INTEGRACIONES (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <!-- INTEGRACIONES (CON SUBMENÚ DESPLEGABLE TIPO ZOCO) -->
           <div class="space-y-0.5">
             <button onclick="toggleIntegracionesSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="integraciones">
               <div class="flex items-center gap-3">
@@ -352,7 +350,7 @@
             </div>
           </div>
 
-          <!-- ZOCO APP STORE (TIPO OLACLICK APP STORE) -->
+          <!-- ZOCO APP STORE (TIPO ZOCO APP STORE) -->
           <button onclick="switchTab('appstore')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white cursor-pointer" data-tab="appstore">
             <span class="text-base">🏬</span>
             <span>Zoco App Store</span>
@@ -364,7 +362,7 @@
       <!-- FOOTER DEL SIDEBAR: ESTADO DEL MENÚ EN VIVO + ACCESOS RÁPIDOS -->
       <div class="p-3 border-t border-slate-800 space-y-2 bg-slate-950/40">
         
-        <!-- BANNER REFERIDOS / COMPARTIR Y GANAR (TIPO OLACLICK US$ 20) -->
+        <!-- BANNER REFERIDOS / COMPARTIR Y GANAR (TIPO ZOCO US$ 20) -->
         <button onclick="switchTab('referidos')" class="nav-btn w-full text-left p-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black shadow-lg shadow-orange-500/20 transition-all cursor-pointer group" data-tab="referidos">
           <div class="flex items-center gap-1.5 text-xs">
             <span class="text-sm">⚡</span>
@@ -375,7 +373,7 @@
           </div>
         </button>
 
-        <!-- PILL OPERATIVO DEL MENÚ DIGITAL (TIPO OLACLICK: MENÚ DIGITAL CERRADO/ABIERTO >) -->
+        <!-- PILL OPERATIVO DEL MENÚ DIGITAL (TIPO ZOCO: MENÚ DIGITAL CERRADO/ABIERTO >) -->
         <button id="storePillBtn" onclick="abrirModalHorariosMenuDigital()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-2xl px-3.5 py-2.5 flex items-center justify-between transition-all cursor-pointer text-left shadow-sm">
           <div class="flex items-center gap-2 overflow-hidden">
             <span id="storeStatusDot" class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
@@ -386,7 +384,7 @@
           <span class="text-xs text-slate-400 font-bold ml-1">›</span>
         </button>
 
-        <!-- ENLACES RÁPIDOS (VISTA PREVIA Y QR Y ENLACES - TIPO OLACLICK) -->
+        <!-- ENLACES RÁPIDOS (VISTA PREVIA Y QR Y ENLACES - TIPO ZOCO) -->
         <div class="grid grid-cols-2 gap-2 pt-0.5">
           <button type="button" onclick="abrirModalVistaPrevia()" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center cursor-pointer">
             <span class="text-sm">👁️</span>
@@ -411,18 +409,18 @@
     <!-- --------------------------------------------------------------------- -->
     <div class="flex-1 flex flex-col min-h-screen overflow-y-auto">
 
-      <!-- TOPBAR SUPERIOR AZUL OFICIAL (TIPO OLACLICK CAPTURAS 1, 2 Y 3) -->
+      <!-- TOPBAR SUPERIOR AZUL OFICIAL (TIPO ZOCO CAPTURAS 1, 2 Y 3) -->
       <header class="bg-blue-600 text-white px-4 sm:px-6 py-2.5 sticky top-0 z-40 shadow-md">
         <div class="flex items-center justify-between gap-3">
           
-          <!-- IZQUIERDA: LOGO OLACLICK + BOTÓN ACTUALIZA TU PLAN -->
+          <!-- IZQUIERDA: LOGO ZOCO + BOTÓN ACTUALIZA TU PLAN -->
           <div class="flex items-center gap-2 sm:gap-3">
             <button onclick="toggleSidebar(true)" class="md:hidden p-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-base">
               ☰
             </button>
-            <div class="flex items-center gap-1.5 pr-2">
-              <span class="text-base">📖</span>
-              <span class="font-black text-sm sm:text-base tracking-tight text-white flex items-center">OlaClick<span class="text-amber-300 text-xs ml-0.5">✨</span></span>
+            <div class="flex items-center gap-2 pr-2">
+              <img src="assets/zoco-avatar.jpg" alt="Zoco OS" class="w-7 h-7 rounded-full object-cover border border-purple-300/40 shadow-sm">
+              <span class="font-black text-sm sm:text-base tracking-tight text-white flex items-center">Zoco OS<span class="text-amber-300 text-xs ml-0.5">✨</span></span>
             </div>
             <button onclick="abrirModalPlanes()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-white text-slate-900 hover:bg-slate-50 font-black text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer border border-white/20">
               <span class="text-slate-900 font-black">⚡</span>
@@ -451,7 +449,7 @@
               <span class="hidden sm:inline">Soporte</span>
             </button>
 
-            <!-- PILL PERFIL DE RESTAURANTE (TIPO OLACLICK: FRAVIOLI, STREET FOOD) -->
+            <!-- PILL PERFIL DE RESTAURANTE (TIPO ZOCO: FRAVIOLI, STREET FOOD) -->
             <div class="relative">
               <button onclick="toggleDropdownPerfil()" class="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer text-left">
                 <span class="w-7 h-7 rounded-full bg-slate-900 border border-white/20 flex items-center justify-center text-xs font-black shrink-0 text-white">
@@ -659,7 +657,7 @@
       <main class="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">
 
         <!-- =================================================================== -->
-        <!-- TAB 1: PEDIDOS PDV (BANDEJA CENTRAL DE PEDIDOS Y CAJA OLACLICK) -->
+        <!-- TAB 1: PEDIDOS PDV (BANDEJA CENTRAL DE PEDIDOS Y CAJA ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-pedidos" class="panel-pane space-y-4">
           
@@ -833,11 +831,11 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 2: PANTALLA DE COCINA KDS INTEGRADA (MULTI-ESTACIÓN OLACLICK) -->
+        <!-- TAB 2: PANTALLA DE COCINA KDS INTEGRADA (MULTI-ESTACIÓN ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-cocina" class="panel-pane space-y-4 hidden">
           
-          <!-- TOP BAR DE ESTACIONES Y ACCIONES DE COCINA (IDÉNTICO A OLACLICK) -->
+          <!-- TOP BAR DE ESTACIONES Y ACCIONES DE COCINA (IDÉNTICO A ZOCO) -->
           <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-wrap items-center justify-between gap-3 shadow-soft">
             
             <!-- SELECTOR DE ESTACIÓN: COCINA PRINCIPAL / BARRA / TODAS -->
@@ -942,7 +940,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 3: MÓDULO DE VENTAS (HISTORIAL, CAJAS Y REPORTES TIPO OLACLICK) -->
+        <!-- TAB 3: MÓDULO DE VENTAS (HISTORIAL, CAJAS Y REPORTES TIPO ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-ventas" class="panel-pane space-y-5 hidden">
           
@@ -1065,7 +1063,7 @@
               </div>
             </div>
 
-            <!-- CAJA CERRADA: EMPTY STATE (IDÉNTICO A OLACLICK IMAGEN 2) -->
+            <!-- CAJA CERRADA: EMPTY STATE (IDÉNTICO A ZOCO IMAGEN 2) -->
             <div id="cajaClosedView" class="bg-white rounded-3xl border border-borderLight p-8 md:p-12 text-center max-w-xl mx-auto space-y-6 shadow-soft my-6">
               <div class="w-28 h-28 mx-auto rounded-3xl bg-amber-50 border border-amber-200 flex items-center justify-center text-6xl shadow-inner">
                 📠
@@ -1234,7 +1232,7 @@
                   <div class="text-xs font-bold text-slate-500 mt-2">Cantidad de pedidos</div>
                 </div>
 
-                <!-- TABLA DESGLOSADA POR TIPO DE SERVICIO (IDÉNTICA A OLACLICK) -->
+                <!-- TABLA DESGLOSADA POR TIPO DE SERVICIO (IDÉNTICA A ZOCO) -->
                 <div class="lg:col-span-8 overflow-x-auto">
                   <table class="w-full text-left text-xs">
                     <thead class="bg-slate-50 border-b border-borderLight text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">
@@ -1312,7 +1310,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 3.5: MÓDULO FINANCIERO (REGISTROS Y CUENTAS TIPO OLACLICK) -->
+        <!-- TAB 3.5: MÓDULO FINANCIERO (REGISTROS Y CUENTAS TIPO ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-finanzas" class="panel-pane space-y-5 hidden">
           
@@ -1338,7 +1336,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 1: REGISTROS FINANCIEROS (IMAGEN 1 OLACLICK) -->
+          <!-- SUBVIEW 1: REGISTROS FINANCIEROS (IMAGEN 1 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewFinanzasRegistros" class="space-y-4">
             
@@ -1362,7 +1360,7 @@
               </div>
             </div>
 
-            <!-- BARRA DE FILTROS (TIPO OLACLICK) -->
+            <!-- BARRA DE FILTROS (TIPO ZOCO) -->
             <div class="bg-white rounded-2xl border border-borderLight p-3.5 shadow-soft flex flex-wrap items-center gap-2.5 text-xs">
               <!-- RANGO DE FECHAS -->
               <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-bold">
@@ -1431,12 +1429,12 @@
                     </tr>
                   </thead>
                   <tbody id="finanzasRegistrosTableBody" class="divide-y divide-slate-100">
-                    <!-- Inyección dinámica con soporte de estado vacío idéntico a OlaClick -->
+                    <!-- Inyección dinámica con soporte de estado vacío idéntico a Zoco OS -->
                   </tbody>
                 </table>
               </div>
 
-              <!-- PAGINACIÓN INFERIOR (TIPO OLACLICK) -->
+              <!-- PAGINACIÓN INFERIOR (TIPO ZOCO) -->
               <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-end gap-6 text-xs text-slate-500 font-medium">
                 <div class="flex items-center gap-2">
                   <span>Items per page:</span>
@@ -1461,7 +1459,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 2: CUENTAS Y MÉTODOS DE PAGO (IMAGEN 2 OLACLICK) -->
+          <!-- SUBVIEW 2: CUENTAS Y MÉTODOS DE PAGO (IMAGEN 2 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewFinanzasCuentas" class="space-y-6 hidden">
             
@@ -1517,11 +1515,11 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 4: MENÚ > PÁGINA DE PRODUCTOS (EXACTO A IMAGEN 1 OLACLICK) -->
+        <!-- TAB 4: MENÚ > PÁGINA DE PRODUCTOS (EXACTO A IMAGEN 1 ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-productos" class="panel-pane space-y-5 hidden">
           
-          <!-- BANNER SUPERIOR DE PORTADA Y MARCA (TIPO OLACLICK) -->
+          <!-- BANNER SUPERIOR DE PORTADA Y MARCA (TIPO ZOCO) -->
           <div class="bg-white rounded-3xl border border-borderLight overflow-hidden shadow-soft">
             <!-- PORTADA -->
             <div class="relative h-32 sm:h-44 bg-gradient-to-r from-amber-700 via-orange-600 to-amber-900 flex items-end p-4">
@@ -1577,7 +1575,7 @@
             </div>
           </div>
 
-          <!-- BARRA HORIZONTAL DE CATEGORÍAS (CARRUSEL TIPO OLACLICK) -->
+          <!-- BARRA HORIZONTAL DE CATEGORÍAS (CARRUSEL TIPO ZOCO) -->
           <div class="bg-white rounded-2xl border border-borderLight p-2 shadow-soft flex items-center gap-2">
             <button onclick="switchTab('categorias')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-2 shrink-0 cursor-pointer shadow-sm">
               <span>☰</span>
@@ -1899,7 +1897,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 4.8: INVENTARIO (EXACTO A IMAGEN OLACLICK) -->
+        <!-- TAB 4.8: INVENTARIO (EXACTO A IMAGEN ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-inventario" class="panel-pane space-y-5 hidden">
           
@@ -1917,7 +1915,7 @@
             </div>
           </div>
 
-          <!-- BARRA DE FILTROS Y MÉTRICAS (EXACTO A IMAGEN OLACLICK) -->
+          <!-- BARRA DE FILTROS Y MÉTRICAS (EXACTO A IMAGEN ZOCO) -->
           <div class="bg-white rounded-2xl border border-borderLight p-3.5 shadow-soft flex flex-wrap items-center justify-between gap-3 text-xs">
             
             <!-- FILTROS DE ESTADO / PILLS A LA IZQUIERDA -->
@@ -1982,7 +1980,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 4.9: CHATBOT WHATSAPP (EXACTO A IMAGEN OLACLICK) -->
+        <!-- TAB 4.9: CHATBOT WHATSAPP (EXACTO A IMAGEN ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-chatbot" class="panel-pane space-y-6 hidden">
           
@@ -2273,7 +2271,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 6: CLIENTES (CRM Y FIDELIDAD - EXACTO A IMAGEN OLACLICK) -->
+        <!-- TAB 6: CLIENTES (CRM Y FIDELIDAD - EXACTO A IMAGEN ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-clientes" class="panel-pane space-y-5 hidden">
           
@@ -2310,7 +2308,7 @@
                 </div>
               </div>
 
-              <!-- BOTÓN NUEVO CLIENTE (AZUL TIPO OLACLICK) -->
+              <!-- BOTÓN NUEVO CLIENTE (AZUL TIPO ZOCO) -->
               <button onclick="abrirModalNuevoCliente()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
                 <span>+</span>
                 <span>Nuevo cliente</span>
@@ -2349,7 +2347,7 @@
             </div>
           </div>
 
-          <!-- TABLA DE CLIENTES (COLUMNAS IDÉNTICAS A OLACLICK) -->
+          <!-- TABLA DE CLIENTES (COLUMNAS IDÉNTICAS A ZOCO) -->
           <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
@@ -2400,11 +2398,11 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 7: MARKETING GASTRONÓMICO COMPLETO (EXACTO A OLACLICK) -->
+        <!-- TAB 7: MARKETING GASTRONÓMICO COMPLETO (EXACTO A ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-marketing" class="panel-pane space-y-6 hidden">
           
-          <!-- SUB-BARRA DE NAVEGACIÓN DE MARKETING (EXACTA A SUBMENÚ OLACLICK) -->
+          <!-- SUB-BARRA DE NAVEGACIÓN DE MARKETING (EXACTA A SUBMENÚ ZOCO) -->
           <div class="bg-white rounded-2xl border border-borderLight p-2 flex flex-wrap items-center justify-between gap-2 shadow-soft">
             <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto no-scrollbar">
               <button onclick="setMarketingSubtab('codigos')" id="subtabBtnMktCodigos" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm cursor-pointer flex items-center gap-2">
@@ -2436,7 +2434,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 1: CÓDIGOS DE DESCUENTO (IMAGEN 1 OLACLICK) -->
+          <!-- SUBVIEW 1: CÓDIGOS DE DESCUENTO (IMAGEN 1 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktCodigos" class="space-y-4">
             
@@ -2451,7 +2449,7 @@
                   <input id="inputBuscarDescuentos" type="text" placeholder="Buscar un descuento..." oninput="filtrarDescuentos(this.value)" class="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-xs">
                 </div>
 
-                <!-- Botón Crear descuento (Azul OlaClick) -->
+                <!-- Botón Crear descuento (Azul Zoco OS) -->
                 <button onclick="abrirModalCrearDescuento()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
                   <span>+</span>
                   <span>Crear descuento</span>
@@ -2484,7 +2482,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 2: PROGRAMA DE FIDELIDAD (IMAGEN 2 OLACLICK) -->
+          <!-- SUBVIEW 2: PROGRAMA DE FIDELIDAD (IMAGEN 2 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktFidelidad" class="space-y-6 hidden">
             
@@ -2636,7 +2634,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 3: ENVÍO MASIVO CON IA & WHATSAPP (IMÁGENES 3 Y 4 OLACLICK) -->
+          <!-- SUBVIEW 3: ENVÍO MASIVO CON IA & WHATSAPP (IMÁGENES 3 Y 4 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktEnvio" class="space-y-6 hidden">
             
@@ -2752,7 +2750,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 4: GOOGLE FOR RESTAURANTS (IMAGEN 5 OLACLICK) -->
+          <!-- SUBVIEW 4: GOOGLE FOR RESTAURANTS (IMAGEN 5 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktGoogle" class="space-y-6 hidden">
             
@@ -2837,7 +2835,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 5: RESEÑAS Y REPUTACIÓN (IMAGEN 1 OLACLICK) -->
+          <!-- SUBVIEW 5: RESEÑAS Y REPUTACIÓN (IMAGEN 1 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktResenas" class="space-y-6 hidden">
             
@@ -3007,7 +3005,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 6: HERRAMIENTAS DE RASTREO (IMAGEN 2 OLACLICK) -->
+          <!-- SUBVIEW 6: HERRAMIENTAS DE RASTREO (IMAGEN 2 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewMktRastreo" class="space-y-6 hidden">
             
@@ -3236,7 +3234,7 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 8: CONFIGURACIONES COMPLETO (EXACTO A OLACLICK) -->
+        <!-- TAB 8: CONFIGURACIONES COMPLETO (EXACTO A ZOCO) -->
         <!-- =================================================================== -->
         <section id="tab-configuraciones" class="panel-pane space-y-6 hidden">
           
@@ -3267,7 +3265,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 1: CONFIGURACIÓN GENERAL (IMAGEN 1 OLACLICK) -->
+          <!-- SUBVIEW 1: CONFIGURACIÓN GENERAL (IMAGEN 1 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewCfgGeneral" class="space-y-6">
             <div class="space-y-1">
@@ -3430,7 +3428,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 2: MÉTODOS DE PAGO (IMAGEN 2 OLACLICK) -->
+          <!-- SUBVIEW 2: MÉTODOS DE PAGO (IMAGEN 2 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewCfgPagos" class="space-y-6 hidden">
             
@@ -3560,7 +3558,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 3: INFORMACIÓN DEL NEGOCIO (IMAGEN 3 OLACLICK) -->
+          <!-- SUBVIEW 3: INFORMACIÓN DEL NEGOCIO (IMAGEN 3 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewCfgNegocio" class="space-y-6 hidden">
             
@@ -3722,7 +3720,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 4: EQUIPO Y ROLES (IMAGEN 4 OLACLICK) -->
+          <!-- SUBVIEW 4: EQUIPO Y ROLES (IMAGEN 4 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewCfgEquipo" class="space-y-6 hidden">
             
@@ -3859,7 +3857,7 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 5: IMPRESORAS Y TICKETS (IMAGEN 5 OLACLICK) -->
+          <!-- SUBVIEW 5: IMPRESORAS Y TICKETS (IMAGEN 5 ZOCO) -->
           <!-- ================================================================= -->
           <div id="viewCfgImpresoras" class="space-y-6 hidden">
             
@@ -3882,7 +3880,7 @@
               <div class="bg-white rounded-2xl border-2 border-blue-600 p-5 shadow-soft space-y-4">
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex items-start gap-3">
-                    <input type="radio" name="modoImpresionOlaClick" id="radioImpManualWeb" checked onchange="setModoImpresion('web')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <input type="radio" name="modoImpresionZoco" id="radioImpManualWeb" checked onchange="setModoImpresion('web')" class="mt-1 accent-blue-600 cursor-pointer">
                     <div>
                       <label for="radioImpManualWeb" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
                         <span>🌐</span>
@@ -3940,7 +3938,7 @@
               <div class="bg-white rounded-2xl border border-borderLight p-5 shadow-soft">
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex items-start gap-3">
-                    <input type="radio" name="modoImpresionOlaClick" id="radioImpTablet" onchange="setModoImpresion('tablet')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <input type="radio" name="modoImpresionZoco" id="radioImpTablet" onchange="setModoImpresion('tablet')" class="mt-1 accent-blue-600 cursor-pointer">
                     <div>
                       <label for="radioImpTablet" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
                         <span>📱</span>
@@ -3959,7 +3957,7 @@
               <div class="bg-white rounded-2xl border border-borderLight p-5 shadow-soft">
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex items-start gap-3">
-                    <input type="radio" name="modoImpresionOlaClick" id="radioImpAutoPc" onchange="setModoImpresion('pc')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <input type="radio" name="modoImpresionZoco" id="radioImpAutoPc" onchange="setModoImpresion('pc')" class="mt-1 accent-blue-600 cursor-pointer">
                     <div>
                       <label for="radioImpAutoPc" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
                         <span>💻</span>
@@ -3996,11 +3994,11 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- TAB: INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO OLACLICK) -->
+        <!-- TAB: INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO ZOCO) -->
         <!-- ================================================================= -->
         <section id="tab-integraciones" class="panel-pane space-y-6 hidden">
 
-          <!-- SUBNAV PILLS (TIPO OLACLICK: ASISTENTES DE IA / MCP, PARTNERS, API KEYS) -->
+          <!-- SUBNAV PILLS (TIPO ZOCO: ASISTENTES DE IA / MCP, PARTNERS, API KEYS) -->
           <div class="bg-white rounded-2xl border border-borderLight p-1.5 flex flex-wrap items-center gap-1.5 shadow-soft">
             <button id="subtabBtnIntegMcp" onclick="setIntegracionesSubtab('mcp')" class="integ-pill-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-white shadow-sm cursor-pointer">
               <span>🤖</span>
@@ -4492,7 +4490,7 @@
               </div>
             </div>
 
-            <!-- TOKENS GENERADOS (TIPO OLACLICK CAPTURAS) -->
+            <!-- TOKENS GENERADOS (TIPO ZOCO CAPTURAS) -->
             <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
               <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                 <div>
@@ -4527,7 +4525,7 @@
                 </table>
               </div>
 
-              <!-- ESTADO VACÍO CUANDO NO HAY TOKENS (TIPO CAPTURA OLACLICK) -->
+              <!-- ESTADO VACÍO CUANDO NO HAY TOKENS (TIPO CAPTURA ZOCO) -->
               <div id="emptyStateTokens" class="p-12 text-center space-y-3">
                 <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold shadow-inner">
                   🗝️
@@ -4543,7 +4541,7 @@
 
             </div>
 
-            <!-- TABLA OFICIAL: INFORMACIÓN SOBRE SCOPES (TIPO OLACLICK CAPTURA 1 Y 2) -->
+            <!-- TABLA OFICIAL: INFORMACIÓN SOBRE SCOPES (TIPO ZOCO CAPTURA 1 Y 2) -->
             <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
               <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                 <div>
@@ -4652,7 +4650,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- TAB: ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO OLACLICK) -->
+        <!-- TAB: ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO ZOCO) -->
         <!-- ================================================================= -->
         <section id="tab-appstore" class="panel-pane space-y-6 hidden">
 
@@ -4668,7 +4666,7 @@
             </a>
           </div>
 
-          <!-- FILTRO DE CATEGORÍAS TIPO OLACLICK -->
+          <!-- FILTRO DE CATEGORÍAS TIPO ZOCO -->
           <div class="bg-white rounded-2xl border border-borderLight p-3 sm:p-4 shadow-soft flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-2">
               <button id="btnCatDelivery" onclick="filtrarAppStore('delivery')" class="appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-2 border-blue-600 bg-blue-50/50 text-blue-700 cursor-pointer flex flex-col items-start leading-tight">
@@ -4703,7 +4701,7 @@
             </div>
           </div>
 
-          <!-- GRID DE TARJETAS DE APPS (TIPO OLACLICK CAPTURA) -->
+          <!-- GRID DE TARJETAS DE APPS (TIPO ZOCO CAPTURA) -->
           <div id="gridAppStore" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             
             <!-- CARD 1: PEDIDOSYA -->
@@ -4967,7 +4965,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- TAB: SISTEMA DE COMPARTIR Y GANAR / REFERIDOS (TIPO OLACLICK) -->
+        <!-- TAB: SISTEMA DE COMPARTIR Y GANAR / REFERIDOS (TIPO ZOCO) -->
         <!-- ================================================================= -->
         <section id="tab-referidos" class="panel-pane space-y-6 hidden">
 
@@ -5296,7 +5294,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- TAB: MIS ENLACES Y CÓDIGOS QR (TIPO OLACLICK CAPTURAS 2, 3 Y 4) -->
+        <!-- TAB: MIS ENLACES Y CÓDIGOS QR (TIPO ZOCO CAPTURAS 2, 3 Y 4) -->
         <!-- ================================================================= -->
         <section id="tab-qrenlaces" class="panel-pane space-y-6 hidden">
 
@@ -5746,7 +5744,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: NUEVO REGISTRO FINANCIERO (GASTO / INGRESO TIPO OLACLICK) -->
+  <!-- MODAL: NUEVO REGISTRO FINANCIERO (GASTO / INGRESO TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalNuevoRegistroFinanciero" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
@@ -5845,7 +5843,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: NUEVA CUENTA FINANCIERA (TIPO OLACLICK) -->
+  <!-- MODAL: NUEVA CUENTA FINANCIERA (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalNuevaCuenta" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
@@ -5889,7 +5887,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: GESTIONAR MÉTODO DE PAGO (TIPO OLACLICK) -->
+  <!-- MODAL: GESTIONAR MÉTODO DE PAGO (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalGestionarMetodo" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
@@ -5935,7 +5933,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: CREAR / EDITAR PRODUCTO (TIPO OLACLICK) -->
+  <!-- MODAL: CREAR / EDITAR PRODUCTO (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalCrearProducto" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4 my-auto">
@@ -6013,7 +6011,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: CONFIGURACIÓN DE COCINAS & IMPRESORAS TÉRMICAS 80MM (TIPO OLACLICK) -->
+  <!-- MODAL: CONFIGURACIÓN DE COCINAS & IMPRESORAS TÉRMICAS 80MM (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalConfigCocinasImpresoras" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-5 my-auto max-h-[92vh] overflow-y-auto">
@@ -6187,7 +6185,7 @@
     </div>
   </div>
 
-  <!-- MODAL: REABASTECER STOCK RÁPIDO (TIPO OLACLICK) -->
+  <!-- MODAL: REABASTECER STOCK RÁPIDO (TIPO ZOCO) -->
   <div id="modalReabastecerStock" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -6286,7 +6284,7 @@
     </div>
   </div>
 
-  <!-- MODAL: NUEVO CLIENTE (TIPO OLACLICK) -->
+  <!-- MODAL: NUEVO CLIENTE (TIPO ZOCO) -->
   <div id="modalNuevoCliente" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -6445,8 +6443,8 @@
     </div>
   </div>
 
-  <!-- MODAL: CREAR DESCUENTO (EXACTO A OLACLICK) -->
-  <div id="modalCrearDescuentoOlaClick" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <!-- MODAL: CREAR DESCUENTO (EXACTO A ZOCO) -->
+  <div id="modalCrearDescuentoZoco" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2.5">
@@ -6515,7 +6513,7 @@
 
       <div class="flex items-center gap-2 pt-2">
         <button type="button" onclick="cerrarModalCrearDescuento()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
-        <button type="button" onclick="guardarDescuentoOlaClick()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Crear Descuento</button>
+        <button type="button" onclick="guardarDescuentoZoco()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Crear Descuento</button>
       </div>
     </div>
   </div>
@@ -6607,7 +6605,7 @@
     </div>
   </div>
 
-  <!-- MODAL: AGREGAR USUARIO AL EQUIPO (EXACTO A OLACLICK) -->
+  <!-- MODAL: AGREGAR USUARIO AL EQUIPO (EXACTO A ZOCO) -->
   <div id="modalAgregarUsuarioEquipo" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -6745,7 +6743,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: GENERAR NUEVO API TOKEN (TIPO OLACLICK) -->
+  <!-- MODAL: GENERAR NUEVO API TOKEN (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalGenerarApiToken" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -7016,7 +7014,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: COMPLETAR DATOS BANCARIOS PARA COBRO (TIPO OLACLICK) -->
+  <!-- MODAL: COMPLETAR DATOS BANCARIOS PARA COBRO (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalCompletarCobro" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -7079,7 +7077,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: DÉJANOS SUS DATOS (FORMULARIO DIRECTO TIPO OLACLICK) -->
+  <!-- MODAL: DÉJANOS SUS DATOS (FORMULARIO DIRECTO TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalDejanosSusDatos" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -7126,7 +7124,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: HORARIOS DEL MENÚ DIGITAL & PAUSAR SERVICIOS (TIPO OLACLICK) -->
+  <!-- MODAL: HORARIOS DEL MENÚ DIGITAL & PAUSAR SERVICIOS (TIPO ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalHorariosMenuDigital" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
@@ -7202,7 +7200,7 @@
 
       </div>
 
-      <!-- NOTA INFORMATIVA (TIPO OLACLICK) -->
+      <!-- NOTA INFORMATIVA (TIPO ZOCO) -->
       <div class="flex items-start gap-2 text-[11px] text-slate-500 pt-1">
         <span class="text-blue-500 font-bold">ⓘ</span>
         <span>Al pausar un servicio también desactivas los pedidos programados en el menú digital.</span>
@@ -7221,7 +7219,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: VISTA PREVIA MÓVIL EN VIVO (TIPO OLACLICK CAPTURA 1) -->
+  <!-- MODAL: VISTA PREVIA MÓVIL EN VIVO (TIPO ZOCO CAPTURA 1) -->
   <!-- ========================================================================= -->
   <div id="modalVistaPrevia" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden">
     <div class="relative flex flex-col items-center max-h-[96vh]">
@@ -7283,7 +7281,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: AYUDA Y SOPORTE (TIPO OLACLICK CAPTURA 2) -->
+  <!-- MODAL: AYUDA Y SOPORTE (TIPO ZOCO CAPTURA 2) -->
   <!-- ========================================================================= -->
   <div id="modalAyudaSoporte" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[92vh]">
@@ -7403,7 +7401,7 @@
   <!-- MODAL: PLANES Y SUSCRIPCIÓN (ACTUALIZA TU PLAN) -->
   <!-- ========================================================================= -->
     <!-- ========================================================================= -->
-  <!-- MODAL / VISTA COMPLETA: MEJORA DE PLAN (ACTUALIZA TU PLAN OLACLICK) -->
+  <!-- MODAL / VISTA COMPLETA: MEJORA DE PLAN (ACTUALIZA TU PLAN ZOCO) -->
   <!-- ========================================================================= -->
   <div id="modalPlanesSuscripcion" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md hidden overflow-y-auto">
     <div class="min-h-screen bg-slate-50 flex flex-col">
@@ -7411,9 +7409,9 @@
       <!-- Topbar del Checkout de Planes -->
       <header class="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-lg">⚡</span>
-            <span class="font-black text-xl tracking-tight text-slate-900">OlaClick<span class="text-blue-600">.</span></span>
+          <div class="flex items-center gap-2.5">
+            <img src="assets/zoco-avatar.jpg" alt="Zoco OS" class="w-8 h-8 rounded-full object-cover border border-purple-400/40">
+            <span class="font-black text-xl tracking-tight text-slate-900">Zoco<span class="text-purple-600 font-extrabold"> OS.</span></span>
           </div>
 
           <!-- Pasos de compra / Breadcrumb -->
@@ -7649,7 +7647,7 @@
           <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div class="lg:col-span-5 space-y-3">
               <h2 class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
-                Súmate a los más de <span class="text-blue-600">40.000 negocios</span> que ya están viendo resultados con OlaClick.
+                Súmate a los más de <span class="text-blue-600">40.000 negocios</span> que ya están viendo resultados con Zoco OS.
               </h2>
               <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
                 Desde heladerías y cafeterías hasta cadenas gastronómicas de múltiples sucursales usan nuestra tecnología diariamente.
@@ -7678,7 +7676,7 @@
                     <div class="text-amber-400 text-xs">★★★★★</div>
                   </div>
                 </div>
-                <p class="text-[11px] text-slate-600 italic">"¡Gracias, OlaClick! Su apoyo ha sido fundamental para el crecimiento de nuestro negocio de hamburguesas. ¡Estamos muy agradecidos!"</p>
+                <p class="text-[11px] text-slate-600 italic">"¡Gracias, Zoco! Su apoyo ha sido fundamental para el crecimiento de nuestro negocio de hamburguesas. ¡Estamos muy agradecidos!"</p>
               </div>
 
               <!-- Testimonio 3 -->
@@ -7690,7 +7688,7 @@
                     <div class="text-amber-400 text-xs">★★★★★</div>
                   </div>
                 </div>
-                <p class="text-[11px] text-slate-600 italic">"En el restaurante estamos con el mismo sistema desde el inicio de OlaClick. No lo cambiamos por nada."</p>
+                <p class="text-[11px] text-slate-600 italic">"En el restaurante estamos con el mismo sistema desde el inicio de Zoco. No lo cambiamos por nada."</p>
               </div>
 
               <!-- Testimonio 4 -->
@@ -7747,7 +7745,7 @@
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Página web con dominio personalizado</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Dominio .com 🦅</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold bg-blue-50/30 border-x border-blue-100">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td><td class="text-center text-[11px] text-amber-700 font-bold">🎁 1 año gratis plan anual</td></tr>
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Menú digital sin publicidad</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
-                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Pedidos en OlaClick y WhatsApp</td><td class="text-center font-bold text-slate-800">Ilimitados</td><td class="text-center font-bold text-slate-800 bg-blue-50/30 border-x border-blue-100">Ilimitados</td><td class="text-center text-slate-600">400 pedidos / mes</td><td class="text-center text-slate-600">75 pedidos / mes</td></tr>
+                  <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Pedidos en Zoco y WhatsApp</td><td class="text-center font-bold text-slate-800">Ilimitados</td><td class="text-center font-bold text-slate-800 bg-blue-50/30 border-x border-blue-100">Ilimitados</td><td class="text-center text-slate-600">400 pedidos / mes</td><td class="text-center text-slate-600">75 pedidos / mes</td></tr>
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Punto de venta multiplataforma</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Impresión Automática y App</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm bg-blue-50/30 border-x border-blue-100">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td><td class="text-center text-emerald-500 font-black text-sm">✔</td></tr>
                   <tr class="hover:bg-slate-50/50"><td class="p-3.5 font-medium">Soporte técnico</td><td class="text-center text-slate-700 font-semibold">WhatsApp Impulso</td><td class="text-center text-slate-700 font-semibold bg-blue-50/30 border-x border-blue-100">WhatsApp Elite</td><td class="text-center text-slate-700 font-semibold">WhatsApp Premium</td><td class="text-center text-slate-700 font-semibold">WhatsApp Advanced</td></tr>
@@ -8001,7 +7999,7 @@
       </main>
 
       <!-- Botón Flotante de WhatsApp para Dudas -->
-      <a href="https://wa.me/56900000000?text=Hola,%20tengo%20dudas%20sobre%20los%20planes%20de%20OlaClick" target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs transition transform hover:scale-105">
+      <a href="https://wa.me/56900000000?text=Hola,%20tengo%20dudas%20sobre%20los%20planes%20de%20Zoco OS" target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs transition transform hover:scale-105">
         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"/></svg>
         <span class="hidden sm:inline">¿Dudas? Habla con un asesor</span>
       </a>
@@ -8180,7 +8178,7 @@
     let knownOrderIds = new Set();
     let currentStoreOpen = true;
 
-    // --- ESTADO MÓDULO FINANCIERO (OLACLICK TIPO) ---
+    // --- ESTADO MÓDULO FINANCIERO (ZOCO TIPO) ---
     let finanzasSubtab = 'registros'; // 'registros', 'cuentas'
     let regTipoSeleccionado = 'gasto'; // 'gasto' | 'ingreso'
     let finanzasFiltros = {
@@ -8709,7 +8707,7 @@
       });
     }
 
-    // --- CONTROL OPERATIVO: HORARIOS DEL MENÚ DIGITAL Y PAUSAR SERVICIOS (TIPO OLACLICK) ---
+    // --- CONTROL OPERATIVO: HORARIOS DEL MENÚ DIGITAL Y PAUSAR SERVICIOS (TIPO ZOCO) ---
     let serviciosCanalesEstado = {
       llevar: true,
       local: true,
@@ -9050,7 +9048,7 @@
       });
     }
 
-    // --- BANDEJA CENTRAL PEDIDOS PDV & GESTIÓN DE CAJA (TIPO OLACLICK) ---
+    // --- BANDEJA CENTRAL PEDIDOS PDV & GESTIÓN DE CAJA (TIPO ZOCO) ---
     function setPdvChannel(channel) {
       pdvChannel = channel;
       document.querySelectorAll('.channel-tab-btn').forEach(btn => {
@@ -9429,7 +9427,7 @@
       document.getElementById('badgeStationBarra').textContent = countBarraStation;
       document.getElementById('badgeStationTodas').textContent = countTotalStation;
 
-      // Placeholders estéticos si están vacías (Estilo OlaClick)
+      // Placeholders estéticos si están vacías (Estilo Zoco OS)
       if (countN === 0) renderEmptyKdsColumn(colNuevos, 'Sin órdenes pendientes');
       if (countC === 0) renderEmptyKdsColumn(colCocina, 'Cocina al día');
       if (countL === 0) renderEmptyKdsColumn(colListos, 'Sin pedidos para entregar');
@@ -9623,7 +9621,7 @@
       return 'cocina';
     }
 
-    // ABRIR Y RENDERIZAR CONFIGURACIÓN DE IMPRESORAS (TIPO OLACLICK [⚙ Cocinas])
+    // ABRIR Y RENDERIZAR CONFIGURACIÓN DE IMPRESORAS (TIPO ZOCO [⚙ Cocinas])
     function abrirModalConfigCocinas() {
       const sw = document.getElementById('switchAutoImpresion');
       if (sw) sw.checked = autoPrintEnabled;
@@ -10021,7 +10019,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 3: VENTAS, HISTORIAL, CAJAS Y REPORTES (TIPO OLACLICK)
+    // SECCIÓN 3: VENTAS, HISTORIAL, CAJAS Y REPORTES (TIPO ZOCO)
     // =========================================================================
     let ventasSubtab = 'historial'; // 'historial', 'cajas', 'reportes'
     let historialFilter = 'todo'; // 'todo', 'web', 'delivery', 'mesas'
@@ -10384,7 +10382,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 3.5: MÓDULO FINANCIERO (REGISTROS, CUENTAS Y COMISIONES TIPO OLACLICK)
+    // SECCIÓN 3.5: MÓDULO FINANCIERO (REGISTROS, CUENTAS Y COMISIONES TIPO ZOCO)
     // =========================================================================
     function toggleFinanzasSubmenu() {
       const sub = document.getElementById('finanzasSubmenu');
@@ -10459,7 +10457,7 @@
       }
 
       if (filtrados.length === 0) {
-        // ESTADO VACÍO IDÉNTICO AL SCREENSHOT DE OLACLICK
+        // ESTADO VACÍO IDÉNTICO AL SCREENSHOT DE ZOCO
         tableBody.innerHTML = `
           <tr>
             <td colspan="9" class="py-16 text-center text-slate-500">
@@ -10805,7 +10803,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 4: MENÚ > PÁGINA DE PRODUCTOS Y BIENVENIDA (TIPO OLACLICK)
+    // SECCIÓN 4: MENÚ > PÁGINA DE PRODUCTOS Y BIENVENIDA (TIPO ZOCO)
     // =========================================================================
     let menuFiltroQuery = '';
     let categoriaActivaScroll = null;
@@ -10945,7 +10943,7 @@
               <div class="flex items-center gap-4 shrink-0">
                 <span class="font-mono font-black text-slate-900 text-sm ${isOculto ? 'opacity-40' : ''}">${fmt(p.price || 0)}</span>
                 
-                <!-- BOTÓN OJO VISIBILIDAD (TIPO OLACLICK) -->
+                <!-- BOTÓN OJO VISIBILIDAD (TIPO ZOCO) -->
                 <button onclick="toggleDisponible('${p.docId}', ${isOculto})" class="p-1.5 rounded-lg transition-colors cursor-pointer ${isOculto ? 'text-slate-300 hover:text-slate-600' : 'text-blue-600 hover:text-blue-700 bg-blue-50/50'}" title="${isOculto ? 'Plato pausado/oculto (clic para activar)' : 'Plato visible en el menú'}">
                   ${isOculto ? '🙈' : '👁️'}
                 </button>
@@ -11549,7 +11547,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 4.8: INVENTARIO & CONTROL DE STOCK (TIPO OLACLICK)
+    // SECCIÓN 4.8: INVENTARIO & CONTROL DE STOCK (TIPO ZOCO)
     // =========================================================================
     let inventarioFiltro = 'todos'; // 'disponible' | 'agotado' | 'todos'
     let inventarioSearchQuery = '';
@@ -12010,7 +12008,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 4.9: CHATBOT WHATSAPP & IA (TIPO OLACLICK)
+    // SECCIÓN 4.9: CHATBOT WHATSAPP & IA (TIPO ZOCO)
     // =========================================================================
     let chatbotConfig = {
       activo: true,
@@ -12351,7 +12349,7 @@
     // SECCIÓN 6: CLIENTES (CRM)
     // =========================================================================
     // =========================================================================
-    // SECCIÓN 6: CLIENTES CRM & FIDELIZACIÓN (EXACTO A OLACLICK)
+    // SECCIÓN 6: CLIENTES CRM & FIDELIZACIÓN (EXACTO A ZOCO)
     // =========================================================================
     let clientesFiltroSegmento = 'todos'; // 'todos' | 'elite' | 'top' | 'frecuente'
     let clientesSearchQuery = '';
@@ -12860,7 +12858,7 @@
     }
 
     // =========================================================================
-    // SECCIÓN 7: MARKETING GASTRONÓMICO Y DESCUENTOS (TIPO OLACLICK)
+    // SECCIÓN 7: MARKETING GASTRONÓMICO Y DESCUENTOS (TIPO ZOCO)
     // =========================================================================
     let marketingSubtab = 'codigos';
     let fidelidadSubtab = 'programa';
@@ -13112,14 +13110,14 @@
     }
 
     function abrirModalCrearDescuento() {
-      document.getElementById('modalCrearDescuentoOlaClick')?.classList.remove('hidden');
+      document.getElementById('modalCrearDescuentoZoco')?.classList.remove('hidden');
     }
 
     function cerrarModalCrearDescuento() {
-      document.getElementById('modalCrearDescuentoOlaClick')?.classList.add('hidden');
+      document.getElementById('modalCrearDescuentoZoco')?.classList.add('hidden');
     }
 
-    function guardarDescuentoOlaClick() {
+    function guardarDescuentoZoco() {
       const nombre = document.getElementById('modalDescNombre').value.trim();
       const codigoRaw = document.getElementById('modalDescCodigo').value.trim().toUpperCase();
       const tipo = document.getElementById('modalDescTipo').value;
@@ -13703,11 +13701,11 @@
     }
 
     // =========================================================================
-    // SECCIÓN 8: CONFIGURACIONES COMPLETO (TIPO OLACLICK)
+    // SECCIÓN 8: CONFIGURACIONES COMPLETO (TIPO ZOCO)
     // =========================================================================
     let configSubtab = 'general';
     let pagosCfgSubtab = 'contraentrega';
-    let modoImpresionOlaClick = 'web';
+    let modoImpresionZoco = 'web';
 
     let equipoUsuarios = [
       {
@@ -14054,7 +14052,7 @@
 
     // --- IMPRESORAS Y TICKETS ---
     function setModoImpresion(modo) {
-      modoImpresionOlaClick = modo;
+      modoImpresionZoco = modo;
       mostrarNotificacion(`Modo de impresión: ${modo === 'web' ? 'Manual por Navegador Web' : modo === 'tablet' ? 'Bluetooth Tablet/Móvil' : 'Automática PC'}`);
     }
 
@@ -14175,7 +14173,7 @@
     }
 
     // =========================================================================
-    // MÓDULO INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO OLACLICK)
+    // MÓDULO INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO ZOCO)
     // =========================================================================
     let currentIntegracionesSubtab = 'mcp';
     let apiTokens = [
@@ -14522,7 +14520,7 @@
     }
 
     // =========================================================================
-    // MÓDULO ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO OLACLICK)
+    // MÓDULO ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO ZOCO)
     // =========================================================================
     let currentAppStoreCategoria = 'delivery';
 
@@ -14631,7 +14629,7 @@
     }
 
     // =========================================================================
-    // MÓDULO SISTEMA DE COMPARTIR Y GANAR (REFERIDOS TIPO OLACLICK)
+    // MÓDULO SISTEMA DE COMPARTIR Y GANAR (REFERIDOS TIPO ZOCO)
     // =========================================================================
     let datosCobroReferidos = null;
     let estadisticasReferidos = {
@@ -14753,7 +14751,7 @@
     }
 
     // =========================================================================
-    // MÓDULO VISTA PREVIA Y MIS ENLACES Y CÓDIGOS QR (TIPO OLACLICK)
+    // MÓDULO VISTA PREVIA Y MIS ENLACES Y CÓDIGOS QR (TIPO ZOCO)
     // =========================================================================
     let qrActualParaDescarga = '';
 
@@ -14827,7 +14825,7 @@
     }
 
     // =========================================================================
-    // MÓDULO TOPBAR: NOTIFICACIONES, SOPORTE Y PERFIL (TIPO OLACLICK)
+    // MÓDULO TOPBAR: NOTIFICACIONES, SOPORTE Y PERFIL (TIPO ZOCO)
     // =========================================================================
     function togglePopoverNotificaciones() {
       const pop = document.getElementById('popoverNotificaciones');

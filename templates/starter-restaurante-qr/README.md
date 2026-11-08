@@ -1,10 +1,10 @@
-# 🍽️ UNIVERSO693 · Starter Restaurante QR (OlaClick Pro Killer)
+# 🍽️ UNIVERSO693 · Starter Restaurante QR (Zoco OS)
 
 Plantilla oficial estandarizada de **UNIVERSO693 SpA** para entrega de cartas digitales interactivas, pedidos por QR en salón y delivery directo por WhatsApp.
 
 ---
 
-## ⚡ ¿Por qué esta plantilla reemplaza a OlaClick ($59 USD/mes)?
+## ⚡ ¿Por qué esta plantilla reemplaza a Zoco OS ($59 USD/mes)?
 
 1. **Cero Comisiones:** El restaurante no paga porcentajes por pedido a UberEats, PedidosYa ni comisiones ocultas.
 2. **Dominio Propio .CL:** Corre bajo el dominio oficial del restaurante (`www.mirestaurante.cl`), no en un subdominio genérico compartido.
