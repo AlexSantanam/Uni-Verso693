@@ -25,6 +25,7 @@ interface PresetItem {
   title: string;
   category: 'sokify' | 'universo693';
   amount: number;
+  amountUsd: number;
   description: string;
   frequency: string;
   badge?: string;
@@ -37,8 +38,9 @@ const ITEMS: PresetItem[] = [
     title: 'Sokify · Plan Mensual',
     category: 'sokify',
     amount: 15900,
+    amountUsd: 16,
     description: 'Sistema Operativo Gastronómico (Menú QR, KDS Cocina, POS y pedidos ilimitados).',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($16 USD)',
     badge: 'Popular',
     icon: '🍽️',
   },
@@ -47,8 +49,9 @@ const ITEMS: PresetItem[] = [
     title: 'Sokify · Plan Anual Fundador',
     category: 'sokify',
     amount: 69000,
-    description: '1 año completo de Sokify todo incluido. Equivale a solo $5.750/mes con precio congelado.',
-    frequency: 'CLP / año',
+    amountUsd: 69,
+    description: '1 año completo de Sokify todo incluido. Equivale a solo $5.750 CLP / $5.75 USD al mes.',
+    frequency: 'CLP / año ($69 USD)',
     badge: 'Ahorro 64%',
     icon: '💎',
   },
@@ -57,18 +60,20 @@ const ITEMS: PresetItem[] = [
     title: 'Sokify · Anual + Copiloto IA WhatsApp',
     category: 'sokify',
     amount: 88900,
+    amountUsd: 89,
     description: '1 año de sistema completo + Copiloto Sofi IA 24/7 atendiendo tu WhatsApp.',
-    frequency: 'CLP / año',
+    frequency: 'CLP / año ($89 USD)',
     badge: 'Pack Completo',
     icon: '🤖',
   },
   {
     id: 'sokify-dominio',
-    title: 'Dominio .CL/.COM + Correos Ilimitados',
+    title: 'Dominio Propio + Correos Ilimitados',
     category: 'sokify',
     amount: 6900,
-    description: 'Dominio propio y casillas corporativas ilimitadas para tu local gastronómico.',
-    frequency: 'CLP / mes',
+    amountUsd: 7,
+    description: 'Dominio propio (.CL, .COM, etc.) y casillas corporativas ilimitadas para tu local.',
+    frequency: 'CLP / mes ($7 USD)',
     icon: '🌐',
   },
   {
@@ -76,17 +81,19 @@ const ITEMS: PresetItem[] = [
     title: 'Copiloto Sofi IA WhatsApp',
     category: 'sokify',
     amount: 19900,
+    amountUsd: 20,
     description: 'Atención 24/7 y toma de pedidos con inteligencia artificial en tu WhatsApp oficial.',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($20 USD)',
     icon: '🤖',
   },
   {
     id: 'sokify-sii',
-    title: 'Facturación Electrónica SII Directa',
+    title: 'Facturación Electrónica Directa',
     category: 'sokify',
     amount: 9900,
-    description: 'Emisión automática de boletas y facturas tributarias del SII desde el punto de venta.',
-    frequency: 'CLP / mes',
+    amountUsd: 10,
+    description: 'Emisión automática de boletas y facturas tributarias desde el punto de venta.',
+    frequency: 'CLP / mes ($10 USD)',
     icon: '🧾',
   },
   {
@@ -94,8 +101,9 @@ const ITEMS: PresetItem[] = [
     title: 'Diagnóstico EBS 693',
     category: 'universo693',
     amount: 197000,
+    amountUsd: 197,
     description: 'Sesión estratégica de 45 min con arquitecto senior. Hoja de ruta técnica y ROI.',
-    frequency: 'Pago único',
+    frequency: 'Pago único ($197 USD)',
     icon: '🧠',
   },
   {
@@ -103,8 +111,9 @@ const ITEMS: PresetItem[] = [
     title: 'AUDIT 693 PRO',
     category: 'universo693',
     amount: 19990,
+    amountUsd: 21,
     description: 'Informe de Fugas de Dinero, análisis de competencia y costos manuales en PDF.',
-    frequency: 'Pago único',
+    frequency: 'Pago único ($21 USD)',
     icon: '📊',
   },
   {
@@ -112,8 +121,9 @@ const ITEMS: PresetItem[] = [
     title: 'Impulsa PyME · Sitio Web Todo Incluido',
     category: 'universo693',
     amount: 19900,
+    amountUsd: 20,
     description: 'Sitio web corporativo de alta velocidad con hosting en la nube y mantención.',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($20 USD)',
     icon: '🌱',
   },
 ];
@@ -142,7 +152,9 @@ export const Pago: React.FC = () => {
   const [customTitle, setCustomTitle] = useState<string>('Abono de Servicio Uni-Verso693');
   const [customAmount, setCustomAmount] = useState<number>(initialAmount || 50000);
 
-  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'transferencia'>(initialMethod);
+  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'paypal' | 'transferencia'>(
+    initialMethod === 'transferencia' ? 'transferencia' : params.get('method') === 'paypal' ? 'paypal' : 'mercadopago'
+  );
 
   const [fullName, setFullName] = useState<string>(initialName);
   const [email, setEmail] = useState<string>(initialEmail);
@@ -159,6 +171,9 @@ export const Pago: React.FC = () => {
   const isCustom = selectedItemId === 'custom' || !currentItem;
   const finalTitle = isCustom ? customTitle : currentItem.title;
   const finalAmount = isCustom ? customAmount : currentItem.amount;
+  const finalAmountUsd = isCustom
+    ? Math.max(1, Math.round(finalAmount / 950))
+    : (currentItem?.amountUsd || Math.max(1, Math.round(finalAmount / 950)));
 
   const handleCopyBankDetails = () => {
     const text = `UNIVERSO693 SpA
@@ -173,7 +188,7 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
     setTimeout(() => setCopiedBank(false), 2500);
   };
 
-  const handleCheckoutMercadoPago = async (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
@@ -189,9 +204,11 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          provider: paymentMethod === 'paypal' ? 'paypal' : 'mercadopago',
           item: selectedItemId,
           title: finalTitle,
           amount: finalAmount,
+          amountUsd: finalAmountUsd,
           fullName: fullName || 'Cliente',
           email,
           phone,
@@ -203,10 +220,10 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
       const data = await res.json();
 
       if (!res.ok || !data.checkoutUrl) {
-        throw new Error(data.error || 'No se pudo generar la preferencia de Mercado Pago.');
+        throw new Error(data.error || 'No se pudo generar la orden de pago.');
       }
 
-      // Redirigir al checkout oficial de Mercado Pago
+      // Redirigir al checkout oficial (Mercado Pago o PayPal)
       window.location.href = data.checkoutUrl;
     } catch (err: any) {
       console.error(err);
@@ -428,38 +445,57 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
                   <h3 className="text-base font-black text-white">{finalTitle}</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl font-black font-mono text-emerald-400">${finalAmount.toLocaleString('es-CL')}</span>
-                  <span className="text-[10px] font-mono text-slate-400 block">CLP</span>
+                  {paymentMethod === 'paypal' ? (
+                    <>
+                      <span className="text-2xl font-black font-mono text-blue-400">${finalAmountUsd} USD</span>
+                      <span className="text-[10px] font-mono text-slate-400 block">~${finalAmount.toLocaleString('es-CL')} CLP</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-2xl font-black font-mono text-emerald-400">${finalAmount.toLocaleString('es-CL')}</span>
+                      <span className="text-[10px] font-mono text-slate-400 block">CLP (~${finalAmountUsd} USD)</span>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* TABS DE MÉTODO DE PAGO */}
-              <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs font-bold">
+              {/* TABS DE MÉTODO DE PAGO (MERCADO PAGO · PAYPAL · TRANSFERENCIA) */}
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-black/40 border border-white/10 text-xs font-bold">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('mercadopago')}
-                  className={`py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 ${
+                  className={`py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     paymentMethod === 'mercadopago' ? 'bg-cyan-500 text-slate-950 font-black shadow-md' : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Mercado Pago</span>
+                  <CreditCard className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Mercado Pago</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('paypal')}
+                  className={`py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    paymentMethod === 'paypal' ? 'bg-blue-600 text-white font-black shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <span className="font-mono font-bold">🅿️</span>
+                  <span className="truncate">PayPal USD</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('transferencia')}
-                  className={`py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 ${
-                    paymentMethod === 'transferencia' ? 'bg-cyan-500 text-slate-950 font-black shadow-md' : 'text-slate-400 hover:text-white'
+                  className={`py-2 px-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    paymentMethod === 'transferencia' ? 'bg-emerald-500 text-slate-950 font-black shadow-md' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <span>🏦</span>
-                  <span>Transferencia</span>
+                  <span className="truncate">Transferencia</span>
                 </button>
               </div>
 
-              {/* CASO A: CHECKOUT MERCADO PAGO */}
-              {paymentMethod === 'mercadopago' ? (
-                <form onSubmit={handleCheckoutMercadoPago} className="space-y-4 text-xs">
+              {/* CASO A & B: CHECKOUT ONLINE (MERCADO PAGO O PAYPAL) */}
+              {paymentMethod === 'mercadopago' || paymentMethod === 'paypal' ? (
+                <form onSubmit={handleCheckout} className="space-y-4 text-xs">
                   <div>
                     <label className="block font-bold text-slate-300 mb-1">Nombre o Razón Social *</label>
                     <input
@@ -480,7 +516,7 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="tu@correo.cl"
+                        placeholder="tu@correo.com"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
                       />
                     </div>
@@ -498,12 +534,12 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-300 mb-1">RUT (para Factura SII)</label>
+                      <label className="block font-bold text-slate-300 mb-1">RUT / Tax ID (opcional)</label>
                       <input
                         type="text"
                         value={rut}
                         onChange={(e) => setRut(e.target.value)}
-                        placeholder="77.834.693-1"
+                        placeholder="RUT o Identificador Fiscal"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
                       />
                     </div>
@@ -521,30 +557,54 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
 
                   {errorMsg && <div className="p-3 rounded-xl bg-red-950/50 border border-red-500/50 text-red-300 text-xs font-medium">{errorMsg}</div>}
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Conectando con Mercado Pago...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4 text-slate-950" />
-                        <span>Pagar con Mercado Pago &rarr;</span>
-                      </>
-                    )}
-                  </button>
+                  {paymentMethod === 'paypal' ? (
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Conectando con PayPal...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4 text-white" />
+                          <span>Pagar con PayPal (${finalAmountUsd} USD) &rarr;</span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Conectando con Mercado Pago...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4 text-slate-950" />
+                          <span>Pagar con Mercado Pago (${finalAmount.toLocaleString('es-CL')} CLP) &rarr;</span>
+                        </>
+                      )}
+                    </button>
+                  )}
 
-                  <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 pt-1">
+                  <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-slate-400 pt-1">
                     <span>🔒 Cifrado TLS 256-bit</span>
                     <span>·</span>
-                    <span>Tarjetas Débito y Crédito</span>
+                    <span>Tarjetas Visa, Mastercard, AMEX</span>
                     <span>·</span>
-                    <span>Webpay Plus</span>
+                    {paymentMethod === 'paypal' ? (
+                      <span className="text-blue-400 font-bold">PayPal Global en USD</span>
+                    ) : (
+                      <span>Webpay Plus & Débito</span>
+                    )}
                   </div>
                 </form>
               ) : (

@@ -4,6 +4,7 @@ import { Redis } from '@upstash/redis';
 
 const SITE_URL = 'https://universo693.com';
 
+// ---------- MERCADO PAGO (CLP / LATAM) ----------
 const mpToken = () =>
   process.env.MP_ACCESS_TOKEN || process.env.MERCADOPAGO_ACCESS_TOKEN;
 
@@ -27,18 +28,49 @@ const mpApi = async (path: string, init?: RequestInit) => {
   return data as any;
 };
 
+// ---------- PAYPAL (USD / INTERNACIONAL) ----------
+const paypalBase = () =>
+  process.env.PAYPAL_ENV === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+
+const paypalReady = () => Boolean(process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET);
+
+const paypalToken = async () => {
+  const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64');
+  const res = await fetch(`${paypalBase()}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: { authorization: `Basic ${auth}`, 'content-type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials',
+    signal: AbortSignal.timeout(10000),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.access_token) throw new Error(`PayPal auth ${res.status}`);
+  return data.access_token as string;
+};
+
+const paypalApi = async (path: string, init?: RequestInit) => {
+  const token = await paypalToken();
+  const res = await fetch(`${paypalBase()}${path}`, {
+    ...init,
+    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json', ...(init?.headers ?? {}) },
+    signal: AbortSignal.timeout(15000),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+};
+
 // Catálogo oficial de items facturables de Uni-Verso693 & Sokify
 export const CATALOG: Record<
   string,
-  { id: string; title: string; category: string; amount: number; description: string; frequency?: string; badge?: string }
+  { id: string; title: string; category: string; amount: number; amountUsd: number; description: string; frequency?: string; badge?: string }
 > = {
   'sokify-mensual': {
     id: 'sokify-mensual',
     title: 'Sokify · Plan Mensual',
     category: 'sokify',
     amount: 15900,
+    amountUsd: 16,
     description: 'Suscripción mensual al Sistema Operativo Gastronómico (Menú QR, KDS, POS, 0% comisión).',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($16 USD)',
     badge: 'Popular',
   },
   'sokify-anual': {
@@ -46,8 +78,9 @@ export const CATALOG: Record<
     title: 'Sokify · Plan Anual Fundador (64% OFF)',
     category: 'sokify',
     amount: 69000,
-    description: '1 año completo de Sokify todo incluido ($5.750/mes con precio congelado).',
-    frequency: 'CLP / año',
+    amountUsd: 69,
+    description: '1 año completo de Sokify todo incluido ($5.750 CLP/mes o $5.75 USD/mes con precio congelado).',
+    frequency: 'CLP / año ($69 USD)',
     badge: 'Ahorro 64%',
   },
   'sokify-anual-ia': {
@@ -55,8 +88,9 @@ export const CATALOG: Record<
     title: 'Sokify · Plan Anual + Copiloto IA WhatsApp',
     category: 'sokify',
     amount: 88900,
+    amountUsd: 89,
     description: '1 año completo de Sokify + Asistente virtual Sofi IA atendiendo pedidos en WhatsApp 24/7.',
-    frequency: 'CLP / año',
+    frequency: 'CLP / año ($89 USD)',
     badge: 'Pack Completo',
   },
   'sokify-dominio': {
@@ -64,48 +98,54 @@ export const CATALOG: Record<
     title: 'Sokify Add-on · Dominio Propio + Correos Ilimitados',
     category: 'sokify',
     amount: 6900,
-    description: 'Dominio propio (.CL o .COM) con correos corporativos ilimitados configurados para tu local.',
-    frequency: 'CLP / mes',
+    amountUsd: 7,
+    description: 'Dominio propio (.CL, .COM, etc.) con casillas de correo corporativas ilimitadas para tu local.',
+    frequency: 'CLP / mes ($7 USD)',
   },
   'sokify-ia-whatsapp': {
     id: 'sokify-ia-whatsapp',
     title: 'Sokify Add-on · Copiloto Sofi IA WhatsApp',
     category: 'sokify',
     amount: 19900,
+    amountUsd: 20,
     description: 'Atención 24/7 y toma de pedidos con IA en tu WhatsApp oficial.',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($20 USD)',
   },
   'sokify-sii': {
     id: 'sokify-sii',
-    title: 'Sokify Add-on · Facturación Electrónica SII Directa',
+    title: 'Sokify Add-on · Facturación Electrónica Directa',
     category: 'sokify',
     amount: 9900,
-    description: 'Emisión automática de boletas y facturas tributarias del SII desde el POS.',
-    frequency: 'CLP / mes',
+    amountUsd: 10,
+    description: 'Emisión automática de boletas y facturas tributarias desde el punto de venta.',
+    frequency: 'CLP / mes ($10 USD)',
   },
   'ebs-693': {
     id: 'ebs-693',
     title: 'EBS 693 · Diagnóstico Estratégico de IA',
     category: 'universo693',
     amount: 197000,
+    amountUsd: 197,
     description: 'Sesión de 45 minutos con arquitecto senior. Hoja de ruta priorizada y estimación de ROI.',
-    frequency: 'Pago único',
+    frequency: 'Pago único ($197 USD)',
   },
   'audit-pro': {
     id: 'audit-pro',
     title: 'AUDIT 693 PRO · Informe de Fugas de Dinero',
     category: 'universo693',
     amount: 19990,
+    amountUsd: 21,
     description: 'Auditoría integral web, análisis de competidores y cálculo de costo manual en PDF.',
-    frequency: 'Pago único',
+    frequency: 'Pago único ($21 USD)',
   },
   'impulsa-pyme': {
     id: 'impulsa-pyme',
     title: 'Impulsa PyME · Arriendo Web Todo Incluido',
     category: 'universo693',
     amount: 19900,
+    amountUsd: 20,
     description: 'Sitio web corporativo de alta velocidad, hosting cloud y soporte continuo.',
-    frequency: 'CLP / mes',
+    frequency: 'CLP / mes ($20 USD)',
   },
 };
 
@@ -168,8 +208,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 2. GET: ESTADO DEL GATEWAY Y CATÁLOGO
   if (req.method === 'GET') {
     res.status(200).json({
-      active: Boolean(mpToken()),
-      provider: 'mercadopago',
+      active: Boolean(mpToken() || paypalReady()),
+      mercadopago: Boolean(mpToken()),
+      paypal: paypalReady(),
       catalog: CATALOG,
       bankTransfer: {
         accountHolder: 'Universo693 SpA',
@@ -183,10 +224,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 3. POST: CREAR PREFERENCIA DE CHECKOUT MERCADO PAGO
+  // 3. POST: CREAR CHECKOUT (MERCADO PAGO O PAYPAL)
   if (req.method === 'POST') {
     try {
       const b = (req.body ?? {}) as Record<string, any>;
+      const provider = b.provider === 'paypal' ? 'paypal' : 'mercadopago';
       const itemId = String(b.item || 'sokify-mensual');
       const standardItem = CATALOG[itemId];
 
@@ -194,6 +236,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const isCustom = itemId === 'custom' || !standardItem;
       const title = isCustom ? String(b.title || 'Servicio Profesional Uni-Verso693').slice(0, 120) : standardItem.title;
       const amount = isCustom ? Math.max(1000, Math.round(Number(b.amount) || 10000)) : standardItem.amount;
+      const amountUsd = isCustom
+        ? Math.max(1, Math.round(Number(b.amountUsd) || amount / 950))
+        : (standardItem.amountUsd || Math.max(1, Math.round(amount / 950)));
 
       const orderId = `u693-${Date.now().toString(36)}-${randomUUID().slice(0, 4)}`;
       const email = String(b.email || '').trim();
@@ -202,13 +247,78 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const restaurantSlug = String(b.ref || b.restaurantSlug || '').trim();
       const rut = String(b.rut || '').trim();
 
+      const returnUrl = (status: string) =>
+        `${SITE_URL}/pago?status=${status}&orderId=${orderId}&provider=${provider}&item=${encodeURIComponent(itemId)}${restaurantSlug ? `&ref=${encodeURIComponent(restaurantSlug)}` : ''}`;
+
+      // ========== CASO A: PAYPAL EN DÓLARES (USD) ==========
+      if (provider === 'paypal') {
+        if (!paypalReady()) {
+          res.status(503).json({ error: 'Pasarela PayPal temporalmente no configurada.' });
+          return;
+        }
+
+        const { ok, status, data } = await paypalApi('/v2/checkout/orders', {
+          method: 'POST',
+          headers: { 'paypal-request-id': orderId },
+          body: JSON.stringify({
+            intent: 'CAPTURE',
+            purchase_units: [
+              {
+                reference_id: orderId,
+                description: title.slice(0, 120),
+                amount: {
+                  currency_code: 'USD',
+                  value: amountUsd.toFixed(2),
+                },
+              },
+            ],
+            payment_source: {
+              paypal: {
+                experience_context: {
+                  brand_name: 'Uni-Verso693 · Sokify',
+                  user_action: 'PAY_NOW',
+                  return_url: returnUrl('success'),
+                  cancel_url: returnUrl('failure'),
+                },
+              },
+            },
+          }),
+        });
+
+        if (!ok) {
+          throw new Error(`PayPal create order ${status}: ${JSON.stringify(data).slice(0, 300)}`);
+        }
+
+        const link = (data.links as any[])?.find((l) => l.rel === 'payer-action' || l.rel === 'approve');
+        if (!link?.href) {
+          throw new Error('No se obtuvo link de redirección de PayPal');
+        }
+
+        // Registrar lead en CRM
+        await recordLead({
+          id: `pay-${orderId}`,
+          source: 'checkout-paypal-usd',
+          name: fullName,
+          email: email,
+          phone: phone,
+          notes: `Checkout PayPal: ${title} ($${amountUsd} USD) · Ref: ${restaurantSlug || 'N/A'} · PayPal ID: ${data.id}`,
+        });
+
+        res.status(200).json({
+          ok: true,
+          provider: 'paypal',
+          orderId,
+          paypalOrderId: data.id,
+          checkoutUrl: link.href,
+        });
+        return;
+      }
+
+      // ========== CASO B: MERCADO PAGO EN CLP / LATAM ==========
       if (!mpToken()) {
         res.status(503).json({ error: 'Pasarela Mercado Pago temporalmente no configurada.' });
         return;
       }
-
-      const returnUrl = (status: string) =>
-        `${SITE_URL}/pago?status=${status}&orderId=${orderId}&item=${encodeURIComponent(itemId)}${restaurantSlug ? `&ref=${encodeURIComponent(restaurantSlug)}` : ''}`;
 
       // Crear Preferencia en la API oficial de Mercado Pago
       const pref = await mpApi('/checkout/preferences', {
@@ -254,19 +364,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         name: fullName,
         email: email,
         phone: phone,
-        notes: `Checkout: ${title} ($${amount.toLocaleString('es-CL')} CLP) · Ref: ${restaurantSlug || 'N/A'} · RUT: ${rut || 'N/A'}`,
+        notes: `Checkout Mercado Pago: ${title} ($${amount.toLocaleString('es-CL')} CLP) · Ref: ${restaurantSlug || 'N/A'} · RUT: ${rut || 'N/A'}`,
       });
 
       res.status(200).json({
         ok: true,
+        provider: 'mercadopago',
         orderId,
         checkoutUrl: pref.init_point,
         sandboxUrl: pref.sandbox_init_point,
       });
       return;
     } catch (err: any) {
-      console.error('Error al generar checkout Mercado Pago:', err);
-      res.status(500).json({ error: err.message || 'Error procesando preferencia de pago.' });
+      console.error('Error al generar checkout:', err);
+      res.status(500).json({ error: err.message || 'Error procesando pasarela de pago.' });
       return;
     }
   }
