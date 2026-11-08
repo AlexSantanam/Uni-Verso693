@@ -302,13 +302,33 @@
             </div>
           </div>
 
-          <!-- CONFIGURACIÓN / NEGOCIO -->
-          <button onclick="switchTab('negocio')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="negocio">
-            <div class="flex items-center gap-3">
-              <span class="text-base">⚙️</span>
-              <span>Configuración</span>
+          <!-- CONFIGURACIONES (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleConfiguracionesSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="configuraciones">
+              <div class="flex items-center gap-3">
+                <span class="text-base">⚙️</span>
+                <span>Configuraciones</span>
+              </div>
+              <span id="configuracionesArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+            </button>
+            <div id="configuracionesSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
+              <button onclick="switchTab('configuraciones', 'general')" class="config-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="general">
+                Configuración general
+              </button>
+              <button onclick="switchTab('configuraciones', 'pagos')" class="config-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="pagos">
+                Métodos de pago
+              </button>
+              <button onclick="switchTab('configuraciones', 'negocio')" class="config-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="negocio">
+                Información del negocio
+              </button>
+              <button onclick="switchTab('configuraciones', 'equipo')" class="config-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="equipo">
+                Equipo y roles
+              </button>
+              <button onclick="switchTab('configuraciones', 'impresoras')" class="config-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="impresoras">
+                Impresoras y tickets
+              </button>
             </div>
-          </button>
+          </div>
 
         </nav>
       </div>
@@ -2976,56 +2996,761 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 8: NEGOCIO, HORARIOS Y CONFIGURACIÓN -->
+        <!-- TAB 8: CONFIGURACIONES COMPLETO (EXACTO A OLACLICK) -->
         <!-- =================================================================== -->
-        <section id="tab-negocio" class="panel-pane space-y-5 hidden">
+        <section id="tab-configuraciones" class="panel-pane space-y-6 hidden">
           
-          <!-- ESTADO Y PAUSA MANUAL -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900 flex items-center justify-between">
-              <span>🚦 Estado de Recepción de Pedidos</span>
-              <span id="estadoLabel" class="text-xs font-mono font-bold"></span>
-            </h3>
-            <p class="text-xs text-slate-500">Usa estos botones para abrir o cerrar de emergencia (lluvia, feriado, stock agotado). En el día a día se abre y cierra solo según el horario de abajo.</p>
-            <div class="grid grid-cols-2 gap-3 pt-1">
-              <button id="btnAbrir" onclick="setPausaManual(false)" class="py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-                🟢 Quitar Pausa (Reanudar Menú)
+          <!-- SUB-BARRA DE NAVEGACIÓN DE CONFIGURACIONES -->
+          <div class="bg-white rounded-2xl border border-borderLight p-2 flex flex-wrap items-center justify-between gap-2 shadow-soft">
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto no-scrollbar">
+              <button onclick="setConfiguracionesSubtab('general')" id="subtabBtnCfgGeneral" class="cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm cursor-pointer flex items-center gap-2">
+                <span>⚙️</span>
+                <span>Configuración general</span>
               </button>
-              <button id="btnPausar" onclick="setPausaManual(true)" class="py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-                ⏸️ Pausar Menú Inmediatamente
+              <button onclick="setConfiguracionesSubtab('pagos')" id="subtabBtnCfgPagos" class="cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>💳</span>
+                <span>Métodos de pago</span>
               </button>
-            </div>
-          </div>
-
-          <!-- HORARIO SEMANAL -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">🗓️ Horario Semanal Automático</h3>
-            <div id="horarioForm" class="space-y-2">
-              <!-- Inyección JS -->
-            </div>
-            <button onclick="guardarHorario()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-              Guardar Horario Automático
-            </button>
-          </div>
-
-          <!-- BANNER DE OFERTAS EN VIVO -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">📢 Banner de Oferta en la Carta</h3>
-            <p class="text-xs text-slate-500">Aparece arriba de la carta del comensal. Déjalo en blanco para ocultarlo.</p>
-            <div class="flex gap-2">
-              <input id="promoInput" type="text" placeholder="Ej: 🔥 15% de descuento en delivery hoy" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
-              <button onclick="publicarPromo()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-                Publicar
+              <button onclick="setConfiguracionesSubtab('negocio')" id="subtabBtnCfgNegocio" class="cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>🏪</span>
+                <span>Información del negocio</span>
+              </button>
+              <button onclick="setConfiguracionesSubtab('equipo')" id="subtabBtnCfgEquipo" class="cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>👥</span>
+                <span>Equipo y roles</span>
+              </button>
+              <button onclick="setConfiguracionesSubtab('impresoras')" id="subtabBtnCfgImpresoras" class="cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>🖨️</span>
+                <span>Impresoras y tickets</span>
               </button>
             </div>
           </div>
 
-          <!-- PALETA DE COLORES -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">🎨 Paleta de Acento del Menú</h3>
-            <div id="paletaSelector" class="grid grid-cols-3 gap-3">
-              <!-- Inyección JS -->
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 1: CONFIGURACIÓN GENERAL (IMAGEN 1 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewCfgGeneral" class="space-y-6">
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Configuración general</h2>
             </div>
+
+            <!-- SUB-TABS INTERNOS DE CONFIG GENERAL -->
+            <div class="border-b border-slate-200 flex items-center gap-6 text-xs sm:text-sm">
+              <button class="pb-3 font-bold text-blue-600 border-b-2 border-blue-600 cursor-pointer">Canales de venta</button>
+              <button class="pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer">Tipos de servicio</button>
+              <button class="pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer">Coberturas y repartidores</button>
+              <button class="pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer">Impulso de ventas</button>
+            </div>
+
+            <!-- LISTA DE CARDS DE CANALES DE VENTA (EXACTO A IMAGEN 1) -->
+            <div class="space-y-3.5">
+              
+              <!-- CARD 1: MENÚ DIGITAL -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 sm:p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shrink-0">
+                    🛍️
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-black text-sm text-slate-900">Menú digital</h3>
+                      <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">WEB</span>
+                      <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activo
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                      Tus clientes acceden a tu sitio web (código QR o enlace) para ver tu menú y hacer pedidos.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-bold text-slate-700">Recibir pedidos</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleCfgRecibirPedidos" class="sr-only peer" checked onchange="toggleRecibirPedidos(this.checked)">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                  <span class="text-slate-400 text-xs cursor-pointer">∨</span>
+                </div>
+              </div>
+
+              <!-- CARD 2: PUNTO DE VENTA (PDV) -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 sm:p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shrink-0">
+                    📋
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-black text-sm text-slate-900">Punto de venta</h3>
+                      <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">PDV</span>
+                      <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activo
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                      Tu equipo gestiona los pedidos desde el panel web o en la app.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-black">Pronto</span>
+                  <button onclick="switchTab('pedidos')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                    <span>⬇</span>
+                    <span>Abrir / Descargar app</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- CARD 3: CHATBOT DE WHATSAPP -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 sm:p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
+                    🤖
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-black text-sm text-slate-900">Chatbot de WhatsApp</h3>
+                      <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">CHATBOT</span>
+                      <span id="badgeCfgChatbotStatus" class="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactivo
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                      Tus clientes piden por WhatsApp, el chatbot los atiende y notifica sobre el estado del pedido.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <button onclick="switchTab('chatbot')" class="px-4 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer">
+                    Ir a chat
+                  </button>
+                </div>
+              </div>
+
+              <!-- CARD 4: PEDIDOS POR QR -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 sm:p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl shrink-0">
+                    🔲
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-black text-sm text-slate-900">Pedidos por QR</h3>
+                      <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.2 rounded">QR</span>
+                      <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activo
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                      Tus clientes escanean un QR para realizar su pedido en el menú digital.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="abrirModalQR()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
+                    Ver QRs
+                  </button>
+                  <span class="text-slate-400 text-xs cursor-pointer">∨</span>
+                </div>
+              </div>
+
+              <!-- CARD 5: APLICATIVOS DE COMIDA -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 sm:p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl shrink-0">
+                    📱
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-black text-sm text-slate-900">Aplicativos de comida</h3>
+                      <span class="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactivo
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                      Recibe y gestiona en Zoco los pedidos de tus apps conectadas (Rappi, PedidosYa, UberEats).
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <button onclick="mostrarNotificacion('Integraciones de Delivery próximamente')" class="px-4 py-2 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer">
+                    Ir a integraciones
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 2: MÉTODOS DE PAGO (IMAGEN 2 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewCfgPagos" class="space-y-6 hidden">
+            
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Métodos de pago</h2>
+            </div>
+
+            <!-- TABS SUPERIORES (PAGOS EN LÍNEA / CONTRA ENTREGA) -->
+            <div class="border-b border-slate-200 flex items-center gap-6 text-xs sm:text-sm">
+              <button onclick="setPagosCfgSubtab('online')" id="tabPagosCfgOnline" class="pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer transition-colors">
+                Pagos en línea
+              </button>
+              <button onclick="setPagosCfgSubtab('contraentrega')" id="tabPagosCfgContraentrega" class="pb-3 font-bold text-blue-600 border-b-2 border-blue-600 cursor-pointer transition-colors">
+                Contra entrega
+              </button>
+            </div>
+
+            <!-- TEXTOS DESCRIPTIVOS -->
+            <div class="space-y-4 text-xs">
+              <div id="boxDescPagosOnline" class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1 hidden">
+                <h4 class="font-bold text-slate-900">Pagos en línea</h4>
+                <p class="text-slate-500 leading-relaxed">
+                  Tus clientes pueden pagar su pedido a través de Internet (Webpay Plus, Mercado Pago, Flow) y se confirman automáticamente.
+                </p>
+              </div>
+
+              <div id="boxDescPagosContraentrega" class="p-4 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-1">
+                <h4 class="font-bold text-slate-900">Contra entrega</h4>
+                <p class="text-slate-600 leading-relaxed">
+                  Tus clientes pueden realizar el pago de su pedido en efectivo o en persona, siguiendo las instrucciones que les proporciones.
+                </p>
+              </div>
+            </div>
+
+            <!-- TABLA DE MÉTODOS DE PAGO CONTRA ENTREGA (EXACTO A IMAGEN 2) -->
+            <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-100">
+                    <tr>
+                      <th class="py-3.5 px-4">MÉTODO DE PAGO</th>
+                      <th class="py-3.5 px-4 text-center">MENÚ DIGITAL (WEB Y QR)</th>
+                      <th class="py-3.5 px-4 text-center">PEDIDOS PDV</th>
+                      <th class="py-3.5 px-4 text-center">RECARGO</th>
+                      <th class="py-3.5 px-4 text-center">ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaMetodosPagoCfgBody" class="divide-y divide-slate-100">
+                    
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                      <td class="py-3.5 px-4 font-bold text-slate-900">Efectivo</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <div class="inline-flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ A domicilio</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ Para llevar</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ En el local</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-center font-bold text-emerald-600">✓</td>
+                      <td class="py-3.5 px-4 text-center text-slate-400 font-bold">--</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <button onclick="gestionarMetodoPago('efectivo')" class="text-blue-600 hover:underline font-bold text-xs cursor-pointer">Gestionar</button>
+                      </td>
+                    </tr>
+
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                      <td class="py-3.5 px-4 font-bold text-slate-900">Tarjeta de crédito</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <div class="inline-flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ A domicilio</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ Para llevar</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ En el local</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-center font-bold text-emerald-600">✓</td>
+                      <td class="py-3.5 px-4 text-center text-slate-400 font-bold">--</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <button onclick="gestionarMetodoPago('credito')" class="text-blue-600 hover:underline font-bold text-xs cursor-pointer">Gestionar</button>
+                      </td>
+                    </tr>
+
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                      <td class="py-3.5 px-4 font-bold text-slate-900">Tarjeta de débito</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <div class="inline-flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ A domicilio</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ Para llevar</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ En el local</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-center font-bold text-emerald-600">✓</td>
+                      <td class="py-3.5 px-4 text-center text-slate-400 font-bold">--</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <button onclick="gestionarMetodoPago('debito')" class="text-blue-600 hover:underline font-bold text-xs cursor-pointer">Gestionar</button>
+                      </td>
+                    </tr>
+
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                      <td class="py-3.5 px-4 font-bold text-slate-900">Transferencia</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <div class="inline-flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ A domicilio</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ Para llevar</span>
+                          <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ En el local</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-center font-bold text-emerald-600">✓</td>
+                      <td class="py-3.5 px-4 text-center text-slate-400 font-bold">--</td>
+                      <td class="py-3.5 px-4 text-center">
+                        <button onclick="gestionarMetodoPago('transferencia')" class="text-blue-600 hover:underline font-bold text-xs cursor-pointer">Gestionar</button>
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- ENLACE AGREGAR MÉTODO DE PAGO -->
+              <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <button onclick="abrirModalAgregarMetodoPago()" class="text-blue-600 hover:text-blue-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+                  <span>+</span>
+                  <span>Agregar método de pago</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 3: INFORMACIÓN DEL NEGOCIO (IMAGEN 3 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewCfgNegocio" class="space-y-6 hidden">
+            
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Información del negocio</h2>
+            </div>
+
+            <!-- CARD 1: FORMULARIO PRINCIPAL DE NEGOCIO (EXACTO A IMAGEN 3) -->
+            <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 space-y-5 shadow-soft">
+              <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <span class="text-lg">🏪</span>
+                <h3 class="font-black text-sm text-slate-900">Información del negocio</h3>
+              </div>
+
+              <div class="space-y-4 text-xs">
+                
+                <!-- NOMBRE DE LA EMPRESA -->
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5">Nombre de la Empresa</label>
+                  <input id="inputNegocioNombre" type="text" value="Fravioli, Street Food" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                </div>
+
+                <!-- WHATSAPP PARA PEDIDOS CON BANDERA -->
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5">WhatsApp para pedidos</label>
+                  <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold shrink-0">
+                      <span>🇨🇱</span>
+                      <span class="text-slate-400 text-[10px]">▼</span>
+                    </div>
+                    <input id="inputNegocioWhatsapp" type="text" value="+56 935362199" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                  </div>
+                </div>
+
+                <!-- DIRECCIÓN CON BOTÓN EDITAR Y CHECKBOX -->
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1.5">Dirección</label>
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl gap-3">
+                    <div class="flex items-center gap-2 text-slate-800 font-medium truncate">
+                      <span class="text-slate-400">📍</span>
+                      <span id="labelNegocioDireccion">Fernanda 596, Villa Alemana, 2460175, Valparaíso, Chile</span>
+                    </div>
+                    <button onclick="editarDireccionNegocio()" class="text-blue-600 hover:text-blue-700 font-bold text-xs shrink-0 cursor-pointer flex items-center gap-1">
+                      <span>✏️</span>
+                      <span>Editar</span>
+                    </button>
+                  </div>
+                  <label class="flex items-center gap-2 mt-2 text-slate-600 font-medium cursor-pointer">
+                    <input type="checkbox" id="checkOcultarDireccion" checked class="accent-blue-600 rounded">
+                    <span>No mostrar la dirección del negocio en el menú digital</span>
+                  </label>
+                </div>
+
+                <!-- MONEDA E IDIOMA -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">Moneda</label>
+                    <select id="selectNegocioMoneda" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                      <option value="CLP">CLP (Peso chileno)</option>
+                      <option value="USD">USD (Dólar estadounidense)</option>
+                      <option value="ARS">ARS (Peso argentino)</option>
+                      <option value="COP">COP (Peso colombiano)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">Idioma</label>
+                    <select id="selectNegocioIdioma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                      <option value="es">Spanish (Español)</option>
+                      <option value="en">English (Inglés)</option>
+                      <option value="pt">Português (Portugués)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="pt-2 flex justify-end">
+                  <button onclick="guardarInfoNegocio()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                    💾 Guardar Información del Negocio
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- CARD 2: HORARIO DE ATENCIÓN (EXACTO A IMAGEN 3) -->
+            <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 space-y-5 shadow-soft">
+              <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <span class="text-lg">🕒</span>
+                <h3 class="font-black text-sm text-slate-900">Horario de atención</h3>
+              </div>
+
+              <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                <div class="flex items-center gap-3">
+                  <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">🕒</span>
+                  <div>
+                    <div class="font-bold text-xs text-slate-900">Horarios</div>
+                    <div class="text-[11px] text-slate-400">Horario de atención específico por días</div>
+                  </div>
+                </div>
+                <button onclick="toggleDesplegarHorarios()" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs">
+                  <span>✏️</span>
+                  <span>Editar</span>
+                </button>
+              </div>
+
+              <!-- CONTENEDOR DESPLEGABLE DE HORARIOS Y ESTADO DE LOCAL -->
+              <div id="boxHorariosExpandido" class="space-y-5 pt-2">
+                
+                <!-- PAUSA MANUAL DE EMERGENCIA -->
+                <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="font-black text-xs text-amber-900">Estado de Recepción Inmediata</span>
+                    <span id="estadoLabel" class="text-xs font-mono font-bold"></span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setPausaManual(false)" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer shadow-xs">
+                      🟢 Reanudar Menú
+                    </button>
+                    <button onclick="setPausaManual(true)" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs cursor-pointer shadow-xs">
+                      ⏸️ Pausar Menú
+                    </button>
+                  </div>
+                </div>
+
+                <!-- HORARIO SEMANAL DETALLADO -->
+                <div class="space-y-3">
+                  <h4 class="font-bold text-xs text-slate-700">Horario Semanal Automático</h4>
+                  <div id="horarioForm" class="space-y-2">
+                    <!-- Inyección JS -->
+                  </div>
+                  <button onclick="guardarHorario()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-sm">
+                    💾 Guardar Horario Automático
+                  </button>
+                </div>
+
+                <!-- BANNER DE OFERTA EN CARTA -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                  <h4 class="font-bold text-xs text-slate-700">📢 Banner de Oferta en la Carta</h4>
+                  <div class="flex gap-2">
+                    <input id="promoInput" type="text" placeholder="Ej: 🔥 15% de descuento en delivery hoy" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+                    <button onclick="publicarPromo()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                      Publicar
+                    </button>
+                  </div>
+                </div>
+
+                <!-- PALETA DE COLORES -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                  <h4 class="font-bold text-xs text-slate-700">🎨 Paleta de Acento del Menú</h4>
+                  <div id="paletaSelector" class="grid grid-cols-3 gap-3">
+                    <!-- Inyección JS -->
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 4: EQUIPO Y ROLES (IMAGEN 4 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewCfgEquipo" class="space-y-6 hidden">
+            
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Gestionar mi equipo</h2>
+            </div>
+
+            <!-- ACORDEÓN: SABER MÁS DE LOS ROLES (EXACTO A IMAGEN 4) -->
+            <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+              <button onclick="toggleAcordeonRoles()" class="w-full p-4 flex items-center justify-between text-left font-bold text-xs text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer">
+                <span>Saber más de los roles</span>
+                <span id="flechaAcordeonRoles" class="text-xs text-slate-400">∧</span>
+              </button>
+
+              <div id="tablaMatrizRoles" class="p-4 border-t border-slate-100 overflow-x-auto">
+                <table class="w-full text-center text-[11px] whitespace-nowrap">
+                  <thead class="text-slate-500 font-bold border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3 text-left">Nombre</th>
+                      <th class="py-2.5 px-3">Pedidos ℹ️</th>
+                      <th class="py-2.5 px-3">Productos ℹ️</th>
+                      <th class="py-2.5 px-3">Mostrar/Ocultar ℹ️</th>
+                      <th class="py-2.5 px-3">Apariencia ℹ️</th>
+                      <th class="py-2.5 px-3">Inventario ℹ️</th>
+                      <th class="py-2.5 px-3">Ventas ℹ️</th>
+                      <th class="py-2.5 px-3">Configuraciones ℹ️</th>
+                      <th class="py-2.5 px-3">Cocina ℹ️</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Admin ℹ️</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Manager ℹ️</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Mozo ℹ️</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Cajero ℹ️</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Cocinero ℹ️</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-3 text-left font-bold text-slate-900">Repartidor ℹ️</td>
+                      <td class="text-emerald-600 font-bold">✓</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                      <td class="text-slate-300">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ROLES CREADOS (TABLA DE USUARIOS DEL RESTAURANTE) -->
+            <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+              <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="font-black text-sm text-slate-900">Roles creados:</h3>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-100">
+                    <tr>
+                      <th class="py-3 px-4">Nombre</th>
+                      <th class="py-3 px-4">Correo Electrónico</th>
+                      <th class="py-3 px-4">Local</th>
+                      <th class="py-3 px-4">Rol</th>
+                      <th class="py-3 px-4 text-center">Estado</th>
+                      <th class="py-3 px-4 text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaEquipoRolesBody" class="divide-y divide-slate-100">
+                    <!-- Inyección dinámica de equipo -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <button onclick="abrirModalAgregarUsuarioEquipo()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all cursor-pointer">
+                  <span>+</span>
+                  <span>AGREGAR USUARIO</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 5: IMPRESORAS Y TICKETS (IMAGEN 5 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewCfgImpresoras" class="space-y-6 hidden">
+            
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🖨️</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Impresión</h2>
+              </div>
+              
+              <div class="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">
+                <span>⚠️</span>
+                <span>Los cambios en esta sección pueden tardar hasta 5 minutos en actualizarse</span>
+              </div>
+            </div>
+
+            <!-- 3 OPCIONES EN FORMATO RADIO CARD (EXACTO A IMAGEN 5) -->
+            <div class="space-y-4">
+              
+              <!-- OPCIÓN 1: IMPRESIÓN MANUAL POR NAVEGADOR WEB (EXPANDIDA POR DEFECTO) -->
+              <div class="bg-white rounded-2xl border-2 border-blue-600 p-5 shadow-soft space-y-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-3">
+                    <input type="radio" name="modoImpresionOlaClick" id="radioImpManualWeb" checked onchange="setModoImpresion('web')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <div>
+                      <label for="radioImpManualWeb" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
+                        <span>🌐</span>
+                        <span>Impresión manual por navegador web</span>
+                      </label>
+                      <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Proceso de impresión manual en dos etapas. No permite impresión automática.
+                      </p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">∧</span>
+                </div>
+
+                <!-- CONFIGURACIÓN DE TICKETS (COCINA / CLIENTE) -->
+                <div class="bg-amber-50/50 rounded-2xl border border-amber-200/80 p-5 space-y-4">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm">🧾</span>
+                    <h4 class="font-black text-xs text-slate-900">Configuración de tickets</h4>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+                    
+                    <!-- COLUMNA COCINA -->
+                    <div class="space-y-2">
+                      <div class="font-bold text-slate-800">Cocina</div>
+                      <button onclick="abrirModalPersonalizarTicket('cocina')" class="text-blue-600 hover:underline font-bold flex items-center gap-1.5 cursor-pointer">
+                        <span>🎛️</span>
+                        <span>Personalizar ticket</span>
+                      </button>
+                      <div class="flex items-start gap-2 text-slate-600 pt-1">
+                        <span class="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span><b>Impresión manual:</b> Dar click a la impresora de cocina en el detalle de un pedido.</span>
+                      </div>
+                    </div>
+
+                    <!-- COLUMNA CLIENTE -->
+                    <div class="space-y-2">
+                      <div class="font-bold text-slate-800">Cliente</div>
+                      <button onclick="abrirModalPersonalizarTicket('cliente')" class="text-blue-600 hover:underline font-bold flex items-center gap-1.5 cursor-pointer">
+                        <span>🎛️</span>
+                        <span>Personalizar ticket</span>
+                      </button>
+                      <div class="flex items-start gap-2 text-slate-600 pt-1">
+                        <span class="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span><b>Impresión manual:</b> Dar click a la impresora de la cuenta en el detalle de un pedido.</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- OPCIÓN 2: IMPRESIÓN CON TABLET O MÓVIL BLUETOOTH -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 shadow-soft">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-3">
+                    <input type="radio" name="modoImpresionOlaClick" id="radioImpTablet" onchange="setModoImpresion('tablet')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <div>
+                      <label for="radioImpTablet" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
+                        <span>📱</span>
+                        <span>Impresión manual sólo con tablet o teléfono móvil</span>
+                      </label>
+                      <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Permite impresión manual por bluetooth desde dispositivos Android o iOS. No permite impresión automática.
+                      </p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">∨</span>
+                </div>
+              </div>
+
+              <!-- OPCIÓN 3: IMPRESIÓN AUTOMÁTICA CON COMPUTADORA PC -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 shadow-soft">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-3">
+                    <input type="radio" name="modoImpresionOlaClick" id="radioImpAutoPc" onchange="setModoImpresion('pc')" class="mt-1 accent-blue-600 cursor-pointer">
+                    <div>
+                      <label for="radioImpAutoPc" class="font-black text-sm text-slate-900 flex items-center gap-2 cursor-pointer">
+                        <span>💻</span>
+                        <span>Impresión automática con computadora PC</span>
+                      </label>
+                      <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Impresión rápida en un solo paso. Permite automatizar impresiones y seleccionar diferentes cocinas según tus productos.
+                      </p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-slate-400">∨</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- GESTOR DE IMPRESORAS TÉRMICAS 80MM ENRUTADAS -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-black text-sm text-slate-900">Enrutamiento de Impresoras Térmicas (80mm)</h3>
+                <button onclick="abrirModalNuevaImpresora()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                  <span>+</span>
+                  <span>Agregar impresora</span>
+                </button>
+              </div>
+
+              <div id="listaImpresorasEnrutadas" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Inyección JS -->
+              </div>
+            </div>
+
           </div>
 
         </section>
@@ -4087,6 +4812,143 @@
     </div>
   </div>
 
+  <!-- MODAL: AGREGAR USUARIO AL EQUIPO (EXACTO A OLACLICK) -->
+  <div id="modalAgregarUsuarioEquipo" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">👤</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Agregar Miembro al Equipo</h3>
+            <p class="text-[11px] text-slate-400">Asigna un rol y permisos de acceso al panel</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalAgregarUsuarioEquipo()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre Completo *</label>
+          <input id="inputNuevoUsuarioNombre" type="text" placeholder="Ej: Diego Cáceres" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Correo Electrónico *</label>
+          <input id="inputNuevoUsuarioEmail" type="email" placeholder="ejemplo@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Rol en el Restaurante *</label>
+          <select id="selectNuevoUsuarioRol" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <option value="Rider">Rider / Repartidor</option>
+            <option value="Cocinero">Cocinero (KDS)</option>
+            <option value="Mozo">Mozo / Garzón</option>
+            <option value="Cajero">Cajero</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalAgregarUsuarioEquipo()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarNuevoUsuarioEquipo()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer">Agregar Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PERSONALIZAR TICKET (COCINA / CLIENTE) -->
+  <div id="modalPersonalizarTicket" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">🧾</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900" id="tituloModalPersonalizarTicket">Personalizar Ticket de Cocina</h3>
+            <p class="text-[11px] text-slate-400">Ajustes visuales para impresora térmica 80mm</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalPersonalizarTicket()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Ancho de Impresora</label>
+          <select id="selectTicketAncho" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <option value="80mm">80 mm (Estándar POS)</option>
+            <option value="58mm">58 mm (Portátil Bluetooth)</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+            <input type="checkbox" id="checkTicketNumeroGrande" checked class="accent-blue-600 rounded">
+            <span>Mostrar número de orden y canal en tamaño extra grande</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+            <input type="checkbox" id="checkTicketNotas" checked class="accent-blue-600 rounded">
+            <span>Destacar notas y especificaciones del cliente en negrita</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+            <input type="checkbox" id="checkTicketTimers" checked class="accent-blue-600 rounded">
+            <span>Incluir fecha y hora exacta de recepción</span>
+          </label>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Pie de página (Para ticket comensal)</label>
+          <input id="inputTicketPie" type="text" value="¡Gracias por su visita a Fravioli Street Food!" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalPersonalizarTicket()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarPersonalizacionTicket()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Guardar Ajustes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR MÉTODO DE PAGO -->
+  <div id="modalAgregarMetodoPago" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">💳</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Agregar Método de Pago</h3>
+            <p class="text-[11px] text-slate-400">Habilita opciones de cobro para comensales</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalAgregarMetodoPago()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre del Método *</label>
+          <input id="inputNuevoMetodoPagoNombre" type="text" placeholder="Ej: Sodexo, Edenred, Junaeb, Cheque Restaurante" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tipo de Modalidad</label>
+          <select id="selectNuevoMetodoPagoTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <option value="contraentrega">Contra entrega (en persona)</option>
+            <option value="online">En línea / Pasarela</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Recargo o Comisión (%)</label>
+          <input id="inputNuevoMetodoPagoRecargo" type="number" placeholder="0 = sin recargo" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalAgregarMetodoPago()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarNuevoMetodoPago()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Agregar Método</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -4401,7 +5263,8 @@
       clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
       descuentos: { title: 'Marketing & Descuentos', sub: 'Promociones para la carta online y fidelización' },
       marketing: { title: 'Marketing Gastronómico', sub: 'Descuentos, fidelización, envíos masivos con IA y presencia en Google' },
-      negocio: { title: 'Configuración & Horarios', sub: 'Apertura automática, colores y estado del local' }
+      negocio: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
+      configuraciones: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' }
     };
 
     function switchTab(tab, subtab) {
@@ -4410,12 +5273,18 @@
           b.classList.toggle('active', b.dataset.tab === 'productos');
         } else if (tab === 'marketing' || tab === 'descuentos') {
           b.classList.toggle('active', b.dataset.tab === 'marketing');
+        } else if (tab === 'configuraciones' || tab === 'negocio') {
+          b.classList.toggle('active', b.dataset.tab === 'configuraciones');
         } else {
           b.classList.toggle('active', b.dataset.tab === tab);
         }
       });
       document.querySelectorAll('.panel-pane').forEach(p => {
-        const targetId = (tab === 'marketing' || tab === 'descuentos') ? 'tab-marketing' : 'tab-' + tab;
+        const targetId = (tab === 'marketing' || tab === 'descuentos') 
+          ? 'tab-marketing' 
+          : (tab === 'configuraciones' || tab === 'negocio') 
+            ? 'tab-configuraciones' 
+            : 'tab-' + tab;
         p.classList.toggle('hidden', p.id !== targetId);
       });
       
@@ -4441,6 +5310,14 @@
 
       // Actualizar selección en submenú de marketing
       document.querySelectorAll('.marketing-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === subtab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
+
+      // Actualizar selección en submenú de configuraciones
+      document.querySelectorAll('.config-sub-btn').forEach(b => {
         const isMatch = b.dataset.subtab === subtab;
         b.classList.toggle('text-white', isMatch);
         b.classList.toggle('font-bold', isMatch);
@@ -4479,6 +5356,10 @@
         if (subtab) setMarketingSubtab(subtab);
         else renderMarketing();
       }
+      if (tab === 'configuraciones' || tab === 'negocio') {
+        if (subtab) setConfiguracionesSubtab(subtab);
+        else renderConfiguraciones();
+      }
     }
 
     function toggleMarketingSubmenu() {
@@ -4509,6 +5390,16 @@
         if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
       }
       switchTab('productos');
+    }
+
+    function toggleConfiguracionesSubmenu() {
+      const sub = document.getElementById('configuracionesSubmenu');
+      const arrow = document.getElementById('configuracionesArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('configuraciones', 'general');
     }
 
     // --- LOGIN ---
@@ -9545,8 +10436,411 @@
     }
 
     // =========================================================================
-    // SECCIÓN 8: CONFIGURACIÓN, HORARIOS Y PALETA
+    // SECCIÓN 8: CONFIGURACIONES COMPLETO (TIPO OLACLICK)
     // =========================================================================
+    let configSubtab = 'general';
+    let pagosCfgSubtab = 'contraentrega';
+    let modoImpresionOlaClick = 'web';
+
+    let equipoUsuarios = [
+      {
+        id: 'usr-1',
+        nombre: 'Diego Cacerez dely',
+        email: 'd.cacerez03@gmail.com',
+        local: 'fravioli',
+        rol: 'Rider',
+        activo: false
+      },
+      {
+        id: 'usr-2',
+        nombre: 'Jeniffer',
+        email: 'jeniffer.mella.a@gmail.com',
+        local: 'fravioli',
+        rol: 'Rider',
+        activo: false
+      },
+      {
+        id: 'usr-3',
+        nombre: 'Alex',
+        email: 'alexis.santana.miranda@gmail.com',
+        local: 'fravioli',
+        rol: 'Rider',
+        activo: false
+      },
+      {
+        id: 'usr-4',
+        nombre: 'Fravioli',
+        email: 'fravioli.va@gmail.com',
+        local: 'fravioli',
+        rol: 'Admin',
+        activo: true
+      }
+    ];
+
+    let ticketConfig = {
+      ancho: '80mm',
+      numeroGrande: true,
+      notasNegrita: true,
+      timers: true,
+      pie: '¡Gracias por su visita a Fravioli Street Food!'
+    };
+
+    function setConfiguracionesSubtab(subtab) {
+      configSubtab = subtab || 'general';
+
+      const pills = [
+        { id: 'subtabBtnCfgGeneral', key: 'general' },
+        { id: 'subtabBtnCfgPagos', key: 'pagos' },
+        { id: 'subtabBtnCfgNegocio', key: 'negocio' },
+        { id: 'subtabBtnCfgEquipo', key: 'equipo' },
+        { id: 'subtabBtnCfgImpresoras', key: 'impresoras' }
+      ];
+
+      pills.forEach(p => {
+        const el = document.getElementById(p.id);
+        if (!el) return;
+        const active = p.key === configSubtab;
+        el.className = `cfg-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+          active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+        }`;
+      });
+
+      const views = {
+        'general': 'viewCfgGeneral',
+        'pagos': 'viewCfgPagos',
+        'negocio': 'viewCfgNegocio',
+        'equipo': 'viewCfgEquipo',
+        'impresoras': 'viewCfgImpresoras'
+      };
+
+      Object.entries(views).forEach(([k, viewId]) => {
+        const el = document.getElementById(viewId);
+        if (el) el.classList.toggle('hidden', k !== configSubtab);
+      });
+
+      document.querySelectorAll('.config-sub-btn').forEach(b => {
+        const match = b.dataset.subtab === configSubtab;
+        b.classList.toggle('text-white', match);
+        b.classList.toggle('font-bold', match);
+        b.classList.toggle('bg-slate-800', match);
+      });
+
+      renderConfiguraciones();
+    }
+
+    function renderConfiguraciones() {
+      if (configSubtab === 'general') {
+        // Estado general
+      } else if (configSubtab === 'pagos') {
+        setPagosCfgSubtab(pagosCfgSubtab);
+      } else if (configSubtab === 'negocio') {
+        // Horario y datos
+      } else if (configSubtab === 'equipo') {
+        renderEquipoRolesTable();
+      } else if (configSubtab === 'impresoras') {
+        renderImpresorasEnrutadas();
+      }
+    }
+
+    // --- CONFIGURACIÓN GENERAL ---
+    function toggleRecibirPedidos(checked) {
+      setPausaManual(!checked);
+      mostrarNotificacion(checked ? '🟢 Menú Digital abierto para recibir pedidos' : '⏸️ Menú Digital pausado temporalmente');
+    }
+
+    // --- MÉTODOS DE PAGO ---
+    function setPagosCfgSubtab(sub) {
+      pagosCfgSubtab = sub || 'contraentrega';
+      const btnO = document.getElementById('tabPagosCfgOnline');
+      const btnC = document.getElementById('tabPagosCfgContraentrega');
+      const boxO = document.getElementById('boxDescPagosOnline');
+      const boxC = document.getElementById('boxDescPagosContraentrega');
+
+      if (btnO && btnC) {
+        if (pagosCfgSubtab === 'online') {
+          btnO.className = 'pb-3 font-bold text-blue-600 border-b-2 border-blue-600 cursor-pointer transition-colors';
+          btnC.className = 'pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer transition-colors';
+        } else {
+          btnC.className = 'pb-3 font-bold text-blue-600 border-b-2 border-blue-600 cursor-pointer transition-colors';
+          btnO.className = 'pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent cursor-pointer transition-colors';
+        }
+      }
+
+      if (boxO) boxO.classList.toggle('hidden', pagosCfgSubtab !== 'online');
+      if (boxC) boxC.classList.toggle('hidden', pagosCfgSubtab !== 'contraentrega');
+    }
+
+    function gestionarMetodoPago(tipo) {
+      mostrarNotificacion(`Configurando canal y comisiones para: ${tipo}`);
+    }
+
+    function abrirModalAgregarMetodoPago() {
+      document.getElementById('modalAgregarMetodoPago')?.classList.remove('hidden');
+    }
+
+    function cerrarModalAgregarMetodoPago() {
+      document.getElementById('modalAgregarMetodoPago')?.classList.add('hidden');
+    }
+
+    function guardarNuevoMetodoPago() {
+      const nombre = document.getElementById('inputNuevoMetodoPagoNombre')?.value.trim();
+      const recargo = Number(document.getElementById('inputNuevoMetodoPagoRecargo')?.value) || 0;
+      if (!nombre) {
+        alert('Por favor escribe el nombre del método de pago.');
+        return;
+      }
+
+      const tbody = document.getElementById('tablaMetodosPagoCfgBody');
+      if (tbody) {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/70 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 font-bold text-slate-900">${nombre}</td>
+          <td class="py-3.5 px-4 text-center">
+            <div class="inline-flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ A domicilio</span>
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ Para llevar</span>
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">✓ En el local</span>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 text-center font-bold text-emerald-600">✓</td>
+          <td class="py-3.5 px-4 text-center text-slate-700 font-bold">${recargo > 0 ? recargo + '%' : '--'}</td>
+          <td class="py-3.5 px-4 text-center">
+            <button onclick="gestionarMetodoPago('${nombre}')" class="text-blue-600 hover:underline font-bold text-xs cursor-pointer">Gestionar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      cerrarModalAgregarMetodoPago();
+      document.getElementById('inputNuevoMetodoPagoNombre').value = '';
+      mostrarNotificacion(`✅ Método "${nombre}" agregado correctamente`);
+    }
+
+    // --- INFORMACIÓN DEL NEGOCIO ---
+    function guardarInfoNegocio() {
+      const nombre = document.getElementById('inputNegocioNombre')?.value.trim();
+      const whatsapp = document.getElementById('inputNegocioWhatsapp')?.value.trim();
+      const moneda = document.getElementById('selectNegocioMoneda')?.value;
+      const idioma = document.getElementById('selectNegocioIdioma')?.value;
+      const ocultarDir = document.getElementById('checkOcultarDireccion')?.checked;
+
+      if (window.restRef) {
+        window.restRef().set({
+          nombreNegocio: nombre,
+          whatsappPedidos: whatsapp,
+          moneda,
+          idioma,
+          ocultarDireccionMenu: ocultarDir
+        }, { merge: true }).catch(() => {});
+      }
+
+      mostrarNotificacion('✅ Información del negocio guardada exitosamente');
+    }
+
+    function toggleDesplegarHorarios() {
+      const box = document.getElementById('boxHorariosExpandido');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function editarDireccionNegocio() {
+      const actual = document.getElementById('labelNegocioDireccion')?.textContent || '';
+      const nueva = prompt('Ingresa la nueva dirección del restaurante:', actual);
+      if (nueva && nueva.trim()) {
+        const el = document.getElementById('labelNegocioDireccion');
+        if (el) el.textContent = nueva.trim();
+        if (window.restRef) {
+          window.restRef().set({ direccion: nueva.trim() }, { merge: true }).catch(() => {});
+        }
+        mostrarNotificacion('📍 Dirección actualizada');
+      }
+    }
+
+    // --- GESTIONAR MI EQUIPO ---
+    function toggleAcordeonRoles() {
+      const tabla = document.getElementById('tablaMatrizRoles');
+      const flecha = document.getElementById('flechaAcordeonRoles');
+      if (tabla) {
+        const isHidden = tabla.classList.toggle('hidden');
+        if (flecha) flecha.textContent = isHidden ? '∧' : '∨';
+      }
+    }
+
+    function renderEquipoRolesTable() {
+      const tbody = document.getElementById('tablaEquipoRolesBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = equipoUsuarios.map((u, idx) => {
+        const isAdmin = u.rol === 'Admin';
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3 px-4 font-bold text-slate-900">${u.nombre}</td>
+            <td class="py-3 px-4 font-mono text-slate-600">${u.email}</td>
+            <td class="py-3 px-4 text-slate-500 font-mono text-[11px]">${u.local}</td>
+            <td class="py-3 px-4">
+              ${isAdmin ? `
+                <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-black text-[10px] border border-blue-200">
+                  Admin
+                </span>
+              ` : `
+                <select onchange="cambiarRolUsuario(${idx}, this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-800">
+                  <option value="Rider" ${u.rol === 'Rider' ? 'selected' : ''}>Rider</option>
+                  <option value="Cocinero" ${u.rol === 'Cocinero' ? 'selected' : ''}>Cocinero</option>
+                  <option value="Mozo" ${u.rol === 'Mozo' ? 'selected' : ''}>Mozo</option>
+                  <option value="Cajero" ${u.rol === 'Cajero' ? 'selected' : ''}>Cajero</option>
+                  <option value="Manager" ${u.rol === 'Manager' ? 'selected' : ''}>Manager</option>
+                </select>
+              `}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${isAdmin ? `
+                <span class="text-slate-400 font-bold text-[10px]">-</span>
+              ` : `
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" onchange="toggleEstadoUsuario(${idx}, this.checked)" ${u.activo ? 'checked' : ''} class="sr-only peer">
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              `}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${isAdmin ? `
+                <button onclick="mostrarNotificacion('Gestionar perfil de Administrador')" class="text-blue-600 hover:underline font-bold text-[11px] cursor-pointer">
+                  Gestionar mi perfil
+                </button>
+              ` : `
+                <div class="inline-flex items-center gap-2">
+                  <button onclick="editarUsuarioEquipo(${idx})" class="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-blue-600 text-xs cursor-pointer">✏️</button>
+                  <button onclick="eliminarUsuarioEquipo(${idx})" class="p-1 hover:bg-red-50 rounded text-slate-500 hover:text-red-600 text-xs cursor-pointer">🗑️</button>
+                </div>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleEstadoUsuario(idx, checked) {
+      if (equipoUsuarios[idx]) {
+        equipoUsuarios[idx].activo = checked;
+        mostrarNotificacion(`Usuario ${equipoUsuarios[idx].nombre} ${checked ? 'activado' : 'desactivado'}`);
+      }
+    }
+
+    function cambiarRolUsuario(idx, nextRol) {
+      if (equipoUsuarios[idx]) {
+        equipoUsuarios[idx].rol = nextRol;
+        mostrarNotificacion(`Rol actualizado a: ${nextRol}`);
+      }
+    }
+
+    function editarUsuarioEquipo(idx) {
+      const u = equipoUsuarios[idx];
+      if (!u) return;
+      const nuevoNombre = prompt('Editar nombre del miembro:', u.nombre);
+      if (nuevoNombre && nuevoNombre.trim()) {
+        u.nombre = nuevoNombre.trim();
+        renderEquipoRolesTable();
+        mostrarNotificacion('Nombre actualizado');
+      }
+    }
+
+    function eliminarUsuarioEquipo(idx) {
+      if (!confirm(`¿Eliminar al miembro "${equipoUsuarios[idx]?.nombre}" del equipo?`)) return;
+      equipoUsuarios.splice(idx, 1);
+      renderEquipoRolesTable();
+      mostrarNotificacion('Usuario eliminado del equipo');
+    }
+
+    function abrirModalAgregarUsuarioEquipo() {
+      document.getElementById('modalAgregarUsuarioEquipo')?.classList.remove('hidden');
+    }
+
+    function cerrarModalAgregarUsuarioEquipo() {
+      document.getElementById('modalAgregarUsuarioEquipo')?.classList.add('hidden');
+    }
+
+    function guardarNuevoUsuarioEquipo() {
+      const nombre = document.getElementById('inputNuevoUsuarioNombre')?.value.trim();
+      const email = document.getElementById('inputNuevoUsuarioEmail')?.value.trim();
+      const rol = document.getElementById('selectNuevoUsuarioRol')?.value || 'Rider';
+
+      if (!nombre || !email) {
+        alert('Por favor ingresa nombre y correo electrónico.');
+        return;
+      }
+
+      equipoUsuarios.push({
+        id: 'usr-' + Date.now(),
+        nombre,
+        email,
+        local: 'fravioli',
+        rol,
+        activo: true
+      });
+
+      cerrarModalAgregarUsuarioEquipo();
+      document.getElementById('inputNuevoUsuarioNombre').value = '';
+      document.getElementById('inputNuevoUsuarioEmail').value = '';
+      mostrarNotificacion(`✅ Miembro "${nombre}" agregado como ${rol}`);
+      renderEquipoRolesTable();
+    }
+
+    // --- IMPRESORAS Y TICKETS ---
+    function setModoImpresion(modo) {
+      modoImpresionOlaClick = modo;
+      mostrarNotificacion(`Modo de impresión: ${modo === 'web' ? 'Manual por Navegador Web' : modo === 'tablet' ? 'Bluetooth Tablet/Móvil' : 'Automática PC'}`);
+    }
+
+    function abrirModalPersonalizarTicket(tipo) {
+      const modal = document.getElementById('modalPersonalizarTicket');
+      const titulo = document.getElementById('tituloModalPersonalizarTicket');
+      if (titulo) titulo.textContent = `Personalizar Ticket de ${tipo === 'cocina' ? 'Cocina' : 'Cliente (Cuenta)'}`;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function cerrarModalPersonalizarTicket() {
+      document.getElementById('modalPersonalizarTicket')?.classList.add('hidden');
+    }
+
+    function guardarPersonalizacionTicket() {
+      ticketConfig.ancho = document.getElementById('selectTicketAncho')?.value || '80mm';
+      ticketConfig.numeroGrande = document.getElementById('checkTicketNumeroGrande')?.checked;
+      ticketConfig.notasNegrita = document.getElementById('checkTicketNotas')?.checked;
+      ticketConfig.timers = document.getElementById('checkTicketTimers')?.checked;
+      ticketConfig.pie = document.getElementById('inputTicketPie')?.value.trim();
+
+      cerrarModalPersonalizarTicket();
+      mostrarNotificacion('✅ Plantilla de ticket térmico guardada');
+    }
+
+    function renderImpresorasEnrutadas() {
+      const box = document.getElementById('listaImpresorasEnrutadas');
+      if (!box) return;
+
+      const items = (typeof impresorasTermicas !== 'undefined' && impresorasTermicas.length > 0) ? impresorasTermicas : [
+        { id: 'imp-cocina', nombre: 'Cocina Principal', ip: '192.168.1.150', destino: 'cocina', activa: true },
+        { id: 'imp-barra', nombre: 'Barra y Bebidas', ip: '192.168.1.151', destino: 'bar', activa: true },
+        { id: 'imp-caja', nombre: 'Caja Mostrador', ip: '192.168.1.152', destino: 'recepcion', activa: true }
+      ];
+
+      box.innerHTML = items.map(imp => `
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">🖨️</span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Activa (80mm)</span>
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-900">${imp.nombre}</div>
+            <div class="text-[10px] text-slate-400 font-mono">Destino: ${imp.destino.toUpperCase()} · ${imp.ip || 'USB/Red'}</div>
+          </div>
+          <button onclick="probarImpresionTermica('${imp.id}')" class="w-full py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer shadow-xs">
+            📄 Imprimir Prueba
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // --- HORARIO, PAUSA Y PALETA (ORIGINALES PRESERVADOS) ---
     const PALETAS = [
       { id: 'brasa', nombre: 'Brasa', color: '#C85A32' },
       { id: 'oceano', nombre: 'Océano', color: '#0E7490' },
@@ -9555,6 +10849,7 @@
 
     function renderPaletaSelector(actual) {
       const box = document.getElementById('paletaSelector');
+      if (!box) return;
       box.innerHTML = PALETAS.map(p => `
         <button onclick="setPaleta('${p.id}')" class="py-3 rounded-xl border-2 flex flex-col items-center gap-1.5 text-[11px] font-bold cursor-pointer transition-all ${p.id === actual ? 'border-brand-600 bg-brand-50/50' : 'border-slate-200 hover:border-slate-300'}">
           <span class="w-6 h-6 rounded-full block shadow-xs" style="background:${p.color}"></span>
@@ -9573,6 +10868,7 @@
 
     function renderHorarioForm(horarioGuardado) {
       const box = document.getElementById('horarioForm');
+      if (!box) return;
       box.innerHTML = window.DIAS_SEMANA.map(dia => {
         const cfg = horarioGuardado[dia] || { abre: '12:30', cierra: '23:00', cerrado: dia === 'lun' };
         return `
@@ -9600,14 +10896,14 @@
         };
       });
       window.restRef().set({ horario }, { merge: true }).then(() => {
-        alert('✅ Horario guardado. El local abrirá y cerrará solo automáticamente.');
+        mostrarNotificacion('✅ Horario guardado. El local abrirá y cerrará automáticamente.');
       });
     }
 
     function publicarPromo() {
-      const promo = document.getElementById('promoInput').value.trim();
+      const promo = document.getElementById('promoInput')?.value.trim();
       window.restRef().set({ promo }, { merge: true }).then(() => {
-        alert('📢 Banner de oferta actualizado en la carta.');
+        mostrarNotificacion('📢 Banner de oferta actualizado en la carta');
       });
     }
 
