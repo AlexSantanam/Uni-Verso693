@@ -129,9 +129,23 @@ const ITEMS: PresetItem[] = [
 ];
 
 export const Pago: React.FC = () => {
-  const { lang } = useLang();
-  const es = lang === 'es';
+  const { lang, setLang } = useLang();
   const [params] = useSearchParams();
+
+  // Sincronizar idioma si viene en la URL (?lang=en) o detectar inglés
+  useEffect(() => {
+    const langParam = params.get('lang');
+    if (langParam === 'en' || langParam === 'es') {
+      setLang(langParam as 'en' | 'es');
+    } else {
+      const navLang = (navigator.language || '').toLowerCase();
+      if (navLang.startsWith('en')) {
+        setLang('en');
+      }
+    }
+  }, [params, setLang]);
+
+  const es = lang === 'es';
 
   // Estados de la URL
   const initialItemId = params.get('item') || 'sokify-mensual';
