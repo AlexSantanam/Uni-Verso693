@@ -411,43 +411,243 @@
     <!-- --------------------------------------------------------------------- -->
     <div class="flex-1 flex flex-col min-h-screen overflow-y-auto">
 
-      <!-- TOPBAR SUPERIOR (MÓVIL / ESCRITORIO) -->
-      <header class="bg-white border-b border-borderLight px-5 py-3 sticky top-0 z-30 flex items-center justify-between gap-4 shadow-sm">
-        <div class="flex items-center gap-3">
-          <button onclick="toggleSidebar(true)" class="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm">
-            ☰
-          </button>
-          <div>
-            <h2 id="topBarTitle" class="text-base font-black text-slate-900 tracking-tight">Punto de Venta (PDV)</h2>
-            <p id="topBarSubtitle" class="text-xs text-slate-500 hidden sm:block">Toma de pedidos en mostrador y mesas</p>
+      <!-- TOPBAR SUPERIOR AZUL OFICIAL (TIPO OLACLICK CAPTURAS 1, 2 Y 3) -->
+      <header class="bg-blue-600 text-white px-4 sm:px-6 py-2.5 sticky top-0 z-40 shadow-md">
+        <div class="flex items-center justify-between gap-3">
+          
+          <!-- IZQUIERDA: BOTÓN MENÚ MÓVIL + ACTUALIZA TU PLAN -->
+          <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar(true)" class="md:hidden p-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-base">
+              ☰
+            </button>
+            <button onclick="abrirModalPlanes()" class="px-3.5 py-1.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-black text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer">
+              <span class="text-amber-500">⚡</span>
+              <span>Actualiza tu Plan</span>
+            </button>
           </div>
+
+          <!-- DERECHA: CAMPANA + MENSAJES CON BADGE (5) + SOPORTE + PERFIL -->
+          <div class="flex items-center gap-1 sm:gap-2 text-xs font-bold relative">
+            
+            <!-- CAMPANA DE NOTIFICACIONES -->
+            <button onclick="togglePopoverNotificaciones()" class="relative p-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer text-white" title="Notificaciones">
+              <span class="text-base">🔔</span>
+              <span id="badgeCampanaDot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400"></span>
+            </button>
+
+            <!-- MENSAJES CON BADGE NARANJA (5) -->
+            <button onclick="togglePopoverNotificaciones()" class="relative p-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer text-white flex items-center gap-1" title="Mensajes del sistema">
+              <span class="text-base">✉️</span>
+              <span id="badgeMensajesCount" class="bg-amber-500 text-white font-extrabold text-[10px] px-1.5 py-0.2 rounded-full shadow-sm">5</span>
+            </button>
+
+            <!-- BOTÓN SOPORTE -->
+            <button onclick="abrirModalSoporte()" class="px-3 py-1.5 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer text-white flex items-center gap-1.5">
+              <span class="text-sm">🎧</span>
+              <span class="hidden sm:inline">Soporte</span>
+            </button>
+
+            <!-- PILL PERFIL DE RESTAURANTE (TIPO OLACLICK: FRAVIOLI, STREET FOOD) -->
+            <div class="relative">
+              <button onclick="toggleDropdownPerfil()" class="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer text-left">
+                <span class="w-7 h-7 rounded-full bg-slate-900 border border-white/20 flex items-center justify-center text-xs font-black shrink-0 text-white">
+                  FS
+                </span>
+                <span class="font-bold text-xs text-white hidden md:inline truncate max-w-[130px]">Fravioli, Street Food</span>
+                <span id="perfilArrow" class="text-[10px] text-white/80 transition-transform">▼</span>
+              </button>
+
+              <!-- DROPDOWN PERFIL DE USUARIO (TIPO CAPTURA 3) -->
+              <div id="dropdownPerfilUsuario" class="absolute right-0 top-full mt-2 w-72 bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-100 p-2 space-y-1.5 hidden z-50 animate-in fade-in zoom-in duration-150">
+                
+                <!-- CABECERA DE PERFIL -->
+                <div class="p-3 bg-slate-50 rounded-xl space-y-1">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="font-extrabold text-xs text-slate-900">Fravioli, Street Food</div>
+                      <div class="text-[11px] text-slate-500 font-medium">fravioli.va@gmail.com</div>
+                      <div class="text-[10px] text-blue-600 font-bold mt-0.5">Free · Admin</div>
+                    </div>
+                    <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold shrink-0">FS</span>
+                  </div>
+                  <div class="pt-1.5 border-t border-slate-200/60 text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Conectado 10 Mbps(4g) / 0ms</span>
+                  </div>
+                </div>
+
+                <!-- LISTA DE ACCIONES -->
+                <div class="space-y-0.5 text-xs font-bold text-slate-700">
+                  <button type="button" onclick="abrirModalMiCuenta()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">👤</span>
+                    <span>Mi cuenta</span>
+                  </button>
+                  <button type="button" onclick="abrirModalPlanes()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">⭐</span>
+                    <span>Planes</span>
+                  </button>
+                  <button type="button" onclick="switchTab('finanzas'); toggleDropdownPerfil(false);" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">🧾</span>
+                    <span>Facturas</span>
+                  </button>
+                  
+                  <div class="border-t border-slate-100 my-1"></div>
+
+                  <button type="button" onclick="abrirModalPlanes()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer text-amber-600">
+                    <span class="text-sm">⚡</span>
+                    <span>Actualiza tu Plan</span>
+                  </button>
+                  <button type="button" onclick="switchTab('appstore'); toggleDropdownPerfil(false);" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">🧩</span>
+                    <span>Obtén un Complemento</span>
+                  </button>
+
+                  <div class="border-t border-slate-100 my-1"></div>
+
+                  <button type="button" onclick="descargarAppEscritorio()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">📥</span>
+                    <span>Descargar App de escritorio</span>
+                  </button>
+                  <button type="button" onclick="abrirModalSoporte()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">🎧</span>
+                    <span>Soporte</span>
+                  </button>
+                  <button type="button" onclick="abrirModalSugerirIdea()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">💡</span>
+                    <span>Sugerir una idea</span>
+                  </button>
+                  <button type="button" onclick="mostrarNotificacion('📜 Términos y Condiciones vigentes de Zoco OS v2.0')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center justify-between transition-colors cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                      <span class="text-sm">⚖️</span>
+                      <span>Términos y condiciones</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400">∨</span>
+                  </button>
+                  <button type="button" onclick="mostrarNotificacion('🏬 Funcionalidad Multi-Sucursales disponible en Plan Premium')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">🏬</span>
+                    <span>Sucursales</span>
+                  </button>
+
+                  <div class="border-t border-slate-100 my-1"></div>
+
+                  <button type="button" onclick="firebase.auth().signOut()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-red-50 text-red-600 flex items-center gap-2.5 transition-colors cursor-pointer">
+                    <span class="text-sm">🚪</span>
+                    <span>Cerrar sesión</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- POPOVER DE NOTIFICACIONES (TIPO CAPTURA 1) -->
+            <div id="popoverNotificaciones" class="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-100 overflow-hidden hidden z-50 animate-in fade-in zoom-in duration-150">
+              
+              <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h4 class="font-black text-slate-900 text-sm">Notificaciones Zoco</h4>
+                <button type="button" onclick="marcarTodasNotificacionesLeidas()" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                  Marcar todas leídas
+                </button>
+              </div>
+
+              <!-- LISTA DE AVISOS Y PROMOCIONES -->
+              <div id="listaNotificacionesItems" class="max-h-96 overflow-y-auto divide-y divide-slate-100 text-xs">
+                
+                <!-- AVISO 1 -->
+                <div class="p-4 hover:bg-slate-50 transition-colors flex gap-3 items-start notif-item">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base shrink-0">
+                    📢
+                  </div>
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-extrabold text-slate-900 text-xs">Tu primer mes en Zoco por $1.499</span>
+                      <span class="text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span>alrededor de 5 horas</span>
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                      Válido en tus 3 primeros días. 🎫 Usa el cupón <strong class="text-slate-800 font-mono">1MESADVCL</strong> en el plan Advanced o <strong class="text-slate-800 font-mono">1MESPRECL</strong> en el Premium.
+                    </p>
+                    <button type="button" onclick="abrirModalPlanes()" class="text-[11px] font-bold text-blue-600 hover:underline inline-block pt-0.5 cursor-pointer">
+                      Elegir mi plan
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AVISO 2 -->
+                <div class="p-4 hover:bg-slate-50 transition-colors flex gap-3 items-start notif-item">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base shrink-0">
+                    📢
+                  </div>
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-extrabold text-slate-900 text-xs">Tu primer mes en Zoco por $1.499</span>
+                      <span class="text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span>1 día</span>
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                      Válido en tus 3 primeros días. 🎫 Usa el cupón <strong class="text-slate-800 font-mono">1MESADVCL</strong> en el plan Advanced o <strong class="text-slate-800 font-mono">1MESPRECL</strong> en el Premium.
+                    </p>
+                    <button type="button" onclick="abrirModalPlanes()" class="text-[11px] font-bold text-blue-600 hover:underline inline-block pt-0.5 cursor-pointer">
+                      Elegir mi plan
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AVISO 3 -->
+                <div class="p-4 hover:bg-slate-50 transition-colors flex gap-3 items-start notif-item">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base shrink-0">
+                    📢
+                  </div>
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-extrabold text-slate-900 text-xs">Tu primer mes en Zoco por $1.499</span>
+                      <span class="text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span>2 días</span>
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                      Válido en tus 3 primeros días. 🎫 Usa el cupón <strong class="text-slate-800 font-mono">1MESADVCL</strong> en el plan Advanced o <strong class="text-slate-800 font-mono">1MESPRECL</strong> en el Premium.
+                    </p>
+                    <button type="button" onclick="abrirModalPlanes()" class="text-[11px] font-bold text-blue-600 hover:underline inline-block pt-0.5 cursor-pointer">
+                      Elegir mi plan
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
 
-        <!-- ACCIONES RÁPIDAS TOPBAR -->
-        <div class="flex items-center gap-2.5 text-xs font-bold">
-          
-          <!-- INDICADOR EN VIVO FIRESTORE -->
-          <div class="hidden sm:flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full text-[11px]">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Firestore En Vivo</span>
+        <!-- SEGUNDA FILA: TÍTULO DEL TAB ACTUAL Y BOTONES DE OPERACIÓN -->
+        <div class="flex items-center justify-between gap-4 pt-2.5 mt-2 border-t border-blue-500/30 text-white">
+          <div>
+            <h2 id="topBarTitle" class="text-sm sm:text-base font-black tracking-tight text-white">Punto de Venta (PDV)</h2>
+            <p id="topBarSubtitle" class="text-[11px] text-blue-100 hidden sm:block">Toma de pedidos en mostrador y mesas</p>
           </div>
 
-          <!-- AUDIO TOGGLE -->
-          <button id="btnSoundToggle" onclick="toggleAudio()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 border border-slate-200 cursor-pointer transition-colors" title="Activar/Silenciar sonido de comanda">
-            <span id="soundIcon">🔔</span>
-            <span id="soundLabel" class="hidden sm:inline">Sonido ON</span>
-          </button>
-
-          <!-- PANTALLA COMPLETA -->
-          <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer" title="Modo Pantalla Completa">
-            ⛶
-          </button>
-
-          <!-- ENLACE PANTALLA COCINA INDEPENDIENTE -->
-          <a href="cocina.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold border border-brand-200 flex items-center gap-1 transition-colors" title="Abrir KDS exclusivo para tablet de cocina">
-            <span>👨‍🍳</span>
-            <span class="hidden md:inline">KDS Pantalla Completa ↗</span>
-          </a>
+          <!-- ACCIONES RÁPIDAS (AUDIO, FULLSCREEN, KDS) -->
+          <div class="flex items-center gap-2 text-xs font-bold">
+            <button id="btnSoundToggle" onclick="toggleAudio()" class="px-2.5 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white flex items-center gap-1.5 transition-colors cursor-pointer" title="Activar/Silenciar sonido">
+              <span id="soundIcon">🔔</span>
+              <span id="soundLabel" class="hidden sm:inline text-[11px]">Sonido ON</span>
+            </button>
+            <button onclick="toggleFullscreen()" class="p-1.5 px-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white cursor-pointer" title="Pantalla Completa">
+              ⛶
+            </button>
+            <a href="cocina.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-black flex items-center gap-1 transition-all shadow-xs" title="Abrir KDS de cocina">
+              <span>👨‍🍳</span>
+              <span class="hidden md:inline text-[11px]">KDS Pantalla Completa ↗</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -7074,6 +7274,254 @@
         <button type="button" onclick="cerrarModalDescargarQrDirecto()" class="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">
           Cerrar
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: AYUDA Y SOPORTE (TIPO OLACLICK CAPTURA 2) -->
+  <!-- ========================================================================= -->
+  <div id="modalAyudaSoporte" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[92vh]">
+      
+      <!-- HEADER AZUL CON TÍTULO Y BOTÓN X -->
+      <div class="px-6 py-4 bg-blue-600 text-white flex items-center justify-between">
+        <h3 class="font-black text-base">Ayuda y soporte</h3>
+        <button type="button" onclick="cerrarModalSoporte()" class="text-white hover:text-slate-200 text-lg font-bold cursor-pointer">✕</button>
+      </div>
+
+      <!-- CONTENIDO SCROLLABLE DE SOPORTE -->
+      <div class="p-6 overflow-y-auto space-y-6 text-xs divide-y divide-slate-100">
+        
+        <!-- BLOQUE 1: WHATSAPP SOPORTE -->
+        <div class="space-y-3 pt-1">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">💬</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-xs">Renueva tu plan y accede al Soporte</h4>
+              <p class="text-[11px] text-slate-500">Soporte disponible todos los días, de 9:00 a 21:30 (GMT-3)</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-3">
+            <p class="text-xs text-amber-900 leading-relaxed font-medium">
+              Contrata uno de nuestros planes y consigue Soporte Directo junto con decenas de funcionalidades clave para tu negocio.
+            </p>
+            <a href="https://wa.me/56912345678?text=Hola,%20deseo%20renovar%20mi%20plan%20en%20Zoco" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md shadow-emerald-600/20 transition-all">
+              <span>💬</span>
+              <span>Renovar mi Plan ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- BLOQUE 2: CENTRO DE AYUDA -->
+        <div class="space-y-3 pt-5">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📘</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-xs">Centro de ayuda</h4>
+              <p class="text-[11px] text-slate-500">Encuentra la información detallada sobre cada funcionalidad.</p>
+            </div>
+          </div>
+          <div>
+            <button type="button" onclick="mostrarNotificacion('📘 Abriendo base de conocimientos y guías Zoco...')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5">
+              <span>Abrir ayuda</span>
+              <span>↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE 3: NOTIFICA UN ERROR -->
+        <div class="space-y-3 pt-5">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🛠️</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-xs">Notifica un error</h4>
+              <p class="text-[11px] text-slate-500">Informa algún error que tú o tus clientes encontraron usando Zoco.</p>
+            </div>
+          </div>
+          <div>
+            <button type="button" onclick="abrirModalSugerirIdea('error')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5">
+              <span>Llenar el formulario</span>
+              <span>↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE 4: ENVÍA UNA SUGERENCIA -->
+        <div class="space-y-3 pt-5">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">💡</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-xs">Envía una sugerencia</h4>
+              <p class="text-[11px] text-slate-500">Envíanos una sugerencia de mejora o novedad que te gustaría ver implementada.</p>
+            </div>
+          </div>
+          <div>
+            <button type="button" onclick="abrirModalSugerirIdea('sugerencia')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5">
+              <span>Envía una sugerencia</span>
+              <span>↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE 5: RED DE CONSEJOS Y ASESORÍA -->
+        <div class="space-y-3 pt-5">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">👥</span>
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-xs">Red de consejos y asesoría</h4>
+              <p class="text-[11px] text-slate-500">Sé parte de la comunidad Zoco en tus redes favoritas.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <a href="#" onclick="mostrarNotificacion('👥 Uniéndote a la comunidad WhatsApp...'); return false;" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-[11px] transition-colors">
+              💬 Grupos WhatsApp
+            </a>
+            <a href="#" onclick="mostrarNotificacion('📘 Abriendo Facebook...'); return false;" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-[11px] transition-colors">
+              Facebook
+            </a>
+            <a href="#" onclick="mostrarNotificacion('📷 Abriendo Instagram...'); return false;" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-[11px] transition-colors">
+              Instagram
+            </a>
+            <a href="#" onclick="mostrarNotificacion('▶️ Abriendo canal YouTube...'); return false;" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-center text-[11px] transition-colors">
+              YouTube
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PLANES Y SUSCRIPCIÓN (ACTUALIZA TU PLAN) -->
+  <!-- ========================================================================= -->
+  <div id="modalPlanesSuscripcion" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[95vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div>
+          <span class="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider block">PLANES ZOCO OS</span>
+          <h3 class="font-black text-slate-900 text-xl">Elige el plan ideal para tu local</h3>
+        </div>
+        <button type="button" onclick="cerrarModalPlanes()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- PLAN FREE -->
+        <div class="p-5 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
+          <div class="space-y-2">
+            <h4 class="font-black text-slate-900 text-sm">Free</h4>
+            <div class="text-2xl font-black text-slate-900">$0 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            <ul class="text-[11px] text-slate-600 space-y-1.5">
+              <li>✓ Menú digital QR ilimitado</li>
+              <li>✓ Comandas en pantalla KDS</li>
+              <li>✓ Punto de Venta (PDV)</li>
+              <li>✓ 0% comisiones</li>
+            </ul>
+          </div>
+          <span class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs text-center block">Plan Actual</span>
+        </div>
+
+        <!-- PLAN ADVANCED -->
+        <div class="p-5 rounded-2xl border-2 border-blue-600 bg-blue-50/30 space-y-4 flex flex-col justify-between relative shadow-sm">
+          <div class="absolute -top-3 right-4 px-2 py-0.5 rounded-full bg-blue-600 text-white font-extrabold text-[9px] uppercase tracking-wider">Más Popular</div>
+          <div class="space-y-2">
+            <h4 class="font-black text-blue-700 text-sm">Advanced</h4>
+            <div class="text-2xl font-black text-slate-900">$14.990 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            <p class="text-[10px] text-amber-600 font-bold">🎫 Cupón: 1MESADVCL ($1.499 primer mes)</p>
+            <ul class="text-[11px] text-slate-700 space-y-1.5 font-medium">
+              <li>✓ Todo lo del plan Free</li>
+              <li>✓ Impresión térmica 80mm multi-estación</li>
+              <li>✓ Chatbot WhatsApp con IA</li>
+              <li>✓ Gestión de Inventario y Stock</li>
+              <li>✓ Soporte prioritario WhatsApp</li>
+            </ul>
+          </div>
+          <button type="button" onclick="mostrarNotificacion('🚀 Redirigiendo a pasarela de pago segura Webpay / Stripe...'); cerrarModalPlanes();" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+            Elegir Advanced
+          </button>
+        </div>
+
+        <!-- PLAN PREMIUM -->
+        <div class="p-5 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
+          <div class="space-y-2">
+            <h4 class="font-black text-purple-700 text-sm">Premium</h4>
+            <div class="text-2xl font-black text-slate-900">$24.990 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            <p class="text-[10px] text-amber-600 font-bold">🎫 Cupón: 1MESPRECL</p>
+            <ul class="text-[11px] text-slate-600 space-y-1.5">
+              <li>✓ Todo lo del plan Advanced</li>
+              <li>✓ Multi-sucursales</li>
+              <li>✓ Conectores oficiales MCP IA</li>
+              <li>✓ Dominio propio personalizado</li>
+              <li>✓ Ejecutivo de onboarding asignado</li>
+            </ul>
+          </div>
+          <button type="button" onclick="mostrarNotificacion('🚀 Redirigiendo a pasarela de pago segura Webpay / Stripe...'); cerrarModalPlanes();" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
+            Elegir Premium
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SUGERIR IDEA / REPORTAR ERROR -->
+  <!-- ========================================================================= -->
+  <div id="modalSugerirIdea" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="tituloModalSugerencia" class="font-black text-slate-900 text-base">Envía una sugerencia</h3>
+        <button type="button" onclick="cerrarModalSugerirIdea()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Título de tu idea o reporte *</label>
+          <input id="inputIdeaTitulo" type="text" placeholder="Ej: Agregar sonido personalizado para delivery..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Detalle de tu comentario *</label>
+          <textarea id="inputIdeaDetalle" rows="4" placeholder="Explícanos con detalle cómo te gustaría que funcione..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-blue-600"></textarea>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalSugerirIdea()" class="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="enviarSugerenciaIdea()" class="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Enviar comentario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: MI CUENTA -->
+  <!-- ========================================================================= -->
+  <div id="modalMiCuenta" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">👤</span>
+          <h3 class="font-black text-slate-900 text-base">Mi cuenta</h3>
+        </div>
+        <button type="button" onclick="cerrarModalMiCuenta()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre del Restaurante</label>
+          <input type="text" value="Fravioli, Street Food" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Correo Electrónico</label>
+          <input type="email" value="fravioli.va@gmail.com" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Rol en el Negocio</label>
+          <input type="text" value="Administrador Principal (Owner)" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800">
+        </div>
+      </div>
+      <div class="pt-2">
+        <button type="button" onclick="cerrarModalMiCuenta()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer">Entendido</button>
       </div>
     </div>
   </div>
@@ -13837,6 +14285,109 @@
       if (dominio) {
         mostrarNotificacion('🌐 Solicitud enviada para ' + dominio + '. Nuestro equipo de soporte configurará los registros DNS.');
       }
+    }
+
+    // =========================================================================
+    // MÓDULO TOPBAR: NOTIFICACIONES, SOPORTE Y PERFIL (TIPO OLACLICK)
+    // =========================================================================
+    function togglePopoverNotificaciones() {
+      const pop = document.getElementById('popoverNotificaciones');
+      const drop = document.getElementById('dropdownPerfilUsuario');
+      if (drop) drop.classList.add('hidden');
+      pop?.classList.toggle('hidden');
+    }
+
+    function toggleDropdownPerfil(force) {
+      const drop = document.getElementById('dropdownPerfilUsuario');
+      const pop = document.getElementById('popoverNotificaciones');
+      if (pop) pop.classList.add('hidden');
+      if (typeof force === 'boolean') {
+        drop?.classList.toggle('hidden', !force);
+      } else {
+        drop?.classList.toggle('hidden');
+      }
+    }
+
+    // Cerrar popovers al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      const pop = document.getElementById('popoverNotificaciones');
+      const drop = document.getElementById('dropdownPerfilUsuario');
+      if (pop && !pop.classList.contains('hidden')) {
+        if (!e.target.closest('#popoverNotificaciones') && !e.target.closest('button[onclick*="togglePopoverNotificaciones"]')) {
+          pop.classList.add('hidden');
+        }
+      }
+      if (drop && !drop.classList.contains('hidden')) {
+        if (!e.target.closest('#dropdownPerfilUsuario') && !e.target.closest('button[onclick*="toggleDropdownPerfil"]')) {
+          drop.classList.add('hidden');
+        }
+      }
+    });
+
+    function marcarTodasNotificacionesLeidas() {
+      document.querySelectorAll('.notif-item .w-1.5.h-1.5.bg-amber-500').forEach(d => d.remove());
+      const badge = document.getElementById('badgeMensajesCount');
+      if (badge) badge.textContent = '0';
+      const dot = document.getElementById('badgeCampanaDot');
+      if (dot) dot.classList.add('hidden');
+      mostrarNotificacion('✅ Todas las notificaciones marcadas como leídas');
+    }
+
+    function abrirModalSoporte() {
+      togglePopoverNotificaciones();
+      toggleDropdownPerfil(false);
+      document.getElementById('modalAyudaSoporte')?.classList.remove('hidden');
+    }
+
+    function cerrarModalSoporte() {
+      document.getElementById('modalAyudaSoporte')?.classList.add('hidden');
+    }
+
+    function abrirModalPlanes() {
+      toggleDropdownPerfil(false);
+      togglePopoverNotificaciones();
+      document.getElementById('modalPlanesSuscripcion')?.classList.remove('hidden');
+    }
+
+    function cerrarModalPlanes() {
+      document.getElementById('modalPlanesSuscripcion')?.classList.add('hidden');
+    }
+
+    function abrirModalSugerirIdea(tipo) {
+      toggleDropdownPerfil(false);
+      cerrarModalSoporte();
+      const tit = document.getElementById('tituloModalSugerencia');
+      if (tit) tit.textContent = (tipo === 'error') ? 'Notifica un error' : 'Envía una sugerencia';
+      document.getElementById('modalSugerirIdea')?.classList.remove('hidden');
+    }
+
+    function cerrarModalSugerirIdea() {
+      document.getElementById('modalSugerirIdea')?.classList.add('hidden');
+    }
+
+    function enviarSugerenciaIdea() {
+      const titulo = document.getElementById('inputIdeaTitulo')?.value.trim();
+      const detalle = document.getElementById('inputIdeaDetalle')?.value.trim();
+      if (!titulo || !detalle) {
+        alert('Por favor completa el título y detalle de tu comentario.');
+        return;
+      }
+      cerrarModalSugerirIdea();
+      mostrarNotificacion('🚀 ¡Gracias por tu aporte! Tu comentario fue enviado directamente a nuestro equipo de producto.');
+    }
+
+    function abrirModalMiCuenta() {
+      toggleDropdownPerfil(false);
+      document.getElementById('modalMiCuenta')?.classList.remove('hidden');
+    }
+
+    function cerrarModalMiCuenta() {
+      document.getElementById('modalMiCuenta')?.classList.add('hidden');
+    }
+
+    function descargarAppEscritorio() {
+      toggleDropdownPerfil(false);
+      mostrarNotificacion('📥 Instalador de escritorio PWA listo. Pulsa "Instalar aplicación" en la barra de tu navegador.');
     }
 
     // Inicialización del primer tab
