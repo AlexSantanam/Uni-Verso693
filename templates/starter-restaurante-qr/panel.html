@@ -195,14 +195,27 @@
             </div>
           </div>
 
-          <!-- MENÚ Y CARTA -->
-          <button onclick="switchTab('productos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="productos">
-            <div class="flex items-center gap-3">
-              <span class="text-base">🍽️</span>
-              <span>Menú & Carta</span>
+          <!-- MENÚ (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleMenuSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="productos">
+              <div class="flex items-center gap-3">
+                <span class="text-base">📖</span>
+                <span>Menú</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="badgePlatosCount" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono">0</span>
+                <span id="menuArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+              </div>
+            </button>
+            <div id="menuSubmenu" class="pl-8 pr-2 space-y-0.5 py-1">
+              <button onclick="switchTab('productos')" class="menu-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="productos">
+                Página de productos
+              </button>
+              <button onclick="switchTab('bienvenida')" class="menu-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="bienvenida">
+                Página de bienvenida
+              </button>
             </div>
-            <span id="badgePlatosCount" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono">0</span>
-          </button>
+          </div>
 
           <!-- CATEGORÍAS -->
           <button onclick="switchTab('categorias')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="categorias">
@@ -1170,43 +1183,383 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 4: PRODUCTOS & CARTA -->
+        <!-- TAB 4: MENÚ > PÁGINA DE PRODUCTOS (EXACTO A IMAGEN 1 OLACLICK) -->
         <!-- =================================================================== -->
         <section id="tab-productos" class="panel-pane space-y-5 hidden">
           
-          <!-- AGREGAR PLATO NUEVO -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">➕ Agregar Plato o Trago Nuevo</h3>
-            <div class="grid sm:grid-cols-2 gap-3">
-              <input id="newName" type="text" placeholder="Nombre del plato (ej: Hamburguesa Doble Queso)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
-              <select id="newCat" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white"></select>
-              <input id="newPrice" type="number" step="500" placeholder="Precio CLP (ej: 8900)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
-              <input id="newBadge" type="text" placeholder="Etiqueta opcional (ej: 🔥 Más Pedido, Nuevo)" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white">
-              <textarea id="newDesc" placeholder="Descripción breve de ingredientes..." class="sm:col-span-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white" rows="2"></textarea>
-
-              <div class="sm:col-span-2 space-y-2">
-                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Foto del Plato</label>
-                <div class="flex items-center gap-3">
-                  <div id="newImgPreview" class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xl shrink-0 overflow-hidden">📷</div>
-                  <label class="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold text-center cursor-pointer transition-colors">
-                    📁 Subir foto desde el celular o computador
-                    <input id="newImgFile" type="file" accept="image/*" class="hidden" onchange="procesarImagenNueva(event)">
-                  </label>
-                </div>
-                <input id="newImg" type="text" placeholder="O pega una URL de foto web (opcional)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600">
+          <!-- BANNER SUPERIOR DE PORTADA Y MARCA (TIPO OLACLICK) -->
+          <div class="bg-white rounded-3xl border border-borderLight overflow-hidden shadow-soft">
+            <!-- PORTADA -->
+            <div class="relative h-32 sm:h-44 bg-gradient-to-r from-amber-700 via-orange-600 to-amber-900 flex items-end p-4">
+              <img id="menuCoverImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Portada" class="absolute inset-0 w-full h-full object-cover opacity-60">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+              
+              <!-- BOTÓN DOMINIO Y CAMBIAR PORTADA -->
+              <div class="relative z-10 w-full flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-bold border border-white/20 shadow-sm">
+                  🔗 Consigue tu carta online 0% comisión
+                </span>
+                <label class="p-2 rounded-xl bg-white/30 backdrop-blur-md hover:bg-white/40 text-white cursor-pointer transition-colors shadow-sm" title="Cambiar foto de portada">
+                  📷
+                  <input type="file" accept="image/*" class="hidden" onchange="cambiarFotoPortada(event)">
+                </label>
               </div>
             </div>
-            <button onclick="agregarPlato()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs tracking-wide shadow-md shadow-brand-600/20 cursor-pointer transition-all">
-              + Guardar Plato en la Carta
+
+            <!-- FILA DE LOGO, NOMBRE DE NEGOCIO Y CONTROLES -->
+            <div class="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="relative -mt-10 sm:-mt-12">
+                  <div id="menuLogoContainer" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-slate-900 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-3xl font-black text-white">
+                    🍔
+                  </div>
+                  <label class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs flex items-center justify-center cursor-pointer shadow-md transition-colors" title="Cambiar logo">
+                    📷
+                    <input type="file" accept="image/*" class="hidden" onchange="cambiarLogoRestaurante(event)">
+                  </label>
+                </div>
+
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Negocio</span>
+                  <h2 id="menuNegocioNombre" class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Fravioli, Street Food</h2>
+                  <span class="text-[11px] font-mono text-slate-400" id="menuSlugPreview">carta-online/zoco</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="switchTab('pedidos')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                  <span>🖩</span>
+                  <span>Menú PDV</span>
+                </button>
+                <div class="relative">
+                  <input id="inputBuscarPlatoMenu" type="text" placeholder="Buscar plato..." oninput="filtrarPlatosMenu(this.value)" class="bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600 focus:bg-white w-40 sm:w-48 transition-all">
+                  <span class="absolute left-2.5 top-2.5 text-xs text-slate-400">🔍</span>
+                </div>
+                <button onclick="abrirModalCrearProducto()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                  <span>＋</span>
+                  <span>Nuevo Producto</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- BARRA HORIZONTAL DE CATEGORÍAS (CARRUSEL TIPO OLACLICK) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-2 shadow-soft flex items-center gap-2">
+            <button onclick="switchTab('categorias')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-2 shrink-0 cursor-pointer shadow-sm">
+              <span>☰</span>
+              <span>Categorías</span>
+            </button>
+            <button onclick="scrollCategoriasBar(-150)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer">
+              ◀
+            </button>
+            <div id="carruselCategoriasMenu" class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
+              <!-- Inyección de pills de categorías -->
+            </div>
+            <button onclick="scrollCategoriasBar(150)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer">
+              ▶
             </button>
           </div>
 
-          <!-- LISTA DE PRODUCTOS ACTIVOS -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">🏷️ Carta en Vivo (Precios, Stock y Modificaciones)</h3>
-            <div id="productosList" class="divide-y divide-slate-100">
+          <!-- SECCIÓN DE DESTACADOS (EXACTO A IMAGEN 1) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">⭐</span>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-black text-slate-900">Categoría destacados: Destacados</span>
+                    <span class="text-slate-400 text-xs cursor-help" title="Los platos destacados aparecen en primer lugar en la carta digital móvil">ⓘ</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400">Impulsa tus platos estrella y más vendidos</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button onclick="copiarEnlaceCarta()" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
+                  <span>🔗</span>
+                  <span>Copiar enlace</span>
+                </button>
+                <span id="labelContadorDestacados" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-mono text-[11px] font-bold">
+                  0 / 10
+                </span>
+                <button onclick="abrirModalCrearProducto(null, true)" class="px-3 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                  <span>＋</span>
+                  <span>Destacado</span>
+                </button>
+                <button onclick="toggleVisibilidadDestacados()" id="btnEyeDestacados" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer" title="Visibilidad en carta">
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <!-- LISTA DE DESTACADOS -->
+            <div id="listaPlatosDestacados" class="space-y-2 pt-1">
               <!-- Inyección JS -->
             </div>
+          </div>
+
+          <!-- CONTENEDOR DE GRUPOS DE CATEGORÍAS Y PRODUCTOS (EXACTO A IMAGEN 1) -->
+          <div id="gruposCategoriasProductos" class="space-y-4">
+            <!-- Inyección dinámica de acordeones por categoría -->
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 4.5: MENÚ > PÁGINA DE BIENVENIDA (EXACTO A IMÁGENES 2 Y 3) -->
+        <!-- =================================================================== -->
+        <section id="tab-bienvenida" class="panel-pane space-y-5 hidden">
+          
+          <div class="grid lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- COLUMNA IZQUIERDA: EDITOR DE PÁGINA DE BIENVENIDA (LG:COL-SPAN-7) -->
+            <div class="lg:col-span-7 space-y-5">
+              
+              <!-- CABECERA DE LA PÁGINA DE BIENVENIDA -->
+              <div class="bg-white rounded-2xl border border-borderLight p-4 flex items-center justify-between shadow-soft">
+                <div class="space-y-0.5">
+                  <h2 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Página de bienvenida</h2>
+                  <p class="text-xs text-slate-400 font-medium">Personaliza el portal de entrada cuando tus comensales escanean el QR</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="switchTab('negocio')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                    <span>🎨</span>
+                    <span>Apariencia</span>
+                  </button>
+                  <button onclick="actualizarBienvenida()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
+                    <span>↻</span>
+                    <span>Actualizar</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- BLOQUE 1: SECCIÓN PRINCIPAL -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
+                <h3 class="font-black text-sm text-slate-900">Sección principal</h3>
+
+                <!-- LOGO, ESTADO CERRADO/ABIERTO Y SWITCH PEDIR AQUÍ -->
+                <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="flex items-center gap-3">
+                    <div id="bienvenidaLogoMini" class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-300 flex items-center justify-center text-xl text-white font-bold">
+                      🍔
+                    </div>
+                    <div>
+                      <span class="text-xs font-bold text-slate-800 block">Logo del local</span>
+                      <span class="text-[10px] text-slate-400">Visible en la cabecera móvil</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-4 text-xs">
+                    <!-- ESTADO DEL LOCAL -->
+                    <button onclick="toggleEstadoLocalBienvenida()" id="btnEstadoLocalBienvenida" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>Abierto</span>
+                      <span>✎</span>
+                    </button>
+
+                    <!-- SWITCH PEDIR AQUÍ -->
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500 font-bold text-[11px]">Pedir aquí</span>
+                      <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="switchPedirAqui" checked onchange="actualizarPreviewBienvenida()" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TÍTULO DE BIENVENIDA -->
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-xs">
+                    <label class="font-bold text-slate-600">Título</label>
+                    <span id="charCountTituloBienvenida" class="font-mono text-[10px] text-slate-400">13/60</span>
+                  </div>
+                  <input id="inputTituloBienvenida" type="text" value="😍 Bienvenid@s" maxlength="60" oninput="onInputTituloBienvenida(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600 focus:bg-white">
+                </div>
+
+                <!-- DESCRIPCIÓN ADICIONAL -->
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-xs">
+                    <label class="font-bold text-slate-600">Descripción adicional</label>
+                    <span id="charCountDescBienvenida" class="font-mono text-[10px] text-slate-400">0/150</span>
+                  </div>
+                  <textarea id="inputDescBienvenida" rows="2" maxlength="150" placeholder="Ej: Las mejores hamburguesas y tragos de la ciudad. Conéctate a nuestro WiFi y pide sin filas." oninput="onInputDescBienvenida(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white"></textarea>
+                </div>
+              </div>
+
+              <!-- BLOQUE 2: BOTONES DE ACCIÓN (LINKTREE BUILDER) -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <h3 id="labelBotonesCount" class="font-black text-sm text-slate-900">Botones (4)</h3>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <button onclick="agregarBotonBienvenida('whatsapp')" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                      <span>＋</span>
+                      <span>Whatsapp</span>
+                    </button>
+                    <button onclick="agregarBotonBienvenida('enlace')" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                      <span>＋</span>
+                      <span>Enlace externo</span>
+                    </button>
+                    <button onclick="agregarBotonBienvenida('pdf')" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                      <span>＋</span>
+                      <span>PDF</span>
+                    </button>
+                    <button onclick="agregarBotonBienvenida('wifi')" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                      <span>＋</span>
+                      <span>WiFi</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- LISTA DE BOTONES CONFIGURADOS -->
+                <div id="listaBotonesBienvenida" class="space-y-3 pt-1">
+                  <!-- Inyección dinámica -->
+                </div>
+              </div>
+
+              <!-- BLOQUE 3: GALERÍA DE FOTOS (EXACTO A IMAGEN 3) -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <h3 class="font-black text-sm text-slate-900">Galería</h3>
+                    <p class="text-[11px] text-slate-400">Muestra las especialidades visuales del local</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="switchGaleria" checked onchange="actualizarPreviewBienvenida()" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-slate-600 block">Título de la sección</label>
+                  <input id="inputTituloGaleria" type="text" value="Nuestros Platos Favoritos" oninput="actualizarPreviewBienvenida()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600 focus:bg-white">
+                </div>
+
+                <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-xs text-amber-800 space-y-1">
+                  <div class="flex items-center gap-1.5 font-bold">
+                    <span>ⓘ</span>
+                    <span>Sube al menos una foto para que esta sección sea visible en tu página de bienvenida.</span>
+                  </div>
+                  <p class="text-[11px] text-amber-700">Formatos aceptados: PNG, JPG. Máximo 10 MB. Tu web mostrará únicamente las fotos cargadas.</p>
+                </div>
+
+                <!-- SLOTS DE FOTOS -->
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 pt-1" id="galeriaSlots">
+                  <!-- Inyección de 5 slots -->
+                </div>
+              </div>
+
+              <!-- BLOQUE 4: PIE DE PÁGINA -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+                <h3 class="font-black text-sm text-slate-900">Pie de página ⓘ</h3>
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-xs font-medium text-slate-700">Botón "Descargar Aplicación" (PWA para comensales)</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="switchDescargarApp" checked onchange="actualizarPreviewBienvenida()" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <span class="text-xs font-medium text-slate-700">Mención de autoría y 0% comisión</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="switchMencion" checked onchange="actualizarPreviewBienvenida()" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- COLUMNA DERECHA: SIMULADOR DE SMARTPHONE EN VIVO (LG:COL-SPAN-5) -->
+            <div class="lg:col-span-5 sticky top-20 space-y-4">
+              
+              <div class="flex items-center justify-between px-2">
+                <span class="text-xs font-black text-slate-500 uppercase tracking-wider">📱 Vista Previa en Vivo</span>
+                <a href="bienvenida.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors">
+                  <span>👁️</span>
+                  <span>Ver en línea</span>
+                </a>
+              </div>
+
+              <!-- CHASSIS DEL SMARTPHONE -->
+              <div class="w-[300px] sm:w-[340px] mx-auto rounded-[44px] bg-slate-950 p-3.5 shadow-2xl border-4 border-slate-800 ring-1 ring-slate-700">
+                
+                <!-- PANTALLA DEL TELÉFONO -->
+                <div class="rounded-[34px] bg-[#141210] text-white overflow-hidden border border-slate-800/80 min-h-[580px] max-h-[640px] overflow-y-auto no-scrollbar flex flex-col justify-between p-4 space-y-4">
+                  
+                  <!-- NOTCH Y BARRA SUPERIOR -->
+                  <div class="space-y-3">
+                    <div class="w-24 h-4 bg-slate-900 mx-auto rounded-full"></div>
+                    
+                    <!-- HEADER DEL RESTAURANTE EN EL CELULAR -->
+                    <div class="flex items-center justify-between pt-1 border-b border-white/10 pb-3">
+                      <div class="flex items-center gap-2">
+                        <div id="simLogo" class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-lg">
+                          🍔
+                        </div>
+                        <span id="simNombreTop" class="font-bold text-xs text-white truncate max-w-[120px]">Fravioli</span>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <span id="simStatusPill" class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-950 text-red-400 border border-red-800/60 flex items-center gap-1">
+                          <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                          <span>Cerrado</span>
+                        </span>
+                        <a href="index.html" id="simBtnPedirTop" class="px-3 py-1 rounded-lg bg-orange-600 text-white font-black text-[10px] shadow-sm">
+                          Pedir
+                        </a>
+                      </div>
+                    </div>
+
+                    <!-- TÍTULO DE BIENVENIDA Y DESCRIPCIÓN -->
+                    <div class="text-center pt-2 space-y-1">
+                      <h3 id="simTitulo" class="text-xl font-black text-white tracking-tight">😍 Bienvenid@s</h3>
+                      <p id="simDesc" class="text-[11px] text-stone-300 leading-relaxed">Las mejores hamburguesas y tragos de la ciudad.</p>
+                    </div>
+
+                    <!-- MODALIDADES DE SERVICIO -->
+                    <div class="flex items-center justify-center gap-3 text-[10px] text-stone-400 font-semibold pt-1">
+                      <span class="flex items-center gap-1">🍽️ En el local</span>
+                      <span>·</span>
+                      <span class="flex items-center gap-1">🥡 Para llevar</span>
+                      <span>·</span>
+                      <span class="flex items-center gap-1">🛵 A domicilio</span>
+                    </div>
+
+                    <!-- BOTONES VERTICALES LINKTREE -->
+                    <div id="simBotonesContainer" class="space-y-2 pt-2">
+                      <!-- Inyección dinámica de botones interactivos -->
+                    </div>
+
+                    <!-- GALERÍA SIMULADOR -->
+                    <div id="simGaleriaBox" class="pt-2 space-y-2">
+                      <h4 id="simGaleriaTitulo" class="text-xs font-bold text-white text-center">Nuestros Platos Favoritos</h4>
+                      <div class="grid grid-cols-2 gap-2" id="simGaleriaGrid">
+                        <!-- Miniaturas de fotos -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- REDES SOCIALES Y FOOTER -->
+                  <div class="pt-4 border-t border-white/10 text-center space-y-3">
+                    <div class="flex items-center justify-center gap-4 text-base text-stone-300">
+                      <a href="#" class="hover:text-emerald-400">💬</a>
+                      <a href="#" class="hover:text-pink-400">📸</a>
+                      <a href="#" class="hover:text-blue-400">📘</a>
+                    </div>
+                    <div class="text-[9px] text-stone-400 space-y-0.5">
+                      <p id="simFooterNombre">Menú Digital de Fravioli, Street Food</p>
+                      <p class="text-stone-400">Tipos de servicio y horarios</p>
+                      <p id="simMencionText" class="text-stone-400 pt-1">Software gastronómico por UNIVERSO693</p>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
         </section>
@@ -1740,6 +2093,84 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: CREAR / EDITAR PRODUCTO (TIPO OLACLICK) -->
+  <!-- ========================================================================= -->
+  <div id="modalCrearProducto" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl">🍔</span>
+          <div>
+            <h3 id="modalProductoTitle" class="font-black text-sm text-slate-900">Nuevo Producto en la Carta</h3>
+            <p class="text-[11px] text-slate-400">Configura precio, fotos, categoría y disponibilidad</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalCrearProducto()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <input type="hidden" id="editProductoId">
+
+      <div class="space-y-3.5">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Nombre del Plato *</label>
+            <input id="inputProdNombre" type="text" placeholder="Ej: Super Burger Doble Queso" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Categoría *</label>
+            <select id="selectProdCategoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600"></select>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Precio ($ CLP) *</label>
+            <input id="inputProdPrecio" type="number" step="500" placeholder="Ej: 8900" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-blue-600">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Etiqueta opcional</label>
+            <input id="inputProdBadge" type="text" placeholder="Ej: 🔥 Más Pedido, 2x1, Nuevo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Descripción / Ingredientes</label>
+          <textarea id="inputProdDesc" rows="2" placeholder="Ej: Doble carne angus smash, queso cheddar americano, tocino crujiente y salsa especial..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600"></textarea>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Foto del Plato</label>
+          <div class="flex items-center gap-3">
+            <div id="modalProdImgPreview" class="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xl shrink-0 overflow-hidden font-bold text-slate-400">
+              📷
+            </div>
+            <label class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold text-center cursor-pointer transition-colors">
+              📁 Subir imagen desde el dispositivo
+              <input type="file" accept="image/*" class="hidden" onchange="procesarFotoProductoModal(event)">
+            </label>
+          </div>
+          <input id="inputProdImgUrl" type="text" placeholder="O pega un enlace web de la foto (opcional)" oninput="actualizarPreviewFotoModal(this.value)" class="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="checkProdDestacado" class="rounded text-blue-600">
+            <span class="text-xs font-bold text-slate-700">⭐ Destacar en la cabecera de la carta</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="checkProdVisible" checked class="rounded text-blue-600">
+            <span class="text-xs font-bold text-slate-700">👁️ Visible en el menú</span>
+          </label>
+        </div>
+
+        <button onclick="guardarProductoModal()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-blue-600/20 cursor-pointer transition-all">
+          ✓ Guardar Plato en la Carta
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
   <div id="printArea" class="hidden"></div>
 
@@ -2047,7 +2478,8 @@
       cocina: { title: 'Pantalla de Cocina (KDS)', sub: 'Comandas en preparación, timers y barra' },
       ventas: { title: 'Ventas & Caja Diaria', sub: 'Métricas de facturación, pedidos y ticket promedio' },
       finanzas: { title: 'Módulo Financiero', sub: 'Control de egresos, ingresos, cuentas bancarias y métodos de pago' },
-      productos: { title: 'Menú & Platos', sub: 'Precios, fotos, stock y disponibilidad' },
+      productos: { title: 'Página de Productos & Carta', sub: 'Estructuración de categorías, precios, fotos y stock' },
+      bienvenida: { title: 'Página de Bienvenida', sub: 'Editor de landing page móvil, enlaces rápidos y WiFi' },
       categorias: { title: 'Categorías', sub: 'Organización del catálogo gastronómico' },
       clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
       descuentos: { title: 'Descuentos & Cupones', sub: 'Promociones para la carta online' },
@@ -2055,12 +2487,26 @@
     };
 
     function switchTab(tab, subtab) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        if (tab === 'bienvenida' || tab === 'productos') {
+          b.classList.toggle('active', b.dataset.tab === 'productos');
+        } else {
+          b.classList.toggle('active', b.dataset.tab === tab);
+        }
+      });
       document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
       
       const meta = TAB_TITLES[tab] || { title: 'Panel Zoco', sub: '' };
       document.getElementById('topBarTitle').textContent = meta.title;
       document.getElementById('topBarSubtitle').textContent = meta.sub;
+
+      // Actualizar selección en submenú de menú
+      document.querySelectorAll('.menu-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === tab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
 
       toggleSidebar(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2075,6 +2521,22 @@
         if (subtab) setFinanzasSubtab(subtab);
         else renderFinanzas();
       }
+      if (tab === 'productos') {
+        renderProductosList();
+      }
+      if (tab === 'bienvenida') {
+        renderBienvenidaEditor();
+      }
+    }
+
+    function toggleMenuSubmenu() {
+      const sub = document.getElementById('menuSubmenu');
+      const arrow = document.getElementById('menuArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('productos');
     }
 
     // --- LOGIN ---
@@ -3783,51 +4245,690 @@
       });
     }
 
+    // =========================================================================
+    // SECCIÓN 4: MENÚ > PÁGINA DE PRODUCTOS Y BIENVENIDA (TIPO OLACLICK)
+    // =========================================================================
+    let menuFiltroQuery = '';
+    let categoriaActivaScroll = null;
+    let visibilidadDestacadosActiva = true;
+
+    // ESTADO PÁGINA DE BIENVENIDA (LINKTREE + SIMULADOR MÓVIL REACTIVO)
+    let bienvenidaConfig = {
+      titulo: '😍 Bienvenid@s',
+      descripcion: 'Las mejores hamburguesas y tragos de la ciudad. Conéctate a nuestro WiFi y pide sin filas.',
+      pedirAqui: true,
+      estadoAbierto: true,
+      botones: [
+        { id: 'btn-1', tipo: 'menu', nombre: 'Menú', enlace: 'index.html', activo: true },
+        { id: 'btn-2', tipo: 'whatsapp', nombre: 'Whatsapp', pais: '🇨🇱', numero: '+56 9 3536 2199', activo: true },
+        { id: 'btn-3', tipo: 'wifi', nombre: 'Código WiFi', red: 'Fravioli_Clientes', clave: 'burgers2026', activo: true },
+        { id: 'btn-4', tipo: 'enlace', nombre: 'Volver al inicio', enlace: '#', activo: true }
+      ],
+      galeriaActiva: true,
+      galeriaTitulo: 'Nuestros Platos Favoritos',
+      galeriaFotos: [
+        'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80',
+        'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=300&q=80',
+        'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=300&q=80',
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=300&q=80'
+      ],
+      descargarApp: true,
+      mencion: true
+    };
+
     function renderProductosList() {
-      const box = document.getElementById('productosList');
-      if (productos.length === 0) {
-        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Aún no hay platos cargados.</p>';
+      // 1. Sincronizar Portada, Avatar y Nombre del Negocio
+      const bName = document.getElementById('menuNegocioNombre');
+      const bSlug = document.getElementById('menuSlugPreview');
+      if (bName) bName.textContent = CFG.nombre || 'Fravioli, Street Food';
+      if (bSlug) bSlug.textContent = `carta-online/${CFG.slug || 'fravioli'}`;
+
+      // Badge total platos en el sidebar
+      const badgeCount = document.getElementById('badgePlatosCount');
+      if (badgeCount) badgeCount.textContent = productos.length;
+
+      // 2. Renderizar Carrusel Horizontal de Categorías (Exacto a Imagen 1)
+      const carrusel = document.getElementById('carruselCategoriasMenu');
+      if (carrusel) {
+        carrusel.innerHTML = `
+          <button onclick="scrollToCategorySection('destacados')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${categoriaActivaScroll === 'destacados' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+            ⭐ Destacados
+          </button>
+        ` + categorias.map(c => `
+          <button onclick="scrollToCategorySection('${c.id}')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${categoriaActivaScroll === c.id ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+            ${c.icono || ''} ${c.nombre}
+          </button>
+        `).join('');
+      }
+
+      // 3. Renderizar Platos Destacados (Exacto a Imagen 1)
+      const destacados = productos.filter(p => p.destacado);
+      const labelDest = document.getElementById('labelContadorDestacados');
+      const listDest = document.getElementById('listaPlatosDestacados');
+      if (labelDest) labelDest.textContent = `${destacados.length} / 10`;
+
+      if (listDest) {
+        if (!visibilidadDestacadosActiva) {
+          listDest.innerHTML = '<p class="text-xs text-slate-400 py-2 italic">Sección de destacados pausada (oculta para comensales).</p>';
+        } else if (destacados.length === 0) {
+          listDest.innerHTML = `
+            <div class="py-3 px-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
+              Aún no tienes platos en Destacados. Haz clic en <strong>+ Destacado</strong> para fijar tus productos estrella arriba de la carta.
+            </div>
+          `;
+        } else {
+          listDest.innerHTML = destacados.map(p => `
+            <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-3">
+                <span class="text-slate-300 font-mono text-sm cursor-grab select-none">⠿</span>
+                <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center font-bold shrink-0">
+                  ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : '🍔'}
+                </div>
+                <div>
+                  <span class="font-bold text-slate-900">${p.name}</span>
+                  <span class="text-[10px] text-amber-600 font-bold block">⭐ Destacado en portada</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-mono font-black text-slate-800">${fmt(p.price || 0)}</span>
+                <button onclick="toggleDestacado('${p.docId}', false)" class="text-xs text-slate-400 hover:text-red-500 cursor-pointer" title="Quitar de destacados">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // 4. Renderizar Secciones de Categorías con sus Productos Agrupados (Exacto a Imagen 1)
+      const containerGrupos = document.getElementById('gruposCategoriasProductos');
+      if (!containerGrupos) return;
+
+      if (categorias.length === 0) {
+        containerGrupos.innerHTML = `
+          <div class="p-8 text-center bg-white rounded-3xl border border-borderLight shadow-soft space-y-3">
+            <span class="text-3xl block">📋</span>
+            <h4 class="font-bold text-sm text-slate-800">No hay categorías creadas aún</h4>
+            <p class="text-xs text-slate-400">Crea tu primera categoría para organizar tu carta gastronómica.</p>
+            <button onclick="switchTab('categorias')" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-sm">
+              + Crear Primera Categoría
+            </button>
+          </div>
+        `;
         return;
       }
-      box.innerHTML = productos.map(p => {
-        const stockBajo = p.controlStock && (p.stock || 0) <= (p.stockMinimo || 3);
-        const sinStock = p.controlStock && (p.stock || 0) <= 0;
-        const disponibilidadHTML = p.controlStock
-          ? `<div class="flex items-center gap-1">
-               <input type="number" value="${p.stock || 0}" min="0" onchange="actualizarStock('${p.docId}', this.value)" class="w-16 bg-slate-50 border ${sinStock ? 'border-red-500 text-red-600' : stockBajo ? 'border-amber-500 text-amber-600' : 'border-slate-200 text-slate-900'} rounded-lg px-2 py-1.5 font-mono font-bold text-xs">
-               <span class="text-[10px] text-slate-400">stock</span>
-             </div>`
-          : `<button onclick="toggleDisponible('${p.docId}', ${p.disponible === false})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-colors ${p.disponible === false ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}">
-               ${p.disponible === false ? '🔴 Agotado' : '🟢 Disponible'}
-             </button>`;
+
+      // Filtrar platos por query de búsqueda
+      const query = menuFiltroQuery.toLowerCase().trim();
+      const platosFiltrados = query ? productos.filter(p => (p.name || '').toLowerCase().includes(query) || (p.desc || '').toLowerCase().includes(query)) : productos;
+
+      containerGrupos.innerHTML = categorias.map(c => {
+        const prodsDeCat = platosFiltrados.filter(p => p.cat === c.id);
+
+        const filasProductos = prodsDeCat.map(p => {
+          const isOculto = p.disponible === false;
+          return `
+            <div class="p-3 bg-white hover:bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-3 text-xs transition-colors">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="text-slate-300 font-mono text-sm cursor-grab select-none">⠿</span>
+                <div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center font-bold shrink-0">
+                  ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : '🍔'}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 truncate ${isOculto ? 'opacity-40 line-through' : ''}">${p.name}</span>
+                    ${p.badge ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">${p.badge}</span>` : ''}
+                  </div>
+                  <p class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">${p.desc || 'Sin descripción'}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 shrink-0">
+                <span class="font-mono font-black text-slate-900 text-sm ${isOculto ? 'opacity-40' : ''}">${fmt(p.price || 0)}</span>
+                
+                <!-- BOTÓN OJO VISIBILIDAD (TIPO OLACLICK) -->
+                <button onclick="toggleDisponible('${p.docId}', ${isOculto})" class="p-1.5 rounded-lg transition-colors cursor-pointer ${isOculto ? 'text-slate-300 hover:text-slate-600' : 'text-blue-600 hover:text-blue-700 bg-blue-50/50'}" title="${isOculto ? 'Plato pausado/oculto (clic para activar)' : 'Plato visible en el menú'}">
+                  ${isOculto ? '🙈' : '👁️'}
+                </button>
+
+                <!-- MENÚ DE TRES PUNTOS -->
+                <button onclick="editarPlatoModal('${p.docId}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer" title="Editar producto">
+                  ⋮
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
 
         return `
-          <div class="py-3 flex flex-wrap items-center gap-3 text-xs">
-            <label class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-lg shrink-0 overflow-hidden cursor-pointer relative" title="Cambiar foto">
-              ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : '📷'}
-              <input type="file" accept="image/*" class="hidden" onchange="procesarImagenExistente(event, '${p.docId}')">
-            </label>
-            <div class="flex-1 min-w-[150px]">
-              <div class="text-slate-900 font-bold">${p.name} ${sinStock ? '<span class="text-red-500 text-[10px]">· sin stock</span>' : stockBajo ? '<span class="text-amber-500 text-[10px]">· stock bajo</span>' : ''}</div>
-              <div class="text-[10px] text-slate-400">${(categorias.find(c => c.id === p.cat) || {}).nombre || p.cat || 'Sin categoría'}</div>
+          <div id="cat-section-${c.id}" class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+            <!-- CABECERA DE CATEGORÍA (EXACTO A IMAGEN 1) -->
+            <div class="p-4 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-slate-400 font-mono text-sm cursor-grab select-none">⠿</span>
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Nombre de categoría</span>
+                  <input type="text" value="${c.nombre}" onchange="renombrarCategoria('${c.docId}', this.value)" class="text-sm font-black text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:outline-none transition-all">
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span class="px-2.5 py-1 rounded-full bg-slate-200/70 text-slate-700 font-mono text-xs font-bold" title="Cantidad de platos en esta categoría">
+                  ${prodsDeCat.length}
+                </span>
+                <button onclick="abrirModalCrearProducto('${c.id}')" class="px-3 py-1.5 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer">
+                  <span>＋</span>
+                  <span>Producto</span>
+                </button>
+                <button onclick="eliminarCategoria('${c.docId}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer" title="Eliminar categoría">
+                  ⋮
+                </button>
+              </div>
             </div>
-            <input type="number" value="${p.price}" step="500" onchange="actualizarPrecio('${p.docId}', this.value)" class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-brand-600 font-mono font-black text-xs">
-            <select onchange="actualizarCategoria('${p.docId}', this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700">
-              ${categorias.map(c => `<option value="${c.id}" ${c.id === p.cat ? 'selected' : ''}>${c.nombre}</option>`).join('')}
-            </select>
-            ${disponibilidadHTML}
-            <button onclick="toggleControlStock('${p.docId}', ${!p.controlStock})" class="text-[10px] text-slate-400 hover:text-slate-700 px-1 cursor-pointer" title="Alternar control numérico de stock">
-              ${p.controlStock ? '🔢→🔘' : '🔘→🔢'}
-            </button>
-            <button onclick="eliminarPlato('${p.docId}')" class="text-slate-400 hover:text-red-500 text-[11px] font-bold px-1 cursor-pointer">Eliminar</button>
+
+            <!-- CONTENIDO DE PRODUCTOS -->
+            <div class="divide-y divide-slate-100">
+              ${filasProductos || `
+                <div class="p-6 text-center text-xs text-slate-400">
+                  Aún no hay productos en <strong>${c.nombre}</strong>. Toca <strong>+ Producto</strong> para agregar el primero.
+                </div>
+              `}
+            </div>
           </div>
         `;
       }).join('');
     }
 
-    function actualizarStock(docId, value) {
-      const stock = Math.max(0, Number(value) || 0);
-      window.platosRef().doc(docId).update({ stock });
+    function scrollCategoriasBar(offset) {
+      const el = document.getElementById('carruselCategoriasMenu');
+      if (el) el.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+
+    function scrollToCategorySection(catId) {
+      categoriaActivaScroll = catId;
+      renderProductosList();
+      if (catId === 'destacados') {
+        const topEl = document.getElementById('listaPlatosDestacados');
+        if (topEl) topEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const target = document.getElementById('cat-section-' + catId);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function filtrarPlatosMenu(val) {
+      menuFiltroQuery = val || '';
+      renderProductosList();
+    }
+
+    function toggleVisibilidadDestacados() {
+      visibilidadDestacadosActiva = !visibilidadDestacadosActiva;
+      renderProductosList();
+    }
+
+    function toggleDestacado(docId, estado) {
+      if (!docId) return;
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({ destacado: estado });
+      } else {
+        const p = productos.find(x => x.docId === docId);
+        if (p) {
+          p.destacado = estado;
+          renderProductosList();
+        }
+      }
+    }
+
+    function renombrarCategoria(docId, nuevoNombre) {
+      if (!nuevoNombre.trim()) return;
+      if (window.categoriasRef) {
+        window.categoriasRef().doc(docId).update({ nombre: nuevoNombre.trim() });
+      }
+    }
+
+    function cambiarFotoPortada(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        const img = document.getElementById('menuCoverImg');
+        if (img) img.src = dataUrl;
+        if (window.restRef) window.restRef().update({ portadaUrl: dataUrl });
+      });
+    }
+
+    function cambiarLogoRestaurante(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        const container = document.getElementById('menuLogoContainer');
+        const mini = document.getElementById('bienvenidaLogoMini');
+        const sim = document.getElementById('simLogo');
+        const html = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+        if (container) container.innerHTML = html;
+        if (mini) mini.innerHTML = html;
+        if (sim) sim.innerHTML = html;
+        if (window.restRef) window.restRef().update({ logoUrl: dataUrl });
+      });
+    }
+
+    function copiarEnlaceCarta() {
+      const url = window.location.origin + window.location.pathname.replace('panel.html', 'index.html');
+      navigator.clipboard.writeText(url).then(() => {
+        alert('📋 ¡Enlace de la carta copiado con éxito!\n' + url);
+      });
+    }
+
+    // MODAL CREAR / EDITAR PRODUCTO
+    function abrirModalCrearProducto(catId, esDestacado) {
+      document.getElementById('editProductoId').value = '';
+      document.getElementById('modalProductoTitle').textContent = 'Nuevo Producto en la Carta';
+      document.getElementById('inputProdNombre').value = '';
+      document.getElementById('inputProdPrecio').value = '';
+      document.getElementById('inputProdBadge').value = '';
+      document.getElementById('inputProdDesc').value = '';
+      document.getElementById('inputProdImgUrl').value = '';
+      document.getElementById('modalProdImgPreview').innerHTML = '📷';
+      document.getElementById('checkProdDestacado').checked = !!esDestacado;
+      document.getElementById('checkProdVisible').checked = true;
+      imagenNuevaDataUrl = null;
+
+      // Llenar categorías
+      const selCat = document.getElementById('selectProdCategoria');
+      selCat.innerHTML = categorias.map(c => `
+        <option value="${c.id}" ${c.id === catId ? 'selected' : ''}>${c.icono || ''} ${c.nombre}</option>
+      `).join('');
+
+      document.getElementById('modalCrearProducto').classList.remove('hidden');
+    }
+
+    function cerrarModalCrearProducto() {
+      document.getElementById('modalCrearProducto').classList.add('hidden');
+    }
+
+    function procesarFotoProductoModal(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        imagenNuevaDataUrl = dataUrl;
+        document.getElementById('modalProdImgPreview').innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+      });
+    }
+
+    function actualizarPreviewFotoModal(url) {
+      if (url.trim()) {
+        document.getElementById('modalProdImgPreview').innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='📷'">`;
+      }
+    }
+
+    function guardarProductoModal() {
+      const editId = document.getElementById('editProductoId').value;
+      const name = document.getElementById('inputProdNombre').value.trim();
+      const cat = document.getElementById('selectProdCategoria').value;
+      const price = Number(document.getElementById('inputProdPrecio').value) || 0;
+      const badge = document.getElementById('inputProdBadge').value.trim();
+      const desc = document.getElementById('inputProdDesc').value.trim();
+      const img = imagenNuevaDataUrl || document.getElementById('inputProdImgUrl').value.trim() || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80';
+      const destacado = document.getElementById('checkProdDestacado').checked;
+      const disponible = document.getElementById('checkProdVisible').checked;
+
+      if (!name || !cat) {
+        alert('Por favor ingresa al menos el nombre y la categoría del plato.');
+        return;
+      }
+
+      if (editId) {
+        // Modo Edición
+        window.platosRef().doc(editId).update({
+          name, cat, price, badge, desc, img, destacado, disponible
+        });
+      } else {
+        // Modo Creación
+        window.platosRef().doc('plato-' + Date.now()).set({
+          id: Date.now(),
+          name, cat, price, badge, desc, img, destacado, disponible,
+          orden: productos.length
+        });
+      }
+
+      cerrarModalCrearProducto();
+      renderProductosList();
+    }
+
+    function editarPlatoModal(docId) {
+      const p = productos.find(x => x.docId === docId);
+      if (!p) return;
+
+      document.getElementById('editProductoId').value = docId;
+      document.getElementById('modalProductoTitle').textContent = `Editar: ${p.name}`;
+      document.getElementById('inputProdNombre').value = p.name || '';
+      document.getElementById('inputProdPrecio').value = p.price || '';
+      document.getElementById('inputProdBadge').value = p.badge || '';
+      document.getElementById('inputProdDesc').value = p.desc || '';
+      document.getElementById('inputProdImgUrl').value = (p.img && !p.img.startsWith('data:')) ? p.img : '';
+      document.getElementById('checkProdDestacado').checked = !!p.destacado;
+      document.getElementById('checkProdVisible').checked = p.disponible !== false;
+
+      const preview = document.getElementById('modalProdImgPreview');
+      if (p.img) {
+        preview.innerHTML = `<img src="${p.img}" class="w-full h-full object-cover">`;
+      } else {
+        preview.innerHTML = '📷';
+      }
+
+      const selCat = document.getElementById('selectProdCategoria');
+      selCat.innerHTML = categorias.map(c => `
+        <option value="${c.id}" ${c.id === p.cat ? 'selected' : ''}>${c.icono || ''} ${c.nombre}</option>
+      `).join('');
+
+      document.getElementById('modalCrearProducto').classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // LÓGICA DE PÁGINA DE BIENVENIDA (LINKTREE + PHONE SIMULATOR EN VIVO)
+    // =========================================================================
+    function renderBienvenidaEditor() {
+      // 1. Sincronizar inputs básicos
+      const inTit = document.getElementById('inputTituloBienvenida');
+      const inDesc = document.getElementById('inputDescBienvenida');
+      const swPedir = document.getElementById('switchPedirAqui');
+      const swGal = document.getElementById('switchGaleria');
+      const inTitGal = document.getElementById('inputTituloGaleria');
+      const swApp = document.getElementById('switchDescargarApp');
+      const swMenc = document.getElementById('switchMencion');
+
+      if (inTit) inTit.value = bienvenidaConfig.titulo;
+      if (inDesc) inDesc.value = bienvenidaConfig.descripcion;
+      if (swPedir) swPedir.checked = bienvenidaConfig.pedirAqui;
+      if (swGal) swGal.checked = bienvenidaConfig.galeriaActiva;
+      if (inTitGal) inTitGal.value = bienvenidaConfig.galeriaTitulo;
+      if (swApp) swApp.checked = bienvenidaConfig.descargarApp;
+      if (swMenc) swMenc.checked = bienvenidaConfig.mencion;
+
+      onInputTituloBienvenida(bienvenidaConfig.titulo);
+      onInputDescBienvenida(bienvenidaConfig.descripcion);
+
+      // Estado local
+      const btnEst = document.getElementById('btnEstadoLocalBienvenida');
+      if (btnEst) {
+        btnEst.innerHTML = bienvenidaConfig.estadoAbierto
+          ? `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Abierto</span><span>✎</span>`
+          : `<span class="w-2 h-2 rounded-full bg-red-500"></span><span>Cerrado</span><span>✎</span>`;
+        btnEst.className = bienvenidaConfig.estadoAbierto
+          ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer'
+          : 'flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold bg-red-50 text-red-700 border border-red-200 cursor-pointer';
+      }
+
+      // 2. Renderizar Lista de Botones (Exacto a Imagen 2)
+      const listaBtn = document.getElementById('listaBotonesBienvenida');
+      const lblCount = document.getElementById('labelBotonesCount');
+      if (lblCount) lblCount.textContent = `Botones (${bienvenidaConfig.botones.length})`;
+
+      if (listaBtn) {
+        listaBtn.innerHTML = bienvenidaConfig.botones.map((b, idx) => {
+          let camposEspecificos = '';
+
+          if (b.tipo === 'whatsapp') {
+            camposEspecificos = `
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div>
+                  <label class="text-[10px] text-slate-400 block font-bold">País</label>
+                  <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center">🇨🇱 Chile</div>
+                </div>
+                <div class="col-span-2">
+                  <label class="text-[10px] text-slate-400 block font-bold">Número de WhatsApp</label>
+                  <input type="text" value="${b.numero || ''}" oninput="actualizarDatoBoton('${b.id}', 'numero', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-600">
+                </div>
+              </div>
+            `;
+          } else if (b.tipo === 'wifi') {
+            camposEspecificos = `
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <div>
+                  <label class="text-[10px] text-slate-400 block font-bold">Nombre de red WiFi</label>
+                  <input type="text" value="${b.red || ''}" oninput="actualizarDatoBoton('${b.id}', 'red', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-600">
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400 block font-bold">Contraseña de acceso WiFi</label>
+                  <input type="text" value="${b.clave || ''}" oninput="actualizarDatoBoton('${b.id}', 'clave', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-600">
+                </div>
+              </div>
+            `;
+          } else {
+            camposEspecificos = `
+              <div class="pt-1">
+                <label class="text-[10px] text-slate-400 block font-bold">Enlace a donde lleva</label>
+                <input type="text" value="${b.enlace || ''}" oninput="actualizarDatoBoton('${b.id}', 'enlace', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600">
+              </div>
+            `;
+          }
+
+          return `
+            <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 transition-all space-y-2 shadow-xs">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                  <span class="text-slate-300 font-mono text-sm cursor-grab select-none">⠿</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span class="text-[10px] font-bold text-slate-400 uppercase">Nombre del botón</span>
+                      <span class="text-[10px] text-slate-400 font-mono">${(b.nombre || '').length}/60</span>
+                    </div>
+                    <input type="text" value="${b.nombre || ''}" oninput="actualizarDatoBoton('${b.id}', 'nombre', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-4">
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" ${b.activo ? 'checked' : ''} onchange="toggleBotonBienvenida('${b.id}', this.checked)" class="sr-only peer">
+                    <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                  <button onclick="eliminarBotonBienvenida('${b.id}')" class="p-1 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 cursor-pointer" title="Eliminar botón">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+
+              ${camposEspecificos}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Renderizar Slots de Fotos de Galería (Exacto a Imagen 3)
+      const gSlots = document.getElementById('galeriaSlots');
+      if (gSlots) {
+        gSlots.innerHTML = [0, 1, 2, 3, 4].map(idx => {
+          const foto = (bienvenidaConfig.galeriaFotos || [])[idx];
+          return `
+            <div class="aspect-square rounded-2xl bg-slate-100 border-2 border-dashed border-slate-200 overflow-hidden relative group flex flex-col items-center justify-center text-center p-2">
+              ${foto ? `
+                <img src="${foto}" class="w-full h-full object-cover">
+                <button onclick="eliminarFotoGaleria(${idx})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-slate-900/80 text-white text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  ✕
+                </button>
+              ` : `
+                <label class="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-slate-200/50 transition-colors">
+                  <span class="text-base text-slate-400 mb-1">📤</span>
+                  <span class="text-[10px] font-bold text-slate-500">Subir foto</span>
+                  <input type="file" accept="image/*" class="hidden" onchange="subirFotoGaleria(event, ${idx})">
+                </label>
+              `}
+            </div>
+          `;
+        }).join('');
+      }
+
+      actualizarPreviewBienvenida();
+    }
+
+    function onInputTituloBienvenida(val) {
+      bienvenidaConfig.titulo = val || '';
+      const lbl = document.getElementById('charCountTituloBienvenida');
+      if (lbl) lbl.textContent = `${val.length}/60`;
+      actualizarPreviewBienvenida();
+    }
+
+    function onInputDescBienvenida(val) {
+      bienvenidaConfig.descripcion = val || '';
+      const lbl = document.getElementById('charCountDescBienvenida');
+      if (lbl) lbl.textContent = `${val.length}/150`;
+      actualizarPreviewBienvenida();
+    }
+
+    function toggleEstadoLocalBienvenida() {
+      bienvenidaConfig.estadoAbierto = !bienvenidaConfig.estadoAbierto;
+      renderBienvenidaEditor();
+    }
+
+    function agregarBotonBienvenida(tipo) {
+      let nuevo = { id: 'btn-' + Date.now(), tipo, activo: true };
+      if (tipo === 'whatsapp') {
+        nuevo.nombre = 'Whatsapp';
+        nuevo.pais = '🇨🇱';
+        nuevo.numero = '+56 9 3536 2199';
+      } else if (tipo === 'wifi') {
+        nuevo.nombre = 'Código WiFi';
+        nuevo.red = 'WiFi_Local';
+        nuevo.clave = 'clave123';
+      } else if (tipo === 'pdf') {
+        nuevo.nombre = 'Carta en PDF';
+        nuevo.enlace = 'https://ejemplo.com/carta.pdf';
+      } else {
+        nuevo.nombre = 'Enlace Web';
+        nuevo.enlace = 'https://instagram.com';
+      }
+      bienvenidaConfig.botones.push(nuevo);
+      renderBienvenidaEditor();
+    }
+
+    function eliminarBotonBienvenida(id) {
+      bienvenidaConfig.botones = bienvenidaConfig.botones.filter(b => b.id !== id);
+      renderBienvenidaEditor();
+    }
+
+    function toggleBotonBienvenida(id, activo) {
+      const b = bienvenidaConfig.botones.find(x => x.id === id);
+      if (b) b.activo = activo;
+      actualizarPreviewBienvenida();
+    }
+
+    function actualizarDatoBoton(id, campo, valor) {
+      const b = bienvenidaConfig.botones.find(x => x.id === id);
+      if (b) {
+        b[campo] = valor;
+        actualizarPreviewBienvenida();
+      }
+    }
+
+    function subirFotoGaleria(event, index) {
+      const file = event.target.files[0];
+      if (!file) return;
+      redimensionarImagen(file, (dataUrl) => {
+        if (!bienvenidaConfig.galeriaFotos) bienvenidaConfig.galeriaFotos = [];
+        bienvenidaConfig.galeriaFotos[index] = dataUrl;
+        renderBienvenidaEditor();
+      });
+    }
+
+    function eliminarFotoGaleria(index) {
+      if (bienvenidaConfig.galeriaFotos && bienvenidaConfig.galeriaFotos[index]) {
+        bienvenidaConfig.galeriaFotos.splice(index, 1);
+        renderBienvenidaEditor();
+      }
+    }
+
+    // ACTUALIZADOR REACTIVO DEL SMARTPHONE SIMULATOR EN VIVO
+    function actualizarPreviewBienvenida() {
+      // 1. Cabecera móvil
+      const sNom = document.getElementById('simNombreTop');
+      const sFootNom = document.getElementById('simFooterNombre');
+      if (sNom) sNom.textContent = CFG.nombre || 'Fravioli';
+      if (sFootNom) sFootNom.textContent = `Menú Digital de ${CFG.nombre || 'Fravioli, Street Food'}`;
+
+      const sStatus = document.getElementById('simStatusPill');
+      if (sStatus) {
+        sStatus.innerHTML = bienvenidaConfig.estadoAbierto
+          ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>Abierto</span>`
+          : `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span><span>Cerrado</span>`;
+        sStatus.className = bienvenidaConfig.estadoAbierto
+          ? 'px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60 flex items-center gap-1'
+          : 'px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-950 text-red-400 border border-red-800/60 flex items-center gap-1';
+      }
+
+      const swPedir = document.getElementById('switchPedirAqui');
+      const btnPedir = document.getElementById('simBtnPedirTop');
+      if (btnPedir && swPedir) {
+        btnPedir.classList.toggle('hidden', !swPedir.checked);
+      }
+
+      // 2. Textos principales
+      const sTit = document.getElementById('simTitulo');
+      const sDesc = document.getElementById('simDesc');
+      if (sTit) sTit.textContent = bienvenidaConfig.titulo || 'Bienvenid@s';
+      if (sDesc) sDesc.textContent = bienvenidaConfig.descripcion || '';
+
+      // 3. Botones verticales
+      const contBotones = document.getElementById('simBotonesContainer');
+      if (contBotones) {
+        const activos = bienvenidaConfig.botones.filter(b => b.activo);
+        contBotones.innerHTML = activos.map(b => {
+          let extra = '';
+          if (b.tipo === 'wifi') extra = `📡 (${b.red || 'WiFi'})`;
+          return `
+            <a href="${b.enlace || '#'}" class="block w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold text-xs text-center shadow-md transition-transform active:scale-95">
+              ${b.nombre} ${extra}
+            </a>
+          `;
+        }).join('');
+      }
+
+      // 4. Galería en teléfono
+      const swGal = document.getElementById('switchGaleria');
+      const simGalBox = document.getElementById('simGaleriaBox');
+      const simGalTit = document.getElementById('simGaleriaTitulo');
+      const simGalGrid = document.getElementById('simGaleriaGrid');
+      const inTitGal = document.getElementById('inputTituloGaleria');
+
+      if (simGalBox && swGal) {
+        simGalBox.classList.toggle('hidden', !swGal.checked);
+        if (simGalTit && inTitGal) simGalTit.textContent = inTitGal.value || 'Nuestros Platos Favoritos';
+
+        if (simGalGrid) {
+          const fotosValidas = (bienvenidaConfig.galeriaFotos || []).filter(Boolean);
+          if (fotosValidas.length === 0) {
+            simGalGrid.innerHTML = '<p class="col-span-2 text-[10px] text-stone-500 text-center py-2">Sin fotos cargadas todavía.</p>';
+          } else {
+            simGalGrid.innerHTML = fotosValidas.map(f => `
+              <div class="aspect-square rounded-xl overflow-hidden border border-white/10 shadow-sm">
+                <img src="${f}" class="w-full h-full object-cover">
+              </div>
+            `).join('');
+          }
+        }
+      }
+
+      // 5. Mención footer
+      const swMenc = document.getElementById('switchMencion');
+      const simMenc = document.getElementById('simMencionText');
+      if (simMenc && swMenc) {
+        simMenc.classList.toggle('hidden', !swMenc.checked);
+      }
+    }
+
+    function actualizarBienvenida() {
+      // Guardar en localStorage para persistencia instantánea y sync con bienvenida.html
+      try {
+        localStorage.setItem('zoco_bienvenida_config', JSON.stringify(bienvenidaConfig));
+      } catch (e) {}
+
+      if (window.restRef) {
+        window.restRef().update({ bienvenida: bienvenidaConfig }).then(() => {
+          alert('✓ Página de bienvenida guardada y actualizada con éxito.');
+        }).catch(err => {
+          alert('✓ Configuración guardada localmente.');
+        });
+      } else {
+        alert('✓ Configuración guardada con éxito.');
+      }
     }
 
     function toggleControlStock(docId, nextValue) {

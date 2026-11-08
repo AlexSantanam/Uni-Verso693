@@ -130,6 +130,42 @@
   <script>
     const CFG = window.RESTAURANTE_CONFIG;
 
+    function aplicarConfigBienvenida(cfg) {
+      if (!cfg) return;
+      if (cfg.titulo) document.getElementById('brandName').textContent = cfg.titulo.replace(/^[^\w\s]+/, '').trim() || CFG.nombre;
+      if (cfg.descripcion) document.getElementById('brandSlogan').textContent = cfg.descripcion;
+      
+      // Botones dinámicos si están configurados
+      if (cfg.botones && cfg.botones.length > 0) {
+        const cont = document.querySelector('.space-y-2.5.pt-2');
+        if (cont) {
+          const activos = cfg.botones.filter(b => b.activo);
+          cont.innerHTML = activos.map(b => {
+            if (b.tipo === 'wifi') {
+              return `
+                <button onclick="copiarWifiDirecto('${b.clave || ''}')" class="block w-full py-3.5 rounded-2xl bg-amber-600/90 hover:bg-amber-600 text-white font-bold text-sm shadow transition-all cursor-pointer">
+                  📶 ${b.nombre} · ${b.red || 'WiFi'} (Toca para copiar clave)
+                </button>
+              `;
+            } else if (b.tipo === 'whatsapp') {
+              return `
+                <a href="https://wa.me/${(b.numero || '').replace(/[^0-9]/g, '')}" target="_blank" class="block w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm shadow transition-all">
+                  💬 ${b.nombre}
+                </a>
+              `;
+            } else {
+              return `
+                <a href="${b.enlace || 'index.html'}" class="block w-full py-3.5 rounded-2xl bg-ember hover:bg-[#B04B25] text-white font-bold text-sm shadow transition-all">
+                  📋 ${b.nombre}
+                </a>
+              `;
+            }
+          }).join('');
+        }
+      }
+    }
+
+    // Carga inicial
     document.getElementById('brandName').textContent = CFG.nombre;
     document.getElementById('brandSlogan').textContent = CFG.slogan;
     document.getElementById('brandHorario').textContent = CFG.horario;
@@ -142,9 +178,19 @@
       document.getElementById('wifiClaveLabel').textContent = CFG.wifiClave;
     }
 
+    try {
+      const savedBienvenida = localStorage.getItem('zoco_bienvenida_config');
+      if (savedBienvenida) aplicarConfigBienvenida(JSON.parse(savedBienvenida));
+    } catch (e) {}
+
     function copiarWifi() {
       if (!CFG.wifiClave) return;
       navigator.clipboard.writeText(CFG.wifiClave).then(() => alert('🔑 Clave WiFi copiada: ' + CFG.wifiClave));
+    }
+
+    function copiarWifiDirecto(clave) {
+      if (!clave) return;
+      navigator.clipboard.writeText(clave).then(() => alert('🔑 Clave WiFi copiada: ' + clave));
     }
 
     function toggleTheme() {
@@ -158,6 +204,7 @@
     window.restRef().onSnapshot(snap => {
       const data = snap.data() || {};
       document.documentElement.setAttribute('data-palette', data.paleta || 'brasa');
+      if (data.bienvenida) aplicarConfigBienvenida(data.bienvenida);
     });
   </script>
 </body>
