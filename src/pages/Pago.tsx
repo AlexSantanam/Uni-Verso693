@@ -141,7 +141,10 @@ export const Pago: React.FC = () => {
   const initialEmail = params.get('clientEmail') || params.get('email') || '';
   const initialPhone = params.get('clientPhone') || params.get('phone') || '';
   const initialRut = params.get('rut') || '';
-  const initialMethod = params.get('method') === 'transferencia' ? 'transferencia' : 'mercadopago';
+  const initialCurrency = params.get('currency');
+  const initialMethodParam = params.get('method');
+  const isPaypalInitial = initialMethodParam === 'paypal' || initialCurrency === 'USD';
+  const initialMethod = initialMethodParam === 'transferencia' ? 'transferencia' : isPaypalInitial ? 'paypal' : 'mercadopago';
   const statusParam = params.get('status');
   const orderIdParam = params.get('orderId');
 
@@ -152,9 +155,20 @@ export const Pago: React.FC = () => {
   const [customTitle, setCustomTitle] = useState<string>('Abono de Servicio Uni-Verso693');
   const [customAmount, setCustomAmount] = useState<number>(initialAmount || 50000);
 
-  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'paypal' | 'transferencia'>(
-    initialMethod === 'transferencia' ? 'transferencia' : params.get('method') === 'paypal' ? 'paypal' : 'mercadopago'
-  );
+  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'paypal' | 'transferencia'>(initialMethod);
+
+  // Autodetección de ubicación geográfica para visitantes internacionales
+  useEffect(() => {
+    if (params.get('method') || params.get('currency')) return;
+    try {
+      const tz = (Intl && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : '';
+      if (tz && !tz.includes('Santiago') && !tz.includes('Easter') && !tz.includes('Chile')) {
+        setPaymentMethod('paypal');
+      }
+    } catch (e) {
+      // Ignorar fallback silencioso
+    }
+  }, [params]);
 
   const [fullName, setFullName] = useState<string>(initialName);
   const [email, setEmail] = useState<string>(initialEmail);
@@ -284,18 +298,26 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
             {es ? (
               <>
-                Paga de forma rápida y segura con <span className="text-gradient-brand">Mercado Pago</span>
+                Paga de forma rápida y segura con{' '}
+                <span className="text-gradient-brand">
+                  {paymentMethod === 'paypal' ? 'PayPal USD' : paymentMethod === 'transferencia' ? 'Transferencia Bancaria' : 'Mercado Pago'}
+                </span>
               </>
             ) : (
               <>
-                Fast and secure checkout with <span className="text-gradient-brand">Mercado Pago</span>
+                Fast and secure checkout with{' '}
+                <span className="text-gradient-brand">
+                  {paymentMethod === 'paypal' ? 'PayPal USD' : paymentMethod === 'transferencia' ? 'Bank Transfer' : 'Mercado Pago'}
+                </span>
               </>
             )}
           </h1>
 
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-            {es
-              ? 'Tarjetas de crédito en cuotas, tarjetas de débito, Webpay Plus y saldo Mercado Pago sin comisiones adicionales. Factura electrónica válida ante el SII.'
+            {paymentMethod === 'paypal'
+              ? (es ? 'Aceptamos pagos internacionales en Dólares (USD) con saldo PayPal o tarjetas de crédito/débito de cualquier país.' : 'We accept international payments in USD with PayPal or credit/debit cards from anywhere in the world.')
+              : es
+              ? 'Tarjetas de crédito en cuotas, tarjetas de débito, Webpay Plus y saldo Mercado Pago sin comisiones adicionales. Factura electrónica válida.'
               : 'Credit cards in installments, debit cards, Webpay Plus, and Mercado Pago account balance. Official tax invoices provided.'}
           </p>
         </div>
@@ -343,8 +365,12 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
                       </div>
 
                       <div className="pt-3 mt-2 border-t border-white/5 flex items-baseline justify-between">
-                        <span className="text-lg font-black font-mono text-emerald-400">${item.amount.toLocaleString('es-CL')}</span>
-                        <span className="text-[10px] font-mono text-slate-400">{item.frequency}</span>
+                        <span className="text-lg font-black font-mono text-emerald-400">
+                          {paymentMethod === 'paypal' ? `$${item.amountUsd} USD` : `$${item.amount.toLocaleString('es-CL')}`}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {paymentMethod === 'paypal' ? (item.frequency.includes('/ año') ? '/ año' : '/ mes') : item.frequency}
+                        </span>
                       </div>
                     </div>
                   );
@@ -377,8 +403,12 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
                       </div>
 
                       <div className="pt-3 mt-2 border-t border-white/5 flex items-baseline justify-between">
-                        <span className="text-lg font-black font-mono text-cyan-300">${item.amount.toLocaleString('es-CL')}</span>
-                        <span className="text-[10px] font-mono text-slate-400">{item.frequency}</span>
+                        <span className="text-lg font-black font-mono text-cyan-300">
+                          {paymentMethod === 'paypal' ? `$${item.amountUsd} USD` : `$${item.amount.toLocaleString('es-CL')}`}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {paymentMethod === 'paypal' ? (item.frequency.includes('/ mes') ? '/ mes' : 'Pago único') : item.frequency}
+                        </span>
                       </div>
                     </div>
                   );
