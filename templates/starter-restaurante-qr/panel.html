@@ -173,13 +173,27 @@
             <span id="badgeKdsCount" class="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-mono font-black animate-pulse">0</span>
           </button>
 
-          <!-- VENTAS -->
-          <button onclick="switchTab('ventas')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="ventas">
-            <div class="flex items-center gap-3">
-              <span class="text-base">📊</span>
-              <span>Ventas & Caja</span>
+          <!-- VENTAS (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleVentasSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="ventas">
+              <div class="flex items-center gap-3">
+                <span class="text-base">📊</span>
+                <span>Ventas</span>
+              </div>
+              <span id="ventasArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+            </button>
+            <div id="ventasSubmenu" class="pl-8 pr-2 space-y-0.5 py-1">
+              <button onclick="switchTab('ventas', 'historial')" class="ventas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="historial">
+                Historial de pedidos
+              </button>
+              <button onclick="switchTab('ventas', 'cajas')" class="ventas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="cajas">
+                Cajas
+              </button>
+              <button onclick="switchTab('ventas', 'reportes')" class="ventas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="reportes">
+                Reportes
+              </button>
             </div>
-          </button>
+          </div>
 
           <!-- MENÚ Y CARTA -->
           <button onclick="switchTab('productos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="productos">
@@ -581,43 +595,371 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 3: VENTAS & MÉTRICAS (CAJA) -->
+        <!-- TAB 3: MÓDULO DE VENTAS (HISTORIAL, CAJAS Y REPORTES TIPO OLACLICK) -->
         <!-- =================================================================== -->
         <section id="tab-ventas" class="panel-pane space-y-5 hidden">
           
-          <!-- FILTRO DE PERÍODO -->
-          <div class="flex gap-2">
-            <button class="periodo-btn active" data-periodo="0" onclick="setPeriodoVentas(0)">Hoy</button>
-            <button class="periodo-btn" data-periodo="7" onclick="setPeriodoVentas(7)">Últimos 7 días</button>
-            <button class="periodo-btn" data-periodo="30" onclick="setPeriodoVentas(30)">Últimos 30 días</button>
+          <!-- SUB-BARRA DE NAVEGACIÓN DE VENTAS -->
+          <div class="bg-white rounded-2xl border border-borderLight p-2 flex flex-wrap items-center justify-between gap-2 shadow-soft">
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+              <button onclick="setVentasSubtab('historial')" id="subtabBtnHistorial" class="ventas-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm cursor-pointer flex items-center gap-2">
+                <span>📋</span>
+                <span>Historial de pedidos</span>
+              </button>
+              <button onclick="setVentasSubtab('cajas')" id="subtabBtnCajas" class="ventas-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 cursor-pointer flex items-center gap-2">
+                <span>📠</span>
+                <span>Cajas</span>
+                <span id="badgeCajaSubnavDot" class="w-2 h-2 rounded-full bg-red-500"></span>
+              </button>
+              <button onclick="setVentasSubtab('reportes')" id="subtabBtnReportes" class="ventas-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-900 cursor-pointer flex items-center gap-2">
+                <span>📊</span>
+                <span>Reportes</span>
+              </button>
+            </div>
+
+            <!-- Botón Exportar Reporte Verde -->
+            <div class="flex items-center gap-2 px-1">
+              <button onclick="exportarReporteVentas()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
+                <span>✉</span>
+                <span>Descargar Reporte CSV / Excel</span>
+              </button>
+            </div>
           </div>
 
-          <!-- KPIS PRINCIPALES -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Facturado</div>
-              <div class="text-2xl font-black text-brand-600 mt-1 font-mono" id="kpiTotalVendido">$0</div>
+          <!-- ================================================================= -->
+          <!-- SUB-VIEW 1: HISTORIAL DE PEDIDOS (IMAGEN 3) -->
+          <!-- ================================================================= -->
+          <div id="viewVentasHistorial" class="space-y-4">
+            
+            <!-- CONTROLES SUPERIORES HISTORIAL -->
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-wrap items-center justify-between gap-3 shadow-soft">
+              <div>
+                <h3 class="font-black text-sm text-slate-900">Historial de pedidos</h3>
+                <p class="text-[11px] text-slate-400">Auditoría completa de comandas cobradas, anuladas y cerradas</p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Selector de período rápido -->
+                <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                  <button class="periodo-btn active" data-periodo="0" onclick="setPeriodoVentas(0)">Hoy</button>
+                  <button class="periodo-btn" data-periodo="7" onclick="setPeriodoVentas(7)">7 días</button>
+                  <button class="periodo-btn" data-periodo="30" onclick="setPeriodoVentas(30)">30 días</button>
+                </div>
+
+                <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 cursor-pointer" title="Refrescar">
+                  ↺
+                </button>
+                <button onclick="exportarReporteVentas()" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 cursor-pointer" title="Exportar Excel">
+                  📄
+                </button>
+              </div>
             </div>
-            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Comandas Totales</div>
-              <div class="text-2xl font-black text-slate-900 mt-1 font-mono" id="kpiPedidos">0</div>
+
+            <!-- FILTRO DE CANAL Y MÉTRICAS -->
+            <div class="bg-white rounded-2xl border border-borderLight px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-soft">
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <span class="text-slate-400 text-xs">Y</span>
+                <button onclick="setHistorialFilter('todo')" class="hist-chip active" data-hfilter="todo">✓ Todo</button>
+                <button onclick="setHistorialFilter('web')" class="hist-chip" data-hfilter="web">PDV / WEB</button>
+                <button onclick="setHistorialFilter('delivery')" class="hist-chip" data-hfilter="delivery">🛵 Delivery</button>
+                <button onclick="setHistorialFilter('mesas')" class="hist-chip" data-hfilter="mesas">🍽️ Mesas</button>
+              </div>
+
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="text-slate-500 font-sans font-bold">ⓘ Pedidos: <strong id="histTotalCount" class="text-slate-900 font-mono">0</strong></span>
+                <span class="text-slate-300">|</span>
+                <span class="text-slate-500 font-sans font-bold">Total: <strong id="histTotalMonto" class="text-slate-900 font-mono">$0</strong></span>
+              </div>
             </div>
-            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket Promedio</div>
-              <div class="text-2xl font-black text-slate-900 mt-1 font-mono" id="kpiTicketProm">$0</div>
+
+            <!-- TABLA HISTÓRICA COMPLETA -->
+            <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 border-b border-borderLight text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">
+                    <tr>
+                      <th class="py-3 px-4">ESTADO</th>
+                      <th class="py-3 px-4">ORIGEN</th>
+                      <th class="py-3 px-4">FECHA CREACIÓN / CIERRE</th>
+                      <th class="py-3 px-4">CLIENTE / DESTINO</th>
+                      <th class="py-3 px-4">ESTADO Y DETALLE DE PAGOS</th>
+                      <th class="py-3 px-4 text-right">TOTAL</th>
+                      <th class="py-3 px-4 text-right">ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historialTableBody" class="divide-y divide-slate-100 font-medium">
+                    <!-- Inyección JS -->
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
-              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mesa vs Delivery</div>
-              <div class="text-sm font-black text-slate-900 mt-2.5 font-mono" id="kpiMesaDelivery">0 mesa / 0 delivery</div>
-            </div>
+
           </div>
 
-          <!-- PLATOS MÁS PEDIDOS -->
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">🏆 Platos Más Vendidos</h3>
-            <div id="topProductosList" class="divide-y divide-slate-100">
-              <!-- Inyección JS -->
+          <!-- ================================================================= -->
+          <!-- SUB-VIEW 2: CAJAS Y TURNOS (IMAGEN 2) -->
+          <!-- ================================================================= -->
+          <div id="viewVentasCajas" class="space-y-4 hidden">
+            
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex items-center justify-between shadow-soft">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-slate-300" id="kdsCajasViewDot"></span>
+                <h3 class="font-black text-sm text-slate-900">Caja principal</h3>
+                <span id="kdsCajasViewStatePill" class="px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-red-100 text-red-700">Cerrada</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="abrirModalCaja()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer flex items-center gap-1.5">
+                  <span>🕒</span>
+                  <span>Arqueo de turno</span>
+                </button>
+                <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 cursor-pointer">
+                  ↺
+                </button>
+              </div>
             </div>
+
+            <!-- CAJA CERRADA: EMPTY STATE (IDÉNTICO A OLACLICK IMAGEN 2) -->
+            <div id="cajaClosedView" class="bg-white rounded-3xl border border-borderLight p-8 md:p-12 text-center max-w-xl mx-auto space-y-6 shadow-soft my-6">
+              <div class="w-28 h-28 mx-auto rounded-3xl bg-amber-50 border border-amber-200 flex items-center justify-center text-6xl shadow-inner">
+                📠
+              </div>
+              <div class="space-y-2">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight">¡Todo listo para empezar el día!</h2>
+                <div class="space-y-1.5 text-xs text-slate-600 font-medium max-w-md mx-auto text-left pt-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-500 font-black">✓</span>
+                    <span>Suma tus ventas automáticamente en tiempo real.</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-500 font-black">✓</span>
+                    <span>Mantén el control total de tu efectivo al cerrar el turno.</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-500 font-black">✓</span>
+                    <span>Simplifica la pantalla de tu mozo y cajero sin cálculos del sistema.</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="abrirModalCaja()" class="px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 cursor-pointer transition-all active:scale-[0.98]">
+                Abrir caja
+              </button>
+            </div>
+
+            <!-- CAJA ABIERTA: DASHBOARD DE TURNO ACTIVO -->
+            <div id="cajaOpenView" class="hidden space-y-4">
+              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                  <div>
+                    <h4 class="font-bold text-xs text-emerald-950">Turno de Caja Activo</h4>
+                    <p class="text-[11px] text-emerald-800" id="cajaTurnoOpenDetail">Abierto hoy · Registrando cobros</p>
+                  </div>
+                </div>
+                <button onclick="abrirModalCaja()" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs cursor-pointer shadow-sm">
+                  🔒 Cuadrar y Cerrar Caja
+                </button>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+                  <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fondo Inicial</div>
+                  <div class="text-xl font-black text-slate-900 mt-1 font-mono" id="cajaKpiFondo">$0</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+                  <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Efectivo Recaudado</div>
+                  <div class="text-xl font-black text-slate-900 mt-1 font-mono" id="cajaKpiEfectivo">$0</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+                  <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tarjetas / POS</div>
+                  <div class="text-xl font-black text-slate-900 mt-1 font-mono" id="cajaKpiTarjetas">$0</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft">
+                  <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total en Gaveta</div>
+                  <div class="text-xl font-black text-emerald-600 mt-1 font-mono" id="cajaKpiTotalGaveta">$0</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUB-VIEW 3: REPORTES & ANALYTICS (IMAGEN 1) -->
+          <!-- ================================================================= -->
+          <div id="viewVentasReportes" class="space-y-5 hidden">
+            
+            <!-- HEADER DE REPORTES -->
+            <div class="bg-white rounded-2xl border border-borderLight p-4 flex flex-wrap items-center justify-between gap-3 shadow-soft">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1.5 rounded-xl bg-slate-100 font-bold text-xs text-slate-800 border border-slate-200">Pedidos ▼</span>
+                <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                  <button class="periodo-btn active" data-periodo="0" onclick="setPeriodoVentas(0)">Hoy</button>
+                  <button class="periodo-btn" data-periodo="7" onclick="setPeriodoVentas(7)">7 días</button>
+                  <button class="periodo-btn" data-periodo="30" onclick="setPeriodoVentas(30)">30 días</button>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="exportarReporteVentas()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
+                  <span>✉</span>
+                  <span>Reporte</span>
+                </button>
+                <button onclick="subscribeAll(true)" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 cursor-pointer">
+                  ↺
+                </button>
+              </div>
+            </div>
+
+            <!-- CHIPS DE CANAL DE ORIGEN -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              <button onclick="setReporteCanal('todos')" class="rep-chip active" data-rcanal="todos">✓ TODOS LOS PEDIDOS</button>
+              <button onclick="setReporteCanal('web')" class="rep-chip" data-rcanal="web">WEB</button>
+              <button onclick="setReporteCanal('pos')" class="rep-chip" data-rcanal="pos">POS</button>
+              <button onclick="setReporteCanal('delivery')" class="rep-chip" data-rcanal="delivery">DELIVERY</button>
+              <button onclick="setReporteCanal('qr')" class="rep-chip" data-rcanal="qr">QR MESAS</button>
+            </div>
+
+            <!-- 3 TOP KPIS (CANTIDAD PEDIDOS, VENTAS TOTALES, TICKET PROMEDIO) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-1.5 shadow-soft">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Cantidad de pedidos</span>
+                  <span class="text-xs">ⓘ</span>
+                </div>
+                <div class="text-3xl font-black text-slate-900 font-mono" id="kpiRepCantidad">0</div>
+                <div class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                  <span>▲</span>
+                  <span>Activo en este período</span>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-1.5 shadow-soft">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Ventas totales</span>
+                  <span class="text-xs">ⓘ</span>
+                </div>
+                <div class="text-3xl font-black text-slate-900 font-mono" id="kpiRepVentas">$0</div>
+                <div class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                  <span>▲</span>
+                  <span>Total facturado</span>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-1.5 shadow-soft">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Ticket promedio</span>
+                  <span class="text-xs">ⓘ</span>
+                </div>
+                <div class="text-3xl font-black text-slate-900 font-mono" id="kpiRepTicket">$0</div>
+                <div class="text-[10px] text-blue-600 font-bold flex items-center gap-1">
+                  <span>◆</span>
+                  <span>Promedio por comanda</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- SECCIÓN: ANÁLISIS DE PEDIDOS (GRÁFICO DONUT + DESGLOSE POR SERVICIO) -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft">
+              <h3 class="font-black text-base text-slate-900">Análisis de pedidos</h3>
+
+              <div class="grid lg:grid-cols-12 gap-6 items-center">
+                
+                <!-- GRÁFICO DONUT (ANILLO SVG DINÁMICO) -->
+                <div class="lg:col-span-4 flex flex-col items-center justify-center p-4">
+                  <div class="relative w-48 h-48 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                      <!-- Base track -->
+                      <circle cx="100" cy="100" r="70" fill="none" stroke="#F1F5F9" stroke-width="26" />
+                      <!-- Segmento 1: En mesa (Púrpura #8B5CF6) -->
+                      <circle id="donutSegMesa" cx="100" cy="100" r="70" fill="none" stroke="#8B5CF6" stroke-width="26" stroke-dasharray="0 440" stroke-dashoffset="0" class="transition-all duration-700" />
+                      <!-- Segmento 2: En el local / Mostrador (Azul #3B82F6) -->
+                      <circle id="donutSegLocal" cx="100" cy="100" r="70" fill="none" stroke="#3B82F6" stroke-width="26" stroke-dasharray="0 440" stroke-dashoffset="0" class="transition-all duration-700" />
+                      <!-- Segmento 3: Para llevar / Delivery (Teal #10B981) -->
+                      <circle id="donutSegLlevar" cx="100" cy="100" r="70" fill="none" stroke="#10B981" stroke-width="26" stroke-dasharray="0 440" stroke-dashoffset="0" class="transition-all duration-700" />
+                    </svg>
+                    <!-- Centro del Donut -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-2xl font-black text-slate-900 font-mono" id="donutTotalCenter">0</span>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pedidos</span>
+                    </div>
+                  </div>
+                  <div class="text-xs font-bold text-slate-500 mt-2">Cantidad de pedidos</div>
+                </div>
+
+                <!-- TABLA DESGLOSADA POR TIPO DE SERVICIO (IDÉNTICA A OLACLICK) -->
+                <div class="lg:col-span-8 overflow-x-auto">
+                  <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 border-b border-borderLight text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">
+                      <tr>
+                        <th class="py-3 px-4">TIPO DE SERVICIO</th>
+                        <th class="py-3 px-4 text-center">PEDIDOS</th>
+                        <th class="py-3 px-4 text-right">VENTAS</th>
+                        <th class="py-3 px-4 text-right">TICKET PROMEDIO</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-medium">
+                      
+                      <!-- FILA 1: EN MESA -->
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-3.5 px-4 flex items-center gap-2">
+                          <span class="w-3 h-3 rounded-full bg-purple-500 shrink-0"></span>
+                          <span class="font-bold text-slate-800">En mesa</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center font-mono font-bold" id="rowMesaPedidos">0</td>
+                        <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-900" id="rowMesaVentas">$0</td>
+                        <td class="py-3.5 px-4 text-right font-mono text-slate-600" id="rowMesaTicket">$0</td>
+                      </tr>
+
+                      <!-- FILA 2: EN EL LOCAL (MOSTRADOR / BARRA) -->
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-3.5 px-4 flex items-center gap-2">
+                          <span class="w-3 h-3 rounded-full bg-blue-500 shrink-0"></span>
+                          <span class="font-bold text-slate-800">En el local (Mostrador)</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center font-mono font-bold" id="rowLocalPedidos">0</td>
+                        <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-900" id="rowLocalVentas">$0</td>
+                        <td class="py-3.5 px-4 text-right font-mono text-slate-600" id="rowLocalTicket">$0</td>
+                      </tr>
+
+                      <!-- FILA 3: PARA LLEVAR -->
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-3.5 px-4 flex items-center gap-2">
+                          <span class="w-3 h-3 rounded-full bg-teal-500 shrink-0"></span>
+                          <span class="font-bold text-slate-800">Para llevar</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center font-mono font-bold" id="rowLlevarPedidos">0</td>
+                        <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-900" id="rowLlevarVentas">$0</td>
+                        <td class="py-3.5 px-4 text-right font-mono text-slate-600" id="rowLlevarTicket">$0</td>
+                      </tr>
+
+                      <!-- FILA 4: A DOMICILIO -->
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-3.5 px-4 flex items-center gap-2">
+                          <span class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></span>
+                          <span class="font-bold text-slate-800">A domicilio (Delivery)</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center font-mono font-bold" id="rowDeliveryPedidos">0</td>
+                        <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-900" id="rowDeliveryVentas">$0</td>
+                        <td class="py-3.5 px-4 text-right font-mono text-slate-600" id="rowDeliveryTicket">$0</td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- RANKING DE PLATOS MÁS VENDIDOS -->
+            <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
+              <h3 class="font-extrabold text-sm text-slate-900">🏆 Ranking de Platos Más Vendidos</h3>
+              <div id="topProductosList" class="divide-y divide-slate-100">
+                <!-- Inyección JS -->
+              </div>
+            </div>
+
           </div>
 
         </section>
@@ -1207,7 +1549,7 @@
       negocio: { title: 'Configuración & Horarios', sub: 'Apertura automática, colores y estado del local' }
     };
 
-    function switchTab(tab) {
+    function switchTab(tab, subtab) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
       
@@ -1220,6 +1562,10 @@
 
       if (tab === 'cocina') renderKdsBoard();
       if (tab === 'pedidos') renderPdvOrders();
+      if (tab === 'ventas') {
+        if (subtab) setVentasSubtab(subtab);
+        else renderVentas();
+      }
     }
 
     // --- LOGIN ---
@@ -2145,14 +2491,75 @@
     }
 
     // =========================================================================
-    // SECCIÓN 3: VENTAS & MÉTRICAS
+    // SECCIÓN 3: VENTAS, HISTORIAL, CAJAS Y REPORTES (TIPO OLACLICK)
     // =========================================================================
+    let ventasSubtab = 'historial'; // 'historial', 'cajas', 'reportes'
+    let historialFilter = 'todo'; // 'todo', 'web', 'delivery', 'mesas'
+    let reporteCanal = 'todos'; // 'todos', 'web', 'pos', 'delivery', 'qr'
+
+    function toggleVentasSubmenu() {
+      const sub = document.getElementById('ventasSubmenu');
+      const arrow = document.getElementById('ventasArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('ventas', ventasSubtab);
+    }
+
+    function setVentasSubtab(subtab) {
+      ventasSubtab = subtab;
+      
+      // Actualizar pills de sub-navegación superior
+      document.querySelectorAll('.ventas-tab-pill').forEach(btn => {
+        btn.classList.remove('active', 'bg-white', 'text-slate-900', 'shadow-sm');
+        btn.classList.add('text-slate-500');
+      });
+      const activePill = subtab === 'historial' ? document.getElementById('subtabBtnHistorial')
+                       : subtab === 'cajas' ? document.getElementById('subtabBtnCajas')
+                       : document.getElementById('subtabBtnReportes');
+      if (activePill) {
+        activePill.classList.add('active', 'bg-white', 'text-slate-900', 'shadow-sm');
+        activePill.classList.remove('text-slate-500');
+      }
+
+      // Actualizar items de submenú en el Sidebar
+      document.querySelectorAll('.ventas-sub-btn').forEach(b => {
+        b.classList.toggle('text-white', b.dataset.subtab === subtab);
+        b.classList.toggle('font-bold', b.dataset.subtab === subtab);
+        b.classList.toggle('bg-slate-800', b.dataset.subtab === subtab);
+      });
+
+      // Conmutar vistas
+      const vHist = document.getElementById('viewVentasHistorial');
+      const vCaj = document.getElementById('viewVentasCajas');
+      const vRep = document.getElementById('viewVentasReportes');
+      if (vHist) vHist.classList.toggle('hidden', subtab !== 'historial');
+      if (vCaj) vCaj.classList.toggle('hidden', subtab !== 'cajas');
+      if (vRep) vRep.classList.toggle('hidden', subtab !== 'reportes');
+
+      renderVentas();
+    }
+
+    function setHistorialFilter(filter) {
+      historialFilter = filter;
+      document.querySelectorAll('.hist-chip').forEach(c => c.classList.toggle('active', c.dataset.hfilter === filter));
+      renderVentas();
+    }
+
+    function setReporteCanal(canal) {
+      reporteCanal = canal;
+      document.querySelectorAll('.rep-chip').forEach(c => c.classList.toggle('active', c.dataset.rcanal === canal));
+      renderVentas();
+    }
+
     function setPeriodoVentas(dias) {
       periodoVentas = dias;
       renderVentas();
     }
 
     function renderVentas() {
+      // Sincronizar botones de período
       document.querySelectorAll('.periodo-btn').forEach(b => b.classList.toggle('active', Number(b.dataset.periodo) === periodoVentas));
 
       const desde = new Date();
@@ -2163,14 +2570,230 @@
       const totalVendido = enRango.reduce((s, p) => s + (p.total || 0), 0);
       const nPedidos = enRango.length;
       const ticketProm = nPedidos > 0 ? Math.round(totalVendido / nPedidos) : 0;
-      const nMesa = enRango.filter(p => p.type === 'mesa').length;
-      const nDelivery = enRango.filter(p => p.type === 'delivery').length;
 
-      document.getElementById('kpiTotalVendido').textContent = fmt(totalVendido);
-      document.getElementById('kpiPedidos').textContent = nPedidos;
-      document.getElementById('kpiTicketProm').textContent = fmt(ticketProm);
-      document.getElementById('kpiMesaDelivery').textContent = `${nMesa} mesa / ${nDelivery} delivery`;
+      // -----------------------------------------------------------------------
+      // 1. RENDER SUBVIEW: HISTORIAL DE PEDIDOS (IMAGEN 3)
+      // -----------------------------------------------------------------------
+      const histTable = document.getElementById('historialTableBody');
+      const hCount = document.getElementById('histTotalCount');
+      const hMonto = document.getElementById('histTotalMonto');
+      if (hCount) hCount.textContent = nPedidos;
+      if (hMonto) hMonto.textContent = fmt(totalVendido);
 
+      if (histTable) {
+        const histFiltrados = enRango.filter(p => {
+          if (historialFilter === 'todo') return true;
+          if (historialFilter === 'delivery') return p.type === 'delivery';
+          if (historialFilter === 'mesas') return p.type === 'mesa' && p.table && !p.table.toLowerCase().includes('mostrador') && !p.table.toLowerCase().includes('barra');
+          if (historialFilter === 'web') return !p.table || p.type === 'delivery';
+          return true;
+        });
+
+        if (histFiltrados.length === 0) {
+          histTable.innerHTML = `
+            <tr>
+              <td colspan="7" class="py-12 text-center text-slate-400 font-sans">
+                <span class="text-3xl block mb-1">📋</span>
+                No hay órdenes registradas en este período o filtro.
+              </td>
+            </tr>
+          `;
+        } else {
+          histTable.innerHTML = histFiltrados.map((o, idx) => {
+            const date = new Date(o.createdAt);
+            const fechaStr = date.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: '2-digit' }) + ' ' + date.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+            const isAnulado = o.status === 'anulado';
+            const orderNum = '#' + (histFiltrados.length - idx);
+
+            const estadoBadge = isAnulado 
+              ? `<span class="bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full text-[10px] border border-red-200">Anulado · Pedido incorrecto</span>`
+              : `<span class="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-full text-[10px] border border-blue-200">Finalizado</span>`;
+
+            const iconCanal = o.type === 'delivery' ? '🛵' : '🛍️';
+            const canalPill = o.type === 'delivery' ? 'POS' : 'POS';
+
+            // Detalle de pago
+            const payLower = (o.payment || '').toLowerCase();
+            const payIcon = payLower.includes('efectivo') ? '💵 Efectivo' : payLower.includes('transferencia') ? '📲 Transferencia' : '💳 Tarjeta de débito/crédito';
+            const payStatusPill = `<span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">Pagado</span>`;
+
+            return `
+              <tr class="hover:bg-slate-50/70 transition-colors">
+                <td class="py-3 px-4 font-mono font-bold">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-slate-800">${orderNum}</span>
+                    <span class="p-1 rounded bg-slate-100 text-slate-700 text-xs">${iconCanal}</span>
+                    ${estadoBadge}
+                  </div>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="bg-slate-100 text-slate-700 font-bold font-mono px-2 py-0.5 rounded-full text-[10px] border border-slate-200">${canalPill}</span>
+                </td>
+                <td class="py-3 px-4 font-mono text-slate-600">
+                  <div class="flex items-center gap-1">
+                    <span>📅</span>
+                    <span>${fechaStr}</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-slate-900">${o.customer || 'Comensal'}</div>
+                  ${o.table ? `<div class="text-[10px] text-slate-400 font-mono">🍽️ ${o.table}</div>` : ''}
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    ${payStatusPill}
+                    <span class="text-slate-600 font-mono text-[11px] truncate max-w-[150px]" title="${o.payment}">${payIcon}</span>
+                  </div>
+                </td>
+                <td class="py-3 px-4 text-right font-mono font-black text-slate-900 text-xs">
+                  ${fmt(o.total)}
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="printTicket('${o.docId}')" class="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer" title="Imprimir Comanda">
+                    🖨️
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // 2. RENDER SUBVIEW: CAJAS (IMAGEN 2)
+      // -----------------------------------------------------------------------
+      const cClosed = document.getElementById('cajaClosedView');
+      const cOpen = document.getElementById('cajaOpenView');
+      const cPill = document.getElementById('kdsCajasViewStatePill');
+      const cDot = document.getElementById('kdsCajasViewDot');
+      const cSubDot = document.getElementById('badgeCajaSubnavDot');
+
+      if (cajaAbierta) {
+        if (cClosed) cClosed.classList.add('hidden');
+        if (cOpen) cOpen.classList.remove('hidden');
+        if (cPill) {
+          cPill.textContent = 'Abierta';
+          cPill.className = 'px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-emerald-100 text-emerald-700';
+        }
+        if (cDot) cDot.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
+        if (cSubDot) cSubDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+
+        let vEfec = 0, vTarj = 0;
+        enRango.forEach(p => {
+          const pay = (p.payment || '').toLowerCase();
+          const tot = (p.total || 0);
+          if (pay.includes('efectivo')) vEfec += tot;
+          else vTarj += tot;
+        });
+
+        const kFondo = document.getElementById('cajaKpiFondo');
+        const kEfec = document.getElementById('cajaKpiEfectivo');
+        const kTarj = document.getElementById('cajaKpiTarjetas');
+        const kTotal = document.getElementById('cajaKpiTotalGaveta');
+        if (kFondo) kFondo.textContent = fmt(cajaMontoInicial);
+        if (kEfec) kEfec.textContent = fmt(vEfec);
+        if (kTarj) kTarj.textContent = fmt(vTarj);
+        if (kTotal) kTotal.textContent = fmt(cajaMontoInicial + vEfec);
+      } else {
+        if (cClosed) cClosed.classList.remove('hidden');
+        if (cOpen) cOpen.classList.add('hidden');
+        if (cPill) {
+          cPill.textContent = 'Cerrada';
+          cPill.className = 'px-2 py-0.5 rounded-full font-mono text-[10px] font-black bg-red-100 text-red-700';
+        }
+        if (cDot) cDot.className = 'w-3 h-3 rounded-full bg-red-500';
+        if (cSubDot) cSubDot.className = 'w-2 h-2 rounded-full bg-red-500';
+      }
+
+      // -----------------------------------------------------------------------
+      // 3. RENDER SUBVIEW: REPORTES & ANALYTICS (IMAGEN 1)
+      // -----------------------------------------------------------------------
+      const repCant = document.getElementById('kpiRepCantidad');
+      const repVent = document.getElementById('kpiRepVentas');
+      const repTick = document.getElementById('kpiRepTicket');
+      if (repCant) repCant.textContent = nPedidos;
+      if (repVent) repVent.textContent = fmt(totalVendido);
+      if (repTick) repTick.textContent = fmt(ticketProm);
+
+      // Desglose por tipo de servicio
+      const pedidosMesa = enRango.filter(p => p.type === 'mesa' && p.table && !p.table.toLowerCase().includes('mostrador') && !p.table.toLowerCase().includes('barra'));
+      const pedidosLocal = enRango.filter(p => p.type === 'mesa' && (!p.table || p.table.toLowerCase().includes('mostrador') || p.table.toLowerCase().includes('barra')));
+      const pedidosLlevar = enRango.filter(p => p.type === 'delivery' && (p.notes || '').toLowerCase().includes('llevar'));
+      const pedidosDelivery = enRango.filter(p => p.type === 'delivery' && !(p.notes || '').toLowerCase().includes('llevar'));
+
+      const calcServicio = (arr) => {
+        const count = arr.length;
+        const total = arr.reduce((s, p) => s + (p.total || 0), 0);
+        const avg = count > 0 ? Math.round(total / count) : 0;
+        const pctCount = nPedidos > 0 ? Math.round((count / nPedidos) * 100) : 0;
+        return { count, total, avg, pctCount };
+      };
+
+      const sMesa = calcServicio(pedidosMesa);
+      const sLocal = calcServicio(pedidosLocal);
+      const sLlevar = calcServicio(pedidosLlevar.length > 0 ? pedidosLlevar : pedidosDelivery);
+      const sDeliv = calcServicio(pedidosLlevar.length > 0 ? pedidosDelivery : []);
+
+      // Llenar tabla
+      const rMP = document.getElementById('rowMesaPedidos');
+      const rMV = document.getElementById('rowMesaVentas');
+      const rMT = document.getElementById('rowMesaTicket');
+      if (rMP) rMP.innerHTML = `${sMesa.count} <span class="text-slate-400 font-normal text-[10px]">(${sMesa.pctCount}%)</span>`;
+      if (rMV) rMV.textContent = fmt(sMesa.total);
+      if (rMT) rMT.textContent = fmt(sMesa.avg);
+
+      const rLP = document.getElementById('rowLocalPedidos');
+      const rLV = document.getElementById('rowLocalVentas');
+      const rLT = document.getElementById('rowLocalTicket');
+      if (rLP) rLP.innerHTML = `${sLocal.count} <span class="text-slate-400 font-normal text-[10px]">(${sLocal.pctCount}%)</span>`;
+      if (rLV) rLV.textContent = fmt(sLocal.total);
+      if (rLT) rLT.textContent = fmt(sLocal.avg);
+
+      const rYP = document.getElementById('rowLlevarPedidos');
+      const rYV = document.getElementById('rowLlevarVentas');
+      const rYT = document.getElementById('rowLlevarTicket');
+      if (rYP) rYP.innerHTML = `${sLlevar.count} <span class="text-slate-400 font-normal text-[10px]">(${sLlevar.pctCount}%)</span>`;
+      if (rYV) rYV.textContent = fmt(sLlevar.total);
+      if (rYT) rYT.textContent = fmt(sLlevar.avg);
+
+      const rDP = document.getElementById('rowDeliveryPedidos');
+      const rDV = document.getElementById('rowDeliveryVentas');
+      const rDT = document.getElementById('rowDeliveryTicket');
+      if (rDP) rDP.innerHTML = `${sDeliv.count} <span class="text-slate-400 font-normal text-[10px]">(${sDeliv.pctCount}%)</span>`;
+      if (rDV) rDV.textContent = fmt(sDeliv.total);
+      if (rDT) rDT.textContent = fmt(sDeliv.avg);
+
+      // Actualizar Gráfico Donut SVG
+      const circ = 440; // 2 * pi * 70
+      const dCenter = document.getElementById('donutTotalCenter');
+      if (dCenter) dCenter.textContent = nPedidos;
+
+      const segMesa = document.getElementById('donutSegMesa');
+      const segLocal = document.getElementById('donutSegLocal');
+      const segLlevar = document.getElementById('donutSegLlevar');
+
+      if (segMesa && segLocal && segLlevar) {
+        if (nPedidos === 0) {
+          segMesa.setAttribute('stroke-dasharray', `0 ${circ}`);
+          segLocal.setAttribute('stroke-dasharray', `0 ${circ}`);
+          segLlevar.setAttribute('stroke-dasharray', `0 ${circ}`);
+        } else {
+          const lenMesa = Math.round((sMesa.count / nPedidos) * circ);
+          const lenLocal = Math.round((sLocal.count / nPedidos) * circ);
+          const lenLlevar = Math.max(0, circ - lenMesa - lenLocal);
+
+          segMesa.setAttribute('stroke-dasharray', `${lenMesa} ${circ}`);
+          segMesa.setAttribute('stroke-dashoffset', '0');
+
+          segLocal.setAttribute('stroke-dasharray', `${lenLocal} ${circ}`);
+          segLocal.setAttribute('stroke-dashoffset', `-${lenMesa}`);
+
+          segLlevar.setAttribute('stroke-dasharray', `${lenLlevar} ${circ}`);
+          segLlevar.setAttribute('stroke-dashoffset', `-${lenMesa + lenLocal}`);
+        }
+      }
+
+      // Ranking de Platos Más Vendidos
       const conteoProductos = {};
       enRango.forEach(p => {
         (p.items || []).forEach(item => {
@@ -2179,17 +2802,55 @@
       });
 
       const topList = document.getElementById('topProductosList');
-      const top = Object.entries(conteoProductos).sort((a, b) => b[1] - a[1]).slice(0, 8);
-      if (top.length === 0) {
-        topList.innerHTML = '<p class="text-xs text-slate-400 py-3">Sin comandas en este período todavía.</p>';
+      if (topList) {
+        const top = Object.entries(conteoProductos).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        if (top.length === 0) {
+          topList.innerHTML = '<p class="text-xs text-slate-400 py-3">Sin comandas en este período todavía.</p>';
+        } else {
+          topList.innerHTML = top.map(([nombre, cantidad], idx) => `
+            <div class="py-2.5 flex items-center justify-between text-xs">
+              <span class="text-slate-800 font-bold">${idx + 1}. ${nombre}</span>
+              <span class="text-brand-600 font-mono font-black">${cantidad}x</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    // --- EXPORTAR REPORTE CSV / EXCEL ---
+    function exportarReporteVentas() {
+      if (pedidos.length === 0) {
+        alert('No hay pedidos para exportar.');
         return;
       }
-      topList.innerHTML = top.map(([nombre, cantidad], idx) => `
-        <div class="py-2.5 flex items-center justify-between text-xs">
-          <span class="text-slate-800 font-bold">${idx + 1}. ${nombre}</span>
-          <span class="text-brand-600 font-mono font-black">${cantidad}x</span>
-        </div>
-      `).join('');
+      const headers = ['ID Comanda', 'Fecha', 'Hora', 'Canal', 'Mesa / Destino', 'Cliente', 'Estado', 'Medio de Pago', 'Total CLP', 'Platos'];
+      const rows = pedidos.map(p => {
+        const d = new Date(p.createdAt);
+        const fStr = d.toLocaleDateString('es-CL');
+        const hStr = d.toLocaleTimeString('es-CL');
+        const itemsStr = (p.items || []).map(i => `${i.qty}x ${i.name}`).join(' | ');
+        return [
+          p.id || '',
+          fStr,
+          hStr,
+          p.type || 'mesa',
+          p.table || p.address || 'Mostrador',
+          p.customer || 'Comensal',
+          p.status || 'finalizado',
+          p.payment || 'Efectivo',
+          p.total || 0,
+          `"${itemsStr}"`
+        ];
+      });
+
+      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `reporte_ventas_${CFG.slug || 'local'}_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // =========================================================================
