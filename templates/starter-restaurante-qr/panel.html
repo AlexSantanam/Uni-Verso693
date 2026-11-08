@@ -164,15 +164,6 @@
             <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono font-bold">Caja</span>
           </button>
 
-          <!-- COCINA KDS -->
-          <button onclick="switchTab('cocina')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="cocina">
-            <div class="flex items-center gap-3">
-              <span class="text-base">👨‍🍳</span>
-              <span>Cocina (KDS)</span>
-            </div>
-            <span id="badgeKdsCount" class="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-mono font-black animate-pulse">0</span>
-          </button>
-
           <!-- VENTAS (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
           <div class="space-y-0.5">
             <button onclick="toggleVentasSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="ventas">
@@ -191,6 +182,25 @@
               </button>
               <button onclick="switchTab('ventas', 'reportes')" class="ventas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="reportes">
                 Reportes
+              </button>
+            </div>
+          </div>
+
+          <!-- MÓDULO FINANCIERO (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleFinanzasSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="finanzas">
+              <div class="flex items-center gap-3">
+                <span class="text-base">💳</span>
+                <span>Módulo Financiero</span>
+              </div>
+              <span id="finanzasArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+            </button>
+            <div id="finanzasSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
+              <button onclick="switchTab('finanzas', 'registros')" class="finanzas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="registros">
+                Registros financieros
+              </button>
+              <button onclick="switchTab('finanzas', 'cuentas')" class="finanzas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="cuentas">
+                Cuentas
               </button>
             </div>
           </div>
@@ -216,6 +226,24 @@
               </button>
             </div>
           </div>
+
+          <!-- COCINA KDS -->
+          <button onclick="switchTab('cocina')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="cocina">
+            <div class="flex items-center gap-3">
+              <span class="text-base">👨‍🍳</span>
+              <span>Cocina (KDS)</span>
+            </div>
+            <span id="badgeKdsCount" class="text-[10px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full font-mono font-black animate-pulse">0</span>
+          </button>
+
+          <!-- INVENTARIO -->
+          <button onclick="switchTab('inventario')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="inventario">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📦</span>
+              <span>Inventario</span>
+            </div>
+            <span id="badgeInventarioAlerta" class="hidden text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-mono font-bold animate-pulse">0</span>
+          </button>
 
           <!-- CATEGORÍAS -->
           <button onclick="switchTab('categorias')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="categorias">
@@ -1578,6 +1606,89 @@
         </section>
 
         <!-- =================================================================== -->
+        <!-- TAB 4.8: INVENTARIO (EXACTO A IMAGEN OLACLICK) -->
+        <!-- =================================================================== -->
+        <section id="tab-inventario" class="panel-pane space-y-5 hidden">
+          
+          <!-- ENCABEZADO SUPERIOR Y DESCARGAR EXCEL -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="space-y-0.5">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Inventario</h2>
+              <p class="text-xs text-slate-400 font-medium">Control en tiempo real de existencias para evitar vender ítems agotados</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="descargarExcelInventario()" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer" title="Exportar existencias en Excel / CSV">
+                <span class="text-emerald-600 font-bold">📊</span>
+                <span>Descargar Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BARRA DE FILTROS Y MÉTRICAS (EXACTO A IMAGEN OLACLICK) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-3.5 shadow-soft flex flex-wrap items-center justify-between gap-3 text-xs">
+            
+            <!-- FILTROS DE ESTADO / PILLS A LA IZQUIERDA -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <span class="text-slate-400 text-xs px-1">☰</span>
+              <button onclick="setInventarioFiltro('disponible')" id="btnInvFiltroDisponible" class="inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span id="labelInvDisponibles">0 Disponible (0 Alerta)</span>
+              </button>
+
+              <button onclick="setInventarioFiltro('agotado')" id="btnInvFiltroAgotado" class="inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors flex items-center gap-1.5 cursor-pointer">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span id="labelInvAgotados">0 Agotado</span>
+              </button>
+
+              <button onclick="setInventarioFiltro('todos')" id="btnInvFiltroTodos" class="inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">
+                Todos los productos
+              </button>
+            </div>
+
+            <!-- BUSCADOR A LA DERECHA -->
+            <div class="relative w-full sm:w-64">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+              <input id="inputBuscarInventario" type="text" placeholder="Buscar un producto..." oninput="filtrarInventario(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
+            </div>
+
+          </div>
+
+          <!-- TABLA DE CONTROL DE INVENTARIO Y STOCK NUMÉRICO -->
+          <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-400 font-bold tracking-wider uppercase text-[10px] border-b border-slate-100">
+                  <tr>
+                    <th class="py-3.5 px-4">PRODUCTO</th>
+                    <th class="py-3.5 px-4 text-center">CONTROL DE STOCK</th>
+                    <th class="py-3.5 px-4 text-center">STOCK ACTUAL</th>
+                    <th class="py-3.5 px-4 text-center">STOCK MÍNIMO (ALERTA)</th>
+                    <th class="py-3.5 px-4 text-center">ESTADO</th>
+                    <th class="py-3.5 px-4 text-center">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="inventarioTableBody" class="divide-y divide-slate-100">
+                  <!-- Inyección dinámica -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- PAGINADOR INFERIOR -->
+            <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+              <div class="flex items-center gap-2">
+                <span id="inventarioResumenLabel">Mostrando 0 productos</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <button onclick="activarStockEnTodos()" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                  ⚡ Activar control numérico en todos los productos
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================== -->
         <!-- TAB 5: CATEGORÍAS -->
         <!-- =================================================================== -->
         <section id="tab-categorias" class="panel-pane space-y-5 hidden">
@@ -2359,6 +2470,58 @@
     </div>
   </div>
 
+  <!-- MODAL: REABASTECER STOCK RÁPIDO (TIPO OLACLICK) -->
+  <div id="modalReabastecerStock" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">📦</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Reabastecer Stock</h3>
+            <p id="reabastecerProductoNombre" class="text-[11px] text-slate-400 font-medium">Producto seleccionado</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalReabastecer()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <input type="hidden" id="reabastecerDocId">
+
+      <div class="space-y-3">
+        <div class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between text-xs">
+          <span class="text-slate-500 font-medium">Stock actual:</span>
+          <span id="reabastecerStockActualBadge" class="font-black text-slate-900 text-sm">0 un.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Cantidad a sumar al inventario:</label>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="ajustarInputReabastecer(-1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-sm cursor-pointer">-</button>
+            <input id="inputReabastecerCantidad" type="number" min="1" value="10" class="flex-1 text-center py-2 bg-white border border-slate-200 rounded-xl font-black text-base text-slate-900 focus:outline-none focus:border-blue-600">
+            <button type="button" onclick="ajustarInputReabastecer(1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-sm cursor-pointer">+</button>
+          </div>
+        </div>
+
+        <!-- ATAJOS RÁPIDOS -->
+        <div class="grid grid-cols-4 gap-2 pt-1">
+          <button type="button" onclick="setCantidadReabastecer(5)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors">+5</button>
+          <button type="button" onclick="setCantidadReabastecer(10)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors">+10</button>
+          <button type="button" onclick="setCantidadReabastecer(25)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors">+25</button>
+          <button type="button" onclick="setCantidadReabastecer(50)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors">+50</button>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Alerta de stock mínimo (opcional):</label>
+          <input id="inputReabastecerMinimo" type="number" min="0" value="3" class="w-full py-2 px-3 bg-white border border-slate-200 rounded-xl font-bold text-xs text-slate-900 focus:outline-none focus:border-blue-600" placeholder="Ej: 3 unidades">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalReabastecer()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarReabastecimiento()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer">Reabastecer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
   <div id="printArea" class="hidden"></div>
 
@@ -2668,6 +2831,7 @@
       finanzas: { title: 'Módulo Financiero', sub: 'Control de egresos, ingresos, cuentas bancarias y métodos de pago' },
       productos: { title: 'Página de Productos & Carta', sub: 'Estructuración de categorías, precios, fotos y stock' },
       bienvenida: { title: 'Página de Bienvenida', sub: 'Editor de landing page móvil, enlaces rápidos y WiFi' },
+      inventario: { title: 'Inventario', sub: 'Control de stock y alertas de agotados en tiempo real' },
       categorias: { title: 'Categorías', sub: 'Organización del catálogo gastronómico' },
       clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
       descuentos: { title: 'Descuentos & Cupones', sub: 'Promociones para la carta online' },
@@ -2696,6 +2860,14 @@
         b.classList.toggle('bg-slate-800', isMatch);
       });
 
+      // Actualizar selección en submenú de finanzas
+      document.querySelectorAll('.finanzas-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === subtab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
+
       toggleSidebar(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -2715,6 +2887,19 @@
       if (tab === 'bienvenida') {
         renderBienvenidaEditor();
       }
+      if (tab === 'inventario') {
+        renderInventario();
+      }
+    }
+
+    function toggleFinanzasSubmenu() {
+      const sub = document.getElementById('finanzasSubmenu');
+      const arrow = document.getElementById('finanzasArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('finanzas');
     }
 
     function toggleMenuSubmenu() {
@@ -2818,6 +3003,7 @@
         document.getElementById('badgePlatosCount').textContent = productos.length;
         renderProductosList();
         renderPedidoCatalogo();
+        renderInventario();
       });
 
       // Clientes CRM
@@ -5590,6 +5776,467 @@
       document.getElementById('newImgFile').value = '';
       document.getElementById('newImgPreview').innerHTML = '📷';
       imagenNuevaDataUrl = null;
+    }
+
+    // =========================================================================
+    // SECCIÓN 4.8: INVENTARIO & CONTROL DE STOCK (TIPO OLACLICK)
+    // =========================================================================
+    let inventarioFiltro = 'todos'; // 'disponible' | 'agotado' | 'todos'
+    let inventarioSearchQuery = '';
+
+    function setInventarioFiltro(filtro) {
+      inventarioFiltro = filtro;
+
+      const btnDisp = document.getElementById('btnInvFiltroDisponible');
+      const btnAgot = document.getElementById('btnInvFiltroAgotado');
+      const btnTodos = document.getElementById('btnInvFiltroTodos');
+
+      if (btnDisp) {
+        btnDisp.className = filtro === 'disponible'
+          ? 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-emerald-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer'
+          : 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer';
+      }
+
+      if (btnAgot) {
+        btnAgot.className = filtro === 'agotado'
+          ? 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-red-600 text-white shadow-xs transition-all flex items-center gap-1.5 cursor-pointer'
+          : 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors flex items-center gap-1.5 cursor-pointer';
+      }
+
+      if (btnTodos) {
+        btnTodos.className = filtro === 'todos'
+          ? 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-slate-900 text-white shadow-xs transition-all cursor-pointer'
+          : 'inv-filter-pill px-3 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer';
+      }
+
+      renderInventarioTable();
+    }
+
+    function filtrarInventario(val) {
+      inventarioSearchQuery = (val || '').toLowerCase().trim();
+      renderInventarioTable();
+    }
+
+    function renderInventario() {
+      let disponiblesTotal = 0;
+      let alertasTotal = 0;
+      let agotadosTotal = 0;
+
+      productos.forEach(p => {
+        const stock = typeof p.stock === 'number' ? p.stock : 0;
+        const stockMinimo = typeof p.stockMinimo === 'number' ? p.stockMinimo : 3;
+        const hasControl = !!p.controlStock;
+
+        if (hasControl) {
+          if (stock <= 0 || p.disponible === false) {
+            agotadosTotal++;
+          } else {
+            disponiblesTotal++;
+            if (stock <= stockMinimo) {
+              alertasTotal++;
+            }
+          }
+        } else {
+          if (p.disponible === false) {
+            agotadosTotal++;
+          } else {
+            disponiblesTotal++;
+          }
+        }
+      });
+
+      const labelDisp = document.getElementById('labelInvDisponibles');
+      if (labelDisp) labelDisp.textContent = `${disponiblesTotal} Disponible (${alertasTotal} Alerta)`;
+
+      const labelAgot = document.getElementById('labelInvAgotados');
+      if (labelAgot) labelAgot.textContent = `${agotadosTotal} Agotado`;
+
+      const badgeAlerta = document.getElementById('badgeInventarioAlerta');
+      if (badgeAlerta) {
+        const totalCriticos = alertasTotal + agotadosTotal;
+        if (totalCriticos > 0) {
+          badgeAlerta.textContent = totalCriticos;
+          badgeAlerta.classList.remove('hidden');
+        } else {
+          badgeAlerta.classList.add('hidden');
+        }
+      }
+
+      renderInventarioTable();
+    }
+
+    function renderInventarioTable() {
+      const tbody = document.getElementById('inventarioTableBody');
+      if (!tbody) return;
+
+      let items = [...productos];
+
+      // Filtro de búsqueda
+      if (inventarioSearchQuery) {
+        items = items.filter(p => 
+          (p.name || '').toLowerCase().includes(inventarioSearchQuery) ||
+          (p.cat || '').toLowerCase().includes(inventarioSearchQuery)
+        );
+      }
+
+      // Filtro de píldora
+      if (inventarioFiltro === 'disponible') {
+        items = items.filter(p => {
+          if (p.controlStock) return (p.stock || 0) > 0 && p.disponible !== false;
+          return p.disponible !== false;
+        });
+      } else if (inventarioFiltro === 'agotado') {
+        items = items.filter(p => {
+          if (p.controlStock) return (p.stock || 0) <= 0 || p.disponible === false;
+          return p.disponible === false;
+        });
+      }
+
+      const resumenLabel = document.getElementById('inventarioResumenLabel');
+      if (resumenLabel) {
+        resumenLabel.textContent = `Mostrando ${items.length} de ${productos.length} productos`;
+      }
+
+      if (items.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-16 text-center text-slate-400">
+              <div class="max-w-xs mx-auto space-y-2">
+                <div class="text-4xl">📦</div>
+                <p class="font-bold text-slate-700 text-sm">No hay productos en esta vista</p>
+                <p class="text-xs text-slate-400">Prueba cambiando los filtros o buscando con otro término.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = items.map(p => {
+        const stock = typeof p.stock === 'number' ? p.stock : 0;
+        const stockMin = typeof p.stockMinimo === 'number' ? p.stockMinimo : 3;
+        const hasControl = !!p.controlStock;
+        const isAgotado = hasControl ? (stock <= 0 || p.disponible === false) : (p.disponible === false);
+        const isBajo = hasControl && !isAgotado && stock <= stockMin;
+
+        // Estado badge
+        let estadoBadgeHtml = '';
+        if (isAgotado) {
+          estadoBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-red-50 text-red-700 border border-red-200"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Agotado</span>`;
+        } else if (isBajo) {
+          estadoBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Stock Bajo (${stock})</span>`;
+        } else {
+          estadoBadgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Disponible (${hasControl ? stock + ' un.' : '∞'})</span>`;
+        }
+
+        // Toggle control stock switch
+        const toggleStockHtml = `
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" onchange="toggleControlStockInventario('${p.docId}', this.checked)" class="sr-only peer" ${hasControl ? 'checked' : ''}>
+            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        `;
+
+        // Stock actual controls
+        let stockActualHtml = '';
+        if (hasControl) {
+          stockActualHtml = `
+            <div class="inline-flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl p-1">
+              <button onclick="ajustarStockDelta('${p.docId}', -1)" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-black text-xs border border-slate-200 flex items-center justify-center shadow-xs cursor-pointer">-</button>
+              <input type="number" min="0" value="${stock}" onchange="actualizarStockDirecto('${p.docId}', this.value)" class="w-12 text-center font-black text-xs text-slate-900 bg-transparent border-none focus:outline-none focus:bg-white focus:rounded">
+              <button onclick="ajustarStockDelta('${p.docId}', 1)" class="w-6 h-6 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-black text-xs border border-slate-200 flex items-center justify-center shadow-xs cursor-pointer">+</button>
+            </div>
+          `;
+        } else {
+          stockActualHtml = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 font-bold text-xs">
+              <span>∞</span>
+              <span>Ilimitado</span>
+            </span>
+          `;
+        }
+
+        // Stock mínimo alerta
+        let stockMinimoHtml = '';
+        if (hasControl) {
+          stockMinimoHtml = `
+            <div class="inline-flex items-center justify-center gap-1">
+              <input type="number" min="0" value="${stockMin}" onchange="actualizarStockMinimo('${p.docId}', this.value)" class="w-14 text-center font-bold text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-lg py-1 px-1 focus:outline-none focus:border-blue-600 focus:bg-white">
+              <span class="text-[10px] text-slate-400">un.</span>
+            </div>
+          `;
+        } else {
+          stockMinimoHtml = `<span class="text-slate-300 font-mono">—</span>`;
+        }
+
+        // Thumbnail
+        const thumbHtml = p.img 
+          ? `<img src="${p.img}" class="w-10 h-10 rounded-xl object-cover border border-slate-100 shrink-0" alt="${p.name}">`
+          : `<div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-lg font-bold shrink-0">🍔</div>`;
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-3">
+                ${thumbHtml}
+                <div class="min-w-0">
+                  <h4 class="font-bold text-slate-900 text-xs truncate max-w-[200px] sm:max-w-xs">${p.name || 'Sin nombre'}</h4>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[10px] text-slate-400 font-semibold">${p.cat || 'General'}</span>
+                    <span class="text-[10px] text-slate-300">•</span>
+                    <span class="text-[10px] font-bold text-slate-600">$${Number(p.price || 0).toLocaleString('es-CL')}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${toggleStockHtml}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${stockActualHtml}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${stockMinimoHtml}
+            </td>
+            <td class="py-3 px-4 text-center">
+              ${estadoBadgeHtml}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="abrirModalReabastecer('${p.docId}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Reabastecer existencias">
+                  <span>+</span>
+                  <span>Reabastecer</span>
+                </button>
+                <button onclick="toggleDisponibleDirecto('${p.docId}', ${p.disponible === false ? 'true' : 'false'})" class="p-1.5 rounded-lg ${p.disponible !== false ? 'text-slate-400 hover:text-red-500 hover:bg-red-50' : 'text-red-500 hover:text-emerald-600 hover:bg-emerald-50'} transition-colors cursor-pointer" title="${p.disponible !== false ? 'Marcar agotado manualmente' : 'Habilitar disponibilidad'}">
+                  <span>${p.disponible !== false ? '👁️' : '🚫'}</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleControlStockInventario(docId, nextVal) {
+      const p = productos.find(x => x.docId === docId);
+      const currentStock = (p && typeof p.stock === 'number') ? p.stock : 10;
+      const currentMin = (p && typeof p.stockMinimo === 'number') ? p.stockMinimo : 3;
+
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({
+          controlStock: nextVal,
+          stock: nextVal ? currentStock : firebase.firestore.FieldValue.delete(),
+          stockMinimo: nextVal ? currentMin : firebase.firestore.FieldValue.delete(),
+          disponible: nextVal ? (currentStock > 0) : true
+        }).then(() => {
+          renderInventario();
+        });
+      } else {
+        if (p) {
+          p.controlStock = nextVal;
+          if (nextVal) {
+            p.stock = currentStock;
+            p.stockMinimo = currentMin;
+            p.disponible = currentStock > 0;
+          }
+          renderInventario();
+        }
+      }
+    }
+
+    function actualizarStockDirecto(docId, val) {
+      const stock = Math.max(0, parseInt(val) || 0);
+      const p = productos.find(x => x.docId === docId);
+      const disponible = stock > 0;
+
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({
+          stock,
+          disponible
+        }).then(() => {
+          renderInventario();
+        });
+      } else {
+        if (p) {
+          p.stock = stock;
+          p.disponible = disponible;
+          renderInventario();
+        }
+      }
+    }
+
+    function ajustarStockDelta(docId, delta) {
+      const p = productos.find(x => x.docId === docId);
+      if (!p) return;
+      const current = typeof p.stock === 'number' ? p.stock : 0;
+      const nextVal = Math.max(0, current + delta);
+      actualizarStockDirecto(docId, nextVal);
+    }
+
+    function actualizarStockMinimo(docId, val) {
+      const stockMinimo = Math.max(0, parseInt(val) || 0);
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({ stockMinimo }).then(() => renderInventario());
+      } else {
+        const p = productos.find(x => x.docId === docId);
+        if (p) {
+          p.stockMinimo = stockMinimo;
+          renderInventario();
+        }
+      }
+    }
+
+    function toggleDisponibleDirecto(docId, nextVal) {
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({ disponible: nextVal }).then(() => renderInventario());
+      } else {
+        const p = productos.find(x => x.docId === docId);
+        if (p) {
+          p.disponible = nextVal;
+          renderInventario();
+        }
+      }
+    }
+
+    // MODAL REABASTECER
+    function abrirModalReabastecer(docId) {
+      const p = productos.find(x => x.docId === docId);
+      if (!p) return;
+
+      document.getElementById('reabastecerDocId').value = docId;
+      document.getElementById('reabastecerProductoNombre').textContent = `${p.name} (${p.cat || 'General'})`;
+      document.getElementById('reabastecerStockActualBadge').textContent = `${p.stock || 0} unidades`;
+      document.getElementById('inputReabastecerCantidad').value = 10;
+      document.getElementById('inputReabastecerMinimo').value = p.stockMinimo || 3;
+
+      document.getElementById('modalReabastecerStock').classList.remove('hidden');
+    }
+
+    function cerrarModalReabastecer() {
+      document.getElementById('modalReabastecerStock').classList.add('hidden');
+    }
+
+    function ajustarInputReabastecer(delta) {
+      const inp = document.getElementById('inputReabastecerCantidad');
+      const val = Math.max(1, (parseInt(inp.value) || 0) + delta);
+      inp.value = val;
+    }
+
+    function setCantidadReabastecer(cant) {
+      document.getElementById('inputReabastecerCantidad').value = cant;
+    }
+
+    function guardarReabastecimiento() {
+      const docId = document.getElementById('reabastecerDocId').value;
+      const cant = Math.max(1, parseInt(document.getElementById('inputReabastecerCantidad').value) || 0);
+      const minAlerta = Math.max(0, parseInt(document.getElementById('inputReabastecerMinimo').value) || 3);
+      const p = productos.find(x => x.docId === docId);
+      if (!p) return;
+
+      const currentStock = typeof p.stock === 'number' ? p.stock : 0;
+      const nuevoStock = currentStock + cant;
+
+      if (window.platosRef) {
+        window.platosRef().doc(docId).update({
+          controlStock: true,
+          stock: nuevoStock,
+          stockMinimo: minAlerta,
+          disponible: true
+        }).then(() => {
+          cerrarModalReabastecer();
+          renderInventario();
+        });
+      } else {
+        p.controlStock = true;
+        p.stock = nuevoStock;
+        p.stockMinimo = minAlerta;
+        p.disponible = true;
+        cerrarModalReabastecer();
+        renderInventario();
+      }
+    }
+
+    function activarStockEnTodos() {
+      if (!confirm('¿Deseas activar el control numérico de existencias en TODOS los productos del catálogo? Se establecerá stock inicial de 15 unidades y mínimo de alerta de 3.')) return;
+
+      if (window.platosRef) {
+        const batch = firebase.firestore().batch();
+        productos.forEach(p => {
+          const ref = window.platosRef().doc(p.docId);
+          batch.update(ref, {
+            controlStock: true,
+            stock: typeof p.stock === 'number' ? p.stock : 15,
+            stockMinimo: typeof p.stockMinimo === 'number' ? p.stockMinimo : 3,
+            disponible: true
+          });
+        });
+        batch.commit().then(() => {
+          renderInventario();
+        });
+      } else {
+        productos.forEach(p => {
+          p.controlStock = true;
+          p.stock = typeof p.stock === 'number' ? p.stock : 15;
+          p.stockMinimo = typeof p.stockMinimo === 'number' ? p.stockMinimo : 3;
+          p.disponible = true;
+        });
+        renderInventario();
+      }
+    }
+
+    // DESCARGA EXCEL / CSV DE INVENTARIO
+    function descargarExcelInventario() {
+      if (productos.length === 0) {
+        alert('No hay productos en el catálogo para exportar.');
+        return;
+      }
+
+      let csv = '\uFEFF'; // BOM para que Excel en Windows/Mac lo abra con tildes y caracteres correctos
+      csv += 'ID,Producto,Categoría,Precio,Control de Stock,Stock Actual,Stock Mínimo Alerta,Estado,Valor Total Existencias\r\n';
+
+      let valorTotalGlobal = 0;
+
+      productos.forEach(p => {
+        const hasControl = !!p.controlStock;
+        const stock = hasControl ? (typeof p.stock === 'number' ? p.stock : 0) : 999;
+        const stockMin = hasControl ? (typeof p.stockMinimo === 'number' ? p.stockMinimo : 3) : 0;
+        const precio = Number(p.price || 0);
+        const valorItem = hasControl ? (stock * precio) : 0;
+        valorTotalGlobal += valorItem;
+
+        let estado = 'Disponible';
+        if (hasControl) {
+          if (stock <= 0 || p.disponible === false) estado = 'Agotado';
+          else if (stock <= stockMin) estado = 'Stock Bajo (Alerta)';
+        } else {
+          if (p.disponible === false) estado = 'Agotado';
+        }
+
+        const row = [
+          `"${p.docId || ''}"`,
+          `"${(p.name || '').replace(/"/g, '""')}"`,
+          `"${(p.cat || '').replace(/"/g, '""')}"`,
+          precio,
+          hasControl ? 'SI' : 'NO (Ilimitado)',
+          hasControl ? stock : 'Infinito',
+          hasControl ? stockMin : 'N/A',
+          `"${estado}"`,
+          valorItem
+        ];
+        csv += row.join(',') + '\r\n';
+      });
+
+      csv += `\r\n,,,TOTAL VALOR INVENTARIO:,,,,,"${valorTotalGlobal}"\r\n`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const fechaStr = new Date().toISOString().slice(0, 10);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `inventario_${fechaStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // =========================================================================
