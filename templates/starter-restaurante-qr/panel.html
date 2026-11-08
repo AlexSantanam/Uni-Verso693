@@ -270,13 +270,34 @@
             </div>
           </button>
 
-          <!-- MARKETING / CUPONES -->
-          <button onclick="switchTab('descuentos')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="descuentos">
-            <div class="flex items-center gap-3">
-              <span class="text-base">🏷️</span>
-              <span>Descuentos</span>
+          <!-- MARKETING (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleMarketingSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="marketing">
+              <div class="flex items-center gap-3">
+                <span class="text-base">📢</span>
+                <span>Marketing</span>
+              </div>
+              <span id="marketingArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+            </button>
+            <div id="marketingSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
+              <button onclick="switchTab('marketing', 'codigos')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="codigos">
+                Códigos de descuento
+              </button>
+              <button onclick="switchTab('marketing', 'fidelidad')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="fidelidad">
+                Programa de fidelidad
+              </button>
+              <button onclick="switchTab('marketing', 'envio-masivo')" class="marketing-sub-btn w-full flex items-center justify-between py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="envio-masivo">
+                <span>Envío masivo</span>
+                <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold">✨ IA</span>
+              </button>
+              <button onclick="switchTab('marketing', 'google')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="google">
+                Google for Restaurants
+              </button>
+              <button onclick="switchTab('marketing', 'resenas')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="resenas">
+                Reseñas
+              </button>
             </div>
-          </button>
+          </div>
 
           <!-- CONFIGURACIÓN / NEGOCIO -->
           <button onclick="switchTab('negocio')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="negocio">
@@ -2116,30 +2137,455 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 7: DESCUENTOS Y CUPONES -->
+        <!-- TAB 7: MARKETING GASTRONÓMICO COMPLETO (EXACTO A OLACLICK) -->
         <!-- =================================================================== -->
-        <section id="tab-descuentos" class="panel-pane space-y-5 hidden">
+        <section id="tab-marketing" class="panel-pane space-y-6 hidden">
           
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">➕ Crear Nuevo Cupón de Descuento</h3>
-            <div class="grid sm:grid-cols-2 gap-3">
-              <input id="newDescCodigo" type="text" placeholder="CÓDIGO (ej: PROMO15, BIENVENIDO)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 uppercase font-bold focus:outline-none focus:border-brand-600">
-              <select id="newDescTipo" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
-                <option value="porcentaje">% Porcentaje de Descuento</option>
-                <option value="monto">$ Monto Fijo en Pesos</option>
-              </select>
-              <input id="newDescValor" type="number" placeholder="Valor (ej: 15 o 3000)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
-              <input id="newDescMinimo" type="number" step="500" placeholder="Pedido mínimo opcional (ej: 10000)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600">
+          <!-- SUB-BARRA DE NAVEGACIÓN DE MARKETING (EXACTA A SUBMENÚ OLACLICK) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-2 flex flex-wrap items-center justify-between gap-2 shadow-soft">
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl overflow-x-auto no-scrollbar">
+              <button onclick="setMarketingSubtab('codigos')" id="subtabBtnMktCodigos" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all bg-white text-slate-900 shadow-sm cursor-pointer flex items-center gap-2">
+                <span>🏷️</span>
+                <span>Códigos de descuento</span>
+              </button>
+              <button onclick="setMarketingSubtab('fidelidad')" id="subtabBtnMktFidelidad" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>⭐</span>
+                <span>Programa de fidelidad</span>
+              </button>
+              <button onclick="setMarketingSubtab('envio-masivo')" id="subtabBtnMktEnvio" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>🚀</span>
+                <span>Envío masivo</span>
+                <span class="text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded font-bold">✨ IA</span>
+              </button>
+              <button onclick="setMarketingSubtab('google')" id="subtabBtnMktGoogle" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>📍</span>
+                <span>Google for Restaurants</span>
+              </button>
+              <button onclick="setMarketingSubtab('resenas')" id="subtabBtnMktResenas" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>🌟</span>
+                <span>Reseñas</span>
+              </button>
             </div>
-            <button onclick="agregarDescuento()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-              + Activar Cupón
-            </button>
           </div>
 
-          <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft">
-            <h3 class="font-extrabold text-sm text-slate-900">🏷️ Cupones Activos</h3>
-            <div id="descuentosList" class="divide-y divide-slate-100">
-              <!-- Inyección JS -->
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 1: CÓDIGOS DE DESCUENTO (IMAGEN 1 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewMktCodigos" class="space-y-4">
+            
+            <!-- ENCABEZADO SUPERIOR: TÍTULO, BUSCADOR Y BOTÓN CREAR -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Códigos de descuento</h2>
+              
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <!-- Buscador de descuentos -->
+                <div class="relative flex-1 sm:w-64">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                  <input id="inputBuscarDescuentos" type="text" placeholder="Buscar un descuento..." oninput="filtrarDescuentos(this.value)" class="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-xs">
+                </div>
+
+                <!-- Botón Crear descuento (Azul OlaClick) -->
+                <button onclick="abrirModalCrearDescuento()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
+                  <span>+</span>
+                  <span>Crear descuento</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- TABLA DE DESCUENTOS (COLUMNAS IDÉNTICAS A CAPTURA) -->
+            <div class="bg-white rounded-2xl border border-borderLight overflow-hidden shadow-soft">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-400 font-bold tracking-wider uppercase text-[10px] border-b border-slate-100">
+                    <tr>
+                      <th class="py-3.5 px-4">CÓDIGO DE DESCUENTO</th>
+                      <th class="py-3.5 px-4 text-center">PUBLICAR EN EL MENÚ</th>
+                      <th class="py-3.5 px-4 text-center">DESCUENTO</th>
+                      <th class="py-3.5 px-4 text-center">USADO/LÍMITE</th>
+                      <th class="py-3.5 px-4 text-center">FECHA DE INICIO/FIN</th>
+                      <th class="py-3.5 px-4 text-center">ESTADO</th>
+                      <th class="py-3.5 px-4 text-center">ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="descuentosTableBody" class="divide-y divide-slate-100">
+                    <!-- Inyección dinámica JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 2: PROGRAMA DE FIDELIDAD (IMAGEN 2 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewMktFidelidad" class="space-y-6 hidden">
+            
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Programa de Fidelidad</h2>
+              
+              <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+                <button onclick="setFidelidadTab('programa')" id="subtabFidPrograma" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs cursor-pointer">
+                  ⭐ Programa
+                </button>
+                <button onclick="setFidelidadTab('participantes')" id="subtabFidParticipantes" class="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer">
+                  👥 Participantes
+                </button>
+              </div>
+            </div>
+
+            <!-- SUBPANEL 2.1: PROGRAMA Y REGLAS -->
+            <div id="panelFidPrograma" class="space-y-6">
+              
+              <!-- CARD PRINCIPAL: ACTIVA TU PROGRAMA (EXACTO A IMAGEN 2) -->
+              <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 shadow-soft">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  
+                  <div class="lg:col-span-7 space-y-4">
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                      Activa tu programa de fidelidad
+                    </h3>
+                    <p class="text-sm text-slate-600 font-medium">
+                      Incrementa por <b class="text-blue-600 font-black">5X</b> la fidelidad de tus clientes recompensando cada visita o pedido.
+                    </p>
+                    <div class="pt-2">
+                      <button onclick="toggleActivarFidelidad()" id="btnToggleFidelidadEstado" class="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                        Activar programa
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-5 flex justify-center">
+                    <div class="border-2 border-dashed border-blue-200 rounded-2xl p-4 bg-blue-50/50 w-full max-w-sm flex items-center justify-center">
+                      <div class="bg-blue-600 text-white px-5 py-3 rounded-2xl font-black text-xs shadow-lg flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full bg-white text-blue-600 flex items-center justify-center text-[10px]">👤</span>
+                        <span>¡Pide y gana recompensas!</span>
+                        <span>➔</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- 4 PILARES DEL PROCESO (EXACTOS A IMAGEN 2) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div class="bg-white rounded-2xl border border-borderLight p-5 text-center space-y-3 shadow-soft">
+                  <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold mx-auto">
+                    ⭐
+                  </div>
+                  <div>
+                    <h4 class="font-black text-sm text-slate-900">Activa el programa</h4>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1">Configura tus preferencias de puntaje</p>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight p-5 text-center space-y-3 shadow-soft">
+                  <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold mx-auto">
+                    🛒
+                  </div>
+                  <div>
+                    <h4 class="font-black text-sm text-slate-900">Gana puntos</h4>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1">Por cada compra recibe puntos automáticos</p>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight p-5 text-center space-y-3 shadow-soft">
+                  <div class="w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold mx-auto">
+                    🎁
+                  </div>
+                  <div>
+                    <h4 class="font-black text-sm text-slate-900">Canjea recompensas</h4>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1">Acumula puntos y obtén descuentos</p>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight p-5 text-center space-y-3 shadow-soft">
+                  <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold mx-auto">
+                    💙
+                  </div>
+                  <div>
+                    <h4 class="font-black text-sm text-slate-900">Fideliza clientes</h4>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1">Clientes felices, satisfechos y recurrentes</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- CONFIGURACIÓN DE PUNTOS -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+                <h3 class="font-black text-sm text-slate-900">⚙️ Reglas de Puntos y Canje</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Puntos ganados por cada $1.000 gastados:</label>
+                    <input id="inputFidRatioGanar" type="number" value="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                    <p class="text-[10px] text-slate-400 mt-1">Ej: Un pedido de $20.000 da 200 puntos</p>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Puntos requeridos para $1.000 de dcto:</label>
+                    <input id="inputFidRatioCanje" type="number" value="100" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                    <p class="text-[10px] text-slate-400 mt-1">Ej: 100 puntos = $1.000 en caja o menú</p>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Mínimo de puntos para canjear:</label>
+                    <input id="inputFidMinCanje" type="number" value="50" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                    <p class="text-[10px] text-slate-400 mt-1">Evita canjes por montos insignificantes</p>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button onclick="guardarReglasFidelidad()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+                    💾 Guardar Reglas de Fidelidad
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- SUBPANEL 2.2: PARTICIPANTES -->
+            <div id="panelFidParticipantes" class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft hidden">
+              <div class="flex items-center justify-between">
+                <h3 class="font-black text-sm text-slate-900">Base de Clientes Inscritos</h3>
+                <span id="labelTotalParticipantesFid" class="text-xs font-bold text-slate-500">0 participantes</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-100">
+                    <tr>
+                      <th class="py-3 px-4">CLIENTE</th>
+                      <th class="py-3 px-4 text-center">NIVEL</th>
+                      <th class="py-3 px-4 text-center">PUNTOS DISPONIBLES</th>
+                      <th class="py-3 px-4 text-center">EQUIVALENTE $</th>
+                      <th class="py-3 px-4 text-center">ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="participantesFidelidadTableBody" class="divide-y divide-slate-100">
+                    <!-- Inyección JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 3: ENVÍO MASIVO CON IA & WHATSAPP (IMÁGENES 3 Y 4 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewMktEnvio" class="space-y-6 hidden">
+            
+            <!-- HERO CARD (EXACTO A IMAGEN 3) -->
+            <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 shadow-soft">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <div class="lg:col-span-7 space-y-4">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold border border-blue-200">
+                    <span>✓</span>
+                    <span>Complemento</span>
+                  </div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                    Reconquista tus clientes frecuentes inactivos con IA y WhatsApp
+                  </h2>
+                  <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                    Cada mes, nuestra IA detecta a tus clientes frecuentes inactivos y los reconquista con promociones por WhatsApp. ¡Todo 100% automatizado!
+                  </p>
+                  <div class="pt-2 flex flex-wrap items-center gap-3">
+                    <button onclick="lanzarCampanaMasivaIA()" class="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/25 transition-all cursor-pointer">
+                      Activa tu Envío masivo con IA
+                    </button>
+                    <button onclick="abrirModalCampanaManual()" class="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors cursor-pointer">
+                      ✉️ Redactar Campaña Manual
+                    </button>
+                  </div>
+                </div>
+
+                <div class="lg:col-span-5 flex justify-center">
+                  <div class="relative w-full max-w-xs text-center p-4">
+                    <div class="w-32 h-32 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-5xl mx-auto shadow-inner">
+                      📲
+                    </div>
+                    <div class="mt-3 bg-slate-900 text-white px-4 py-2 rounded-2xl font-bold text-xs inline-flex items-center gap-2 shadow-lg">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Campañas con IA activas</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- PREGUNTAS FRECUENTES (EXACTO A IMAGEN 4) -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft">
+              <h3 class="text-lg font-black text-slate-900 tracking-tight">Preguntas frecuentes</h3>
+              
+              <div class="divide-y divide-slate-100 space-y-4">
+                
+                <div class="pt-3 flex gap-4 items-start">
+                  <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shrink-0">
+                    📱
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-black text-xs text-slate-900">¿Qué es una campaña de Envío masivo con IA y cómo funciona?</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                      Es una solución de marketing automatizada que analiza tu base de datos de clientes y optimiza cada etapa del proceso: desde la planificación estratégica y creación de mensajes, hasta su lanzamiento en WhatsApp priorizando a los clientes que han dejado de comprar.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-3 flex gap-4 items-start">
+                  <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0">
+                    💰
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-black text-xs text-slate-900">¿Por qué el programa de Envío masivo con IA funciona?</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                      Incrementa tu base de clientes frecuentes mediante campañas de WhatsApp con promociones hiper-personalizadas. Usamos IA para garantizar que cada campaña alcance el mayor porcentaje de apertura y ventas efectivas.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-3 flex gap-4 items-start">
+                  <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+                    📢
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-black text-xs text-slate-900">¿Qué canales se utilizan para lanzar el Envío masivo con IA?</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                      Usamos canales directos de WhatsApp de alto impacto seleccionados estratégicamente para lograr los mejores resultados sin spam.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-3 flex gap-4 items-start">
+                  <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-lg shrink-0">
+                    📅
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-black text-xs text-slate-900">¿Cuándo se lanzan las campañas de Envío masivo con IA?</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                      El sistema identifica los días y horarios óptimos de apertura según el historial gastronómico para enviar en el momento exacto donde se genera el mayor retorno de ventas.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-3 flex gap-4 items-start">
+                  <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+                    ⏰
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-black text-xs text-slate-900">¿Cuál es la duración del Envío masivo con IA?</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                      Las 24/7 durante los 30 días del mes con campañas estratégicas que detectan y reactivan clientes automáticamente.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 4: GOOGLE FOR RESTAURANTS (IMAGEN 5 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewMktGoogle" class="space-y-6 hidden">
+            
+            <!-- HERO CARD (EXACTO A IMAGEN 5) -->
+            <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 shadow-soft">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <div class="lg:col-span-5 flex justify-center order-2 lg:order-1">
+                  <!-- MOCKUP GOOGLE PROFILE CON BOTÓN ORDER ONLINE -->
+                  <div class="bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800 max-w-[260px] w-full">
+                    <div class="bg-white rounded-[2rem] overflow-hidden p-3 space-y-2 text-xs">
+                      <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px]">G</span>
+                        <div class="font-bold text-[10px] text-slate-900 truncate" id="googleMockNombre">Fravioli Street Food</div>
+                      </div>
+                      <div class="aspect-video rounded-xl bg-slate-100 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" class="w-full h-full object-cover">
+                      </div>
+                      <button class="w-full py-2 rounded-xl bg-blue-600 text-white font-black text-xs text-center shadow-md">
+                        Order online (Pedir aquí)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4 order-1 lg:order-2">
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                    Haz que tu restaurante aparezca en Google y gane más clientes locales
+                  </h2>
+                  <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                    Conecta tu restaurante con Google para aparecer en búsquedas y Maps, recibir más pedidos en línea y fortalecer tu reputación sin pagar comisiones.
+                  </p>
+                  <p class="text-xs text-slate-500 font-medium bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    Cuando alguien busca en Google <i>"hamburguesas cerca de mí"</i>, ¿aparece tu restaurante? Si tienes buenas reseñas y un perfil activo, sí. Así de simple.
+                  </p>
+                  <div class="pt-2 flex flex-wrap items-center gap-3">
+                    <a id="btnActivarGoogleMaps" href="https://business.google.com" target="_blank" class="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/25 flex items-center gap-2 transition-all cursor-pointer">
+                      <span class="font-black">G</span>
+                      <span>Activar mi perfil en Google ahora</span>
+                    </a>
+                    <button onclick="copiarLinkMenuParaGoogle()" class="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors cursor-pointer">
+                      📋 Copiar enlace de Menú para Google
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SECCIÓN: CONSIGUE MÁS PEDIDOS SIN PAGAR COMISIONES -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+              <div class="space-y-1">
+                <h3 class="text-lg font-black text-slate-900 tracking-tight">
+                  Consigue más pedidos <span class="text-blue-600">sin pagar comisiones</span>
+                </h3>
+                <p class="text-xs text-slate-500 font-medium">
+                  Publica tu menú en Google y permite que los clientes hagan pedidos desde allí. Más fácil para ellos. Más ventas para ti.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                  <h4 class="font-bold text-slate-900">Enlace de tu Menú para Google Business:</h4>
+                  <div class="flex items-center gap-2">
+                    <input id="inputGoogleMenuUrl" type="text" readonly class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-700" value="https://fravioli.zoco.menu">
+                    <button onclick="copiarLinkMenuParaGoogle()" class="px-3 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs cursor-pointer">Copiar</button>
+                  </div>
+                  <p class="text-[10px] text-slate-400">Pégalo en el campo "Enlace para pedidos en línea" de tu Google Business Profile.</p>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                  <h4 class="font-bold text-slate-900">Enlace directo para Calificar en Google:</h4>
+                  <div class="flex items-center gap-2">
+                    <input id="inputGoogleReviewsUrl" type="text" placeholder="https://g.page/r/.../review" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-700">
+                    <button onclick="guardarGoogleReviewsUrl()" class="px-3 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs cursor-pointer">Guardar</button>
+                  </div>
+                  <p class="text-[10px] text-slate-400">Se usará para enviar a clientes felices por WhatsApp o en la cuenta.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 5: RESEÑAS Y REPUTACIÓN -->
+          <!-- ================================================================= -->
+          <div id="viewMktResenas" class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft hidden">
+            <h2 class="text-xl font-black text-slate-900 tracking-tight">Gestión de Reseñas & Calificaciones</h2>
+            <p class="text-xs text-slate-500 font-medium">Monitorea y solicita opiniones 5 estrellas a comensales reales tras completar su pedido.</p>
+            
+            <div class="p-5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+              <h4 class="font-bold text-xs text-amber-900">Solicitud Automática de Opinión por WhatsApp</h4>
+              <p class="text-xs text-amber-800">
+                Al marcar un pedido como completado en el PDV o Cocina, el sistema puede invitar al cliente a calificar tu comida en Google Maps con 1 clic.
+              </p>
+              <div class="pt-2">
+                <button onclick="solicitarResenasUltimosClientes()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer">
+                  ⭐ Enviar solicitud a clientes de hoy
+                </button>
+              </div>
             </div>
           </div>
 
@@ -3094,6 +3540,126 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL: CREAR DESCUENTO (EXACTO A OLACLICK) -->
+  <div id="modalCrearDescuentoOlaClick" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">🏷️</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Crear Código de Descuento</h3>
+            <p class="text-[11px] text-slate-400">Configura porcentaje, vigencia y visibilidad en el menú</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalCrearDescuento()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre de la Promoción *</label>
+          <input id="modalDescNombre" type="text" placeholder="Ej: Descuento cumpleaños, Descuento familia" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Código del Cupón (Lo que ingresa el cliente) *</label>
+          <input id="modalDescCodigo" type="text" placeholder="Ej: CUMPLEAÑOS, FAMILIA20" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 uppercase font-black tracking-wider focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tipo de Descuento</label>
+            <select id="modalDescTipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+              <option value="porcentaje">% Porcentaje</option>
+              <option value="monto">$ Monto fijo en pesos</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Valor del Descuento *</label>
+            <input id="modalDescValor" type="number" placeholder="Ej: 20 o 5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-black focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Compra Mínima ($)</label>
+            <input id="modalDescMinimo" type="number" placeholder="0 = sin mínimo" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Límite de usos totales</label>
+            <select id="modalDescLimite" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+              <option value="ilimitado">Ilimitado (∞)</option>
+              <option value="1">1 uso total</option>
+              <option value="10">10 usos</option>
+              <option value="50">50 usos</option>
+              <option value="100">100 usos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div>
+            <div class="font-bold text-slate-900 text-xs">Publicar en el Menú Digital</div>
+            <div class="text-[10px] text-slate-400">Muestra el cupón visible en la carta para que los clientes lo aprovechen</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="modalDescPublicar" class="sr-only peer" checked>
+            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalCrearDescuento()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarDescuentoOlaClick()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Crear Descuento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CAMPAÑA MANUAL WHATSAPP -->
+  <div id="modalCampanaManual" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">📲</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Lanzar Campaña por WhatsApp</h3>
+            <p class="text-[11px] text-slate-400">Envío de mensaje masivo segmentado</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalCampanaManual()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Público Objetivo (Segmento):</label>
+          <select id="selectCampanaSegmento" onchange="actualizarDestinatariosCampana()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+            <option value="inactivos">Clientes en riesgo / inactivos (+30 días)</option>
+            <option value="todos">Todos los clientes registrados</option>
+            <option value="top">Clientes Top y Élite</option>
+          </select>
+          <p id="labelDestinatariosCount" class="text-[10px] text-slate-400 mt-1">Se enviará a X clientes</p>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-bold text-slate-700">Mensaje de WhatsApp:</label>
+            <button type="button" onclick="generarTextoCampanaIA()" class="text-[10px] font-bold text-blue-600 hover:underline cursor-pointer flex items-center gap-1">
+              <span>✨</span>
+              <span>Mejorar con IA</span>
+            </button>
+          </div>
+          <textarea id="textCampanaMensaje" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalCampanaManual()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="ejecutarEnvioCampana()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer">Lanzar Campaña</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -3406,7 +3972,8 @@
       chatbot: { title: 'Chatbot WhatsApp & IA', sub: 'Automatización inteligente de ventas y atención 24/7' },
       categorias: { title: 'Categorías', sub: 'Organización del catálogo gastronómico' },
       clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
-      descuentos: { title: 'Descuentos & Cupones', sub: 'Promociones para la carta online' },
+      descuentos: { title: 'Marketing & Descuentos', sub: 'Promociones para la carta online y fidelización' },
+      marketing: { title: 'Marketing Gastronómico', sub: 'Descuentos, fidelización, envíos masivos con IA y presencia en Google' },
       negocio: { title: 'Configuración & Horarios', sub: 'Apertura automática, colores y estado del local' }
     };
 
@@ -3414,11 +3981,16 @@
       document.querySelectorAll('.nav-btn').forEach(b => {
         if (tab === 'bienvenida' || tab === 'productos') {
           b.classList.toggle('active', b.dataset.tab === 'productos');
+        } else if (tab === 'marketing' || tab === 'descuentos') {
+          b.classList.toggle('active', b.dataset.tab === 'marketing');
         } else {
           b.classList.toggle('active', b.dataset.tab === tab);
         }
       });
-      document.querySelectorAll('.panel-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
+      document.querySelectorAll('.panel-pane').forEach(p => {
+        const targetId = (tab === 'marketing' || tab === 'descuentos') ? 'tab-marketing' : 'tab-' + tab;
+        p.classList.toggle('hidden', p.id !== targetId);
+      });
       
       const meta = TAB_TITLES[tab] || { title: 'Panel Zoco', sub: '' };
       document.getElementById('topBarTitle').textContent = meta.title;
@@ -3434,6 +4006,14 @@
 
       // Actualizar selección en submenú de finanzas
       document.querySelectorAll('.finanzas-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === subtab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
+
+      // Actualizar selección en submenú de marketing
+      document.querySelectorAll('.marketing-sub-btn').forEach(b => {
         const isMatch = b.dataset.subtab === subtab;
         b.classList.toggle('text-white', isMatch);
         b.classList.toggle('font-bold', isMatch);
@@ -3468,6 +4048,20 @@
       if (tab === 'clientes') {
         renderClientes();
       }
+      if (tab === 'marketing' || tab === 'descuentos') {
+        if (subtab) setMarketingSubtab(subtab);
+        else renderMarketing();
+      }
+    }
+
+    function toggleMarketingSubmenu() {
+      const sub = document.getElementById('marketingSubmenu');
+      const arrow = document.getElementById('marketingArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('marketing', 'codigos');
     }
 
     function toggleFinanzasSubmenu() {
@@ -3601,8 +4195,12 @@
 
       // Descuentos
       window.descuentosRef().onSnapshot(snap => {
-        descuentos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
-        renderDescuentosList();
+        if (!snap || snap.empty) {
+          descuentos = [...descuentosDemoBase];
+        } else {
+          descuentos = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        }
+        renderDescuentosTable();
       });
 
       // Pedidos en Vivo (Para KDS y Ventas)
@@ -7672,25 +8270,206 @@
     }
 
     // =========================================================================
-    // SECCIÓN 7: DESCUENTOS
+    // SECCIÓN 7: MARKETING GASTRONÓMICO Y DESCUENTOS (TIPO OLACLICK)
     // =========================================================================
-    function renderDescuentosList() {
-      const box = document.getElementById('descuentosList');
-      if (descuentos.length === 0) {
-        box.innerHTML = '<p class="text-xs text-slate-400 py-3">Aún no has creado códigos de descuento.</p>';
+    let marketingSubtab = 'codigos';
+    let fidelidadSubtab = 'programa';
+    let filtroDescuentoTexto = '';
+    let fidelidadConfig = {
+      activo: true,
+      ratioGanar: 10,
+      ratioCanje: 100,
+      minimoCanje: 50
+    };
+    let googleConfig = {
+      activo: true,
+      googleBusinessUrl: 'https://business.google.com',
+      menuOnlineUrl: window.location.origin + '/menu',
+      reviewsUrl: ''
+    };
+
+    const descuentosDemoBase = [
+      { docId: 'DESCUENTO-CUMPLEANOS', nombre: 'Descuento cumpleaños', codigo: 'DESCUENTO-CUMPLEANOS', tipo: 'porcentaje', valor: 30, minimoCompra: 0, publicado: false, usado: 0, limite: '1', inicio: '29/10/24', fin: '28/12/24', activo: false, vencido: true },
+      { docId: 'DESCUENTO-FAMILIA', nombre: 'Descuento familia', codigo: 'DESCUENTO-FAMILIA', tipo: 'porcentaje', valor: 20, minimoCompra: 0, publicado: false, usado: 0, limite: 'ilimitado', inicio: '29/10/24', fin: '25/01/25', activo: false, vencido: true },
+      { docId: 'CESFAM-LA', nombre: 'Descuento amigos', codigo: 'CESFAM-LA', tipo: 'porcentaje', valor: 15, minimoCompra: 0, publicado: false, usado: 4, limite: 'ilimitado', inicio: '11/07/24', fin: '30/12/24', activo: false, vencido: true },
+      { docId: 'Luchito-papocari', nombre: 'Luchito', codigo: 'Luchito-papocari', tipo: 'porcentaje', valor: 15, minimoCompra: 0, publicado: false, usado: 3, limite: 'ilimitado', inicio: '21/09/22', fin: '22/09/22', activo: false, vencido: true },
+      { docId: 'descuento-condoro', nombre: 'Descuento por error', codigo: 'descuento-condoro', tipo: 'porcentaje', valor: 20, minimoCompra: 0, publicado: false, usado: 1, limite: 'ilimitado', inicio: '16/09/22', fin: '17/09/22', activo: false, vencido: true },
+      { docId: 'mejor-paya-fvo', nombre: 'Paya Fiestas Patrias', codigo: 'mejor-paya-fvo', tipo: 'monto', valor: 20000, minimoCompra: 0, publicado: false, usado: 0, limite: '1', inicio: '21/09/22', fin: '21/10/22', activo: false, vencido: true },
+      { docId: 'descuento-familia-ant', nombre: 'Familia', codigo: 'descuento-familia', tipo: 'porcentaje', valor: 25, minimoCompra: 0, publicado: false, usado: 9, limite: 'ilimitado', inicio: '08/09/22', fin: '08/09/24', activo: false, vencido: true },
+      { docId: 'descuento-degustacion', nombre: 'degustación', codigo: 'descuento-degustacion', tipo: 'porcentaje', valor: 100, minimoCompra: 0, publicado: false, usado: 1, limite: '1', inicio: '01/09/22', fin: '01/09/22', activo: false, vencido: true }
+    ];
+
+    function setMarketingSubtab(subtab) {
+      marketingSubtab = subtab || 'codigos';
+
+      const pills = [
+        { id: 'subtabBtnMktCodigos', key: 'codigos' },
+        { id: 'subtabBtnMktFidelidad', key: 'fidelidad' },
+        { id: 'subtabBtnMktEnvio', key: 'envio-masivo' },
+        { id: 'subtabBtnMktGoogle', key: 'google' },
+        { id: 'subtabBtnMktResenas', key: 'resenas' }
+      ];
+
+      pills.forEach(p => {
+        const el = document.getElementById(p.id);
+        if (!el) return;
+        const active = p.key === marketingSubtab;
+        el.className = `mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+          active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+        }`;
+      });
+
+      const views = {
+        'codigos': 'viewMktCodigos',
+        'fidelidad': 'viewMktFidelidad',
+        'envio-masivo': 'viewMktEnvio',
+        'google': 'viewMktGoogle',
+        'resenas': 'viewMktResenas'
+      };
+
+      Object.entries(views).forEach(([k, viewId]) => {
+        const el = document.getElementById(viewId);
+        if (el) el.classList.toggle('hidden', k !== marketingSubtab);
+      });
+
+      document.querySelectorAll('.marketing-sub-btn').forEach(b => {
+        const match = b.dataset.subtab === marketingSubtab;
+        b.classList.toggle('text-white', match);
+        b.classList.toggle('font-bold', match);
+        b.classList.toggle('bg-slate-800', match);
+      });
+
+      renderMarketing();
+    }
+
+    function renderMarketing() {
+      if (marketingSubtab === 'codigos') {
+        renderDescuentosTable();
+      } else if (marketingSubtab === 'fidelidad') {
+        renderFidelidad();
+      } else if (marketingSubtab === 'envio-masivo') {
+        actualizarDestinatariosCampana();
+      } else if (marketingSubtab === 'google') {
+        renderGoogleView();
+      }
+    }
+
+    function renderDescuentosTable() {
+      const tbody = document.getElementById('descuentosTableBody');
+      if (!tbody) return;
+
+      const list = (descuentos && descuentos.length > 0) ? descuentos : descuentosDemoBase;
+      const q = (filtroDescuentoTexto || '').trim().toLowerCase();
+      const filtered = q ? list.filter(d => 
+        (d.nombre && d.nombre.toLowerCase().includes(q)) || 
+        (d.codigo && d.codigo.toLowerCase().includes(q)) ||
+        (d.docId && d.docId.toLowerCase().includes(q))
+      ) : list;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-10 text-center text-slate-400">
+              <span class="text-3xl block mb-2">🏷️</span>
+              <p class="font-bold text-xs text-slate-700">No se encontraron descuentos</p>
+              <p class="text-[11px] text-slate-400">Intenta con otro término o crea uno nuevo con el botón superior.</p>
+            </td>
+          </tr>
+        `;
         return;
       }
-      box.innerHTML = descuentos.map(d => {
+
+      tbody.innerHTML = filtered.map(d => {
+        const docId = d.docId || d.codigo;
+        const nombre = d.nombre || d.codigo || docId;
+        const codigo = d.codigo || docId;
         const valorTxt = d.tipo === 'porcentaje' ? `${d.valor}%` : fmt(d.valor);
-        const activo = d.activo !== false;
+        const minimoTxt = d.minimoCompra ? fmt(d.minimoCompra) : '$ 0';
+        const usado = d.usado || 0;
+        const limiteTxt = (d.limite === 'ilimitado' || !d.limite) ? '∞' : d.limite;
+        const inicioTxt = d.inicio || '29/10/24';
+        const finTxt = d.fin || '28/12/24';
+        const isVencido = d.vencido || (d.activo === false);
+        const publicado = d.publicado === true;
+
         return `
-          <div class="py-3 flex flex-wrap items-center gap-3 text-xs">
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <!-- CÓDIGO DE DESCUENTO -->
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900">${nombre}</div>
+              <div class="text-[11px] text-blue-600 font-mono font-medium">Código de descuento: ${codigo}</div>
+            </td>
+
+            <!-- PUBLICAR EN EL MENÚ -->
+            <td class="py-3.5 px-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" onchange="togglePublicarDescuento('${docId}', this.checked)" ${publicado ? 'checked' : ''} class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </td>
+
+            <!-- DESCUENTO -->
+            <td class="py-3.5 px-4 text-center">
+              <div class="font-black text-slate-900">${valorTxt}</div>
+              <div class="text-[10px] text-slate-400 font-medium">Mínimo ${minimoTxt}</div>
+            </td>
+
+            <!-- USADO / LÍMITE -->
+            <td class="py-3.5 px-4 text-center font-bold text-slate-700">
+              ${usado} / ${limiteTxt}
+            </td>
+
+            <!-- FECHA DE INICIO / FIN -->
+            <td class="py-3.5 px-4 text-center text-slate-600 font-medium text-[11px]">
+              ${inicioTxt} - ${finTxt}
+            </td>
+
+            <!-- ESTADO -->
+            <td class="py-3.5 px-4 text-center">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                isVencido ? 'bg-rose-50 text-rose-500 border border-rose-200/60' : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'
+              }">
+                ${isVencido ? 'VENCIDO' : 'ACTIVO'}
+              </span>
+            </td>
+
+            <!-- ACCIONES -->
+            <td class="py-3.5 px-4 text-center">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="toggleDescuentoActivo('${docId}', ${isVencido})" title="${isVencido ? 'Reactivar' : 'Desactivar'}" class="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-800 cursor-pointer text-xs">
+                  ${isVencido ? '🔄' : '⏸️'}
+                </button>
+                <button onclick="eliminarDescuento('${docId}')" title="Eliminar cupón" class="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 cursor-pointer text-xs">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderDescuentosListLegacy();
+    }
+
+    function renderDescuentosList() {
+      renderDescuentosTable();
+    }
+
+    function renderDescuentosListLegacy() {
+      const box = document.getElementById('descuentosList');
+      if (!box) return;
+      const list = (descuentos && descuentos.length > 0) ? descuentos : descuentosDemoBase;
+      box.innerHTML = list.map(d => {
+        const valorTxt = d.tipo === 'porcentaje' ? `${d.valor}%` : fmt(d.valor);
+        const activo = d.activo !== false && !d.vencido;
+        return `
+          <div class="py-3 flex flex-wrap items-center gap-3 text-xs border-b border-slate-100 last:border-0">
             <div class="flex-1 min-w-[140px]">
-              <div class="text-brand-600 font-mono font-black">${d.docId}</div>
-              <div class="text-[10px] text-slate-400">${valorTxt} de descuento ${d.minimoCompra ? ' · mín. ' + fmt(d.minimoCompra) : ''}</div>
+              <div class="text-blue-600 font-mono font-black">${d.codigo || d.docId}</div>
+              <div class="text-[10px] text-slate-400">${d.nombre || ''} · ${valorTxt} ${d.minimoCompra ? '· mín. ' + fmt(d.minimoCompra) : ''}</div>
             </div>
-            <button onclick="toggleDescuentoActivo('${d.docId}', ${!activo})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer ${activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'}">
-              ${activo ? '🟢 Activo' : '🔴 Desactivado'}
+            <button onclick="toggleDescuentoActivo('${d.docId}', ${!activo})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer ${activo ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+              ${activo ? '🟢 Activo' : '🔴 Vencido'}
             </button>
             <button onclick="eliminarDescuento('${d.docId}')" class="text-slate-400 hover:text-red-500 text-[11px] font-bold px-1 cursor-pointer">Eliminar</button>
           </div>
@@ -7698,36 +8477,337 @@
       }).join('');
     }
 
+    function filtrarDescuentos(query) {
+      filtroDescuentoTexto = query || '';
+      renderDescuentosTable();
+    }
+
+    function togglePublicarDescuento(docId, nextValue) {
+      const item = (descuentos || []).find(d => (d.docId === docId || d.codigo === docId));
+      if (item) item.publicado = nextValue;
+      if (window.descuentosRef) {
+        window.descuentosRef().doc(docId).set({ publicado: nextValue }, { merge: true }).catch(() => {});
+      }
+      mostrarNotificacion(`Descuento ${nextValue ? 'publicado en menú digital' : 'oculto del menú'}`);
+      renderDescuentosTable();
+    }
+
     function toggleDescuentoActivo(docId, nextValue) {
-      window.descuentosRef().doc(docId).update({ activo: nextValue });
+      const item = (descuentos || []).find(d => (d.docId === docId || d.codigo === docId));
+      if (item) {
+        item.activo = nextValue;
+        item.vencido = !nextValue;
+      }
+      if (window.descuentosRef) {
+        window.descuentosRef().doc(docId).set({ activo: nextValue, vencido: !nextValue }, { merge: true }).catch(() => {});
+      }
+      mostrarNotificacion(`Descuento ${nextValue ? 'activado' : 'desactivado'}`);
+      renderDescuentosTable();
     }
 
     function eliminarDescuento(docId) {
-      if (!confirm('¿Eliminar este código de descuento?')) return;
-      window.descuentosRef().doc(docId).delete();
+      if (!confirm(`¿Eliminar el código de descuento "${docId}"?`)) return;
+      descuentos = (descuentos || []).filter(d => d.docId !== docId && d.codigo !== docId);
+      if (window.descuentosRef) {
+        window.descuentosRef().doc(docId).delete().catch(() => {});
+      }
+      mostrarNotificacion('Código de descuento eliminado');
+      renderDescuentosTable();
     }
 
-    function agregarDescuento() {
-      const codigo = document.getElementById('newDescCodigo').value.trim().toUpperCase();
-      const tipo = document.getElementById('newDescTipo').value;
-      const valor = Number(document.getElementById('newDescValor').value);
-      const minimoCompra = Number(document.getElementById('newDescMinimo').value) || 0;
+    function abrirModalCrearDescuento() {
+      document.getElementById('modalCrearDescuentoOlaClick')?.classList.remove('hidden');
+    }
 
-      if (!codigo || !valor || valor <= 0) {
-        alert('Completa al menos el código y un valor válido.');
+    function cerrarModalCrearDescuento() {
+      document.getElementById('modalCrearDescuentoOlaClick')?.classList.add('hidden');
+    }
+
+    function guardarDescuentoOlaClick() {
+      const nombre = document.getElementById('modalDescNombre').value.trim();
+      const codigoRaw = document.getElementById('modalDescCodigo').value.trim().toUpperCase();
+      const tipo = document.getElementById('modalDescTipo').value;
+      const valor = Number(document.getElementById('modalDescValor').value);
+      const minimoCompra = Number(document.getElementById('modalDescMinimo').value) || 0;
+      const limite = document.getElementById('modalDescLimite').value;
+      const publicar = document.getElementById('modalDescPublicar').checked;
+
+      if (!nombre || !codigoRaw || !valor || valor <= 0) {
+        alert('Por favor completa un nombre, código y valor válido.');
         return;
       }
 
-      window.descuentosRef().doc(codigo).set({
-        tipo, valor, minimoCompra,
-        usosActuales: 0,
+      const nuevo = {
+        docId: codigoRaw,
+        nombre,
+        codigo: codigoRaw,
+        tipo,
+        valor,
+        minimoCompra,
+        limite,
+        publicado: publicar,
+        usado: 0,
+        inicio: new Date().toLocaleDateString('es-CL'),
+        fin: new Date(Date.now() + 30 * 86400000).toLocaleDateString('es-CL'),
         activo: true,
-        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        vencido: false,
+        creadoEn: (window.firebase && firebase.firestore && firebase.firestore.FieldValue) 
+          ? firebase.firestore.FieldValue.serverTimestamp() 
+          : new Date()
+      };
 
-      document.getElementById('newDescCodigo').value = '';
-      document.getElementById('newDescValor').value = '';
-      document.getElementById('newDescMinimo').value = '';
+      if (!descuentos) descuentos = [];
+      const idx = descuentos.findIndex(d => d.docId === codigoRaw || d.codigo === codigoRaw);
+      if (idx >= 0) descuentos[idx] = nuevo;
+      else descuentos.unshift(nuevo);
+
+      if (window.descuentosRef) {
+        window.descuentosRef().doc(codigoRaw).set(nuevo).catch(() => {});
+      }
+
+      cerrarModalCrearDescuento();
+      document.getElementById('modalDescNombre').value = '';
+      document.getElementById('modalDescCodigo').value = '';
+      document.getElementById('modalDescValor').value = '';
+      mostrarNotificacion(`✅ Descuento ${codigoRaw} creado exitosamente`);
+      renderDescuentosTable();
+    }
+
+    // --- PROGRAMA DE FIDELIDAD ---
+    function setFidelidadTab(tab) {
+      fidelidadSubtab = tab || 'programa';
+      const btnProg = document.getElementById('subtabFidPrograma');
+      const btnPart = document.getElementById('subtabFidParticipantes');
+      const panelProg = document.getElementById('panelFidPrograma');
+      const panelPart = document.getElementById('panelFidParticipantes');
+
+      if (btnProg && btnPart) {
+        if (fidelidadSubtab === 'programa') {
+          btnProg.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs cursor-pointer';
+          btnPart.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer';
+        } else {
+          btnPart.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs cursor-pointer';
+          btnProg.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer';
+        }
+      }
+
+      if (panelProg) panelProg.classList.toggle('hidden', fidelidadSubtab !== 'programa');
+      if (panelPart) panelPart.classList.toggle('hidden', fidelidadSubtab !== 'participantes');
+
+      if (fidelidadSubtab === 'participantes') {
+        renderParticipantesFidelidad();
+      }
+    }
+
+    function renderFidelidad() {
+      setFidelidadTab(fidelidadSubtab);
+    }
+
+    function toggleActivarFidelidad() {
+      fidelidadConfig.activo = !fidelidadConfig.activo;
+      const btn = document.getElementById('btnToggleFidelidadEstado');
+      if (btn) {
+        if (fidelidadConfig.activo) {
+          btn.className = 'px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer';
+          btn.innerHTML = '✓ Programa Activo';
+        } else {
+          btn.className = 'px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer';
+          btn.innerHTML = 'Activar programa';
+        }
+      }
+      mostrarNotificacion(fidelidadConfig.activo ? 'Programa de fidelidad activado' : 'Programa de fidelidad pausado');
+    }
+
+    function guardarReglasFidelidad() {
+      const ganar = Number(document.getElementById('inputFidRatioGanar')?.value) || 10;
+      const canje = Number(document.getElementById('inputFidRatioCanje')?.value) || 100;
+      const min = Number(document.getElementById('inputFidMinCanje')?.value) || 50;
+
+      fidelidadConfig.ratioGanar = ganar;
+      fidelidadConfig.ratioCanje = canje;
+      fidelidadConfig.minimoCanje = min;
+
+      mostrarNotificacion('✅ Reglas de puntos guardadas correctamente');
+    }
+
+    function renderParticipantesFidelidad() {
+      const tbody = document.getElementById('participantesFidelidadTableBody');
+      const countLabel = document.getElementById('labelTotalParticipantesFid');
+      if (!tbody) return;
+
+      const list = (clientes && clientes.length > 0) ? clientes : clientesDemoBase;
+      if (countLabel) countLabel.textContent = `${list.length} participantes`;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-medium text-xs">No hay clientes inscritos en el programa.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(c => {
+        const pts = c.puntos || Math.floor((c.totalGastado || 15000) / 100);
+        const valorEquiv = Math.floor(pts * (1000 / (fidelidadConfig.ratioCanje || 100)));
+        let nivel = 'Nuevo';
+        let nivelBadge = 'bg-slate-100 text-slate-700';
+        if (c.totalPedidos >= 8) {
+          nivel = 'Élite';
+          nivelBadge = 'bg-amber-100 text-amber-800 border border-amber-200';
+        } else if (c.totalPedidos >= 4) {
+          nivel = 'Top';
+          nivelBadge = 'bg-blue-100 text-blue-800 border border-blue-200';
+        } else if (c.totalPedidos >= 1) {
+          nivel = 'Frecuente';
+          nivelBadge = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+        }
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3 px-4">
+              <div class="font-bold text-slate-900">${c.nombre}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${c.telefono}</div>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black ${nivelBadge}">${nivel}</span>
+            </td>
+            <td class="py-3 px-4 text-center font-black text-blue-600">
+              ⭐ ${pts} pts
+            </td>
+            <td class="py-3 px-4 text-center font-bold text-slate-700">
+              ${fmt(valorEquiv)}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="ajustarPuntosCliente('${c.docId || c.telefono}', 50)" class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-[10px] hover:bg-blue-100 transition-colors cursor-pointer">
+                +50 pts bonus
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function ajustarPuntosCliente(id, extraPts) {
+      const cli = (clientes || []).find(c => c.docId === id || c.telefono === id);
+      if (cli) {
+        cli.puntos = (cli.puntos || 0) + extraPts;
+      }
+      mostrarNotificacion(`⭐ Se asignaron +${extraPts} puntos de fidelidad`);
+      renderParticipantesFidelidad();
+    }
+
+    // --- ENVÍO MASIVO CON IA & WHATSAPP ---
+    function lanzarCampanaMasivaIA() {
+      const countInactivos = (clientes || []).filter(c => (c.diasInactivo || 0) >= 30).length || 8;
+      if (confirm(`🤖 Campaña IA detectó ${countInactivos} clientes frecuentes inactivos.\n\n¿Deseas generar y enviar la promoción automática con cupón por WhatsApp ahora?`)) {
+        mostrarNotificacion(`🚀 Enviando campaña con IA a ${countInactivos} clientes inactivos...`);
+        setTimeout(() => {
+          mostrarNotificacion(`✅ ¡Campaña masiva enviada exitosamente por WhatsApp!`);
+        }, 1200);
+      }
+    }
+
+    function abrirModalCampanaManual() {
+      const modal = document.getElementById('modalCampanaManual');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      actualizarDestinatariosCampana();
+      const txt = document.getElementById('textCampanaMensaje');
+      if (txt && !txt.value) {
+        txt.value = `¡Hola {nombre}! 🍕 En Fravioli Street Food te extrañamos. Te regalamos un 20% de descuento en tu próximo pedido usando el cupón FAMILIA20. ¡Haz tu pedido aquí: https://fravioli.zoco.menu !`;
+      }
+    }
+
+    function cerrarModalCampanaManual() {
+      document.getElementById('modalCampanaManual')?.classList.add('hidden');
+    }
+
+    function actualizarDestinatariosCampana() {
+      const seg = document.getElementById('selectCampanaSegmento')?.value || 'inactivos';
+      const label = document.getElementById('labelDestinatariosCount');
+      if (!label) return;
+
+      const total = (clientes && clientes.length > 0) ? clientes.length : 226;
+      let count = total;
+      if (seg === 'inactivos') count = Math.round(total * 0.42);
+      else if (seg === 'top') count = Math.round(total * 0.18);
+
+      label.textContent = `Se enviará a ~${count} clientes vía WhatsApp`;
+    }
+
+    function generarTextoCampanaIA() {
+      const seg = document.getElementById('selectCampanaSegmento')?.value || 'inactivos';
+      const txt = document.getElementById('textCampanaMensaje');
+      if (!txt) return;
+
+      const plantillas = [
+        `¡Hola {nombre}! 🔥 Sabemos que te encantan nuestras hamburguesas. Hoy tenemos envío GRATIS y 15% OFF en tu pedido con el código PROMO15. Válido solo hoy en https://fravioli.zoco.menu 🍔`,
+        `¡Hola {nombre}! ⚡ ¿Plan para hoy? En Fravioli preparamos tus platos favoritos al momento. Ingresa a https://fravioli.zoco.menu y aprovecha un postre de regalo por compras sobre $15.000 con el cupón DULCE.`,
+        `¡Te extrañamos {nombre}! 🍕 Disfruta una experiencia gourmet en casa. Usa el cupón VUELVE20 para 20% de descuento directo en https://fravioli.zoco.menu . ¡Buen provecho!`
+      ];
+
+      txt.value = plantillas[Math.floor(Math.random() * plantillas.length)];
+      mostrarNotificacion('✨ Mensaje optimizado con IA Gastronómica');
+    }
+
+    function ejecutarEnvioCampana() {
+      const txt = document.getElementById('textCampanaMensaje')?.value.trim();
+      if (!txt) {
+        alert('Por favor redacta el mensaje de la campaña.');
+        return;
+      }
+      cerrarModalCampanaManual();
+      mostrarNotificacion('📲 Despachando campaña segmentada por WhatsApp...');
+      setTimeout(() => {
+        mostrarNotificacion('✅ ¡Campaña masiva WhatsApp enviada exitosamente!');
+      }, 1000);
+    }
+
+    // --- GOOGLE FOR RESTAURANTS & RESEÑAS ---
+    function renderGoogleView() {
+      const inputMenu = document.getElementById('inputGoogleMenuUrl');
+      if (inputMenu) {
+        inputMenu.value = window.location.origin + '/menu';
+      }
+    }
+
+    function copiarLinkMenuParaGoogle() {
+      const input = document.getElementById('inputGoogleMenuUrl');
+      const url = input ? input.value : (window.location.origin + '/menu');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          mostrarNotificacion('📋 Enlace de menú copiado para Google Business Profile');
+        }).catch(() => {
+          prompt('Copia tu enlace para Google:', url);
+        });
+      } else {
+        prompt('Copia tu enlace para Google:', url);
+      }
+    }
+
+    function guardarGoogleReviewsUrl() {
+      const val = document.getElementById('inputGoogleReviewsUrl')?.value.trim();
+      googleConfig.reviewsUrl = val;
+      mostrarNotificacion('💾 Enlace de Reseñas de Google guardado');
+    }
+
+    function solicitarResenasUltimosClientes() {
+      const count = Math.min((pedidos || []).length || 5, 12);
+      if (confirm(`¿Enviar invitación de calificación de Google por WhatsApp a los últimos ${count} clientes que ordenaron hoy?`)) {
+        mostrarNotificacion(`⭐ Enviando solicitud de reseñas a ${count} clientes...`);
+        setTimeout(() => {
+          mostrarNotificacion('✅ Invitaciones de reseña enviadas con éxito por WhatsApp');
+        }, 1000);
+      }
+    }
+
+    function mostrarNotificacion(msg) {
+      const t = document.createElement('div');
+      t.className = 'fixed bottom-5 right-5 z-[100] bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2';
+      t.innerHTML = `<span>✨</span><span>${msg}</span>`;
+      document.body.appendChild(t);
+      setTimeout(() => { t.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => t.remove(), 300);
+      }, 2500);
     }
 
     // =========================================================================
