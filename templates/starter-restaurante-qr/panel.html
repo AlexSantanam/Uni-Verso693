@@ -330,6 +330,34 @@
             </div>
           </div>
 
+          <!-- INTEGRACIONES (CON SUBMENÚ DESPLEGABLE TIPO OLACLICK) -->
+          <div class="space-y-0.5">
+            <button onclick="toggleIntegracionesSubmenu()" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="integraciones">
+              <div class="flex items-center gap-3">
+                <span class="text-base">🔌</span>
+                <span>Integraciones</span>
+              </div>
+              <span id="integracionesArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
+            </button>
+            <div id="integracionesSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
+              <button onclick="switchTab('integraciones', 'mcp')" class="integ-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="mcp">
+                Asistentes de IA / MCP
+              </button>
+              <button onclick="switchTab('integraciones', 'partners')" class="integ-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="partners">
+                Partners
+              </button>
+              <button onclick="switchTab('integraciones', 'api')" class="integ-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="api">
+                API Keys
+              </button>
+            </div>
+          </div>
+
+          <!-- OLACLICK / ZOCO APP STORE -->
+          <a href="#" onclick="mostrarNotificacion('🚀 Próximamente: Zoco App Store con extensiones de delivery, facturación electrónica y pasarelas de pago'); return false;" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white cursor-pointer">
+            <span class="text-base">🏬</span>
+            <span>Zoco App Store</span>
+          </a>
+
         </nav>
       </div>
 
@@ -3755,6 +3783,552 @@
 
         </section>
 
+        <!-- ================================================================= -->
+        <!-- TAB: INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO OLACLICK) -->
+        <!-- ================================================================= -->
+        <section id="tab-integraciones" class="panel-pane space-y-6 hidden">
+
+          <!-- SUBNAV PILLS (TIPO OLACLICK: ASISTENTES DE IA / MCP, PARTNERS, API KEYS) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-1.5 flex flex-wrap items-center gap-1.5 shadow-soft">
+            <button id="subtabBtnIntegMcp" onclick="setIntegracionesSubtab('mcp')" class="integ-pill-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-white shadow-sm cursor-pointer">
+              <span>🤖</span>
+              <span>Asistentes de IA / MCP</span>
+              <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md">Conectado</span>
+            </button>
+            <button id="subtabBtnIntegPartners" onclick="setIntegracionesSubtab('partners')" class="integ-pill-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer">
+              <span>🛵</span>
+              <span>Partners (Delivery)</span>
+            </button>
+            <button id="subtabBtnIntegApi" onclick="setIntegracionesSubtab('api')" class="integ-pill-btn px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer">
+              <span>🔑</span>
+              <span>API Keys</span>
+            </button>
+          </div>
+
+          <!-- SUB-VIEW 1: ASISTENTES DE IA / MCP (CAPTURA 1 Y 2) -->
+          <div id="viewIntegMcp" class="space-y-6">
+            <!-- HERO BANNER CONECTA TU RESTAURANTE A LA IA -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-6 sm:p-8 md:p-10 border border-indigo-900/40 shadow-xl">
+              <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 justify-between">
+                
+                <div class="space-y-4 max-w-xl text-center md:text-left">
+                  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Zoco MCP · Conectado</span>
+                  </div>
+                  <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                    Tu restaurante, conectado a la inteligencia artificial en minutos.
+                  </h2>
+                  <p class="text-sm text-slate-300 leading-relaxed">
+                    Consulta tus ventas, administra pedidos y conoce mejor tu negocio desde ChatGPT o Claude. Instala el conector oficial de Zoco, inicia sesión y empieza a usarlo. Sin claves API ni configuraciones técnicas.
+                  </p>
+                </div>
+
+                <!-- ILUSTRACIÓN 3D / CARD VISUAL INTERACTIVA -->
+                <div class="shrink-0 relative">
+                  <div class="w-64 sm:w-72 bg-slate-800/80 backdrop-blur-md rounded-2xl border border-white/10 p-5 shadow-2xl space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xl">👩‍🍳</span>
+                        <div class="text-left">
+                          <div class="text-xs font-bold text-white">Chef IA Zoco</div>
+                          <div class="text-[10px] text-emerald-400">● En línea</div>
+                        </div>
+                      </div>
+                      <span class="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-400/30 px-2 py-0.5 rounded-full font-bold">MCP 1.0</span>
+                    </div>
+                    <div class="bg-slate-900/80 rounded-xl p-3 text-[11px] text-slate-300 space-y-1">
+                      <p class="text-slate-400 font-semibold">"¿Cómo van las ventas de hoy?"</p>
+                      <p class="text-white font-medium">➡️ Hoy llevas <strong class="text-emerald-400">$284.500</strong> en 18 pedidos. El plato más vendido es la <strong class="text-amber-300">Hamburguesa Clásica</strong> (8 uds).</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ACTION CARDS: CHATGPT & CLAUDE -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- CHATGPT CARD -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft hover:border-slate-300 transition-all text-center flex flex-col items-center justify-between">
+                <div class="space-y-3 flex flex-col items-center">
+                  <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-black shadow-inner">
+                    🟢
+                  </div>
+                  <div>
+                    <h3 class="font-black text-slate-900 text-base">ChatGPT</h3>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Conector oficial de Zoco</p>
+                  </div>
+                  <p class="text-xs text-slate-600 max-w-sm">
+                    Consulta ventas, pedidos, clientes y actualiza la disponibilidad de platos directamente conversando con OpenAI ChatGPT.
+                  </p>
+                </div>
+                <button type="button" onclick="conectarAsistenteIA('chatgpt')" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                  Instalar en ChatGPT
+                </button>
+              </div>
+
+              <!-- CLAUDE CARD -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft hover:border-slate-300 transition-all text-center flex flex-col items-center justify-between">
+                <div class="space-y-3 flex flex-col items-center">
+                  <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-black shadow-inner">
+                    🟠
+                  </div>
+                  <div>
+                    <h3 class="font-black text-slate-900 text-base">Claude</h3>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Conector oficial de Zoco</p>
+                  </div>
+                  <p class="text-xs text-slate-600 max-w-sm">
+                    Administra tu restaurante conversando con Anthropic Claude. Análisis profundo de márgenes, fidelización y reportes automáticos.
+                  </p>
+                </div>
+                <button type="button" onclick="conectarAsistenteIA('claude')" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                  Conectar con Claude
+                </button>
+              </div>
+            </div>
+
+            <!-- QUÉ PUEDES HACER CON ZOCO E IA (PROMPT CARDS) -->
+            <div class="space-y-4">
+              <h3 class="font-black text-slate-900 text-base">¿Qué puedes hacer con Zoco e IA?</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft flex flex-col justify-between">
+                  <div class="space-y-2">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">📊</div>
+                    <h4 class="font-bold text-slate-900 text-xs">Consulta tus ventas</h4>
+                    <p class="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      "¿Cuánto vendí hoy comparado con el mismo día de la semana pasada y cuál fue el plato más vendido?"
+                    </p>
+                  </div>
+                  <button type="button" onclick="copiarPromptEjemplo('¿Cuánto vendí hoy comparado con el mismo día de la semana pasada y cuál fue el plato más vendido?')" class="w-full py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                    <span>📋</span>
+                    <span>COPIAR PREGUNTA</span>
+                  </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft flex flex-col justify-between">
+                  <div class="space-y-2">
+                    <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-sm font-bold">🛵</div>
+                    <h4 class="font-bold text-slate-900 text-xs">Administra pedidos</h4>
+                    <p class="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      "Muéstrame los pedidos pendientes de entrega y los clientes con compras más frecuentes esta semana."
+                    </p>
+                  </div>
+                  <button type="button" onclick="copiarPromptEjemplo('Muéstrame los pedidos pendientes de entrega y los clientes con compras más frecuentes esta semana.')" class="w-full py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                    <span>📋</span>
+                    <span>COPIAR PREGUNTA</span>
+                  </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3 shadow-soft flex flex-col justify-between">
+                  <div class="space-y-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">🍔</div>
+                    <h4 class="font-bold text-slate-900 text-xs">Actualiza tu menú</h4>
+                    <p class="text-[11px] text-slate-600 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      "Cambia el estado de la Hamburguesa Clásica a agotado y añade una nota al brownie que contiene nueces."
+                    </p>
+                  </div>
+                  <button type="button" onclick="copiarPromptEjemplo('Cambia el estado de la Hamburguesa Clásica a agotado y añade una nota al brownie que contiene nueces.')" class="w-full py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                    <span>📋</span>
+                    <span>COPIAR PREGUNTA</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- CÓMO FUNCIONA (3 PASOS) -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+              <h3 class="font-black text-slate-900 text-base">¿Cómo funciona?</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="space-y-2 flex gap-3 items-start">
+                  <div class="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0">1</div>
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-xs">Encuentra Zoco</h4>
+                    <p class="text-[11px] text-slate-500">Busca la app de Zoco en la tienda de GPTs de ChatGPT o añade el conector en Claude.</p>
+                  </div>
+                </div>
+
+                <div class="space-y-2 flex gap-3 items-start">
+                  <div class="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0">2</div>
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-xs">Autoriza tu cuenta</h4>
+                    <p class="text-[11px] text-slate-500">Inicia sesión con tus credenciales de Zoco para vincular tu restaurante de forma segura.</p>
+                  </div>
+                </div>
+
+                <div class="space-y-2 flex gap-3 items-start">
+                  <div class="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0">3</div>
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-xs">Empieza a conversar</h4>
+                    <p class="text-[11px] text-slate-500">Haz preguntas sobre tu negocio, ventas, pedidos o menú usando lenguaje natural cotidiano.</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- OPCIONES AVANZADAS: MCP CLIENTS -->
+            <div class="bg-slate-900 text-white rounded-2xl p-6 space-y-4 border border-slate-800">
+              <div class="space-y-1">
+                <h3 class="font-black text-sm text-white flex items-center gap-2">
+                  <span>⚡</span>
+                  <span>Opciones avanzadas para desarrolladores y agentes</span>
+                </h3>
+                <p class="text-xs text-slate-400">
+                  ¿Usas herramientas de desarrollo o agentes autónomos? Conecta Zoco MCP mediante JSON en Claude Code, Cursor, VS Code, Kiro o configuración manual:
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-2 pt-2">
+                <button type="button" onclick="verConfiguracionMcp('Claude Code')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>📟</span>
+                  <span>Claude Code</span>
+                </button>
+                <button type="button" onclick="verConfiguracionMcp('Cursor')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>✨</span>
+                  <span>Cursor</span>
+                </button>
+                <button type="button" onclick="verConfiguracionMcp('VS Code')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>💻</span>
+                  <span>VS Code</span>
+                </button>
+                <button type="button" onclick="verConfiguracionMcp('Kiro')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>🚀</span>
+                  <span>Kiro</span>
+                </button>
+                <button type="button" onclick="verConfiguracionMcp('ChatGPT (manual)')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>🟢</span>
+                  <span>ChatGPT (manual)</span>
+                </button>
+                <button type="button" onclick="verConfiguracionMcp('Claude (manual)')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                  <span>🟠</span>
+                  <span>Claude (manual)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 2: PARTNERS (DELIVERY APPS - CAPTURA 3 Y 4) -->
+          <div id="viewIntegPartners" class="space-y-6 hidden">
+            <!-- PILLS DE APPS -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 border border-red-200 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+                <span>🛵</span>
+                <span>Rappi</span>
+              </span>
+              <span class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+                <span>⚡</span>
+                <span>Rappi Turbo</span>
+              </span>
+              <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+                <span>🍔</span>
+                <span>Uber Eats</span>
+              </span>
+              <span class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+                <span>🔴</span>
+                <span>Pedidos Ya</span>
+              </span>
+              <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+                <span>💻</span>
+                <span>API</span>
+              </span>
+            </div>
+
+            <!-- ACORDEÓN DE INTEGRACIONES DELIVERY -->
+            <div class="space-y-3">
+              
+              <!-- RAPPI (EXPANDIDO POR DEFECTO TIPO CAPTURA 4) -->
+              <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+                <button type="button" onclick="togglePartnerAccordion('rappi')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center font-black text-sm shadow-md shadow-red-500/20">
+                      R
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="font-black text-slate-900 text-sm">Rappi</h4>
+                        <span id="badgePartnerRappi" class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">Sin configurar</span>
+                      </div>
+                      <p class="text-xs text-slate-400">Recibe pedidos de Rappi directamente en tu pantalla de cocina y POS</p>
+                    </div>
+                  </div>
+                  <span id="arrowPartnerRappi" class="text-xs text-slate-400 font-bold">▲</span>
+                </button>
+
+                <div id="bodyPartnerRappi" class="p-5 border-t border-slate-100 bg-slate-50/50 space-y-5">
+                  <div class="space-y-2">
+                    <h5 class="font-bold text-slate-900 text-xs">Requisitos previos</h5>
+                    <ul class="text-xs text-slate-600 space-y-1 list-disc pl-5">
+                      <li>Debes tener una cuenta comercial activa en Rappi Partners.</li>
+                      <li>Contar con credenciales de API (Client ID y Client Secret) provistas por tu ejecutivo de Rappi.</li>
+                      <li>El restaurante debe estar homologado en la plataforma de Rappi para recibir webhooks.</li>
+                    </ul>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <button type="button" onclick="conectarTiendaPartner('Rappi')" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/20 transition-all cursor-pointer flex items-center gap-2">
+                      <span>🏪</span>
+                      <span>Listar tiendas de Rappi</span>
+                    </button>
+                    <button type="button" onclick="mostrarNotificacion('ℹ️ Guía paso a paso: Solicita tus API Keys a partners@rappi.com')" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-white text-slate-700 font-bold text-xs transition-colors cursor-pointer">
+                      Ver tutorial de conexión
+                    </button>
+                  </div>
+
+                  <!-- CONFIGURACIÓN IMPRESIÓN CON QR MENÚ PROPIO (0% COMISIÓN) -->
+                  <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h5 class="font-bold text-slate-900 text-xs">Imprimir QR en ticket de comanda</h5>
+                        <p class="text-[11px] text-slate-500">Convierte clientes de Rappi en clientes directos añadiendo el QR de tu menú digital con 0% comisión en el ticket impreso.</p>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer">
+                        <input id="checkRappiQrTicket" type="checkbox" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                      </label>
+                    </div>
+
+                    <div class="space-y-1">
+                      <label class="block text-[11px] font-bold text-slate-700">Mensaje promocional en el ticket:</label>
+                      <input id="inputRappiMensajeTicket" type="text" value="Escanea el QR y pide directamente cuando quieras con 15% OFF en tu primera compra." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium focus:outline-none focus:border-red-500">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RAPPI TURBO -->
+              <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+                <button type="button" onclick="togglePartnerAccordion('turbo')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black text-sm shadow-md shadow-amber-500/20">
+                      ⚡
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="font-black text-slate-900 text-sm">Rappi Turbo</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">Sin configurar</span>
+                      </div>
+                      <p class="text-xs text-slate-400">Entregas ultra rápidas en menos de 10 minutos con priorización KDS</p>
+                    </div>
+                  </div>
+                  <span id="arrowPartnerTurbo" class="text-xs text-slate-400 font-bold">▼</span>
+                </button>
+
+                <div id="bodyPartnerTurbo" class="p-5 border-t border-slate-100 bg-slate-50/50 space-y-4 hidden">
+                  <p class="text-xs text-slate-600">Requiere activación previa de la modalidad Dark Store / Turbo en Rappi.</p>
+                  <button type="button" onclick="conectarTiendaPartner('Rappi Turbo')" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-600/20 transition-all cursor-pointer">
+                    Vincular Rappi Turbo
+                  </button>
+                </div>
+              </div>
+
+              <!-- UBER EATS -->
+              <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+                <button type="button" onclick="togglePartnerAccordion('ubereats')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-emerald-600/20">
+                      U
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="font-black text-slate-900 text-sm">Uber Eats</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">Sin configurar</span>
+                      </div>
+                      <p class="text-xs text-slate-400">Sincronización bidireccional de carta, precios y recepción de pedidos</p>
+                    </div>
+                  </div>
+                  <span id="arrowPartnerUbereats" class="text-xs text-slate-400 font-bold">▼</span>
+                </button>
+
+                <div id="bodyPartnerUbereats" class="p-5 border-t border-slate-100 bg-slate-50/50 space-y-4 hidden">
+                  <p class="text-xs text-slate-600">Conecta mediante Uber Eats Restaurant API con OAuth 2.0.</p>
+                  <button type="button" onclick="conectarTiendaPartner('Uber Eats')" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer">
+                    Conectar con Uber Eats
+                  </button>
+                </div>
+              </div>
+
+              <!-- PEDIDOSYA -->
+              <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+                <button type="button" onclick="togglePartnerAccordion('pedidosya')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-red-600/20">
+                      P
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="font-black text-slate-900 text-sm">PedidosYa</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">Sin configurar</span>
+                      </div>
+                      <p class="text-xs text-slate-400">Gestión de delivery con PedidosYa y despacho con riders externos</p>
+                    </div>
+                  </div>
+                  <span id="arrowPartnerPedidosya" class="text-xs text-slate-400 font-bold">▼</span>
+                </button>
+
+                <div id="bodyPartnerPedidosya" class="p-5 border-t border-slate-100 bg-slate-50/50 space-y-4 hidden">
+                  <p class="text-xs text-slate-600">Integra con PedidosYa Partner Portal para recibir comandas automáticas.</p>
+                  <button type="button" onclick="conectarTiendaPartner('PedidosYa')" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/20 transition-all cursor-pointer">
+                    Conectar con PedidosYa
+                  </button>
+                </div>
+              </div>
+
+              <!-- API EXTERNA CUSTOM -->
+              <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+                <button type="button" onclick="togglePartnerAccordion('apicustom')" class="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center font-black text-sm shadow-md shadow-slate-800/20">
+                      💻
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h4 class="font-black text-slate-900 text-sm">API Externa / Webhooks Custom</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">Sin configurar</span>
+                      </div>
+                      <p class="text-xs text-slate-400">Recibe pedidos desde tu propia app móvil, e-commerce o call center</p>
+                    </div>
+                  </div>
+                  <span id="arrowPartnerApicustom" class="text-xs text-slate-400 font-bold">▼</span>
+                </button>
+
+                <div id="bodyPartnerApicustom" class="p-5 border-t border-slate-100 bg-slate-50/50 space-y-4 hidden">
+                  <p class="text-xs text-slate-600">Configura una URL de webhook para recibir eventos de pedidos en tiempo real en formato JSON.</p>
+                  <div class="space-y-1">
+                    <label class="block text-[11px] font-bold text-slate-700">Webhook URL:</label>
+                    <input type="text" placeholder="https://tu-servidor.com/webhook/pedidos" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                  </div>
+                  <button type="button" onclick="mostrarNotificacion('✅ Webhook guardado exitosamente')" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs">
+                    Guardar Webhook
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 3: API KEYS / TOKENS PARA DESARROLLADORES (CAPTURA 5) -->
+          <div id="viewIntegApi" class="space-y-6 hidden">
+            
+            <!-- HEADER API KEYS CON BOTONES -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 class="font-black text-slate-900 text-lg">API Keys</h3>
+                <p class="text-xs text-slate-500">Genera y administra tokens de acceso a la API para conectar tu restaurante con sistemas externos.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="mostrarNotificacion('📄 Abriendo especificación OpenAPI / Swagger de Zoco REST API v1...')" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                  <span>📄</span>
+                  <span>Ver documentación</span>
+                </button>
+                <button type="button" onclick="abrirModalGenerarApiToken()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                  <span>+</span>
+                  <span>Generar nuevo token</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- BANNER CONÉCTATE CON MCP (IGUAL QUE CAPTURA 5) -->
+            <div class="rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/80 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-base shadow-md shadow-blue-600/20 shrink-0">
+                  ⚡
+                </div>
+                <div>
+                  <h4 class="font-black text-slate-900 text-sm">Conecta tu asistente de IA a Zoco</h4>
+                  <p class="text-xs text-slate-600">Usa el Protocolo de Contexto de Modelo (MCP) para conectar Claude, ChatGPT o Cursor con tu restaurante sin necesidad de crear tokens manualmente.</p>
+                </div>
+              </div>
+              <button onclick="setIntegracionesSubtab('mcp')" class="shrink-0 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all cursor-pointer">
+                CONÉCTATE CON MCP
+              </button>
+            </div>
+
+            <!-- CÓMO FUNCIONAN LOS TOKENS (3 PASOS) -->
+            <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+              <h4 class="font-black text-slate-900 text-sm">¿Cómo funcionan los tokens?</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="space-y-1.5 flex gap-3 items-start">
+                  <div class="w-6 h-6 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">1</div>
+                  <div>
+                    <h5 class="font-bold text-slate-900 text-xs">Genera un token</h5>
+                    <p class="text-[11px] text-slate-500">Crea un token con los permisos (scopes) específicos que necesita tu integración.</p>
+                  </div>
+                </div>
+
+                <div class="space-y-1.5 flex gap-3 items-start">
+                  <div class="w-6 h-6 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">2</div>
+                  <div>
+                    <h5 class="font-bold text-slate-900 text-xs">Compártelo con tu proveedor</h5>
+                    <p class="text-[11px] text-slate-500">Ingresa el token en el software que quieras conectar (ERP, facturación, delivery).</p>
+                  </div>
+                </div>
+
+                <div class="space-y-1.5 flex gap-3 items-start">
+                  <div class="w-6 h-6 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">3</div>
+                  <div>
+                    <h5 class="font-bold text-slate-900 text-xs">Revócalo cuando quieras</h5>
+                    <p class="text-[11px] text-slate-500">Si dejas de usar la integración, revoca el token en cualquier momento sin afectar los demás.</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- TABLA DE TOKENS GENERADOS -->
+            <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+              <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                <h4 class="font-black text-slate-900 text-sm">Tokens generados</h4>
+                <span id="badgeContadorTokens" class="text-xs text-slate-400 font-bold">0 tokens</span>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider text-[10px]">
+                      <th class="py-3 px-4">Nombre</th>
+                      <th class="py-3 px-4">Categoría</th>
+                      <th class="py-3 px-4">Scopes</th>
+                      <th class="py-3 px-4">Creado</th>
+                      <th class="py-3 px-4">Último uso</th>
+                      <th class="py-3 px-4">Estado</th>
+                      <th class="py-3 px-4 text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyApiTokens" class="divide-y divide-slate-100 text-slate-700">
+                    <!-- Inyección JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- ESTADO VACÍO CUANDO NO HAY TOKENS (TIPO CAPTURA 5) -->
+              <div id="emptyStateTokens" class="p-12 text-center space-y-3">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold shadow-inner">
+                  🗝️
+                </div>
+                <div class="space-y-1">
+                  <h5 class="font-bold text-slate-900 text-sm">No tienes tokens generados aún</h5>
+                  <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                    Haz clic en "+ Generar nuevo token" para crear tu primera API Key segura y conectar sistemas externos.
+                  </p>
+                </div>
+                <button type="button" onclick="abrirModalGenerarApiToken()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5">
+                  <span>+</span>
+                  <span>Generar nuevo token</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
       </main>
 
     </div>
@@ -4949,6 +5523,129 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: GENERAR NUEVO API TOKEN (TIPO OLACLICK) -->
+  <!-- ========================================================================= -->
+  <div id="modalGenerarApiToken" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-black">
+            🔑
+          </div>
+          <div>
+            <h3 class="font-black text-slate-900 text-base">Generar nuevo API Token</h3>
+            <p class="text-xs text-slate-400">Crea una clave segura para conectar sistemas externos</p>
+          </div>
+        </div>
+        <button type="button" onclick="cerrarModalGenerarApiToken()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre o Aplicación del Token *</label>
+          <input id="inputTokenNombre" type="text" placeholder="Ej: Conector Facturador SII, Bot Delivery Propio..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Categoría</label>
+          <select id="selectTokenCategoria" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-blue-600 cursor-pointer">
+            <option value="Facturación electrónica">Facturación electrónica</option>
+            <option value="Delivery / Logística">Delivery / Logística</option>
+            <option value="ERP / Contabilidad">ERP / Contabilidad</option>
+            <option value="Inteligencia Artificial">Inteligencia Artificial / MCP</option>
+            <option value="General">Integración General</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-2">Permisos y Alcance (Scopes) *</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_pedidos_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>pedidos:read</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_pedidos_write" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>pedidos:write</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_productos_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>productos:read</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_productos_write" class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>productos:write</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_clientes_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>clientes:read</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+              <input type="checkbox" id="scope_inventario_read" checked class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>inventario:read</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700 col-span-2">
+              <input type="checkbox" id="scope_ventas_read" class="rounded border-slate-300 text-blue-600 accent-blue-600">
+              <span>ventas:read (métricas financieras)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 space-y-1">
+          <p class="font-bold">⚠️ Seguridad de la clave API:</p>
+          <p>El token generado tendrá acceso a los datos de tu restaurante según los permisos seleccionados. No compartas esta clave en repositorios públicos.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalGenerarApiToken()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="guardarNuevoApiToken()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Generar Token</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: VER CONFIGURACIÓN MCP PARA CLIENTES Y DESARROLLADORES -->
+  <!-- ========================================================================= -->
+  <div id="modalVerMcpConfig" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg font-black">
+            ⚡
+          </div>
+          <div>
+            <h3 id="modalMcpTituloCliente" class="font-black text-slate-900 text-base">Configuración MCP</h3>
+            <p class="text-xs text-slate-400">Conexión directa vía Model Context Protocol</p>
+          </div>
+        </div>
+        <button type="button" onclick="cerrarModalMcpConfig()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-600">
+          Pega el siguiente fragmento de configuración en el archivo de ajustes de <strong id="modalMcpNombreCliente" class="text-slate-900">Claude Code</strong>:
+        </p>
+        
+        <div class="relative">
+          <pre id="codeSnippetMcp" class="bg-slate-900 text-emerald-400 p-4 rounded-2xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800"></pre>
+          <button type="button" onclick="copiarSnippetMcp()" class="absolute top-2.5 right-2.5 px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold border border-slate-700 cursor-pointer">
+            Copiar JSON
+          </button>
+        </div>
+
+        <p class="text-[11px] text-slate-400">
+          Una vez guardado, tu cliente de IA podrá consultar menú, órdenes activas, stock y ventas directamente mediante herramientas estandarizadas de Zoco.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalMcpConfig()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer">Entendido</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -5264,7 +5961,8 @@
       descuentos: { title: 'Marketing & Descuentos', sub: 'Promociones para la carta online y fidelización' },
       marketing: { title: 'Marketing Gastronómico', sub: 'Descuentos, fidelización, envíos masivos con IA y presencia en Google' },
       negocio: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
-      configuraciones: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' }
+      configuraciones: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
+      integraciones: { title: 'Integraciones', sub: 'Asistentes de IA / MCP, partners de delivery y API Keys' }
     };
 
     function switchTab(tab, subtab) {
@@ -5284,7 +5982,9 @@
           ? 'tab-marketing' 
           : (tab === 'configuraciones' || tab === 'negocio') 
             ? 'tab-configuraciones' 
-            : 'tab-' + tab;
+            : (tab === 'integraciones')
+              ? 'tab-integraciones'
+              : 'tab-' + tab;
         p.classList.toggle('hidden', p.id !== targetId);
       });
       
@@ -5318,6 +6018,14 @@
 
       // Actualizar selección en submenú de configuraciones
       document.querySelectorAll('.config-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === subtab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
+
+      // Actualizar selección en submenú de integraciones
+      document.querySelectorAll('.integ-sub-btn').forEach(b => {
         const isMatch = b.dataset.subtab === subtab;
         b.classList.toggle('text-white', isMatch);
         b.classList.toggle('font-bold', isMatch);
@@ -5359,6 +6067,10 @@
       if (tab === 'configuraciones' || tab === 'negocio') {
         if (subtab) setConfiguracionesSubtab(subtab);
         else renderConfiguraciones();
+      }
+      if (tab === 'integraciones') {
+        if (subtab) setIntegracionesSubtab(subtab);
+        else renderIntegraciones();
       }
     }
 
@@ -10905,6 +11617,357 @@
       window.restRef().set({ promo }, { merge: true }).then(() => {
         mostrarNotificacion('📢 Banner de oferta actualizado en la carta');
       });
+    }
+
+    // =========================================================================
+    // MÓDULO INTEGRACIONES (MCP IA, PARTNERS DELIVERY & API KEYS TIPO OLACLICK)
+    // =========================================================================
+    let currentIntegracionesSubtab = 'mcp';
+    let apiTokens = [
+      {
+        id: 'tok-1',
+        nombre: 'Conector Facturación Electrónica',
+        categoria: 'Facturación electrónica',
+        scopes: ['pedidos:read', 'ventas:read'],
+        creado: '02/11/2026',
+        ultimoUso: 'Hace 2 horas',
+        estado: 'Activo',
+        token: 'zoco_live_9f83b1a4e8d2c17604eb'
+      },
+      {
+        id: 'tok-2',
+        nombre: 'Asistente IA Local (Claude Code)',
+        categoria: 'Inteligencia Artificial',
+        scopes: ['pedidos:read', 'pedidos:write', 'productos:read', 'productos:write'],
+        creado: '05/11/2026',
+        ultimoUso: 'Hace 10 min',
+        estado: 'Activo',
+        token: 'zoco_live_a712f5c9e3b8d04192fc'
+      }
+    ];
+
+    function toggleIntegracionesSubmenu() {
+      const sub = document.getElementById('integracionesSubmenu');
+      const arrow = document.getElementById('integracionesArrow');
+      if (sub) {
+        const isHidden = sub.classList.toggle('hidden');
+        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+      }
+      switchTab('integraciones', 'mcp');
+    }
+
+    function setIntegracionesSubtab(subtab) {
+      currentIntegracionesSubtab = subtab || 'mcp';
+
+      // Actualizar pills
+      const pillMcp = document.getElementById('subtabBtnIntegMcp');
+      const pillPartners = document.getElementById('subtabBtnIntegPartners');
+      const pillApi = document.getElementById('subtabBtnIntegApi');
+
+      [pillMcp, pillPartners, pillApi].forEach(p => {
+        if (!p) return;
+        p.classList.remove('bg-slate-900', 'text-white', 'shadow-sm');
+        p.classList.add('text-slate-600');
+      });
+
+      if (currentIntegracionesSubtab === 'mcp' && pillMcp) {
+        pillMcp.classList.add('bg-slate-900', 'text-white', 'shadow-sm');
+        pillMcp.classList.remove('text-slate-600');
+      } else if (currentIntegracionesSubtab === 'partners' && pillPartners) {
+        pillPartners.classList.add('bg-slate-900', 'text-white', 'shadow-sm');
+        pillPartners.classList.remove('text-slate-600');
+      } else if (currentIntegracionesSubtab === 'api' && pillApi) {
+        pillApi.classList.add('bg-slate-900', 'text-white', 'shadow-sm');
+        pillApi.classList.remove('text-slate-600');
+      }
+
+      // Alternar vistas
+      const vMcp = document.getElementById('viewIntegMcp');
+      const vPartners = document.getElementById('viewIntegPartners');
+      const vApi = document.getElementById('viewIntegApi');
+
+      if (vMcp) vMcp.classList.toggle('hidden', currentIntegracionesSubtab !== 'mcp');
+      if (vPartners) vPartners.classList.toggle('hidden', currentIntegracionesSubtab !== 'partners');
+      if (vApi) vApi.classList.toggle('hidden', currentIntegracionesSubtab !== 'api');
+
+      // Sincronizar submenú de sidebar si está visible
+      document.querySelectorAll('.integ-sub-btn').forEach(b => {
+        const isMatch = b.dataset.subtab === currentIntegracionesSubtab;
+        b.classList.toggle('text-white', isMatch);
+        b.classList.toggle('font-bold', isMatch);
+        b.classList.toggle('bg-slate-800', isMatch);
+      });
+
+      renderIntegraciones();
+    }
+
+    function renderIntegraciones() {
+      if (currentIntegracionesSubtab === 'api') {
+        renderApiTokens();
+      }
+    }
+
+    // --- SUBTAB MCP IA ---
+    function conectarAsistenteIA(asistente) {
+      if (asistente === 'chatgpt') {
+        window.open('https://chatgpt.com/gpts', '_blank');
+        mostrarNotificacion('🟢 Abriendo conector oficial de Zoco en ChatGPT Store...');
+      } else if (asistente === 'claude') {
+        window.open('https://claude.ai', '_blank');
+        mostrarNotificacion('🟠 Abriendo conector oficial de Zoco en Claude...');
+      }
+    }
+
+    function copiarPromptEjemplo(texto) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(texto);
+      }
+      mostrarNotificacion('📋 Pregunta copiada al portapapeles. Pégala en tu chat con IA.');
+    }
+
+    const MCP_CONFIGS = {
+      'Claude Code': {
+        snippet: JSON.stringify({
+          mcpServers: {
+            "zoco-restaurante": {
+              command: "npx",
+              args: ["-y", "@zoco/mcp-server@latest"],
+              env: {
+                ZOCO_API_KEY: "zoco_live_tu_clave_aqui",
+                ZOCO_STORE_ID: "fravioli-street-food"
+              }
+            }
+          }
+        }, null, 2)
+      },
+      'Cursor': {
+        snippet: JSON.stringify({
+          mcpServers: {
+            "zoco": {
+              url: "https://api.zoco.app/mcp/sse",
+              headers: {
+                Authorization: "Bearer zoco_live_tu_clave_aqui"
+              }
+            }
+          }
+        }, null, 2)
+      },
+      'VS Code': {
+        snippet: JSON.stringify({
+          "mcp.servers": {
+            "zoco": {
+              "type": "sse",
+              "url": "https://api.zoco.app/mcp/sse"
+            }
+          }
+        }, null, 2)
+      },
+      'Kiro': {
+        snippet: JSON.stringify({
+          agentTools: ["zoco.consultarVentas", "zoco.listarPedidos", "zoco.actualizarMenu"],
+          serverUrl: "https://api.zoco.app/mcp/sse"
+        }, null, 2)
+      },
+      'ChatGPT (manual)': {
+        snippet: JSON.stringify({
+          name: "Zoco MCP Tool",
+          schema_version: "v1",
+          description_for_model: "Conector MCP para gestionar ventas, inventario y pedidos del restaurante.",
+          api: { type: "openapi", url: "https://api.zoco.app/openapi.json" }
+        }, null, 2)
+      },
+      'Claude (manual)': {
+        snippet: JSON.stringify({
+          mcpServers: {
+            "zoco": {
+              command: "uvx",
+              args: ["zoco-mcp"],
+              env: { ZOCO_TOKEN: "zoco_live_tu_clave_aqui" }
+            }
+          }
+        }, null, 2)
+      }
+    };
+
+    let snippetMcpActual = '';
+
+    function verConfiguracionMcp(cliente) {
+      const cfg = MCP_CONFIGS[cliente] || MCP_CONFIGS['Claude Code'];
+      snippetMcpActual = cfg.snippet;
+
+      const titEl = document.getElementById('modalMcpTituloCliente');
+      if (titEl) titEl.textContent = 'Configuración MCP · ' + cliente;
+      const nomEl = document.getElementById('modalMcpNombreCliente');
+      if (nomEl) nomEl.textContent = cliente;
+      const codEl = document.getElementById('codeSnippetMcp');
+      if (codEl) codEl.textContent = cfg.snippet;
+
+      document.getElementById('modalVerMcpConfig')?.classList.remove('hidden');
+    }
+
+    function cerrarModalMcpConfig() {
+      document.getElementById('modalVerMcpConfig')?.classList.add('hidden');
+    }
+
+    function copiarSnippetMcp() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(snippetMcpActual);
+      }
+      mostrarNotificacion('📋 Configuración JSON copiada al portapapeles');
+    }
+
+    // --- SUBTAB PARTNERS (DELIVERY) ---
+    function togglePartnerAccordion(id) {
+      const body = document.getElementById('bodyPartner' + id.charAt(0).toUpperCase() + id.slice(1));
+      const arrow = document.getElementById('arrowPartner' + id.charAt(0).toUpperCase() + id.slice(1));
+      if (!body) return;
+      const isHidden = body.classList.toggle('hidden');
+      if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+    }
+
+    function conectarTiendaPartner(nombre) {
+      mostrarNotificacion('🛵 Vinculando cuenta con ' + nombre + ' Partners...');
+      setTimeout(() => {
+        mostrarNotificacion('✅ Tienda conectada exitosamente con ' + nombre);
+        const badge = document.getElementById('badgePartner' + nombre.replace(/\s+/g, ''));
+        if (badge) {
+          badge.className = 'text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full';
+          badge.textContent = 'Conectado';
+        }
+      }, 1200);
+    }
+
+    // --- SUBTAB API KEYS ---
+    function renderApiTokens() {
+      const tbody = document.getElementById('tbodyApiTokens');
+      const emptyState = document.getElementById('emptyStateTokens');
+      const counter = document.getElementById('badgeContadorTokens');
+
+      if (counter) counter.textContent = apiTokens.length + (apiTokens.length === 1 ? ' token' : ' tokens');
+
+      if (!tbody) return;
+
+      if (!apiTokens || apiTokens.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      tbody.innerHTML = apiTokens.map(t => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-3.5 px-4 font-bold text-slate-900">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🔑</span>
+              <div>
+                <div>${t.nombre}</div>
+                <div class="text-[10px] font-mono text-slate-400">${t.token.slice(0, 14)}••••••••</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+              ${t.categoria}
+            </span>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex flex-wrap gap-1 max-w-xs">
+              ${t.scopes.map(s => `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200/60">${s}</span>`).join('')}
+            </div>
+          </td>
+          <td class="py-3.5 px-4 text-slate-500">${t.creado}</td>
+          <td class="py-3.5 px-4 text-slate-500">${t.ultimoUso}</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${t.estado === 'Activo' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+              ● ${t.estado}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-right space-x-1 whitespace-nowrap">
+            <button type="button" onclick="copiarTokenApi('${t.token}')" class="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition-colors cursor-pointer" title="Copiar Token">
+              📋 Copiar
+            </button>
+            <button type="button" onclick="revocarApiToken('${t.id}')" class="px-2.5 py-1 rounded-lg border border-red-200 hover:bg-red-50 text-red-600 font-bold text-[11px] transition-colors cursor-pointer" title="Revocar Token">
+              Revocar
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function abrirModalGenerarApiToken() {
+      const nomEl = document.getElementById('inputTokenNombre');
+      if (nomEl) nomEl.value = '';
+      const catEl = document.getElementById('selectTokenCategoria');
+      if (catEl) catEl.value = 'Facturación electrónica';
+      document.getElementById('modalGenerarApiToken')?.classList.remove('hidden');
+      setTimeout(() => document.getElementById('inputTokenNombre')?.focus(), 50);
+    }
+
+    function cerrarModalGenerarApiToken() {
+      document.getElementById('modalGenerarApiToken')?.classList.add('hidden');
+    }
+
+    function guardarNuevoApiToken() {
+      const nombre = document.getElementById('inputTokenNombre')?.value.trim();
+      if (!nombre) {
+        alert('Por favor ingresa un nombre para identificar el token.');
+        return;
+      }
+
+      const categoria = document.getElementById('selectTokenCategoria')?.value || 'General';
+      const scopes = [];
+      if (document.getElementById('scope_pedidos_read')?.checked) scopes.push('pedidos:read');
+      if (document.getElementById('scope_pedidos_write')?.checked) scopes.push('pedidos:write');
+      if (document.getElementById('scope_productos_read')?.checked) scopes.push('productos:read');
+      if (document.getElementById('scope_productos_write')?.checked) scopes.push('productos:write');
+      if (document.getElementById('scope_clientes_read')?.checked) scopes.push('clientes:read');
+      if (document.getElementById('scope_inventario_read')?.checked) scopes.push('inventario:read');
+      if (document.getElementById('scope_ventas_read')?.checked) scopes.push('ventas:read');
+
+      if (scopes.length === 0) {
+        alert('Selecciona al menos un permiso (scope) para el token.');
+        return;
+      }
+
+      const randomPart = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+      const nuevoToken = 'zoco_live_' + randomPart;
+
+      const nuevoObj = {
+        id: 'tok-' + Date.now(),
+        nombre: nombre,
+        categoria: categoria,
+        scopes: scopes,
+        creado: 'Hoy',
+        ultimoUso: 'Nunca',
+        estado: 'Activo',
+        token: nuevoToken
+      };
+
+      apiTokens.unshift(nuevoObj);
+      cerrarModalGenerarApiToken();
+      renderApiTokens();
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(nuevoToken);
+      }
+      mostrarNotificacion('✅ Token generado y copiado al portapapeles: ' + nuevoToken.slice(0, 18) + '...');
+    }
+
+    function revocarApiToken(id) {
+      if (!confirm('¿Estás seguro de que deseas revocar este token? Los sistemas conectados perderán acceso inmediatamente.')) {
+        return;
+      }
+      apiTokens = apiTokens.filter(t => t.id !== id);
+      renderApiTokens();
+      mostrarNotificacion('🗑️ Token revocado correctamente.');
+    }
+
+    function copiarTokenApi(token) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(token);
+      }
+      mostrarNotificacion('📋 Token copiado al portapapeles: ' + token.slice(0, 16) + '••••');
     }
 
     // Inicialización del primer tab
