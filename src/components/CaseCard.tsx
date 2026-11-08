@@ -17,6 +17,8 @@ import yndipetServices from '../../asset/cases/yndipet-services.webp';
 import yndipetGames from '../../asset/cases/yndipet-games.webp';
 import gameHome from '../../asset/cases/yndipet-game-home.webp';
 import gameTrivia from '../../asset/cases/yndipet-game-trivia.webp';
+import sokifyLogo from '../../asset/cases/sokify-logo.png';
+import sokifyHero from '../../asset/cases/sokify-hero.jpg';
 
 export const caseImages: Record<CaseImage, string> = {
   'memora-home': memoraHome,
@@ -52,6 +54,25 @@ export const CaseVisual: React.FC<{ item: CaseStudy; tall?: boolean }> = ({ item
           className={`absolute right-0 bottom-0 ${tall ? 'h-[105%]' : 'h-[112%] -mb-4'} w-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-2`}
           style={{ animation: 'orb-float 6s ease-in-out infinite' }}
         />
+      </div>
+    );
+  }
+
+  if (item.visual === 'sokify') {
+    return (
+      <div className={`${h} relative overflow-hidden bg-gradient-to-br from-[#1c0a2e] via-[#0b1022] to-[#040812] flex items-center justify-center p-6`}>
+        <div className="absolute -left-12 -top-12 w-64 h-64 rounded-full bg-purple-600/30 blur-[70px]" aria-hidden />
+        <div className="absolute right-0 bottom-0 w-64 h-64 rounded-full bg-emerald-500/20 blur-[70px]" aria-hidden />
+        <img
+          loading="lazy"
+          decoding="async"
+          src={sokifyLogo}
+          alt="Sokify — Sistema Operativo Gastronómico Inteligente"
+          className={`relative z-10 ${tall ? 'w-56 sm:w-80' : 'w-44'} drop-shadow-[0_15px_35px_rgba(168,85,247,0.45)] transition-transform duration-500 group-hover:scale-105`}
+        />
+        <div className="absolute bottom-2.5 right-3.5 z-10 rounded-full border border-emerald-400/30 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+          0% Comisión · 3 Meses Gratis
+        </div>
       </div>
     );
   }

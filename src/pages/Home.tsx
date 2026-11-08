@@ -9,6 +9,7 @@ import { CaseCard } from '../components/CaseCard';
 import { ParticleField } from '../components/effects';
 import { PlasmaVideo } from '../components/PlasmaVideo';
 import { YndiPetSpotlight } from '../components/YndiPetSpotlight';
+import { SokifySpotlight } from '../components/SokifySpotlight';
 import { CustomProjectCard } from '../components/CustomProjectCard';
 import { GlobalReach } from '../components/GlobalReach';
 import { TechMarquee } from '../components/TechMarquee';
@@ -214,6 +215,8 @@ export const Home: React.FC = () => {
           </div>
         </Container>
       </section>
+
+      <SokifySpotlight />
 
       <YndiPetSpotlight />
 

@@ -43,6 +43,7 @@ const organization = {
   description:
     'Empresa chilena de desarrollo de software e inteligencia artificial aplicada: soluciones ProPyme, plataformas a medida, agentes de IA para WhatsApp, campus virtuales SENCE y soberanía digital para empresas en crecimiento.',
   subOrganization: [
+    { '@type': 'Organization', name: 'Sokify', url: 'https://sokify.app' },
     { '@type': 'Organization', name: 'YndiPet', url: 'https://yndipet.com' },
     { '@type': 'Organization', name: 'MEMORA', url: 'https://memora.lat' },
   ],
@@ -66,6 +67,14 @@ const organization = {
     ...(WHATSAPP_NUMBER && { telephone: `+${WHATSAPP_NUMBER}` }),
   },
   makesOffer: [
+    {
+      '@type': 'Offer',
+      name: 'Sokify: Sistema Operativo Gastronómico Inteligente (Menú QR, KDS Cocina, POS, 0% Comisión)',
+      description: 'Plataforma SaaS para restaurantes y cafeterías con menú interactivo QR, comanda KDS en tiempo real, pedidos por WhatsApp y 0% comisión por venta. 3 meses gratis.',
+      price: '15900',
+      priceCurrency: 'CLP',
+      url: 'https://sokify.app',
+    },
     {
       '@type': 'Offer',
       name: `${ebs.name}: diagnóstico estratégico de IA`,

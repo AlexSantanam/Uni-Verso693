@@ -355,13 +355,105 @@ export interface CaseStudy {
   /** Extra links shown on the detail page (e.g. games). */
   links?: { label: L; url: string }[];
   /** Hero visual on cards and detail page. */
-  visual: 'yndipet' | 'memora' | 'melsa';
+  visual: 'yndipet' | 'memora' | 'melsa' | 'sokify';
   /** "What we built" grouped by area. */
   features?: { title: L; items: { es: string[]; en: string[] } }[];
   gallery?: { image: CaseImage; caption: L }[];
 }
 
 export const cases: CaseStudy[] = [
+  {
+    slug: 'sokify',
+    client: 'Sokify',
+    sector: { es: 'SaaS Gastronómico & Operaciones en Vivo', en: 'FoodTech SaaS & Live Kitchen Operations' },
+    title: {
+      es: 'Sokify: El sistema operativo inteligente para restaurantes',
+      en: 'Sokify: The intelligent operating system for restaurants',
+    },
+    challenge: {
+      es: 'Los locales gastronómicos, bares y cafeterías en Chile perdían hasta un 30% de cada pedido en comisiones de plataformas intermediarias, además de lidiar con comandas en papel desordenadas, retrasos en cocina y nula fidelización directa de sus clientes.',
+      en: 'Restaurants, bars, and cafes in Chile were losing up to 30% of every sale to intermediary platform commissions, while struggling with chaotic paper tickets, kitchen delays, and zero direct client retention.',
+    },
+    solution: {
+      es: 'Diseñamos y desarrollamos Sokify como un ecosistema en la nube de alta disponibilidad: Menú interactivo QR sincronizado en tiempo real, pantalla de cocina (KDS) con alertas sonoras inmediatas vía Web Audio API, pedidos directos por WhatsApp, control de caja/POS y asistente Sofi IA para atención 24/7 sin intermediarios.',
+      en: 'We designed and engineered Sokify as a high-availability cloud ecosystem: real-time synchronized QR interactive menus, live kitchen display system (KDS) with instant Web Audio sound alerts, direct WhatsApp ordering, cash/POS controls, and Sofi AI assistant for 24/7 automated support.',
+    },
+    results: {
+      es: [
+        '0% comisiones por venta en pedidos directos (ahorro estimado de +$16M CLP/año)',
+        'Sincronización instantánea (<100ms) entre el celular del comensal y el KDS de cocina',
+        'Gestión unificada de comanda: mesa, retiro en barra y delivery directo propio',
+        'Modelo de masificación de entrada con 3 meses 100% gratuitos y planes desde $15.900/mes',
+      ],
+      en: [
+        '0% sales commissions on direct orders (estimated savings of +$16M CLP/year)',
+        'Instant sync (<100ms) between customer smartphones and kitchen KDS display',
+        'Unified order routing: dine-in table, bar takeout, and direct in-house delivery',
+        'High-penetration acquisition model with 3 months 100% free and plans from $15,900 CLP/mo',
+      ],
+    },
+    tags: ['React', 'Firebase Realtime', 'Web Audio API', 'KDS Cocina', 'SaaS', '0% Comisiones', 'PWA'],
+    url: 'https://sokify.app',
+    links: [
+      { label: { es: 'Ingresar a Sokify.app', en: 'Open Sokify.app' }, url: 'https://sokify.app' },
+      { label: { es: 'Demo Menú QR', en: 'Live QR Menu Demo' }, url: 'https://sokify.app/menu.html?demo=1' },
+      { label: { es: 'Demo Pantalla Cocina (KDS)', en: 'Kitchen KDS Demo' }, url: 'https://sokify.app/cocina.html?demo=1' },
+    ],
+    visual: 'sokify',
+    features: [
+      {
+        title: { es: 'Menú Digital QR Inteligente', en: 'Smart QR Digital Menu' },
+        items: {
+          es: [
+            'Carga instantánea en smartphones sin necesidad de descargar aplicaciones',
+            'Categorización visual con fotos en alta definición y modificadores de ingredientes',
+            'Carro de compras interactivo con selección de mesa o delivery',
+            'Botón flotante con Sofi IA para resolver dudas de la carta al instante',
+          ],
+          en: [
+            'Instant mobile loading without requiring any app download',
+            'Visual categories with HD photography and ingredient modifiers',
+            'Interactive cart supporting dine-in table or delivery options',
+            'Floating Sofi AI widget answering menu questions on the fly',
+          ],
+        },
+      },
+      {
+        title: { es: 'Comanda de Cocina (KDS) en Tiempo Real', en: 'Real-Time Kitchen Display (KDS)' },
+        items: {
+          es: [
+            'Alertas sonoras automáticas al ingresar un nuevo pedido (Web Audio API)',
+            'Columnas de flujo Kanban: Pendiente, En Preparación y Listo para Servir',
+            'Cronómetro visual de espera para optimizar tiempos de despacho del chef',
+            'Operable en cualquier tablet o pantalla táctil de cocina vía navegador',
+          ],
+          en: [
+            'Automated sound chimes upon receiving new orders (Web Audio API)',
+            'Kanban workflow columns: Pending, In Preparation, and Ready to Serve',
+            'Visual elapsed time counters to optimize chef dispatch pace',
+            'Runs on any tablet or kitchen touch screen via web browser',
+          ],
+        },
+      },
+      {
+        title: { es: 'Punto de Venta (POS) & Administración', en: 'POS Cash Register & Management' },
+        items: {
+          es: [
+            'Recepción de pagos directos online o presenciales con 0% de comisiones a terceros',
+            'Panel de control en vivo de ventas diarias, productos más vendidos y comensales',
+            'Add-on de dominio propio (.cl o .com) con correos corporativos ilimitados',
+            'Multi-tenant seguro con autenticación de dueños de restaurante',
+          ],
+          en: [
+            'Direct online or in-person payments with 0% third-party cuts',
+            'Live analytics dashboard for daily revenue, top items, and repeat customers',
+            'Custom domain add-on (.com or .cl) with unlimited corporate mailboxes',
+            'Secure multi-tenant architecture with restaurant owner authentication',
+          ],
+        },
+      },
+    ],
+  },
   {
     slug: 'yndipet',
     client: 'YndiPet',
