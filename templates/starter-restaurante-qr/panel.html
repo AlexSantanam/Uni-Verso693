@@ -296,6 +296,9 @@
               <button onclick="switchTab('marketing', 'resenas')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="resenas">
                 Reseñas
               </button>
+              <button onclick="switchTab('marketing', 'rastreo')" class="marketing-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="rastreo">
+                Herramientas de rastreo
+              </button>
             </div>
           </div>
 
@@ -2165,6 +2168,10 @@
                 <span>🌟</span>
                 <span>Reseñas</span>
               </button>
+              <button onclick="setMarketingSubtab('rastreo')" id="subtabBtnMktRastreo" class="mkt-tab-pill px-4 py-2 rounded-lg text-xs font-black transition-all text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-2">
+                <span>🎯</span>
+                <span>Herramientas de rastreo</span>
+              </button>
             </div>
           </div>
 
@@ -2570,23 +2577,400 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- SUBVIEW 5: RESEÑAS Y REPUTACIÓN -->
+          <!-- SUBVIEW 5: RESEÑAS Y REPUTACIÓN (IMAGEN 1 OLACLICK) -->
           <!-- ================================================================= -->
-          <div id="viewMktResenas" class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft hidden">
-            <h2 class="text-xl font-black text-slate-900 tracking-tight">Gestión de Reseñas & Calificaciones</h2>
-            <p class="text-xs text-slate-500 font-medium">Monitorea y solicita opiniones 5 estrellas a comensales reales tras completar su pedido.</p>
+          <div id="viewMktResenas" class="space-y-6 hidden">
             
-            <div class="p-5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
-              <h4 class="font-bold text-xs text-amber-900">Solicitud Automática de Opinión por WhatsApp</h4>
-              <p class="text-xs text-amber-800">
-                Al marcar un pedido como completado en el PDV o Cocina, el sistema puede invitar al cliente a calificar tu comida en Google Maps con 1 clic.
+            <!-- ENCABEZADO SUPERIOR: TÍTULO Y DESCRIPCIÓN -->
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Reseñas</h2>
+              <p class="text-xs sm:text-sm text-slate-500 font-medium">
+                Gestiona las Reseñas de tus clientes desde un solo lugar. Responde manualmente, con inteligencia artificial.
               </p>
-              <div class="pt-2">
-                <button onclick="solicitarResenasUltimosClientes()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer">
-                  ⭐ Enviar solicitud a clientes de hoy
-                </button>
+            </div>
+
+            <!-- TABS SUB-NAVEGACIÓN (EXACTO A IMAGEN 1) -->
+            <div class="border-b border-slate-200 flex items-center gap-6 text-xs sm:text-sm">
+              <button onclick="setResenasSubtab('google')" id="tabResenasGoogleBtn" class="pb-3 font-bold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2 cursor-pointer transition-colors">
+                <span>Reseñas de Google</span>
+                <span class="text-[9px] bg-cyan-100 text-cyan-800 border border-cyan-200 px-1.5 py-0.2 rounded font-black">✨ IA</span>
+                <span class="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+              </button>
+              <button onclick="setResenasSubtab('whatsapp')" id="tabResenasWhatsappBtn" class="pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 cursor-pointer transition-colors">
+                <span>Reseñas de WhatsApp</span>
+                <span class="w-2 h-2 rounded-full bg-slate-300 inline-block"></span>
+              </button>
+            </div>
+
+            <!-- SUBPANEL 5.1: RESEÑAS DE GOOGLE -->
+            <div id="panelResenasGoogle" class="space-y-6">
+              
+              <!-- CARD ESTADO HERO CON GRÁFICO 3D (EXACTO A IMAGEN 1) -->
+              <div id="cardGoogleResenasPrompt" class="bg-white rounded-3xl border border-borderLight p-8 sm:p-14 text-center shadow-soft space-y-6">
+                
+                <!-- GRÁFICO 3D: ICONO GOOGLE + 5 ESTRELLAS + PULGAR ARRIBA -->
+                <div class="flex justify-center items-center">
+                  <div class="relative w-28 h-28 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-blue-500/10 rounded-full blur-xl"></div>
+                    <div class="relative bg-white border border-slate-100 rounded-3xl p-4 shadow-xl flex flex-col items-center gap-1.5">
+                      <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-md">G</span>
+                        <div class="text-amber-400 text-sm tracking-tight">★★★★★</div>
+                      </div>
+                      <div class="text-3xl filter drop-shadow">👍</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TEXTOS DESCRIPTIVOS -->
+                <div class="max-w-md mx-auto space-y-2">
+                  <h3 class="text-sm sm:text-base font-bold text-slate-800 leading-snug">
+                    Activa tu perfil de Google para gestionar tus reseñas. Podrás ver y responder reseñas rápidamente con ayuda de IA.
+                  </h3>
+                  <p class="text-xs sm:text-sm text-slate-500 font-medium">
+                    ¡Actívalo y empieza a interactuar con tus clientes!
+                  </p>
+                </div>
+
+                <!-- BOTÓN AZUL GOOGLE (IDÉNTICO A IMAGEN) -->
+                <div class="pt-2 flex flex-wrap justify-center items-center gap-3">
+                  <button onclick="toggleActivarPerfilGoogleResenas()" id="btnActivarPerfilGoogleResenas" class="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/25 flex items-center gap-3 transition-all cursor-pointer">
+                    <span class="w-6 h-6 rounded-lg bg-white text-blue-600 flex items-center justify-center font-black text-xs">G</span>
+                    <span>Activar mi perfil en Google ahora</span>
+                  </button>
+                  <button onclick="toggleVerDemoResenasGoogle()" class="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer">
+                    👁️ Ver Reseñas en Vivo
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- FEED INTERACTIVO DE RESEÑAS DE GOOGLE (CON ASISTENTE DE IA) -->
+              <div id="boxFeedResenasGoogle" class="space-y-4 hidden">
+                
+                <!-- MÉTRICAS DE REPUTACIÓN -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl">
+                      ⭐
+                    </div>
+                    <div>
+                      <div class="text-2xl font-black text-slate-900">4.9 <span class="text-xs text-slate-400 font-normal">/ 5.0</span></div>
+                      <div class="text-[11px] text-slate-400 font-medium">148 opiniones verificadas</div>
+                    </div>
+                  </div>
+
+                  <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
+                      ⚡
+                    </div>
+                    <div>
+                      <div class="text-2xl font-black text-emerald-600">98%</div>
+                      <div class="text-[11px] text-slate-400 font-medium">Tasa de respuesta con IA</div>
+                    </div>
+                  </div>
+
+                  <div class="bg-white rounded-2xl border border-borderLight p-4 shadow-soft flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+                      🕒
+                    </div>
+                    <div>
+                      <div class="text-2xl font-black text-slate-900">&lt; 15 min</div>
+                      <div class="text-[11px] text-slate-400 font-medium">Tiempo promedio de respuesta</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- LISTA DE RESEÑAS -->
+                <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-4 shadow-soft">
+                  <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h3 class="font-black text-sm text-slate-900">Opiniones Recientes de Google Maps</h3>
+                    <div class="flex items-center gap-2">
+                      <button onclick="solicitarResenasUltimosClientes()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                        <span>⭐</span>
+                        <span>Pedir reseñas a clientes de hoy</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="listaGoogleReviewsCards" class="divide-y divide-slate-100 space-y-4">
+                    <!-- Inyección dinámica de reviews -->
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- SUBPANEL 5.2: RESEÑAS DE WHATSAPP -->
+            <div id="panelResenasWhatsapp" class="space-y-4 hidden">
+              <div class="bg-white rounded-2xl border border-borderLight p-6 space-y-4 shadow-soft">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 class="font-black text-sm text-slate-900">Encuestas de Satisfacción Post-Pedido en WhatsApp</h3>
+                    <p class="text-xs text-slate-400">Enviada automáticamente 35 minutos después de entregada la orden.</p>
+                  </div>
+                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Encuestas Automáticas Activas</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-slate-900">Carlos Navarrete (+56 944123890)</span>
+                      <span class="text-amber-500 font-bold">★★★★★</span>
+                    </div>
+                    <p class="text-xs text-slate-600">"El pedido #1042 llegó rapidísimo y los completos estaban perfectos. Excelente servicio!"</p>
+                    <div class="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+                      <span>Hace 2 horas · Pedido Delivery</span>
+                      <button onclick="enviarCuponAgradecimiento('+56 944123890')" class="text-blue-600 hover:underline font-bold cursor-pointer">Enviar cupón de regalo</button>
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-slate-900">Francisca Leiva (+56 988231002)</span>
+                      <span class="text-amber-500 font-bold">★★★★★</span>
+                    </div>
+                    <p class="text-xs text-slate-600">"Amamos la tabla de papas cheddar. Muy bien empaquetado todo."</p>
+                    <div class="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+                      <span>Hace 5 horas · Mostrador</span>
+                      <button onclick="enviarCuponAgradecimiento('+56 988231002')" class="text-blue-600 hover:underline font-bold cursor-pointer">Enviar cupón de regalo</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- SUBVIEW 6: HERRAMIENTAS DE RASTREO (IMAGEN 2 OLACLICK) -->
+          <!-- ================================================================= -->
+          <div id="viewMktRastreo" class="space-y-6 hidden">
+            
+            <!-- ENCABEZADO -->
+            <div class="space-y-1">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Herramientas de rastreo</h2>
+              <p class="text-xs sm:text-sm text-slate-500 font-medium">
+                Conecta tus píxeles y herramientas de analítica para medir conversiones, optimizar campañas publicitarias y verificar tu dominio.
+              </p>
+            </div>
+
+            <!-- CONTENEDOR DE 4 CARDS (EXACTO A IMAGEN 2) -->
+            <div class="space-y-4">
+              
+              <!-- CARD 1: FACEBOOK PIXEL -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 shadow-soft hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  <!-- COLUMNA IZQUIERDA: DESCRIPCIÓN -->
+                  <div class="lg:col-span-4 space-y-2">
+                    <div class="flex items-center gap-2.5">
+                      <span id="badgeStatusFbPixel" class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black shrink-0">✓</span>
+                      <h3 class="font-black text-sm text-slate-900">Agrega el pixel de Facebook aquí</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium pl-8">
+                      El Pixel de Facebook es un código "invisible" que te permite realizar un seguimiento de tus conversiones web, crear públicos y medir el rendimiento de tus anuncios en Meta.
+                    </p>
+                  </div>
+
+                  <!-- COLUMNA CENTRAL: INSTRUCCIONES Y FORMULARIO -->
+                  <div class="lg:col-span-5 space-y-3 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-6 pt-4 lg:pt-0">
+                    <h4 class="font-bold text-xs text-slate-800">Facebook Pixel</h4>
+                    <ol class="text-xs text-slate-500 space-y-1 list-decimal list-inside font-medium leading-relaxed">
+                      <li>Ingresa al <b>"Administrador de eventos"</b> de su cuenta de Facebook.</li>
+                      <li>Elige tu Pixel.</li>
+                      <li>Copia el <b>Identificador de Pixel</b>.</li>
+                      <li>Ingrese el identificador de Pixel:</li>
+                    </ol>
+
+                    <div class="flex items-center gap-2 pt-1">
+                      <input id="inputTrackingFbPixel" type="text" placeholder="Ingrese el identificador de pixel aquí" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                      <button onclick="guardarPixelConfig('fbPixel')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0">
+                        Guardar
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- COLUMNA DERECHA: MOCKUP / CAPTURA DE REFERENCIA -->
+                  <div class="lg:col-span-3 flex justify-center items-center">
+                    <div class="w-full max-w-[200px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-[10px] space-y-2 shadow-xs">
+                      <div class="flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                        <span class="font-bold text-slate-700">Facebook Pixel</span>
+                      </div>
+                      <div class="space-y-1 text-slate-400 font-mono">
+                        <div>Pixel ID:</div>
+                        <div class="bg-blue-100/70 text-blue-700 p-1 rounded font-bold text-[9px] truncate">111111111111111</div>
+                      </div>
+                      <div class="h-6 bg-slate-200/60 rounded flex items-center justify-center text-slate-400 font-sans text-[9px]">
+                        Gráfico de eventos
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- CARD 2: FACEBOOK DOMAIN VERIFICATION -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 shadow-soft hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  <div class="lg:col-span-4 space-y-2">
+                    <div class="flex items-center gap-2.5">
+                      <span id="badgeStatusFbDomain" class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black shrink-0">✓</span>
+                      <h3 class="font-black text-sm text-slate-900">Agrega la verificación del dominio de Facebook aquí</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium pl-8">
+                      Verificando el dominio de Meta (Facebook) podrás administrar los permisos de edición de tus enlaces y contenido, tanto orgánico como de pago, evitando bloqueos en Business Manager.
+                    </p>
+                  </div>
+
+                  <div class="lg:col-span-5 space-y-3 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-6 pt-4 lg:pt-0">
+                    <h4 class="font-bold text-xs text-slate-800">Facebook Domain Verification</h4>
+                    <ol class="text-xs text-slate-500 space-y-1 list-decimal list-inside font-medium leading-relaxed">
+                      <li>Ubicados en el panel principal del Business Manager debes hacer Click en las herramientas principales de Meta.</li>
+                      <li>Click en <b>"Seguridad de marca"</b>.</li>
+                      <li>Dentro de la opción "Seguridad de marca", se dirije al panel de verificación donde encontrarás la configuración.</li>
+                      <li>Dentro del Panel en la parte inferior debes seleccionar <b>"Agregar una metaetiqueta"</b>.</li>
+                      <li>Copiando la metaetiqueta o token de tu menú deberás pegarla aquí.</li>
+                      <li>Ingrese su verificación de dominio recibido de Facebook aquí:</li>
+                    </ol>
+
+                    <div class="flex items-center gap-2 pt-1">
+                      <input id="inputTrackingFbDomain" type="text" placeholder="Pega aquí la verificación de dominio recibido de Facebook" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                      <button onclick="guardarPixelConfig('fbDomain')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0">
+                        Guardar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-3 flex justify-center items-center">
+                    <div class="w-full max-w-[200px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-[10px] space-y-2 shadow-xs">
+                      <div class="flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                        <span class="font-bold text-slate-700">Domain Verification</span>
+                      </div>
+                      <div class="space-y-1 text-slate-400 font-mono">
+                        <div>Meta-tag token:</div>
+                        <div class="bg-blue-100/70 text-blue-700 p-1 rounded font-bold text-[9px] truncate">meta name="facebook-domain-verif"</div>
+                      </div>
+                      <div class="h-6 bg-slate-200/60 rounded flex items-center justify-center text-slate-400 font-sans text-[9px]">
+                        Dominio Verificado
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- CARD 3: GOOGLE TAG MANAGER -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 shadow-soft hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  <div class="lg:col-span-4 space-y-2">
+                    <div class="flex items-center gap-2.5">
+                      <span id="badgeStatusGtm" class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black shrink-0">✓</span>
+                      <h3 class="font-black text-sm text-slate-900">Agrega el pixel de Google Tag Manager aquí</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium pl-8">
+                      El pixel de Tag Manager te ayuda a administrar etiquetas para la medición de tu audiencia y rendimiento de la misma en herramientas como Google Analytics o conversiones para Google AdWords.
+                    </p>
+                  </div>
+
+                  <div class="lg:col-span-5 space-y-3 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-6 pt-4 lg:pt-0">
+                    <h4 class="font-bold text-xs text-slate-800">Google Tag Manager</h4>
+                    <ol class="text-xs text-slate-500 space-y-1 list-decimal list-inside font-medium leading-relaxed">
+                      <li>Crea tu cuenta en Google Tag Manager.</li>
+                      <li>Agrega la URL de tu menú digital.</li>
+                      <li>Configura el contenedor para sitio web.</li>
+                      <li>Copia el ID del contenedor.</li>
+                      <li>Pega aquí el ID del contenedor:</li>
+                    </ol>
+
+                    <div class="flex items-center gap-2 pt-1">
+                      <input id="inputTrackingGtm" type="text" placeholder="Ingrese el ID (GTM-XXXXXX de GTM) aquí" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                      <button onclick="guardarPixelConfig('gtm')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0">
+                        Guardar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-3 flex justify-center items-center">
+                    <div class="w-full max-w-[200px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-[10px] space-y-2 shadow-xs">
+                      <div class="flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-cyan-600"></span>
+                        <span class="font-bold text-slate-700">Google Tag Manager</span>
+                      </div>
+                      <div class="space-y-1 text-slate-400 font-mono">
+                        <div>Contenedor:</div>
+                        <div class="bg-cyan-100/70 text-cyan-800 p-1 rounded font-bold text-[9px] truncate">GTM-MK89W2P</div>
+                      </div>
+                      <div class="h-6 bg-slate-200/60 rounded flex items-center justify-center text-slate-400 font-sans text-[9px]">
+                        Contenedor Web Activo
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- CARD 4: GOOGLE ANALYTICS GA4 -->
+              <div class="bg-white rounded-2xl border border-borderLight p-6 shadow-soft hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  <div class="lg:col-span-4 space-y-2">
+                    <div class="flex items-center gap-2.5">
+                      <span id="badgeStatusGa4" class="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black shrink-0">✓</span>
+                      <h3 class="font-black text-sm text-slate-900">Agrega el pixel de Google Analytics aquí</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium pl-8">
+                      El pixel de Analytics te ofrece información del tráfico que llega a tu menú: según la audiencia, la adquisición, el comportamiento y las conversiones que se llevan a cabo.
+                    </p>
+                  </div>
+
+                  <div class="lg:col-span-5 space-y-3 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-6 pt-4 lg:pt-0">
+                    <h4 class="font-bold text-xs text-slate-800">Google Analytics GA4</h4>
+                    <ol class="text-xs text-slate-500 space-y-1 list-decimal list-inside font-medium leading-relaxed">
+                      <li>Crear cuenta con Google Analytics.</li>
+                      <li>Dar click a Empezar a medir / Configuración de la cuenta.</li>
+                      <li>Siguiente, Configuración de propiedad y dar click en Flujos de datos.</li>
+                      <li>Seleccionar "Web" y copiar el <b>ID de Medición</b> (G-XXXXXXXXXX).</li>
+                      <li>Pega aquí el Google Analytics 4:</li>
+                    </ol>
+
+                    <div class="flex items-center gap-2 pt-1">
+                      <input id="inputTrackingGa4" type="text" placeholder="Ingrese el ID (G-XXXXXXXXXX) aquí" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+                      <button onclick="guardarPixelConfig('ga4')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0">
+                        Guardar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="lg:col-span-3 flex justify-center items-center">
+                    <div class="w-full max-w-[200px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-[10px] space-y-2 shadow-xs">
+                      <div class="flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        <span class="font-bold text-slate-700">Google Analytics 4</span>
+                      </div>
+                      <div class="space-y-1 text-slate-400 font-mono">
+                        <div>ID de Medición:</div>
+                        <div class="bg-amber-100/70 text-amber-800 p-1 rounded font-bold text-[9px] truncate">G-9P8Y2K7X10</div>
+                      </div>
+                      <div class="h-6 bg-slate-200/60 rounded flex items-center justify-center text-slate-400 font-sans text-[9px]">
+                        Tráfico en tiempo real
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
           </div>
 
         </section>
@@ -3660,6 +4044,49 @@
     </div>
   </div>
 
+  <!-- MODAL: ASISTENTE IA PARA RESPONDER RESEÑAS -->
+  <div id="modalResponderResenaIA" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl font-bold">✨</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Responder Reseña con IA</h3>
+            <p class="text-[11px] text-slate-400">Genera una respuesta gastronómica empática y profesional</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalResponderResena()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+          <div class="flex items-center justify-between">
+            <span id="modalResenaClienteNombre" class="font-bold text-slate-900">Camila Valenzuela</span>
+            <span id="modalResenaEstrellas" class="text-amber-500 font-bold">★★★★★</span>
+          </div>
+          <p id="modalResenaComentario" class="text-xs text-slate-600 italic">"¡Increíble la hamburguesa trufada y las papas rústicas! 10/10."</p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Sugerencias generadas por IA:</label>
+          <div class="grid grid-cols-1 gap-2" id="boxSugerenciasIA">
+            <!-- Sugerencias dinámicas -->
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tu respuesta oficial:</label>
+          <textarea id="textRespuestaOficialResena" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalResponderResena()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="publicarRespuestaResena()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Publicar Respuesta</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -4159,6 +4586,11 @@
           renderHorarioForm(data.horario || {});
         }
         renderPaletaSelector(data.paleta || 'brasa');
+
+        if (data.tracking) {
+          trackingConfig = { ...trackingConfig, ...data.tracking };
+          if (marketingSubtab === 'rastreo') renderRastreoView();
+        }
       });
 
       // Categorías
@@ -8307,7 +8739,8 @@
         { id: 'subtabBtnMktFidelidad', key: 'fidelidad' },
         { id: 'subtabBtnMktEnvio', key: 'envio-masivo' },
         { id: 'subtabBtnMktGoogle', key: 'google' },
-        { id: 'subtabBtnMktResenas', key: 'resenas' }
+        { id: 'subtabBtnMktResenas', key: 'resenas' },
+        { id: 'subtabBtnMktRastreo', key: 'rastreo' }
       ];
 
       pills.forEach(p => {
@@ -8324,7 +8757,8 @@
         'fidelidad': 'viewMktFidelidad',
         'envio-masivo': 'viewMktEnvio',
         'google': 'viewMktGoogle',
-        'resenas': 'viewMktResenas'
+        'resenas': 'viewMktResenas',
+        'rastreo': 'viewMktRastreo'
       };
 
       Object.entries(views).forEach(([k, viewId]) => {
@@ -8351,6 +8785,10 @@
         actualizarDestinatariosCampana();
       } else if (marketingSubtab === 'google') {
         renderGoogleView();
+      } else if (marketingSubtab === 'resenas') {
+        renderResenasView();
+      } else if (marketingSubtab === 'rastreo') {
+        renderRastreoView();
       }
     }
 
@@ -8760,7 +9198,57 @@
       }, 1000);
     }
 
-    // --- GOOGLE FOR RESTAURANTS & RESEÑAS ---
+    // --- GOOGLE FOR RESTAURANTS, RESEÑAS & RASTREO ---
+    let resenasSubtab = 'google';
+    let perfilGoogleConectado = false;
+    let currentReviewResponder = null;
+
+    const demoGoogleReviews = [
+      {
+        id: 'rev-1',
+        autor: 'Camila Valenzuela',
+        avatarBg: 'bg-rose-500',
+        estrellas: 5,
+        tiempo: 'hace 2 días',
+        texto: '¡Increíble la hamburguesa trufada y las papas rústicas! Llegó súper rápido y caliente. 10/10.',
+        respuesta: '¡Muchísimas gracias por tu visita Camila! Nos alegra un montón que disfrutaras la trufada. ¡Te esperamos pronto en Fravioli!'
+      },
+      {
+        id: 'rev-2',
+        autor: 'Rodrigo Morales',
+        avatarBg: 'bg-blue-500',
+        estrellas: 4,
+        tiempo: 'hace 4 días',
+        texto: 'Muy rica la comida, la promo familiar rinde excelente y las salsas caseras tienen muy buen toque.',
+        respuesta: null
+      },
+      {
+        id: 'rev-3',
+        autor: 'Ignacio Soto',
+        avatarBg: 'bg-emerald-500',
+        estrellas: 5,
+        tiempo: 'hace 1 semana',
+        texto: 'Atención impecable y el sistema para pedir por QR fue súper rápido y fluido.',
+        respuesta: null
+      },
+      {
+        id: 'rev-4',
+        autor: 'Valentina Tapia',
+        avatarBg: 'bg-purple-500',
+        estrellas: 5,
+        tiempo: 'hace 2 semanas',
+        texto: 'Las papas cheddar y la smash burger estaban de otro planeta. Recomiendo al 100%!',
+        respuesta: null
+      }
+    ];
+
+    let trackingConfig = {
+      fbPixel: '',
+      fbDomain: '',
+      gtm: '',
+      ga4: ''
+    };
+
     function renderGoogleView() {
       const inputMenu = document.getElementById('inputGoogleMenuUrl');
       if (inputMenu) {
@@ -8796,6 +9284,252 @@
           mostrarNotificacion('✅ Invitaciones de reseña enviadas con éxito por WhatsApp');
         }, 1000);
       }
+    }
+
+    // --- GESTIÓN DE RESEÑAS (GOOGLE + WHATSAPP) ---
+    function setResenasSubtab(sub) {
+      resenasSubtab = sub || 'google';
+      const btnG = document.getElementById('tabResenasGoogleBtn');
+      const btnW = document.getElementById('tabResenasWhatsappBtn');
+      const panelG = document.getElementById('panelResenasGoogle');
+      const panelW = document.getElementById('panelResenasWhatsapp');
+
+      if (btnG && btnW) {
+        if (resenasSubtab === 'google') {
+          btnG.className = 'pb-3 font-bold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2 cursor-pointer transition-colors';
+          btnW.className = 'pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 cursor-pointer transition-colors';
+        } else {
+          btnW.className = 'pb-3 font-bold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2 cursor-pointer transition-colors';
+          btnG.className = 'pb-3 font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2 cursor-pointer transition-colors';
+        }
+      }
+
+      if (panelG) panelG.classList.toggle('hidden', resenasSubtab !== 'google');
+      if (panelW) panelW.classList.toggle('hidden', resenasSubtab !== 'whatsapp');
+    }
+
+    function toggleActivarPerfilGoogleResenas() {
+      perfilGoogleConectado = !perfilGoogleConectado;
+      const btn = document.getElementById('btnActivarPerfilGoogleResenas');
+      const boxFeed = document.getElementById('boxFeedResenasGoogle');
+      
+      if (perfilGoogleConectado) {
+        if (btn) {
+          btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs">✓</span><span>Perfil de Google Conectado</span>`;
+          btn.className = 'px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/25 flex items-center gap-3 transition-all cursor-pointer';
+        }
+        mostrarNotificacion('✅ Perfil de Google conectado con éxito');
+        if (boxFeed) boxFeed.classList.remove('hidden');
+      } else {
+        if (btn) {
+          btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-white text-blue-600 flex items-center justify-center font-black text-xs">G</span><span>Activar mi perfil en Google ahora</span>`;
+          btn.className = 'px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/25 flex items-center gap-3 transition-all cursor-pointer';
+        }
+        mostrarNotificacion('Perfil de Google desconectado');
+        if (boxFeed) boxFeed.classList.add('hidden');
+      }
+      renderResenasGoogle();
+    }
+
+    function toggleVerDemoResenasGoogle() {
+      const boxFeed = document.getElementById('boxFeedResenasGoogle');
+      if (boxFeed) {
+        const isHidden = boxFeed.classList.toggle('hidden');
+        if (!isHidden) renderResenasGoogle();
+      }
+    }
+
+    function renderResenasView() {
+      setResenasSubtab(resenasSubtab);
+      renderResenasGoogle();
+    }
+
+    function renderResenasGoogle() {
+      const container = document.getElementById('listaGoogleReviewsCards');
+      if (!container) return;
+
+      container.innerHTML = demoGoogleReviews.map(r => {
+        const estrellasTxt = '★'.repeat(r.estrellas) + '☆'.repeat(5 - r.estrellas);
+        const iniciales = r.autor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+        return `
+          <div class="pt-4 first:pt-0 space-y-3" id="review-item-${r.id}">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full ${r.avatarBg} text-white font-black text-xs flex items-center justify-center shadow-xs">
+                  ${iniciales}
+                </div>
+                <div>
+                  <div class="font-bold text-xs text-slate-900">${r.autor}</div>
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <span class="text-amber-500 font-bold">${estrellasTxt}</span>
+                    <span class="text-slate-400">· ${r.tiempo}</span>
+                  </div>
+                </div>
+              </div>
+
+              ${!r.respuesta ? `
+                <button onclick="abrirModalResponderResena('${r.id}')" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                  <span>✨</span>
+                  <span>Responder con IA</span>
+                </button>
+              ` : `
+                <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-bold">
+                  ✓ Respondida
+                </span>
+              `}
+            </div>
+
+            <p class="text-xs text-slate-700 leading-relaxed font-medium pl-12">
+              "${r.texto}"
+            </p>
+
+            ${r.respuesta ? `
+              <div class="ml-12 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                <div class="flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
+                  <span>💬</span>
+                  <span>Respuesta del propietario (Fravioli):</span>
+                </div>
+                <p class="text-slate-600 text-xs leading-relaxed">${r.respuesta}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function abrirModalResponderResena(reviewId) {
+      const review = demoGoogleReviews.find(r => r.id === reviewId);
+      if (!review) return;
+      currentReviewResponder = review;
+
+      const modal = document.getElementById('modalResponderResenaIA');
+      if (!modal) return;
+
+      document.getElementById('modalResenaClienteNombre').textContent = review.autor;
+      document.getElementById('modalResenaEstrellas').textContent = '★'.repeat(review.estrellas) + '☆'.repeat(5 - review.estrellas);
+      document.getElementById('modalResenaComentario').textContent = `"${review.texto}"`;
+
+      const sugerencias = [
+        `¡Muchísimas gracias por tu visita y reseña, ${review.autor}! 🍔 En Fravioli nos apasiona preparar cada orden con la máxima frescura y sabor. ¡Te esperamos pronto para consentirte de nuevo!`,
+        `¡Hola ${review.autor}! Nos alegra enorme leer tu comentario. Todo el equipo de cocina y mostrador agradece tu preferencia. ¡Vuelve pronto a disfrutar tus favoritos!`,
+        `¡Excelente ${review.autor}! Gracias de corazón por tus 5 estrellas. Nos motiva a seguir entregando la mejor experiencia gastronómica. ¡Hasta la próxima orden!`
+      ];
+
+      const boxSug = document.getElementById('boxSugerenciasIA');
+      if (boxSug) {
+        boxSug.innerHTML = sugerencias.map((s, idx) => `
+          <button type="button" onclick="seleccionarSugerenciaResenaIA(${idx})" class="w-full text-left p-2.5 rounded-xl border border-blue-100 bg-blue-50/50 hover:bg-blue-100/70 text-slate-700 text-xs transition-colors cursor-pointer space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-bold text-blue-700">
+              <span>Opción ${idx + 1} (${idx === 0 ? 'Cálida & Agradecida' : idx === 1 ? 'Invitación a Repetir' : 'Gourmet'})</span>
+              <span>Usar ➔</span>
+            </div>
+            <div class="leading-relaxed line-clamp-2">${s}</div>
+          </button>
+        `).join('');
+      }
+
+      document.getElementById('textRespuestaOficialResena').value = sugerencias[0];
+      modal.classList.remove('hidden');
+    }
+
+    function seleccionarSugerenciaResenaIA(idx) {
+      const review = currentReviewResponder;
+      if (!review) return;
+      const sugerencias = [
+        `¡Muchísimas gracias por tu visita y reseña, ${review.autor}! 🍔 En Fravioli nos apasiona preparar cada orden con la máxima frescura y sabor. ¡Te esperamos pronto para consentirte de nuevo!`,
+        `¡Hola ${review.autor}! Nos alegra enorme leer tu comentario. Todo el equipo de cocina y mostrador agradece tu preferencia. ¡Vuelve pronto a disfrutar tus favoritos!`,
+        `¡Excelente ${review.autor}! Gracias de corazón por tus 5 estrellas. Nos motiva a seguir entregando la mejor experiencia gastronómica. ¡Hasta la próxima orden!`
+      ];
+      document.getElementById('textRespuestaOficialResena').value = sugerencias[idx] || sugerencias[0];
+    }
+
+    function cerrarModalResponderResena() {
+      document.getElementById('modalResponderResenaIA')?.classList.add('hidden');
+    }
+
+    function publicarRespuestaResena() {
+      const txt = document.getElementById('textRespuestaOficialResena')?.value.trim();
+      if (!txt) {
+        alert('Por favor escribe una respuesta.');
+        return;
+      }
+      if (currentReviewResponder) {
+        currentReviewResponder.respuesta = txt;
+      }
+      cerrarModalResponderResena();
+      mostrarNotificacion('✅ ¡Respuesta publicada exitosamente en Google Maps!');
+      renderResenasGoogle();
+    }
+
+    function enviarCuponAgradecimiento(telefono) {
+      mostrarNotificacion(`🎁 Cupón de fidelidad enviado por WhatsApp a ${telefono}`);
+    }
+
+    // --- HERRAMIENTAS DE RASTREO (META, GTM, GA4) ---
+    function renderRastreoView() {
+      const inFb = document.getElementById('inputTrackingFbPixel');
+      const inDom = document.getElementById('inputTrackingFbDomain');
+      const inGtm = document.getElementById('inputTrackingGtm');
+      const inGa4 = document.getElementById('inputTrackingGa4');
+
+      if (inFb && !inFb.value) inFb.value = trackingConfig.fbPixel || '';
+      if (inDom && !inDom.value) inDom.value = trackingConfig.fbDomain || '';
+      if (inGtm && !inGtm.value) inGtm.value = trackingConfig.gtm || '';
+      if (inGa4 && !inGa4.value) inGa4.value = trackingConfig.ga4 || '';
+
+      actualizarBadgesTracking();
+    }
+
+    function actualizarBadgesTracking() {
+      const map = [
+        { id: 'badgeStatusFbPixel', val: trackingConfig.fbPixel },
+        { id: 'badgeStatusFbDomain', val: trackingConfig.fbDomain },
+        { id: 'badgeStatusGtm', val: trackingConfig.gtm },
+        { id: 'badgeStatusGa4', val: trackingConfig.ga4 }
+      ];
+
+      map.forEach(m => {
+        const el = document.getElementById(m.id);
+        if (!el) return;
+        if (m.val && m.val.trim().length > 0) {
+          el.className = 'w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black shrink-0';
+          el.textContent = '✓';
+        } else {
+          el.className = 'w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black shrink-0';
+          el.textContent = '✓';
+        }
+      });
+    }
+
+    function guardarPixelConfig(tipo) {
+      let val = '';
+      let nombre = '';
+
+      if (tipo === 'fbPixel') {
+        val = document.getElementById('inputTrackingFbPixel')?.value.trim() || '';
+        trackingConfig.fbPixel = val;
+        nombre = 'Pixel de Facebook';
+      } else if (tipo === 'fbDomain') {
+        val = document.getElementById('inputTrackingFbDomain')?.value.trim() || '';
+        trackingConfig.fbDomain = val;
+        nombre = 'Verificación de Dominio Meta';
+      } else if (tipo === 'gtm') {
+        val = document.getElementById('inputTrackingGtm')?.value.trim() || '';
+        trackingConfig.gtm = val;
+        nombre = 'Google Tag Manager';
+      } else if (tipo === 'ga4') {
+        val = document.getElementById('inputTrackingGa4')?.value.trim() || '';
+        trackingConfig.ga4 = val;
+        nombre = 'Google Analytics 4';
+      }
+
+      if (window.restRef) {
+        window.restRef().set({ tracking: trackingConfig }, { merge: true }).catch(() => {});
+      }
+
+      actualizarBadgesTracking();
+      mostrarNotificacion(`💾 ${nombre} guardado correctamente`);
     }
 
     function mostrarNotificacion(msg) {
