@@ -245,6 +245,15 @@
             <span id="badgeInventarioAlerta" class="hidden text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-mono font-bold animate-pulse">0</span>
           </button>
 
+          <!-- CHATBOT WHATSAPP (EXACTO A OLACLICK) -->
+          <button onclick="switchTab('chatbot')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="chatbot">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🤖</span>
+              <span>Chatbot</span>
+            </div>
+            <span id="badgeChatbotStatus" class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">Auto</span>
+          </button>
+
           <!-- CATEGORÍAS -->
           <button onclick="switchTab('categorias')" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white" data-tab="categorias">
             <div class="flex items-center gap-3">
@@ -1689,7 +1698,273 @@
         </section>
 
         <!-- =================================================================== -->
-        <!-- TAB 5: CATEGORÍAS -->
+        <!-- TAB 4.9: CHATBOT WHATSAPP (EXACTO A IMAGEN OLACLICK) -->
+        <!-- =================================================================== -->
+        <section id="tab-chatbot" class="panel-pane space-y-6 hidden">
+          
+          <!-- HERO CARD PRINCIPAL (CLON DE DISEÑO DE LA CAPTURA) -->
+          <div class="bg-white rounded-3xl border border-borderLight p-6 sm:p-8 shadow-soft relative overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              <!-- COLUMNA IZQUIERDA: CONTENIDO Y ACCIONES -->
+              <div class="lg:col-span-7 space-y-5">
+                <div class="space-y-2">
+                  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="chatbotHeroStatusPill">Listo para automatizar</span>
+                  </div>
+                  <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    Chatbot WhatsApp de <span id="chatbotRestName">Fravioli</span>
+                  </h2>
+                  <p class="text-sm text-slate-500 leading-relaxed font-medium">
+                    Una herramienta poderosa para vender y responder automáticamente a tus clientes. ¡Úsalo fácilmente, sin necesidad de conocimientos de programación!
+                  </p>
+                </div>
+
+                <!-- LISTA DE CARACTERÍSTICAS CON TILDES AZULES (EXACTO A CAPTURA) -->
+                <div class="space-y-2.5 text-xs sm:text-sm text-slate-700 font-medium">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shrink-0">✓</span>
+                    <span>Mensajes automáticos totalmente editables.</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shrink-0">✓</span>
+                    <span>Respuestas instantáneas e inteligentes impulsadas con IA.</span>
+                  </div>
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shrink-0">✓</span>
+                    <span>Información clave de tu negocio 24/7 para tus clientes.</span>
+                  </div>
+                </div>
+
+                <!-- BOTÓN PRINCIPAL VERDE DE WHATSAPP -->
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                  <button onclick="abrirModalVincularChatbot()" class="px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-lg shadow-emerald-600/25 flex items-center gap-2.5 transition-all active:scale-95 cursor-pointer">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    <span id="btnVincularChatbotLabel">Vincular Chatbot de WhatsApp</span>
+                  </button>
+                  <button onclick="probarSimuladorChatbot()" class="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer">
+                    <span>📱</span>
+                    <span>Probar en Simulador</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- COLUMNA DERECHA: ILUSTRACIÓN Y MOCKUP (EXACTO A CAPTURA) -->
+              <div class="lg:col-span-5 flex justify-center">
+                <div class="relative w-full max-w-sm py-4">
+                  
+                  <!-- Teléfono Mockup con burbujas de WhatsApp -->
+                  <div class="bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800 mx-auto max-w-[240px]">
+                    <div class="bg-emerald-950/95 rounded-[2rem] overflow-hidden p-3 space-y-2.5">
+                      <div class="flex items-center gap-2 border-b border-emerald-800/80 pb-2">
+                        <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">🤖</span>
+                        <div class="text-[10px] text-white font-bold truncate">Bot Fravioli</div>
+                      </div>
+                      
+                      <div class="space-y-1.5 text-[9px] font-medium">
+                        <div class="bg-white/95 text-slate-900 p-2 rounded-xl rounded-tl-none shadow-xs">
+                          ¡Hola! 🍔 Bienvenido a Fravioli. ¿En qué te podemos ayudar?
+                        </div>
+                        <div class="bg-emerald-600 text-white p-2 rounded-xl rounded-tr-none ml-auto max-w-[85%] text-right shadow-xs">
+                          ¿Tienen carta digital para pedir?
+                        </div>
+                        <div class="bg-white/95 text-slate-900 p-2 rounded-xl rounded-tl-none shadow-xs">
+                          ¡Claro que sí! Puedes ver nuestras smash y pedir aquí: <span class="text-blue-600 underline">fravioli.menu</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Insignias flotantes sociales (Exactas a captura) -->
+                  <div class="absolute -bottom-1 left-2 bg-white rounded-2xl p-2.5 shadow-xl border border-slate-100 flex items-center gap-2">
+                    <span class="text-xl">😍</span>
+                    <div>
+                      <div class="font-black text-xs text-slate-900">+2,000</div>
+                      <div class="text-[10px] text-slate-400 font-semibold">Clientes felices</div>
+                    </div>
+                  </div>
+
+                  <div class="absolute -bottom-1 right-2 bg-white rounded-2xl p-2.5 shadow-xl border border-slate-100 flex items-center gap-2">
+                    <span class="text-xl">⭐</span>
+                    <div>
+                      <div class="font-black text-xs text-slate-900">4.8 to 5</div>
+                      <div class="text-[10px] text-slate-400 font-semibold">Reseñas</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SUB-BARRA DE CONFIGURACIÓN Y SIMULADOR -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- PANEL DE CONFIGURACIÓN DE MENSAJES (7 COLS) -->
+            <div class="lg:col-span-7 space-y-4">
+              
+              <!-- CARD 1: ESTADO Y VINCULACIÓN DEL NÚMERO -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3.5 shadow-soft">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">📞</span>
+                    <div>
+                      <h3 class="font-bold text-xs text-slate-900">Conexión de WhatsApp Oficial</h3>
+                      <p class="text-[11px] text-slate-400 font-medium">Línea activa para recepción y despacho de mensajes automáticos</p>
+                    </div>
+                  </div>
+                  <button onclick="abrirModalVincularChatbot()" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                    Cambiar número
+                  </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl text-xs">
+                  <div class="flex items-center gap-3">
+                    <div id="chatbotIndicatorLed" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <div>
+                      <div class="font-black text-slate-900" id="chatbotNumeroLabel">+56 9 3536 2199</div>
+                      <div class="text-[11px] text-emerald-600 font-semibold" id="chatbotEstadoLabel">Conectado y listo para responder</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-slate-600">Auto-responder:</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="chatbotSwitchActivo" onchange="actualizarChatbotConfig()" class="sr-only peer" checked>
+                      <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 2: MENSAJE DE BIENVENIDA -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3.5 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">👋</span>
+                    <h3 class="font-bold text-xs text-slate-900">Mensaje de Bienvenida Automático</h3>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="chatbotSwitchBienvenida" onchange="actualizarChatbotConfig()" class="sr-only peer" checked>
+                    <div class="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <p class="text-[11px] text-slate-400">Se envía de inmediato cuando un cliente saluda por primera vez.</p>
+                <textarea id="chatbotTextoBienvenida" rows="3" oninput="onCambioTextoChatbot()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-all resize-none"></textarea>
+                <div class="flex flex-wrap gap-1.5 text-[10px]">
+                  <span class="text-slate-400 font-semibold">Variables:</span>
+                  <button type="button" onclick="insertarVariableChatbot('{nombre_local}')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">{nombre_local}</button>
+                  <button type="button" onclick="insertarVariableChatbot('{link_menu}')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">{link_menu}</button>
+                  <button type="button" onclick="insertarVariableChatbot('{horario}')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">{horario}</button>
+                </div>
+              </div>
+
+              <!-- CARD 3: RESPUESTA FUERA DE HORARIO -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3.5 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">🌙</span>
+                    <h3 class="font-bold text-xs text-slate-900">Respuesta Fuera de Horario</h3>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="chatbotSwitchCerrado" onchange="actualizarChatbotConfig()" class="sr-only peer" checked>
+                    <div class="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <p class="text-[11px] text-slate-400">Se activa automáticamente si el restaurante se encuentra cerrado en el módulo de horarios.</p>
+                <textarea id="chatbotTextoCerrado" rows="3" oninput="onCambioTextoChatbot()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 focus:bg-white transition-all resize-none"></textarea>
+              </div>
+
+              <!-- CARD 4: RESPUESTAS INTELIGENTES CON IA -->
+              <div class="bg-white rounded-2xl border border-borderLight p-5 space-y-3.5 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">🧠</span>
+                    <h3 class="font-bold text-xs text-slate-900">Respuestas Inteligentes con IA (Gemini)</h3>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="chatbotSwitchIA" onchange="actualizarChatbotConfig()" class="sr-only peer" checked>
+                    <div class="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
+                </div>
+                <p class="text-[11px] text-slate-400">Responde preguntas libres de clientes sobre dirección, formas de pago, tiempo de preparación y recomendaciones del menú.</p>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tono y Personalidad del Bot:</label>
+                  <input id="chatbotPromptIA" type="text" oninput="actualizarChatbotConfig()" placeholder="Ej: Eres un asistente gastronómico amable, rápido y alegre de Fravioli Street Food..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600">
+                </div>
+              </div>
+
+              <div class="flex justify-end pt-1">
+                <button onclick="guardarChatbotConfig()" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+                  💾 Guardar Configuración de Chatbot
+                </button>
+              </div>
+
+            </div>
+
+            <!-- SIMULADOR INTERACTIVO DE WHATSAPP EN VIVO (5 COLS) -->
+            <div class="lg:col-span-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                  <h3 class="font-extrabold text-xs text-slate-900">Simulador de WhatsApp en Vivo</h3>
+                </div>
+                <button onclick="reiniciarChatSimulador()" class="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer">
+                  ↻ Reiniciar chat
+                </button>
+              </div>
+
+              <!-- CARCASA DEL SMARTPHONE CON CHAT DE WHATSAPP -->
+              <div class="bg-slate-950 rounded-[2.5rem] p-3.5 shadow-2xl border-4 border-slate-800 w-full max-w-[340px] mx-auto">
+                <div class="bg-[#0b141a] rounded-[2rem] overflow-hidden flex flex-col h-[520px]">
+                  
+                  <!-- Cabecera de WhatsApp -->
+                  <div class="bg-[#202c33] p-3 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-xs text-white">
+                        🍔
+                      </div>
+                      <div>
+                        <div class="font-bold text-xs text-slate-100" id="simChatbotNombre">Fravioli Bot</div>
+                        <div class="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
+                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                          <span>en línea</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-slate-400 text-xs">⋮</div>
+                  </div>
+
+                  <!-- Área de mensajes scrolleable -->
+                  <div id="simChatMensajesArea" class="flex-1 p-3 overflow-y-auto space-y-2 text-xs font-normal bg-[radial-gradient(#1f2c34_1px,transparent_1px)] bg-[size:16px_16px]">
+                    <!-- Inyección dinámica de burbujas -->
+                  </div>
+
+                  <!-- Barra inferior para escribir mensaje de prueba -->
+                  <div class="p-2 bg-[#202c33] flex items-center gap-1.5 shrink-0">
+                    <input id="inputSimChatUsuario" type="text" placeholder="Escribe un mensaje de prueba..." onkeydown="if(event.key==='Enter') enviarMensajeSimulador()" class="flex-1 bg-[#2a3942] text-slate-100 placeholder-slate-400 text-xs rounded-xl px-3 py-2 border-none focus:outline-none">
+                    <button onclick="enviarMensajeSimulador()" class="w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center font-bold text-xs cursor-pointer shrink-0">
+                      ➤
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Sugerencias de prueba rápida -->
+              <div class="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                <button onclick="probarMensajeRapido('Hola')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:bg-slate-50 cursor-pointer">"Hola"</button>
+                <button onclick="probarMensajeRapido('¿Tienen carta digital?')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:bg-slate-50 cursor-pointer">"¿Tienen carta?"</button>
+                <button onclick="probarMensajeRapido('¿Dónde están ubicados?')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:bg-slate-50 cursor-pointer">"¿Dónde están?"</button>
+                <button onclick="probarMensajeRapido('¿Qué medios de pago tienen?')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-[10px] font-bold hover:bg-slate-50 cursor-pointer">"Medios de pago"</button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
         <!-- =================================================================== -->
         <section id="tab-categorias" class="panel-pane space-y-5 hidden">
           
@@ -2522,6 +2797,53 @@
     </div>
   </div>
 
+  <!-- MODAL: VINCULAR CHATBOT DE WHATSAPP -->
+  <div id="modalVincularChatbot" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">📲</span>
+          <div>
+            <h3 class="font-black text-sm text-slate-900">Vincular WhatsApp de tu Negocio</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Escanea o ingresa tu línea comercial oficial</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalVincularChatbot()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-600">
+        <!-- Código QR simulado tipo WhatsApp Web -->
+        <div class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+          <div class="w-44 h-44 bg-white p-2 rounded-xl border border-slate-200 shadow-sm relative flex items-center justify-center">
+            <!-- QR SVG -->
+            <svg class="w-full h-full text-slate-800" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M0 0h30v30H0zm5 5h20v20H5zm35 0h10v10H40zm20 0h10v10H60zm10 0h30v30H70zm5 5h20v20H75zM0 70h30v30H0zm5 5h20v20H5zm45-65h10v10H50zm-10 20h10v10H40zm20 0h10v10H60zm-30 10h10v10H30zm20 0h10v10H50zm10 0h10v10H60zm-30 10h10v10H30zm30 0h10v10H60zm10 0h10v10H70zm-60 10h10v10H10zm20 0h10v10H30zm40 0h10v10H70zm10 0h20v10H80zm-40 10h10v10H40zm20 0h10v10H60zm10 0h10v10H70zm10 0h10v10H80zm-40 10h10v10H40zm10 0h10v10H50zm20 0h20v10H70z"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-sm shadow-md">💬</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium text-center">
+            Abre WhatsApp en tu teléfono > <b>Dispositivos vinculados</b> > <b>Vincular un dispositivo</b>
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">O ingresa el número telefónico comercial:</label>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-2 bg-slate-100 rounded-xl font-bold text-xs text-slate-600 border border-slate-200">🇨🇱 +56</span>
+            <input id="inputChatbotNumeroModal" type="text" placeholder="9 3536 2199" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalVincularChatbot()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="confirmarVinculacionChatbot()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer">Vincular y Activar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA PARA IMPRESIÓN DE TICKETS TÉRMICOS -->
   <div id="printArea" class="hidden"></div>
 
@@ -2832,6 +3154,7 @@
       productos: { title: 'Página de Productos & Carta', sub: 'Estructuración de categorías, precios, fotos y stock' },
       bienvenida: { title: 'Página de Bienvenida', sub: 'Editor de landing page móvil, enlaces rápidos y WiFi' },
       inventario: { title: 'Inventario', sub: 'Control de stock y alertas de agotados en tiempo real' },
+      chatbot: { title: 'Chatbot WhatsApp & IA', sub: 'Automatización inteligente de ventas y atención 24/7' },
       categorias: { title: 'Categorías', sub: 'Organización del catálogo gastronómico' },
       clientes: { title: 'Clientes (CRM)', sub: 'Historial de compras y fidelización WhatsApp' },
       descuentos: { title: 'Descuentos & Cupones', sub: 'Promociones para la carta online' },
@@ -2889,6 +3212,9 @@
       }
       if (tab === 'inventario') {
         renderInventario();
+      }
+      if (tab === 'chatbot') {
+        renderChatbot();
       }
     }
 
@@ -6237,6 +6563,307 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+
+    // =========================================================================
+    // SECCIÓN 4.9: CHATBOT WHATSAPP & IA (TIPO OLACLICK)
+    // =========================================================================
+    let chatbotConfig = {
+      activo: true,
+      vinculado: true,
+      numero: '+56 9 3536 2199',
+      bienvenidaActiva: true,
+      textoBienvenida: '¡Hola! 🍔 Bienvenido a {nombre_local}. Puedes revisar nuestra carta digital y hacer tu pedido en línea aquí: {link_menu}',
+      cerradoActivo: true,
+      textoCerrado: '¡Hola! En este momento nos encontramos descansando 🌙. Nuestro horario es {horario}. Revisa nuestra carta para tu próximo pedido: {link_menu}',
+      iaActiva: true,
+      promptIA: 'Asistente gastronómico amable, rápido y alegre. Recomienda hamburguesas smash, combos familiares, informa tiempos de entrega (35-45 min) y formas de pago.'
+    };
+
+    try {
+      const savedChatbot = localStorage.getItem('zoco_chatbot_config');
+      if (savedChatbot) {
+        chatbotConfig = { ...chatbotConfig, ...JSON.parse(savedChatbot) };
+      }
+    } catch(e) {}
+
+    let simChatMensajes = [
+      { emisor: 'bot', texto: '¡Hola! 🍔 Bienvenido a Fravioli. ¿En qué te podemos ayudar hoy?', hora: '12:00' },
+      { emisor: 'cliente', texto: '¿Tienen carta digital para pedir?', hora: '12:01' },
+      { emisor: 'bot', texto: '¡Claro que sí! Puedes ver nuestra carta con fotos, precios y pedir aquí: https://fravioli.zoco.menu 🚀', hora: '12:01' }
+    ];
+
+    function renderChatbot() {
+      const rName = CFG.nombre || 'Fravioli';
+      const elRName = document.getElementById('chatbotRestName');
+      if (elRName) elRName.textContent = rName;
+
+      const simName = document.getElementById('simChatbotNombre');
+      if (simName) simName.textContent = `${rName} Bot`;
+
+      const pill = document.getElementById('chatbotHeroStatusPill');
+      if (pill) {
+        pill.textContent = chatbotConfig.vinculado && chatbotConfig.activo
+          ? 'WhatsApp Conectado y Activo'
+          : (chatbotConfig.vinculado ? 'Pausado temporalmente' : 'Listo para vincular');
+      }
+
+      const btnVinc = document.getElementById('btnVincularChatbotLabel');
+      if (btnVinc) {
+        btnVinc.textContent = chatbotConfig.vinculado ? 'Gestionar Conexión WhatsApp' : 'Vincular Chatbot de WhatsApp';
+      }
+
+      const badgeSidebar = document.getElementById('badgeChatbotStatus');
+      if (badgeSidebar) {
+        badgeSidebar.textContent = chatbotConfig.activo ? 'Auto' : 'Off';
+        badgeSidebar.className = chatbotConfig.activo
+          ? 'text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold'
+          : 'text-[9px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full font-bold';
+      }
+
+      const led = document.getElementById('chatbotIndicatorLed');
+      if (led) {
+        led.className = chatbotConfig.vinculado && chatbotConfig.activo
+          ? 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse'
+          : 'w-3 h-3 rounded-full bg-slate-400';
+      }
+
+      const numLabel = document.getElementById('chatbotNumeroLabel');
+      if (numLabel) numLabel.textContent = chatbotConfig.numero || '+56 9 3536 2199';
+
+      const estLabel = document.getElementById('chatbotEstadoLabel');
+      if (estLabel) {
+        estLabel.textContent = chatbotConfig.activo
+          ? 'Conectado y listo para responder clientes 24/7'
+          : 'Respuestas automáticas en pausa';
+      }
+
+      const swActivo = document.getElementById('chatbotSwitchActivo');
+      if (swActivo) swActivo.checked = !!chatbotConfig.activo;
+
+      const swBienvenida = document.getElementById('chatbotSwitchBienvenida');
+      if (swBienvenida) swBienvenida.checked = !!chatbotConfig.bienvenidaActiva;
+
+      const txBienvenida = document.getElementById('chatbotTextoBienvenida');
+      if (txBienvenida) txBienvenida.value = chatbotConfig.textoBienvenida || '';
+
+      const swCerrado = document.getElementById('chatbotSwitchCerrado');
+      if (swCerrado) swCerrado.checked = !!chatbotConfig.cerradoActivo;
+
+      const txCerrado = document.getElementById('chatbotTextoCerrado');
+      if (txCerrado) txCerrado.value = chatbotConfig.textoCerrado || '';
+
+      const swIA = document.getElementById('chatbotSwitchIA');
+      if (swIA) swIA.checked = !!chatbotConfig.iaActiva;
+
+      const inPrompt = document.getElementById('chatbotPromptIA');
+      if (inPrompt) inPrompt.value = chatbotConfig.promptIA || '';
+
+      renderSimuladorMensajes();
+    }
+
+    function onCambioTextoChatbot() {
+      const txBienvenida = document.getElementById('chatbotTextoBienvenida');
+      if (txBienvenida) chatbotConfig.textoBienvenida = txBienvenida.value;
+
+      const txCerrado = document.getElementById('chatbotTextoCerrado');
+      if (txCerrado) chatbotConfig.textoCerrado = txCerrado.value;
+    }
+
+    function actualizarChatbotConfig() {
+      const swActivo = document.getElementById('chatbotSwitchActivo');
+      if (swActivo) chatbotConfig.activo = swActivo.checked;
+
+      const swBienvenida = document.getElementById('chatbotSwitchBienvenida');
+      if (swBienvenida) chatbotConfig.bienvenidaActiva = swBienvenida.checked;
+
+      const swCerrado = document.getElementById('chatbotSwitchCerrado');
+      if (swCerrado) chatbotConfig.cerradoActivo = swCerrado.checked;
+
+      const swIA = document.getElementById('chatbotSwitchIA');
+      if (swIA) chatbotConfig.iaActiva = swIA.checked;
+
+      const inPrompt = document.getElementById('chatbotPromptIA');
+      if (inPrompt) chatbotConfig.promptIA = inPrompt.value;
+
+      onCambioTextoChatbot();
+
+      try {
+        localStorage.setItem('zoco_chatbot_config', JSON.stringify(chatbotConfig));
+      } catch (e) {}
+
+      renderChatbot();
+    }
+
+    function guardarChatbotConfig() {
+      actualizarChatbotConfig();
+
+      if (window.restRef) {
+        window.restRef().update({ chatbot: chatbotConfig }).then(() => {
+          alert('✓ Configuración del Chatbot guardada y sincronizada con éxito.');
+        }).catch(err => {
+          alert('✓ Configuración guardada en este dispositivo.');
+        });
+      } else {
+        alert('✓ Configuración del Chatbot guardada con éxito.');
+      }
+    }
+
+    function insertarVariableChatbot(variable) {
+      const textarea = document.getElementById('chatbotTextoBienvenida');
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      textarea.value = text.substring(0, start) + variable + text.substring(end);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + variable.length;
+      onCambioTextoChatbot();
+    }
+
+    // MODAL VINCULACIÓN
+    function abrirModalVincularChatbot() {
+      const inModal = document.getElementById('inputChatbotNumeroModal');
+      if (inModal) {
+        const rawNum = (chatbotConfig.numero || '').replace(/^\+56\s*/, '');
+        inModal.value = rawNum || '9 3536 2199';
+      }
+      document.getElementById('modalVincularChatbot').classList.remove('hidden');
+    }
+
+    function cerrarModalVincularChatbot() {
+      document.getElementById('modalVincularChatbot').classList.add('hidden');
+    }
+
+    function confirmarVinculacionChatbot() {
+      const inModal = document.getElementById('inputChatbotNumeroModal');
+      let val = inModal ? inModal.value.trim() : '';
+      if (!val) val = '9 3536 2199';
+      const numCompleto = val.startsWith('+') ? val : `+56 ${val}`;
+
+      chatbotConfig.vinculado = true;
+      chatbotConfig.activo = true;
+      chatbotConfig.numero = numCompleto;
+
+      guardarChatbotConfig();
+      cerrarModalVincularChatbot();
+      alert(`✅ ¡WhatsApp vinculado con éxito al número ${numCompleto}!\nEl chatbot ya está respondiendo a tus clientes.`);
+    }
+
+    // SIMULADOR DE WHATSAPP
+    function renderSimuladorMensajes() {
+      const box = document.getElementById('simChatMensajesArea');
+      if (!box) return;
+
+      box.innerHTML = simChatMensajes.map(m => {
+        const isBot = m.emisor === 'bot';
+        return `
+          <div class="flex ${isBot ? 'justify-start' : 'justify-end'}">
+            <div class="${isBot ? 'bg-[#202c33] text-slate-100 rounded-2xl rounded-tl-none border border-slate-700/40' : 'bg-[#005c4b] text-white rounded-2xl rounded-tr-none'} max-w-[85%] p-2.5 shadow-sm space-y-1">
+              <p class="leading-relaxed whitespace-pre-line text-xs font-medium">${m.texto}</p>
+              <div class="text-[9px] ${isBot ? 'text-slate-400' : 'text-emerald-200'} text-right flex items-center justify-end gap-1">
+                <span>${m.hora || 'Ahora'}</span>
+                ${!isBot ? '<span class="text-blue-300 font-bold">✓✓</span>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function probarSimuladorChatbot() {
+      const inp = document.getElementById('inputSimChatUsuario');
+      if (inp) {
+        inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inp.focus();
+      }
+    }
+
+    function reiniciarChatSimulador() {
+      simChatMensajes = [
+        { emisor: 'bot', texto: `¡Hola! 🍔 Bienvenido a ${CFG.nombre || 'Fravioli'}. ¿En qué te podemos ayudar hoy?`, hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+      ];
+      renderSimuladorMensajes();
+    }
+
+    function probarMensajeRapido(texto) {
+      const inp = document.getElementById('inputSimChatUsuario');
+      if (inp) {
+        inp.value = texto;
+        enviarMensajeSimulador();
+      }
+    }
+
+    function enviarMensajeSimulador() {
+      const inp = document.getElementById('inputSimChatUsuario');
+      if (!inp) return;
+      const texto = inp.value.trim();
+      if (!texto) return;
+
+      const horaActual = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Mensaje del usuario
+      simChatMensajes.push({ emisor: 'cliente', texto, hora: horaActual });
+      inp.value = '';
+      renderSimuladorMensajes();
+
+      // Generar respuesta del bot con retraso realista de 350ms
+      setTimeout(() => {
+        const respuestaBot = generarRespuestaBot(texto);
+        const horaRespuesta = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        simChatMensajes.push({ emisor: 'bot', texto: respuestaBot, hora: horaRespuesta });
+        renderSimuladorMensajes();
+      }, 400);
+    }
+
+    function generarRespuestaBot(msgUsuario) {
+      const q = msgUsuario.toLowerCase();
+      const rName = CFG.nombre || 'Fravioli';
+      const menuUrl = `https://${rName.toLowerCase().replace(/[^a-z0-9]/g, '')}.zoco.menu`;
+      const horarioStr = 'Lunes a Domingo de 12:00 a 23:30 hrs';
+
+      // 1. Si el chatbot está desactivado globalmente
+      if (!chatbotConfig.activo) {
+        return `[Mensaje automático] En este momento el asistente virtual de ${rName} está en pausa. Por favor déjanos tu mensaje y un miembro del equipo te responderá a la brevedad.`;
+      }
+
+      // 2. Saludo
+      if (q.includes('hola') || q.includes('buenas') || q.includes('buenos') || q.includes('hey') || q.includes('saludos')) {
+        let resp = chatbotConfig.textoBienvenida || '¡Hola! Bienvenido a {nombre_local}. Puedes revisar nuestra carta en {link_menu}';
+        return resp
+          .replace(/{nombre_local}/g, rName)
+          .replace(/{link_menu}/g, menuUrl)
+          .replace(/{horario}/g, horarioStr);
+      }
+
+      // 3. Carta / Menú / Precios
+      if (q.includes('carta') || q.includes('menu') || q.includes('menú') || q.includes('precio') || q.includes('pedir') || q.includes('promocion') || q.includes('promo')) {
+        return `📖 Puedes revisar nuestra carta completa con fotos, precios y combos aquí:\n👉 ${menuUrl}\n\n¡Puedes armar tu pedido directamente en el link y enviarlo a cocina! 🍔🍟`;
+      }
+
+      // 4. Ubicación / Dirección / Cómo llegar
+      if (q.includes('donde') || q.includes('dónde') || q.includes('direccion') || q.includes('dirección') || q.includes('ubicacion') || q.includes('ubicación') || q.includes('llegar')) {
+        return `📍 Estamos ubicados en Santiago, Chile.\nContamos con retiro en local y servicio a domicilio en toda la zona. Puedes hacer tu pedido aquí: ${menuUrl}`;
+      }
+
+      // 5. Medios de pago
+      if (q.includes('pago') || q.includes('pagar') || q.includes('tarjeta') || q.includes('transferencia') || q.includes('efectivo') || q.includes('debito') || q.includes('credito')) {
+        return `💳 Aceptamos los siguientes medios de pago:\n• Efectivo en caja / contra entrega\n• Tarjetas de Débito y Crédito (Transbank / Webpay)\n• Transferencia bancaria directa\n\n¡Sin cargos extras ni comisiones!`;
+      }
+
+      // 6. Horarios
+      if (q.includes('horario') || q.includes('hora') || q.includes('abierto') || q.includes('cerrado') || q.includes('abren')) {
+        return `⏰ Nuestro horario de atención es:\n${horarioStr}.\n¡Estamos listos para recibir tus pedidos!`;
+      }
+
+      // 7. IA Gastronómica (Gemini RAG fallback)
+      if (chatbotConfig.iaActiva) {
+        return `🍔 ¡Gracias por tu mensaje! Como asistente virtual de ${rName}, te recomiendo probar nuestras hamburguesas smash más pedidas y promociones duo. Si tienes consultas sobre ingredientes o alérgenos, puedes ver los detalles de cada plato en ${menuUrl} o pedir para que el equipo de cocina te asista.`;
+      }
+
+      return `¡Mensaje recibido! Puedes explorar nuestra carta digital en ${menuUrl} o esperar a que uno de nuestros operadores te atienda en unos momentos.`;
     }
 
     // =========================================================================
