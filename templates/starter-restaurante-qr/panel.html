@@ -352,11 +352,11 @@
             </div>
           </div>
 
-          <!-- OLACLICK / ZOCO APP STORE -->
-          <a href="#" onclick="mostrarNotificacion('🚀 Próximamente: Zoco App Store con extensiones de delivery, facturación electrónica y pasarelas de pago'); return false;" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-slate-800/80 hover:text-white cursor-pointer">
+          <!-- ZOCO APP STORE (TIPO OLACLICK APP STORE) -->
+          <button onclick="switchTab('appstore')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white cursor-pointer" data-tab="appstore">
             <span class="text-base">🏬</span>
             <span>Zoco App Store</span>
-          </a>
+          </button>
 
         </nav>
       </div>
@@ -4439,6 +4439,321 @@
 
         </section>
 
+        <!-- ================================================================= -->
+        <!-- TAB: ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO OLACLICK) -->
+        <!-- ================================================================= -->
+        <section id="tab-appstore" class="panel-pane space-y-6 hidden">
+
+          <!-- HEADER Y PUBLICAR APP LINK -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-black text-slate-900 text-2xl tracking-tight">Apps y complementos</h3>
+              <p class="text-xs text-slate-500 font-medium">Conecta plataformas de delivery, potencia tu marketing y automatiza tu negocio.</p>
+            </div>
+            <a href="#" onclick="abrirModalPublicarApp(); return false;" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer">
+              <span>¿Tienes una app? Publícala aquí</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          <!-- FILTRO DE CATEGORÍAS TIPO OLACLICK -->
+          <div class="bg-white rounded-2xl border border-borderLight p-3 sm:p-4 shadow-soft flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="btnCatDelivery" onclick="filtrarAppStore('delivery')" class="appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-2 border-blue-600 bg-blue-50/50 text-blue-700 cursor-pointer flex flex-col items-start leading-tight">
+                <span class="font-black text-sm">Delivery Apps</span>
+                <span class="text-[10px] text-blue-500 font-semibold">4 complementos</span>
+              </button>
+              <button id="btnCatMarketing" onclick="filtrarAppStore('marketing')" class="appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer flex flex-col items-start leading-tight">
+                <span class="font-black text-sm text-slate-900">Marketing</span>
+                <span class="text-[10px] text-slate-400 font-semibold">2 complementos</span>
+              </button>
+              <button id="btnCatIA" onclick="filtrarAppStore('ia')" class="appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer flex flex-col items-start leading-tight">
+                <span class="font-black text-sm text-slate-900">IA & Automatización</span>
+                <span class="text-[10px] text-slate-400 font-semibold">2 complementos</span>
+              </button>
+              <button id="btnCatTodas" onclick="filtrarAppStore('todas')" class="appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer flex flex-col items-start leading-tight">
+                <span class="font-black text-sm text-slate-900">Todas</span>
+                <span class="text-[10px] text-slate-400 font-semibold">8 complementos</span>
+              </button>
+            </div>
+
+            <button type="button" onclick="filtrarAppStore('todas')" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
+              <span>🪟</span>
+              <span>Ver categorías</span>
+            </button>
+          </div>
+
+          <!-- CONTADOR DE APPS ENCONTRADAS -->
+          <div class="flex items-center justify-between">
+            <span id="contadorAppsEncontradas" class="text-xs font-bold text-slate-500">4 apps encontradas</span>
+            <div class="relative">
+              <input id="inputBuscarAppStore" type="text" oninput="buscarAppStore(this.value)" placeholder="Buscar complementos..." class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-600 w-56">
+            </div>
+          </div>
+
+          <!-- GRID DE TARJETAS DE APPS (TIPO OLACLICK CAPTURA) -->
+          <div id="gridAppStore" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            
+            <!-- CARD 1: PEDIDOSYA -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between" data-categoria="delivery" data-nombre="pedidosya">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-red-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-red-600/20 shrink-0">
+                    P
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">PedidosYa</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
+                    Delivery Apps
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Recibe pedidos de PedidosYa en Zoco y gestiona el despacho automático con repartidores.
+                </p>
+              </div>
+
+              <button type="button" onclick="configurarAppDesdeStore('pedidosya')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 2: RAPPI -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between" data-categoria="delivery" data-nombre="rappi">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-red-500/20 shrink-0">
+                    🛵
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Rappi</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
+                    Delivery Apps
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Recibe pedidos de Rappi en Zoco, imprime comanda térmica y añade QR a tu menú digital a 0% comisión.
+                </p>
+              </div>
+
+              <button type="button" onclick="configurarAppDesdeStore('rappi')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 3: RAPPI TURBO -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between" data-categoria="delivery" data-nombre="rappi turbo">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-amber-500/20 shrink-0">
+                    ⚡
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Rappi Turbo</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
+                    Delivery Apps
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Pedidos Rappi Turbo en Zoco con flujo prioritario de preparación express en menos de 10 minutos.
+                </p>
+              </div>
+
+              <button type="button" onclick="configurarAppDesdeStore('turbo')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 4: UBER EATS -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between" data-categoria="delivery" data-nombre="uber eats">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center font-black text-base shadow-md shrink-0 border border-slate-800">
+                    Uber
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Uber Eats</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
+                    Delivery Apps
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Conecta Uber Eats con Zoco para sincronizar stock en tiempo real y recepción directa en cocina.
+                </p>
+              </div>
+
+              <button type="button" onclick="configurarAppDesdeStore('ubereats')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 5: META PIXEL & GOOGLE ADS (MARKETING) -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between hidden" data-categoria="marketing" data-nombre="meta pixel facebook rastreo">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-600/20 shrink-0">
+                    📈
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Meta Pixel & Conversiones</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-100 text-purple-700">
+                    Marketing
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Rastrea visitas y pedidos completados en Instagram y Facebook Ads con la API de Conversiones.
+                </p>
+              </div>
+
+              <button type="button" onclick="switchTab('marketing', 'rastreo')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 6: GOOGLE FOR RESTAURANTS (MARKETING) -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between hidden" data-categoria="marketing" data-nombre="google for restaurants maps">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-amber-500/20 shrink-0">
+                    G
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Google for Restaurants</h4>
+                    <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                      <span>Sin configurar</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-100 text-purple-700">
+                    Marketing
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Posiciona tu restaurante en Google Maps y búsqueda con botón de Pedir en Línea directo.
+                </p>
+              </div>
+
+              <button type="button" onclick="switchTab('marketing', 'google')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Configurar
+              </button>
+            </div>
+
+            <!-- CARD 7: CHATGPT MCP (IA) -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between hidden" data-categoria="ia" data-nombre="chatgpt openai mcp conector">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-xl shadow-inner shrink-0">
+                    🟢
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">ChatGPT Zoco MCP</h4>
+                    <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Conectado</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                    IA & Automatización
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Asistente inteligente en OpenAI ChatGPT para responder ventas, stock y comandas.
+                </p>
+              </div>
+
+              <button type="button" onclick="switchTab('integraciones', 'mcp')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
+                Ver Conexión
+              </button>
+            </div>
+
+            <!-- CARD 8: CLAUDE MCP (IA) -->
+            <div class="app-card bg-white rounded-2xl border border-borderLight p-6 space-y-5 shadow-soft hover:border-slate-300 transition-all flex flex-col justify-between hidden" data-categoria="ia" data-nombre="claude anthropic mcp conector">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-xl shadow-inner shrink-0">
+                    🟠
+                  </div>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-base leading-tight">Claude Anthropic MCP</h4>
+                    <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1.5 mt-0.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Conectado</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                    IA & Automatización
+                  </span>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Conector de IA para análisis financiero profundo, ingeniería de menú y fidelización.
+                </p>
+              </div>
+
+              <button type="button" onclick="switchTab('integraciones', 'mcp')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
+                Ver Conexión
+              </button>
+            </div>
+
+          </div>
+
+        </section>
+
       </main>
 
     </div>
@@ -5858,6 +6173,52 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: PUBLICAR APP EN ZOCO APP STORE -->
+  <!-- ========================================================================= -->
+  <div id="modalPublicarApp" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-black">
+            🚀
+          </div>
+          <div>
+            <h3 class="font-black text-slate-900 text-base">Publica tu app en Zoco App Store</h3>
+            <p class="text-xs text-slate-400">Llega a miles de restaurantes y negocios gastronómicos</p>
+          </div>
+        </div>
+        <button type="button" onclick="cerrarModalPublicarApp()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <p class="text-slate-600 leading-relaxed">
+          ¿Desarrollaste una integración de facturación electrónica, delivery local, fidelización o hardware POS? Únete al programa de <strong>Zoco Partners</strong> para publicar tu complemento oficial.
+        </p>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre de la App / Empresa *</label>
+          <input id="inputPublicarAppNombre" type="text" placeholder="Ej: FacturadorExpress, MotoRiders..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Sitio web o documentación API *</label>
+          <input id="inputPublicarAppWeb" type="url" placeholder="https://tuempresa.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Correo de contacto técnico *</label>
+          <input id="inputPublicarAppEmail" type="email" placeholder="devs@tuempresa.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-blue-600">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="cerrarModalPublicarApp()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">Cancelar</button>
+        <button type="button" onclick="enviarSolicitudPublicarApp()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">Enviar Solicitud</button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -6174,7 +6535,8 @@
       marketing: { title: 'Marketing Gastronómico', sub: 'Descuentos, fidelización, envíos masivos con IA y presencia en Google' },
       negocio: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
       configuraciones: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
-      integraciones: { title: 'Integraciones', sub: 'Asistentes de IA / MCP, partners de delivery y API Keys' }
+      integraciones: { title: 'Integraciones', sub: 'Asistentes de IA / MCP, partners de delivery y API Keys' },
+      appstore: { title: 'Apps y complementos', sub: 'Conecta plataformas de delivery, potencia tu marketing y automatiza tu negocio' }
     };
 
     function switchTab(tab, subtab) {
@@ -6196,7 +6558,9 @@
             ? 'tab-configuraciones' 
             : (tab === 'integraciones')
               ? 'tab-integraciones'
-              : 'tab-' + tab;
+              : (tab === 'appstore')
+                ? 'tab-appstore'
+                : 'tab-' + tab;
         p.classList.toggle('hidden', p.id !== targetId);
       });
       
@@ -6283,6 +6647,9 @@
       if (tab === 'integraciones') {
         if (subtab) setIntegracionesSubtab(subtab);
         else renderIntegraciones();
+      }
+      if (tab === 'appstore') {
+        renderAppStore();
       }
     }
 
@@ -12176,6 +12543,115 @@
         navigator.clipboard.writeText(token);
       }
       mostrarNotificacion('📋 Token copiado al portapapeles: ' + token.slice(0, 16) + '••••');
+    }
+
+    // =========================================================================
+    // MÓDULO ZOCO APP STORE / APPS Y COMPLEMENTOS (TIPO OLACLICK)
+    // =========================================================================
+    let currentAppStoreCategoria = 'delivery';
+
+    function renderAppStore() {
+      filtrarAppStore(currentAppStoreCategoria);
+    }
+
+    function filtrarAppStore(cat) {
+      currentAppStoreCategoria = cat;
+
+      // Actualizar botones de categoría
+      const btnDelivery = document.getElementById('btnCatDelivery');
+      const btnMarketing = document.getElementById('btnCatMarketing');
+      const btnIA = document.getElementById('btnCatIA');
+      const btnTodas = document.getElementById('btnCatTodas');
+
+      const allBtns = [btnDelivery, btnMarketing, btnIA, btnTodas];
+      allBtns.forEach(b => {
+        if (!b) return;
+        b.className = 'appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer flex flex-col items-start leading-tight';
+        const titleSpan = b.querySelector('span:first-child');
+        if (titleSpan) titleSpan.className = 'font-black text-sm text-slate-900';
+      });
+
+      let activeBtn = btnDelivery;
+      if (cat === 'marketing') activeBtn = btnMarketing;
+      else if (cat === 'ia') activeBtn = btnIA;
+      else if (cat === 'todas') activeBtn = btnTodas;
+
+      if (activeBtn) {
+        activeBtn.className = 'appstore-cat-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-2 border-blue-600 bg-blue-50/50 text-blue-700 cursor-pointer flex flex-col items-start leading-tight';
+        const titleSpan = activeBtn.querySelector('span:first-child');
+        if (titleSpan) titleSpan.className = 'font-black text-sm text-blue-700';
+      }
+
+      // Filtrar tarjetas
+      const cards = document.querySelectorAll('.app-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cardCat = card.dataset.categoria;
+        const matches = (cat === 'todas' || cardCat === cat);
+        card.classList.toggle('hidden', !matches);
+        if (matches) visibleCount++;
+      });
+
+      const counter = document.getElementById('contadorAppsEncontradas');
+      if (counter) {
+        counter.textContent = visibleCount + (visibleCount === 1 ? ' app encontrada' : ' apps encontradas');
+      }
+    }
+
+    function buscarAppStore(query) {
+      const q = (query || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('.app-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const nombre = (card.dataset.nombre || '').toLowerCase();
+        const cat = card.dataset.categoria;
+        const matchesQuery = !q || nombre.includes(q);
+        const matchesCat = (currentAppStoreCategoria === 'todas' || cat === currentAppStoreCategoria);
+
+        const visible = matchesQuery && matchesCat;
+        card.classList.toggle('hidden', !visible);
+        if (visible) visibleCount++;
+      });
+
+      const counter = document.getElementById('contadorAppsEncontradas');
+      if (counter) {
+        counter.textContent = visibleCount + (visibleCount === 1 ? ' app encontrada' : ' apps encontradas');
+      }
+    }
+
+    function configurarAppDesdeStore(partnerId) {
+      switchTab('integraciones', 'partners');
+      setTimeout(() => {
+        const body = document.getElementById('bodyPartner' + partnerId.charAt(0).toUpperCase() + partnerId.slice(1));
+        if (body && body.classList.contains('hidden')) {
+          togglePartnerAccordion(partnerId);
+        }
+        window.scrollTo({ top: 300, behavior: 'smooth' });
+      }, 100);
+    }
+
+    function abrirModalPublicarApp() {
+      document.getElementById('modalPublicarApp')?.classList.remove('hidden');
+    }
+
+    function cerrarModalPublicarApp() {
+      document.getElementById('modalPublicarApp')?.classList.add('hidden');
+    }
+
+    function enviarSolicitudPublicarApp() {
+      const nombre = document.getElementById('inputPublicarAppNombre')?.value.trim();
+      const web = document.getElementById('inputPublicarAppWeb')?.value.trim();
+      const email = document.getElementById('inputPublicarAppEmail')?.value.trim();
+
+      if (!nombre || !web || !email) {
+        alert('Por favor completa todos los campos requeridos.');
+        return;
+      }
+
+      cerrarModalPublicarApp();
+      mostrarNotificacion('🚀 ¡Solicitud enviada! Nuestro equipo de Partners te contactará en devs@tuempresa.cl.');
     }
 
     // Inicialización del primer tab
