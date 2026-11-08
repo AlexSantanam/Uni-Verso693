@@ -388,14 +388,14 @@
 
         <!-- ENLACES RÁPIDOS (VISTA PREVIA Y QR Y ENLACES - TIPO OLACLICK) -->
         <div class="grid grid-cols-2 gap-2 pt-0.5">
-          <a href="index.html" target="_blank" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center">
+          <button type="button" onclick="abrirModalVistaPrevia()" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center cursor-pointer">
             <span class="text-sm">👁️</span>
             <span class="text-[10px] font-bold mt-0.5">Vista previa</span>
-          </a>
-          <a href="generador-qrs.html" target="_blank" class="flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center">
+          </button>
+          <button type="button" onclick="switchTab('qrenlaces')" class="nav-btn flex flex-col items-center justify-center py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all text-center cursor-pointer" data-tab="qrenlaces">
             <span class="text-sm">🏷️</span>
             <span class="text-[10px] font-bold mt-0.5">QR y enlaces</span>
-          </a>
+          </button>
         </div>
 
         <!-- LOGOUT -->
@@ -5091,6 +5091,261 @@
 
         </section>
 
+        <!-- ================================================================= -->
+        <!-- TAB: MIS ENLACES Y CÓDIGOS QR (TIPO OLACLICK CAPTURAS 2, 3 Y 4) -->
+        <!-- ================================================================= -->
+        <section id="tab-qrenlaces" class="panel-pane space-y-6 hidden">
+
+          <!-- HEADER PRINCIPAL -->
+          <div>
+            <h3 class="font-black text-slate-900 text-2xl tracking-tight">Mis enlaces y códigos QR</h3>
+            <p class="text-xs text-slate-500 font-medium">Gestiona los enlaces web y códigos QR oficiales para tu menú digital y mesas.</p>
+          </div>
+
+          <!-- BANNER DOMINIO PROPIO (TIPO CAPTURA 2) -->
+          <div class="bg-white rounded-2xl border border-borderLight p-5 shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                🔗
+              </span>
+              <p class="text-xs text-slate-700 font-medium">
+                Cambia tu enlace <strong class="text-slate-900 font-mono">"fravioli.zoco.app"</strong> a un dominio <strong class="text-slate-900 font-bold">".com"</strong> para que tus clientes lo recuerden fácilmente.
+              </p>
+            </div>
+            <div class="flex items-center gap-2.5 flex-wrap shrink-0">
+              <button type="button" onclick="abrirModalDominioPersonalizado()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                Obtén tu propio dominio ".com"
+              </button>
+              <span class="text-xs text-slate-400 font-medium">o</span>
+              <button type="button" onclick="mostrarNotificacion('✏️ Cambiando subdominio: contacta a soporte para personalizar tu enlace zoco.app')" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                <span>✏️</span>
+                <span>Cambiar mi enlace "zoco.app"</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BLOQUE 1: PEDIDOS DE TODO TIPOS (TIPO CAPTURA 2) -->
+          <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+            
+            <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">📋</span>
+                <h4 class="font-black text-slate-900 text-sm">Pedidos de todo tipos</h4>
+                <div class="flex items-center gap-1.5 ml-2">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🛵 ● Activo</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🛍️ ● Activo</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🍽️ ● Activo</span>
+                </div>
+              </div>
+              <button type="button" onclick="switchTab('configuraciones', 'general')" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>⚙️</span>
+                <span>Configuración de pedidos</span>
+              </button>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              <!-- PÁGINA DE BIENVENIDA -->
+              <div class="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-slate-50/70 border border-slate-100">
+                <!-- MOCKUP MÓVIL EN MINIATURA -->
+                <div class="w-36 h-52 bg-slate-900 rounded-2xl border-4 border-slate-800 shadow-md p-2 flex flex-col justify-between shrink-0 text-white text-center">
+                  <div class="text-[9px] font-bold pt-1">👋 Bienvenid@s</div>
+                  <div class="space-y-1.5 py-2">
+                    <div class="h-4 bg-orange-500 rounded text-[8px] font-bold flex items-center justify-center">Menú</div>
+                    <div class="h-4 bg-emerald-600 rounded text-[8px] font-bold flex items-center justify-center">WhatsApp</div>
+                    <div class="h-4 bg-slate-800 rounded text-[8px] font-bold flex items-center justify-center">Código WiFi</div>
+                  </div>
+                  <div class="text-[7px] text-slate-400 pb-1">Zoco Digital</div>
+                </div>
+
+                <div class="space-y-3 flex-1">
+                  <div>
+                    <h5 class="font-black text-slate-900 text-sm">Página de bienvenida</h5>
+                    <a href="bienvenida.html" target="_blank" class="text-xs font-mono font-bold text-blue-600 hover:underline break-all">
+                      https://fravioli.zoco.app
+                    </a>
+                  </div>
+                  <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="compartirEnlaceQr('https://fravioli.zoco.app', 'Página de Bienvenida')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                      <span>🔗</span>
+                      <span>Compartir</span>
+                    </button>
+                    <button type="button" onclick="descargarQrEnlace('https://fravioli.zoco.app', 'Página de Bienvenida')" class="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-white text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+                      <span>🏷️</span>
+                      <span>Descargar QR</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PÁGINA DE PRODUCTOS -->
+              <div class="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-slate-50/70 border border-slate-100">
+                <!-- MOCKUP MÓVIL EN MINIATURA -->
+                <div class="w-36 h-52 bg-white rounded-2xl border-4 border-slate-800 shadow-md p-1.5 flex flex-col justify-between shrink-0 text-slate-900 text-center overflow-hidden">
+                  <div class="h-10 bg-amber-100 rounded-lg flex items-center justify-center text-xs">🍔</div>
+                  <div class="space-y-1 py-1 text-left px-1">
+                    <div class="text-[9px] font-extrabold truncate">Fravioli Food</div>
+                    <div class="h-2 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-2 bg-slate-100 rounded w-1/2"></div>
+                  </div>
+                  <div class="text-[8px] font-black text-blue-600 pb-1">Ver carta</div>
+                </div>
+
+                <div class="space-y-3 flex-1">
+                  <div>
+                    <h5 class="font-black text-slate-900 text-sm">Página de productos</h5>
+                    <a href="index.html" target="_blank" class="text-xs font-mono font-bold text-blue-600 hover:underline break-all">
+                      https://fravioli.zoco.app/products
+                    </a>
+                  </div>
+                  <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="compartirEnlaceQr('https://fravioli.zoco.app/products', 'Página de Productos')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                      <span>🔗</span>
+                      <span>Compartir</span>
+                    </button>
+                    <button type="button" onclick="descargarQrEnlace('https://fravioli.zoco.app/products', 'Página de Productos')" class="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-white text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+                      <span>🏷️</span>
+                      <span>Descargar QR</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BLOQUE 2: SOLO PEDIDOS EN EL LOCAL (TIPO CAPTURA 3) -->
+          <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+            
+            <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">🍽️</span>
+                <h4 class="font-black text-slate-900 text-sm">Solo pedidos en el local</h4>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 ml-2">● Activo</span>
+              </div>
+              <button type="button" onclick="switchTab('configuraciones', 'general')" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>⚙️</span>
+                <span>Configuración de pedidos</span>
+              </button>
+            </div>
+
+            <!-- ALERTA INFORMATIVA -->
+            <div class="p-4 mx-6 mt-6 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3 text-xs text-amber-900">
+              <span class="text-base shrink-0">⚠️</span>
+              <span>
+                Personaliza los códigos QR para cada mesa, barra o habitación. Los pedidos llegarán automáticamente con el número de mesa asignado.
+              </span>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              <!-- ILUSTRACIÓN / FOTO CLIENTE ESCANEANDO QR EN MESA -->
+              <div class="lg:col-span-5 relative overflow-hidden rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 p-8 text-white text-center shadow-md">
+                <div class="text-6xl mb-3">📱</div>
+                <div class="font-black text-lg">Escaneo en Mesa</div>
+                <div class="text-xs text-white/90 mt-1">Sin esperas · Comanda directa a cocina</div>
+              </div>
+
+              <!-- CONTENIDO DESCRIPTIVO -->
+              <div class="lg:col-span-7 space-y-4">
+                <h4 class="text-xl font-black text-slate-900 leading-tight">
+                  ¡Descarga QR's específicos para servicio en el local (Mesas, habitaciones o Tienda) !
+                </h4>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Perfecto para que restaurantes y hoteles ofrezcan pedidos desde la mesa, la habitación o incluso la barra. Tus clientes hacen pedidos de forma remota sin requerir atención del personal ni descarga de apps.
+                </p>
+                <div class="pt-2">
+                  <a href="generador-qrs.html" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+                    <span>🏷️</span>
+                    <span>Descarga QR's de Mesas</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BLOQUE 3: SOLO LECTURA (TIPO CAPTURA 4) -->
+          <div class="bg-white rounded-2xl border border-borderLight shadow-soft overflow-hidden">
+            
+            <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">📖</span>
+                <h4 class="font-black text-slate-900 text-sm">Solo lectura</h4>
+              </div>
+              <div class="flex items-center gap-4 text-xs font-bold text-blue-600">
+                <button type="button" onclick="switchTab('configuraciones', 'pagos')" class="hover:underline cursor-pointer">Ir a medios de pago</button>
+                <button type="button" onclick="mostrarNotificacion('ℹ️ El modo solo lectura permite a los clientes ver platos y precios sin enviar pedidos al sistema')" class="hover:underline cursor-pointer flex items-center gap-1">
+                  <span>¿Cómo funciona?</span>
+                  <span>▼</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              <!-- ILUSTRACIÓN MÓVIL Y CAFÉ -->
+              <div class="lg:col-span-5 relative overflow-hidden rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-950 p-8 text-white text-center shadow-md border border-slate-800">
+                <div class="text-6xl mb-3">☕</div>
+                <div class="font-black text-lg">Carta Digital Visual</div>
+                <div class="text-xs text-slate-300 mt-1">Visualización de carta sin toma de pedidos</div>
+              </div>
+
+              <!-- CONTENIDO SOLO LECTURA -->
+              <div class="lg:col-span-7 space-y-4">
+                <div>
+                  <h4 class="text-xl font-black text-slate-900 leading-tight">
+                    ¡Usa tu menú digital en modo solo lectura!
+                  </h4>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                    Muestra códigos QR que permiten a los clientes ver el menú pero no hacer pedidos.
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  
+                  <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                    <h5 class="font-extrabold text-xs text-slate-900">Página de bienvenida</h5>
+                    <div class="text-[11px] font-mono text-blue-600 font-bold break-all">
+                      https://fravioli.zoco.app/?type=read
+                    </div>
+                    <div class="flex items-center gap-1.5 pt-1">
+                      <button type="button" onclick="compartirEnlaceQr('https://fravioli.zoco.app/?type=read', 'Bienvenida Solo Lectura')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] transition-colors cursor-pointer">
+                        Compartir
+                      </button>
+                      <button type="button" onclick="descargarQrEnlace('https://fravioli.zoco.app/?type=read', 'Bienvenida Solo Lectura')" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-white text-slate-700 font-bold text-[11px] transition-colors cursor-pointer">
+                        Descargar QR
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                    <h5 class="font-extrabold text-xs text-slate-900">Página de productos</h5>
+                    <div class="text-[11px] font-mono text-blue-600 font-bold break-all">
+                      https://fravioli.zoco.app/products/?type=read
+                    </div>
+                    <div class="flex items-center gap-1.5 pt-1">
+                      <button type="button" onclick="compartirEnlaceQr('https://fravioli.zoco.app/products/?type=read', 'Productos Solo Lectura')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] transition-colors cursor-pointer">
+                        Compartir
+                      </button>
+                      <button type="button" onclick="descargarQrEnlace('https://fravioli.zoco.app/products/?type=read', 'Productos Solo Lectura')" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-white text-slate-700 font-bold text-[11px] transition-colors cursor-pointer">
+                        Descargar QR
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
       </main>
 
     </div>
@@ -6761,6 +7016,68 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: VISTA PREVIA MÓVIL EN VIVO (TIPO OLACLICK CAPTURA 1) -->
+  <!-- ========================================================================= -->
+  <div id="modalVistaPrevia" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="relative flex flex-col items-center max-h-[96vh]">
+      
+      <!-- BOTÓN CERRAR SUPERIOR -->
+      <button type="button" onclick="cerrarModalVistaPrevia()" class="absolute -top-3 -right-3 sm:-right-4 w-9 h-9 rounded-full bg-slate-900 border-2 border-white text-white font-bold flex items-center justify-center shadow-lg hover:bg-slate-800 transition-colors cursor-pointer z-50">
+        ✕
+      </button>
+
+      <!-- FRAME DEL SMARTPHONE -->
+      <div class="w-[340px] sm:w-[380px] h-[640px] sm:h-[720px] bg-slate-950 rounded-[40px] border-[10px] border-slate-900 shadow-2xl overflow-hidden relative flex flex-col">
+        <!-- NOTCH SUPERIOR -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-4 bg-slate-900 rounded-b-xl z-20"></div>
+
+        <!-- IFRAME CARTA EN VIVO -->
+        <iframe id="iframeVistaPrevia" src="about:blank" class="w-full flex-1 border-0 bg-white"></iframe>
+      </div>
+
+      <!-- BOTÓN VER EN TAMAÑO DE COMPUTADORA (TIPO CAPTURA 1) -->
+      <div class="pt-3">
+        <a href="index.html" target="_blank" class="px-5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-900 text-white font-bold text-xs backdrop-blur-md shadow-xl border border-white/20 flex items-center gap-2 transition-all cursor-pointer">
+          <span>Ver en tamaño de computadora</span>
+          <span>↗</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DESCARGAR CÓDIGO QR DIRECTO -->
+  <!-- ========================================================================= -->
+  <div id="modalDescargarQrDirecto" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200 text-center">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 id="qrModalTitulo" class="font-black text-slate-900 text-sm">Código QR</h4>
+        <button type="button" onclick="cerrarModalDescargarQrDirecto()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      </div>
+
+      <!-- QR IMAGE CONTAINER -->
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner">
+        <img id="qrImgGenerado" src="" alt="QR" class="w-48 h-48 mx-auto rounded-xl shadow-sm">
+      </div>
+
+      <div class="space-y-1">
+        <div id="qrEnlaceTexto" class="text-xs font-mono font-bold text-blue-600 break-all select-all"></div>
+        <p class="text-[11px] text-slate-400">Escanea con la cámara de cualquier teléfono para probar.</p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="descargarQrPng()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer">
+          Descargar PNG
+        </button>
+        <button type="button" onclick="cerrarModalDescargarQrDirecto()" class="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors cursor-pointer">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="printArea" class="hidden"></div>
 
   <!-- ========================================================================= -->
@@ -7079,7 +7396,8 @@
       configuraciones: { title: 'Configuraciones', sub: 'Ajustes del restaurante, canales, pagos, equipo e impresión' },
       integraciones: { title: 'Integraciones', sub: 'Asistentes de IA / MCP, partners de delivery y API Keys' },
       appstore: { title: 'Apps y complementos', sub: 'Conecta plataformas de delivery, potencia tu marketing y automatiza tu negocio' },
-      referidos: { title: 'Gana sin límites', sub: 'Programa de recompensas y referidos Zoco (hasta US$ 20 por referido)' }
+      referidos: { title: 'Gana sin límites', sub: 'Programa de recompensas y referidos Zoco (hasta US$ 20 por referido)' },
+      qrenlaces: { title: 'Mis enlaces y códigos QR', sub: 'Gestión de enlaces web, dominios y descarga de códigos QR para tu local' }
     };
 
     function switchTab(tab, subtab) {
@@ -7105,7 +7423,9 @@
                 ? 'tab-appstore'
                 : (tab === 'referidos')
                   ? 'tab-referidos'
-                  : 'tab-' + tab;
+                  : (tab === 'qrenlaces')
+                    ? 'tab-qrenlaces'
+                    : 'tab-' + tab;
         p.classList.toggle('hidden', p.id !== targetId);
       });
       
@@ -13443,6 +13763,80 @@
       renderReferidos();
       cerrarModalDejanosSusDatos();
       mostrarNotificacion('🚀 ¡Negocio cargado! Un asesor comercial contactará a ' + contacto + ' y la comisión te pertenecerá.');
+    }
+
+    // =========================================================================
+    // MÓDULO VISTA PREVIA Y MIS ENLACES Y CÓDIGOS QR (TIPO OLACLICK)
+    // =========================================================================
+    let qrActualParaDescarga = '';
+
+    function abrirModalVistaPrevia() {
+      const modal = document.getElementById('modalVistaPrevia');
+      const iframe = document.getElementById('iframeVistaPrevia');
+      if (iframe) {
+        iframe.src = 'index.html?preview=mobile&t=' + Date.now();
+      }
+      modal?.classList.remove('hidden');
+    }
+
+    function cerrarModalVistaPrevia() {
+      const modal = document.getElementById('modalVistaPrevia');
+      const iframe = document.getElementById('iframeVistaPrevia');
+      if (iframe) iframe.src = 'about:blank';
+      modal?.classList.add('hidden');
+    }
+
+    function compartirEnlaceQr(url, titulo) {
+      if (navigator.share) {
+        navigator.share({
+          title: titulo || 'Menú Digital Zoco',
+          url: url
+        }).catch(() => {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url);
+        mostrarNotificacion('📋 Enlace copiado al portapapeles: ' + url);
+      } else {
+        prompt('Copia tu enlace:', url);
+      }
+    }
+
+    function descargarQrEnlace(url, titulo) {
+      qrActualParaDescarga = url;
+      const titEl = document.getElementById('qrModalTitulo');
+      if (titEl) titEl.textContent = 'Código QR · ' + (titulo || 'Menú Digital');
+      const txtEl = document.getElementById('qrEnlaceTexto');
+      if (txtEl) txtEl.textContent = url;
+
+      // Generar imagen QR rápida usando API pública confiable de Google / QR Server
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(url)}`;
+      const img = document.getElementById('qrImgGenerado');
+      if (img) img.src = qrApiUrl;
+
+      document.getElementById('modalDescargarQrDirecto')?.classList.remove('hidden');
+    }
+
+    function cerrarModalDescargarQrDirecto() {
+      document.getElementById('modalDescargarQrDirecto')?.classList.add('hidden');
+    }
+
+    function descargarQrPng() {
+      if (!qrActualParaDescarga) return;
+      const downloadUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=15&format=png&data=${encodeURIComponent(qrActualParaDescarga)}`;
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = 'codigo-qr-menu-zoco.png';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      mostrarNotificacion('📥 Descargando código QR en alta resolución...');
+    }
+
+    function abrirModalDominioPersonalizado() {
+      const dominio = prompt('Ingresa tu dominio propio (ej: www.tucarta.com):');
+      if (dominio) {
+        mostrarNotificacion('🌐 Solicitud enviada para ' + dominio + '. Nuestro equipo de soporte configurará los registros DNS.');
+      }
     }
 
     // Inicialización del primer tab
