@@ -171,7 +171,7 @@
               </div>
               <span id="ventasArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
             </button>
-            <div id="ventasSubmenu" class="pl-8 pr-2 space-y-0.5 py-1">
+            <div id="ventasSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
               <button onclick="switchTab('ventas', 'historial')" class="ventas-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="historial">
                 Historial de pedidos
               </button>
@@ -215,7 +215,7 @@
                 <span id="menuArrow" class="text-[10px] text-slate-400 transition-transform">▼</span>
               </div>
             </button>
-            <div id="menuSubmenu" class="pl-8 pr-2 space-y-0.5 py-1">
+            <div id="menuSubmenu" class="pl-8 pr-2 space-y-0.5 py-1 hidden">
               <button onclick="switchTab('productos')" class="menu-sub-btn w-full text-left py-1.5 px-2.5 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors cursor-pointer" data-subtab="productos">
                 Página de productos
               </button>
@@ -8504,46 +8504,108 @@
       if (tab === 'referidos') {
         renderReferidos();
       }
+
+      // Sincronizar acordeón lateral según la pestaña activa
+      const tabsVentas = ['historial', 'cajas', 'reportes', 'ventas'];
+      const tabsFinanzas = ['finanzas'];
+      const tabsMenu = ['productos', 'bienvenida'];
+      const tabsMarketing = ['marketing', 'descuentos'];
+      const tabsConfig = ['configuraciones', 'negocio'];
+      const tabsInteg = ['integraciones'];
+
+      if (tabsVentas.includes(tab)) {
+        abrirUnSubmenu('ventasSubmenu', 'ventasArrow');
+      } else if (tabsFinanzas.includes(tab)) {
+        abrirUnSubmenu('finanzasSubmenu', 'finanzasArrow');
+      } else if (tabsMenu.includes(tab)) {
+        abrirUnSubmenu('menuSubmenu', 'menuArrow');
+      } else if (tabsMarketing.includes(tab)) {
+        abrirUnSubmenu('marketingSubmenu', 'marketingArrow');
+      } else if (tabsConfig.includes(tab)) {
+        abrirUnSubmenu('configuracionesSubmenu', 'configuracionesArrow');
+      } else if (tabsInteg.includes(tab)) {
+        abrirUnSubmenu('integracionesSubmenu', 'integracionesArrow');
+      } else {
+        // Pestañas independientes directas (Pedidos PDV, Cocina KDS, Inventario, Chatbot, etc.):
+        // Cerrar todos los submenús para mantener el menú limpio y ordenado
+        cerrarTodosLosSubmenus();
+      }
     }
 
-    function toggleMarketingSubmenu() {
-      const sub = document.getElementById('marketingSubmenu');
-      const arrow = document.getElementById('marketingArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
+    // =========================================================================
+    // GESTIÓN DE SUBMENÚS LATERALES CON ACORDEÓN EXCLUSIVO (ORDEN Y LIMPIEZA)
+    // =========================================================================
+    const SIDEBAR_SUBMENUS = [
+      { id: 'ventasSubmenu', arrow: 'ventasArrow' },
+      { id: 'finanzasSubmenu', arrow: 'finanzasArrow' },
+      { id: 'menuSubmenu', arrow: 'menuArrow' },
+      { id: 'marketingSubmenu', arrow: 'marketingArrow' },
+      { id: 'configuracionesSubmenu', arrow: 'configuracionesArrow' },
+      { id: 'integracionesSubmenu', arrow: 'integracionesArrow' }
+    ];
+
+    function cerrarTodosLosSubmenus(exceptoId = null) {
+      SIDEBAR_SUBMENUS.forEach(menu => {
+        if (menu.id !== exceptoId) {
+          const el = document.getElementById(menu.id);
+          const arr = document.getElementById(menu.arrow);
+          if (el) el.classList.add('hidden');
+          if (arr) arr.textContent = '▼';
+        }
+      });
+    }
+
+    function abrirUnSubmenu(submenuId, arrowId) {
+      cerrarTodosLosSubmenus(submenuId);
+      const el = document.getElementById(submenuId);
+      const arr = document.getElementById(arrowId);
+      if (el) el.classList.remove('hidden');
+      if (arr) arr.textContent = '▲';
+    }
+
+    function toggleSidebarAcordeon(submenuId, arrowId, onOpenTab) {
+      const el = document.getElementById(submenuId);
+      const arr = document.getElementById(arrowId);
+      if (!el) return;
+      const isHidden = el.classList.contains('hidden');
+      
+      // Cerrar siempre todos los demás submenús
+      cerrarTodosLosSubmenus(isHidden ? submenuId : null);
+      
+      if (isHidden) {
+        el.classList.remove('hidden');
+        if (arr) arr.textContent = '▲';
+        if (onOpenTab) {
+          switchTab(onOpenTab);
+        }
+      } else {
+        el.classList.add('hidden');
+        if (arr) arr.textContent = '▼';
       }
-      switchTab('marketing', 'codigos');
+    }
+
+    function toggleVentasSubmenu() {
+      toggleSidebarAcordeon('ventasSubmenu', 'ventasArrow', 'historial');
     }
 
     function toggleFinanzasSubmenu() {
-      const sub = document.getElementById('finanzasSubmenu');
-      const arrow = document.getElementById('finanzasArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('finanzas');
+      toggleSidebarAcordeon('finanzasSubmenu', 'finanzasArrow', 'finanzas');
     }
 
     function toggleMenuSubmenu() {
-      const sub = document.getElementById('menuSubmenu');
-      const arrow = document.getElementById('menuArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('productos');
+      toggleSidebarAcordeon('menuSubmenu', 'menuArrow', 'productos');
+    }
+
+    function toggleMarketingSubmenu() {
+      toggleSidebarAcordeon('marketingSubmenu', 'marketingArrow', 'marketing');
     }
 
     function toggleConfiguracionesSubmenu() {
-      const sub = document.getElementById('configuracionesSubmenu');
-      const arrow = document.getElementById('configuracionesArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('configuraciones', 'general');
+      toggleSidebarAcordeon('configuracionesSubmenu', 'configuracionesArrow', 'configuraciones');
+    }
+
+    function toggleIntegracionesSubmenu() {
+      toggleSidebarAcordeon('integracionesSubmenu', 'integracionesArrow', 'integraciones');
     }
 
     // --- LOGIN ---
@@ -10025,15 +10087,7 @@
     let historialFilter = 'todo'; // 'todo', 'web', 'delivery', 'mesas'
     let reporteCanal = 'todos'; // 'todos', 'web', 'pos', 'delivery', 'qr'
 
-    function toggleVentasSubmenu() {
-      const sub = document.getElementById('ventasSubmenu');
-      const arrow = document.getElementById('ventasArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('ventas', ventasSubtab);
-    }
+    // (toggleVentasSubmenu delegado al gestor de acordeón central)
 
     function setVentasSubtab(subtab) {
       ventasSubtab = subtab;
@@ -10384,15 +10438,7 @@
     // =========================================================================
     // SECCIÓN 3.5: MÓDULO FINANCIERO (REGISTROS, CUENTAS Y COMISIONES TIPO ZOCO)
     // =========================================================================
-    function toggleFinanzasSubmenu() {
-      const sub = document.getElementById('finanzasSubmenu');
-      const arrow = document.getElementById('finanzasArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('finanzas', finanzasSubtab);
-    }
+    // (toggleFinanzasSubmenu delegado al gestor de acordeón central)
 
     function setFinanzasSubtab(subtab) {
       finanzasSubtab = subtab;
@@ -14199,15 +14245,7 @@
       }
     ];
 
-    function toggleIntegracionesSubmenu() {
-      const sub = document.getElementById('integracionesSubmenu');
-      const arrow = document.getElementById('integracionesArrow');
-      if (sub) {
-        const isHidden = sub.classList.toggle('hidden');
-        if (arrow) arrow.textContent = isHidden ? '▼' : '▲';
-      }
-      switchTab('integraciones', 'mcp');
-    }
+    // (toggleIntegracionesSubmenu delegado al gestor de acordeón central)
 
     function setIntegracionesSubtab(subtab) {
       currentIntegracionesSubtab = subtab || 'mcp';
