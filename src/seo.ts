@@ -266,7 +266,7 @@ const casesPage: PageSeo = {
 const caseTitles: Record<string, string> = {
   yndipet: 'YndiPet: app de mascotas con inteligencia artificial',
   memora: 'MEMORA: plataforma de memoriales digitales',
-  melsa: 'MELSA: sitio inmobiliario con simulador de inversión',
+  melsa: 'MELSA: plataforma inmobiliaria de lujo con simulador en UF',
 };
 
 const casePages: PageSeo[] = cases.map((c) => ({

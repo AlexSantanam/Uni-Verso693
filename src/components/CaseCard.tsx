@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { useLang } from '../lib/lang';
 import type { CaseImage, CaseStudy } from '../data/site';
-import melsaLogo from '../../asset/Logo-MELSA.webp';
+import melsaLogoLight from '../../asset/melsa-full-logo-light.png';
 import melsaHero from '../../asset/cases/melsa-hero.webp';
 import melsaProjects from '../../asset/cases/melsa-projects.webp';
 import melsaSimulator from '../../asset/cases/melsa-simulator.webp';
@@ -93,32 +93,83 @@ export const CaseVisual: React.FC<{ item: CaseStudy; tall?: boolean }> = ({ item
     );
   }
 
+  if (item.visual === 'melsa') {
+    return (
+      <div className={`${h} relative overflow-hidden bg-[#0F1115] flex items-center justify-center p-6 border-b border-white/5`}>
+        <div className="absolute -left-10 -top-10 w-64 h-64 rounded-full bg-[#D02126]/20 blur-[75px]" aria-hidden />
+        <div className="absolute right-0 bottom-0 w-64 h-64 rounded-full bg-[#B81B1F]/20 blur-[85px]" aria-hidden />
+        <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-[#D02126] via-[#B81B1F] to-[#D02126]" aria-hidden />
+        <img
+          loading="lazy"
+          decoding="async"
+          src={melsaLogoLight}
+          alt="MELSA Gestión Inmobiliaria"
+          className={`relative z-10 ${tall ? 'w-80 sm:w-[28rem]' : 'w-64'} px-4 drop-shadow-[0_12px_30px_rgba(208,33,38,0.35)] transition-transform duration-500 group-hover:scale-105`}
+        />
+        <div className="absolute bottom-2.5 right-3.5 z-10 rounded-full border border-red-500/30 bg-red-950/70 px-2.5 py-0.5 text-[10px] font-bold text-red-300">
+          Las Condes · Vitacura · Zapallar
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`${h} relative overflow-hidden bg-white flex items-center justify-center`}>
-      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-[#1A2E5A] via-[#C5A059] to-[#1A2E5A]" aria-hidden />
-      <img loading="lazy" decoding="async"
-        src={melsaLogo}
+    <div className={`${h} relative overflow-hidden bg-[#0F1115] flex items-center justify-center p-6 border-b border-white/5`}>
+      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-[#D02126] via-[#B81B1F] to-[#D02126]" aria-hidden />
+      <img
+        loading="lazy"
+        decoding="async"
+        src={melsaLogoLight}
         alt="MELSA Gestión Inmobiliaria"
-        className={`${tall ? 'w-80 sm:w-[28rem]' : 'w-60'} px-4 transition-transform duration-500 group-hover:scale-105`}
+        className={`${tall ? 'w-80 sm:w-[28rem]' : 'w-64'} px-4 transition-transform duration-500 group-hover:scale-105`}
       />
     </div>
   );
 };
 
+const visualStyles: Record<string, { border: string; sector: string; link: string }> = {
+  melsa: {
+    border: 'hover:border-red-500/60 hover:shadow-xl hover:shadow-red-500/15',
+    sector: 'text-red-400',
+    link: 'group-hover:text-red-400',
+  },
+  sokify: {
+    border: 'hover:border-purple-500/60 hover:shadow-xl hover:shadow-purple-500/15',
+    sector: 'text-purple-300',
+    link: 'group-hover:text-purple-300',
+  },
+  yndipet: {
+    border: 'hover:border-pink-500/60 hover:shadow-xl hover:shadow-pink-500/15',
+    sector: 'text-pink-400',
+    link: 'group-hover:text-pink-400',
+  },
+  memora: {
+    border: 'hover:border-amber-400/60 hover:shadow-xl hover:shadow-amber-500/15',
+    sector: 'text-amber-300',
+    link: 'group-hover:text-amber-300',
+  },
+};
+
 export const CaseCard: React.FC<{ item: CaseStudy }> = ({ item }) => {
   const { tr, lang } = useLang();
+  const theme = visualStyles[item.visual] || {
+    border: 'hover:border-cyan-400/60 hover:shadow-xl hover:shadow-cyan-500/10',
+    sector: 'text-cyan-300',
+    link: 'group-hover:text-cyan-300',
+  };
+
   return (
     <Link
       to={`/casos/${item.slug}`}
-      className="group spotlight reveal flex flex-col rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] hover:border-cyan-400/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all"
+      className={`group spotlight reveal flex flex-col rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] ${theme.border} transition-all`}
     >
       <CaseVisual item={item} />
       <div className="p-6 flex-1 flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-300">
+        <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${theme.sector}`}>
           {tr(item.sector)}
         </div>
         <h3 className="text-lg font-extrabold text-white leading-snug">{tr(item.title)}</h3>
-        <div className="mt-auto pt-3 inline-flex items-center gap-1.5 text-sm font-bold text-white group-hover:text-cyan-300">
+        <div className={`mt-auto pt-3 inline-flex items-center gap-1.5 text-sm font-bold text-white ${theme.link}`}>
           {lang === 'es' ? 'Ver caso' : 'View case'}
           <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>

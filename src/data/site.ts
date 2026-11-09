@@ -591,18 +591,18 @@ export const cases: CaseStudy[] = [
   {
     slug: 'melsa',
     client: 'MELSA',
-    sector: { es: 'Bienes raíces · Sitio corporativo', en: 'Real estate · Corporate website' },
+    sector: { es: 'Gestión Inmobiliaria · Portal Luxury', en: 'Real Estate · Luxury Property Portal' },
     title: {
-      es: 'MELSA Gestión Inmobiliaria: sitio premium con simulador de inversión',
-      en: 'MELSA Real Estate: premium website with an investment simulator',
+      es: 'MELSA Gestión Inmobiliaria: plataforma de propiedades exclusivas y simulador en UF',
+      en: 'MELSA Real Estate: exclusive property platform & UF mortgage simulator',
     },
     challenge: {
-      es: 'MELSA asesora la compra e inversión en proyectos y propiedades en Santiago, Las Condes y Zapallar. Necesitaba un sitio que transmitiera exclusividad y confianza, y que convirtiera visitas en asesorías agendadas.',
-      en: 'MELSA advises on buying and investing in projects and properties in Santiago, Las Condes and Zapallar. It needed a site that conveyed exclusivity and trust and turned visits into booked advisory sessions.',
+      es: 'MELSA lidera la asesoría y gestión inmobiliaria en zonas de alta plusvalía (Las Condes, Vitacura, Lo Barnechea, San Damián y Zapallar). Requería una plataforma web moderna con identidad de lujo que transmitiera solvencia técnica, integrara su Red de Servicios Sello MELSA y captara inversionistas calificados directamente por WhatsApp sin depender de portales terceros.',
+      en: 'MELSA leads real estate advisory and property management across high-value areas (Las Condes, Vitacura, Lo Barnechea, San Damián, and Zapallar). They needed a modern luxury web platform reflecting corporate prestige, integrating the Sello MELSA technical service network, and capturing qualified investors directly via WhatsApp without relying on third-party portals.',
     },
     solution: {
-      es: 'Diseñamos y desarrollamos un sitio editorial en azul marino y dorado con tipografía serif, alineado con su logo: buscador por tipo, ubicación y estado del proyecto, portafolio con fichas de detalle, simulador de crédito y plusvalía, cartera de propiedades con asesor asignado, y agenda de asesoría con WhatsApp.',
-      en: 'We designed and built an editorial site in navy and gold with serif typography, aligned with its logo: search by type, location and project status, a portfolio with detail sheets, a mortgage and capital-gain simulator, a property portfolio with an assigned advisor, and advisory booking with WhatsApp.',
+      es: 'Diseñamos y desarrollamos una plataforma con arquitectura visual en Carbón Obsidiana (#0F1115), Rojo Carmesí (#D02126) y Blanco Alabastro (#FAF9F8). Incorporamos buscador dinámico de proyectos y propiedades residenciales (unidades Studio, 1D a 4D), simulador interactivo de dividendo y plusvalía en UF, showcase del estándar Sello MELSA (inspección de entrega, remodelación y garantía) y enlace directo con asesores seniors asignados.',
+      en: 'We designed and built a platform with an obsidian charcoal (#0F1115), crimson red (#D02126), and alabaster white (#FAF9F8) visual architecture. We integrated dynamic search for residential projects and properties (Studio, 1BR to 4BR), an interactive UF mortgage and capital-gain simulator, showcase of the Sello MELSA technical standard (delivery inspection, remodeling, and warranty), and direct routing to dedicated senior advisors.',
     },
     results: {
       es: [
@@ -616,36 +616,36 @@ export const cases: CaseStudy[] = [
         '100% commercial independence from recurring third-party property portal fees',
       ],
     },
-    tags: ['UX/UI', 'React', 'Simulador', 'Real estate'],
+    tags: ['React', 'UX/UI Luxury', 'Simulador UF', 'Sello MELSA', 'WhatsApp API'],
     url: 'https://melsa-psi.vercel.app',
     visual: 'melsa',
     features: [
       {
-        title: { es: 'Proyectos', en: 'Projects' },
+        title: { es: 'Proyectos & Propiedades Residenciales', en: 'Residential Projects & Properties' },
         items: {
-          es: ['Buscador por tipo, ubicación y estado', 'Filtros: preventa/pozo, entrega inmediata e inversión', 'Ficha de detalle por proyecto con precio en USD y UF'],
-          en: ['Search by type, location and status', 'Filters: pre-sale, ready to move in and investment', 'Detail sheet per project with USD and UF pricing'],
+          es: ['Buscador por comuna: Las Condes, Vitacura, Lo Barnechea y Zapallar', 'Filtros por tipología: Studio, 1D a 4D, preventa y entrega inmediata', 'Fichas detalladas con galería de alta resolución y precios en UF / USD'],
+          en: ['Search by area: Las Condes, Vitacura, Lo Barnechea, and Zapallar', 'Filters by typology: Studio, 1BR to 4BR, pre-sale and immediate delivery', 'Detailed sheets with high-res gallery and prices in UF / USD'],
         },
       },
       {
-        title: { es: 'Herramientas de inversión', en: 'Investment tools' },
+        title: { es: 'Simulador Financiero & Plusvalía', en: 'Financial & Capital Gain Simulator' },
         items: {
-          es: ['Simulador de dividendo mensual según valor, pie, plazo y tasa', 'Proyección de plusvalía a 5 años', 'Solicitud de evaluación crediticia'],
-          en: ['Monthly payment simulator by price, down payment, term and rate', '5-year capital-gain projection', 'Credit evaluation request'],
+          es: ['Cálculo de dividendo mensual según valor UF, pie (10%-30%), plazo y tasa', 'Proyección de rentabilidad anual y plusvalía estimada a 5 años', 'Solicitud de evaluación crediticia ágil con asesor asignado'],
+          en: ['Monthly mortgage calculation by UF price, down payment (10%-30%), term and rate', '5-year capital gain projection and annual yield estimates', 'Fast-track credit evaluation request with assigned advisor'],
         },
       },
       {
-        title: { es: 'Conversión', en: 'Conversion' },
+        title: { es: 'Red Sello MELSA & Conversión Directa', en: 'Sello MELSA Network & Direct Conversion' },
         items: {
-          es: ['Cartera de propiedades con asesor asignado', 'Agenda de asesoría en modal', 'Equipo, testimonios y widget de WhatsApp'],
-          en: ['Property portfolio with an assigned advisor', 'Advisory booking in a modal', 'Team, testimonials and WhatsApp widget'],
+          es: ['Red técnica de inspección de entrega de propiedades, remodelación y garantía', 'Contacto directo 1 a 1 por WhatsApp con ejecutivos y agentes seniors', 'Formularios sin fricción optimizados para alta conversión de inversionistas'],
+          en: ['Technical network for property delivery inspection, remodeling, and warranty', 'Direct 1-on-1 WhatsApp contact with dedicated senior agents', 'Frictionless lead forms optimized for high investor conversion'],
         },
       },
     ],
     gallery: [
-      { image: 'melsa-hero', caption: { es: 'Portada con buscador de proyectos', en: 'Home page with project search' } },
-      { image: 'melsa-projects', caption: { es: 'Proyectos destacados con filtros', en: 'Featured projects with filters' } },
-      { image: 'melsa-simulator', caption: { es: 'Simulador de crédito y plusvalía', en: 'Mortgage and capital-gain simulator' } },
+      { image: 'melsa-hero', caption: { es: 'Portada editorial en Carbón y Rojo Carmesí con buscador', en: 'Editorial home in Obsidian & Crimson with project search' } },
+      { image: 'melsa-projects', caption: { es: 'Propiedades destacadas en Las Condes, Vitacura y Zapallar', en: 'Featured properties in Las Condes, Vitacura, and Zapallar' } },
+      { image: 'melsa-simulator', caption: { es: 'Simulador financiero de dividendos en UF y plusvalía', en: 'Financial UF mortgage & capital-gain simulator' } },
     ],
   },
 ];
