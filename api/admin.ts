@@ -2913,6 +2913,21 @@ export interface VaultCredential {
   notes?: string;
 }
 
+export interface VaultInvoice {
+  id: string;
+  folio: string;
+  tipoDte: string;
+  concepto: string;
+  fechaEmision: string;
+  montoNeto?: number;
+  iva?: number;
+  montoTotal: number;
+  estado: 'Pagada' | 'Pendiente' | 'Anulada';
+  pdfDataUrl?: string;
+  pdfFileName?: string;
+  notas?: string;
+}
+
 export interface ClientVault {
   id: string;
   clientName: string;
@@ -2924,6 +2939,7 @@ export interface ClientVault {
   updatedAt: string;
   lastLoginAt?: string;
   credentials: VaultCredential[];
+  invoices?: VaultInvoice[];
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -3062,6 +3078,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           project: vault.project,
           clientEmail: vault.clientEmail,
           credentials: vault.credentials ?? [],
+          invoices: vault.invoices ?? [],
           updatedAt: vault.updatedAt,
         },
       });
@@ -3092,6 +3109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           project: vault.project,
           clientEmail: vault.clientEmail,
           credentials: vault.credentials ?? [],
+          invoices: vault.invoices ?? [],
           updatedAt: vault.updatedAt,
         },
       });
@@ -4112,6 +4130,82 @@ ${SITE_URL}/interno#ebs`);
             console.error('Error auto-seeding default vault', seedErr);
           }
         }
+        // Auto-sembrar bóveda oficial de AsviD SpA si no existe aún
+        if (!ids.includes('vlt-asvid-spa')) {
+          const asvidId = 'vlt-asvid-spa';
+          const asvidSalt = randomBytes(16).toString('hex');
+          const asvidHash = scryptSync('Asvid2026!', asvidSalt, 64).toString('hex');
+          const now = new Date().toISOString();
+          const asvidVault: ClientVault = {
+            id: asvidId,
+            clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+            project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
+            clientEmail: 'contacto.asvid@gmail.com',
+            passwordHash: asvidHash,
+            salt: asvidSalt,
+            createdAt: now,
+            updatedAt: now,
+            credentials: [
+              {
+                id: 'asvid-admin-web',
+                category: 'admin',
+                title: 'Portal Interno Autoadministrable (/interno)',
+                url: 'https://asvid-multiservicios.vercel.app/interno',
+                username: 'Administrador AsviD SpA',
+                password: 'asvid2026',
+                notes: 'Permite publicar nuevas obras con fotos desde el celular, actualizar WhatsApp/teléfono y activar comunicados de faena.',
+              },
+              {
+                id: 'asvid-cloud',
+                category: 'servidor',
+                title: 'Hosting Cloud Alta Velocidad & SSL Bancario (Producción)',
+                url: 'https://asvid-multiservicios.vercel.app',
+                username: 'asvid-multiservicios (Vercel Edge Network)',
+                password: 'Incluido por 1 año (Plan Start)',
+                notes: 'Infraestructura distribuida con CDN global, HTTP/2 y certificado SSL TLS 1.3 activo.',
+              },
+              {
+                id: 'asvid-github',
+                category: 'admin',
+                title: 'Repositorio de Código Fuente Soberano (GitHub)',
+                url: 'https://github.com/AlexSantanam/asvid-multiservicios',
+                username: 'AlexSantanam/asvid-multiservicios',
+                notes: 'Soberanía total del código fuente HTML5, Tailwind CSS y motor de sincronización Modo Dueño.',
+              },
+              {
+                id: 'asvid-dns',
+                category: 'dominio',
+                title: 'Dominio Oficial NIC Chile (.CL por 1 Año)',
+                url: 'https://www.nic.cl',
+                username: 'Opciones disponibles: asvidingenieria.cl / asvidspa.cl',
+                notes: 'Inscripción oficial por 1 año incluida en Plan Start Oficial.',
+              },
+            ],
+            invoices: [
+              {
+                id: 'inv-asvid-001',
+                folio: 'F-0001',
+                tipoDte: 'Factura Electrónica / Exenta (SII)',
+                concepto: 'Desarrollo Plataforma Web Corporativa Plan Start Oficial + Sistema Autoadministrable + Hosting Cloud & Dominio .CL 1 Año — AsviD SpA',
+                fechaEmision: '2026-11-11',
+                montoNeto: 126050,
+                iva: 23950,
+                montoTotal: 150000,
+                estado: 'Pagada',
+                notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Cliente: Manuel Videla / Asvid SpA (RUT: 78.521.951-1)',
+              },
+            ],
+          };
+          try {
+            await redis.set(K.vault(asvidId), asvidVault);
+            const nextIds = Array.from(new Set([...ids, asvidId]));
+            await redis.set(K.vaults, nextIds);
+            await redis.set(K.vaultByEmail('contacto.asvid@gmail.com'), asvidId);
+            ids = nextIds;
+          } catch (asvidErr) {
+            console.error('Error auto-seeding AsviD vault', asvidErr);
+          }
+        }
         const rows = await redis.mget<(ClientVault | null)[]>(...ids.map(K.vault));
         const vaults = rows.filter(Boolean).map((v) => ({
           ...v,
@@ -4128,7 +4222,8 @@ ${SITE_URL}/interno#ebs`);
         const clientEmail = str(body.clientEmail, 200).toLowerCase().trim();
         const clientName = str(body.clientName, 200);
         const project = str(body.project, 200);
-        const credentials = Array.isArray(body.credentials) ? body.credentials : [];
+        const credentials = Array.isArray(body.credentials) ? body.credentials : (existing?.credentials ?? []);
+        const invoices = Array.isArray(body.invoices) ? body.invoices : (existing?.invoices ?? []);
 
         let salt = existing?.salt || '';
         let passwordHash = existing?.passwordHash || '';
@@ -4149,6 +4244,7 @@ ${SITE_URL}/interno#ebs`);
           updatedAt: now,
           lastLoginAt: existing?.lastLoginAt,
           credentials,
+          invoices,
         };
 
         await redis.set(K.vault(id), updated);

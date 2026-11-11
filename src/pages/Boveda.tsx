@@ -21,6 +21,11 @@ import {
   Key,
   Sparkles,
   ArrowRight,
+  Receipt,
+  Printer,
+  CheckCircle2,
+  Clock,
+  Building2,
 } from 'lucide-react';
 import { OnboardingModule } from './Onboarding';
 
@@ -37,6 +42,21 @@ export interface VaultCredential {
   notes?: string;
 }
 
+export interface VaultInvoice {
+  id: string;
+  folio: string;
+  tipoDte: 'Factura Electrónica (33)' | 'Factura Exenta (34)' | 'Boleta Electrónica (39)' | 'Nota de Crédito (61)';
+  concepto: string;
+  fechaEmision: string;
+  montoNeto: number;
+  iva: number;
+  montoTotal: number;
+  estado: 'pagada' | 'pendiente' | 'anulada';
+  pdfDataUrl?: string;
+  pdfFileName?: string;
+  notas?: string;
+}
+
 export interface ClientVaultData {
   id: string;
   clientName: string;
@@ -44,7 +64,65 @@ export interface ClientVaultData {
   clientEmail: string;
   updatedAt: string;
   credentials: VaultCredential[];
+  invoices?: VaultInvoice[];
 }
+
+const ASVID_VAULT: ClientVaultData = {
+  id: 'vlt-asvid-spa',
+  clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+  project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
+  clientEmail: 'contacto.asvid@gmail.com',
+  updatedAt: new Date().toISOString(),
+  credentials: [
+    {
+      id: 'cred-asvid-interno',
+      category: 'admin',
+      title: 'Portal Interno Autoadministrable ("Modo Dueño")',
+      url: 'https://asvid-multiservicios.vercel.app/interno',
+      username: 'Portal Interno AsviD',
+      password: 'asvid2026',
+      notes: 'Panel directo para subir fotos de obras desde el celular en 30 segundos, editar WhatsApp corporativo, teléfonos, correo y publicar avisos de faena.',
+    },
+    {
+      id: 'cred-asvid-hosting',
+      category: 'servidor',
+      title: 'Hosting Cloud Alta Velocidad & SSL Bancario (Vercel CDN)',
+      url: 'https://asvid-multiservicios.vercel.app',
+      username: 'asvid-multiservicios.vercel.app',
+      notes: 'Infraestructura Cloud con certificado SSL TLS 1.3 activo y despliegue continuo.',
+    },
+    {
+      id: 'cred-asvid-github',
+      category: 'admin',
+      title: 'Repositorio de Código Fuente Soberano (GitHub)',
+      url: 'https://github.com/AlexSantanam/asvid-multiservicios',
+      username: 'AlexSantanam/asvid-multiservicios',
+      notes: 'Propiedad intelectual y código fuente completo sin amarres (HTML5, CSS3 Industrial, JS Autoadministrable, Schema.org Local SEO).',
+    },
+    {
+      id: 'cred-asvid-dominio',
+      category: 'dominio',
+      title: 'Dominio Oficial NIC Chile (.CL)',
+      url: 'https://www.nic.cl',
+      username: 'asvidingenieria.cl / asvidspa.cl (Por confirmar inscripción)',
+      notes: 'Inscripción oficial por 1 año incluida en Plan Start Oficial a nombre de Asvid SpA.',
+    },
+  ],
+  invoices: [
+    {
+      id: 'inv-asvid-001',
+      folio: 'F-0001',
+      tipoDte: 'Factura Electrónica (33)',
+      concepto: 'Plan Start Oficial — Diseño y Desarrollo Plataforma Web Corporativa AsviD SpA + Portal Autoadministrable (/interno) + Hosting Cloud 1 Año + Dominio .CL',
+      fechaEmision: new Date().toISOString().slice(0, 10),
+      montoNeto: 126050,
+      iva: 23950,
+      montoTotal: 150000,
+      estado: 'pagada',
+      notas: 'Documento tributario electrónico por desarrollo e infraestructura anual Plan Start Oficial.',
+    },
+  ],
+};
 
 const IGNEO_VAULT: ClientVaultData = {
   id: 'vault-igneo',
@@ -126,8 +204,8 @@ export const Boveda: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Selector de pestaña principal (Insumos vs Credenciales)
-  const [mainTab, setMainTab] = useState<'insumos' | 'credenciales'>('insumos');
+  // Selector de pestaña principal (Insumos vs Credenciales vs Facturas Electrónicas)
+  const [mainTab, setMainTab] = useState<'insumos' | 'credenciales' | 'facturas'>('insumos');
 
   const [sessionToken, setSessionToken] = useState<string | null>(() => {
     return typeof window !== 'undefined' ? localStorage.getItem('u693_vault_token') : null;
@@ -136,6 +214,9 @@ export const Boveda: React.FC = () => {
   const [vault, setVault] = useState<ClientVaultData | null>(() => {
     if (typeof window !== 'undefined') {
       const storedEmail = localStorage.getItem('u693_vault_client_email');
+      if (storedEmail && storedEmail.includes('asvid')) {
+        return ASVID_VAULT;
+      }
       if (storedEmail && (storedEmail.includes('igneo') || storedEmail.includes('bomberos') || storedEmail === 'contacto@universo693.com')) {
         return IGNEO_VAULT;
       }
@@ -163,6 +244,9 @@ export const Boveda: React.FC = () => {
         const data = await res.json();
         if (!cancel && data.vault) {
           setVault(data.vault);
+          if (data.vault.id === 'vlt-asvid-spa' || (data.vault.clientEmail && data.vault.clientEmail.includes('asvid'))) {
+            setMainTab('credenciales');
+          }
         }
       } catch {
         if (!cancel) {
@@ -190,7 +274,50 @@ export const Boveda: React.FC = () => {
       const cleanEmail = email.toLowerCase().trim();
       const cleanPass = password.trim();
 
-      // Acceso directo institucional para OTEC Ígneo (Fundación Bomberos Viña del Mar)
+      // 1. Intentar primero contra Upstash Redis (/api/admin?action=vault-login) para traer facturas y PDFs en vivo
+      try {
+        const res = await fetch('/api/admin?action=vault-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, password: cleanPass }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.vault) {
+            localStorage.setItem('u693_vault_token', data.sessionToken);
+            localStorage.setItem('u693_vault_client_email', cleanEmail);
+            setSessionToken(data.sessionToken);
+            setVault(data.vault);
+            if (cleanEmail.includes('asvid') || data.vault.id === 'vlt-asvid-spa') {
+              setMainTab('credenciales');
+            } else {
+              setMainTab('insumos');
+            }
+            setPassword('');
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // Fallback local si el endpoint no responde o aún no se sincroniza
+      }
+
+      // 2. Acceso directo institucional para AsviD SpA
+      if (
+        (cleanEmail.includes('asvid') || cleanEmail === 'contacto.asvid@gmail.com') &&
+        (cleanPass === 'Asvid2026!' || cleanPass === 'asvid2026' || cleanPass === 'ASVID2026')
+      ) {
+        setVault(ASVID_VAULT);
+        setMainTab('credenciales');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('u693_vault_client_email', cleanEmail);
+        }
+        setPassword('');
+        setLoading(false);
+        return;
+      }
+
+      // 3. Acceso directo institucional para OTEC Ígneo (Fundación Bomberos Viña del Mar)
       if (
         (cleanEmail.includes('igneo') || cleanEmail.includes('bomberos') || cleanEmail === 'contacto@universo693.com') &&
         (cleanPass === 'Bomberos2026!' || cleanPass === 'Igneo2026!' || cleanPass === 'IGNEO-2026' || cleanPass === 'Igneo#2026')
@@ -206,20 +333,7 @@ export const Boveda: React.FC = () => {
         return;
       }
 
-      // Validación contra Upstash Redis (/api/admin?action=vault-login)
-      const res = await fetch('/api/admin?action=vault-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, password: cleanPass }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Credenciales inválidas. Verifique su correo institucional y contraseña.');
-      }
-      localStorage.setItem('u693_vault_token', data.sessionToken);
-      setSessionToken(data.sessionToken);
-      setVault(data.vault);
-      setPassword('');
+      throw new Error('Credenciales inválidas. Verifique su correo institucional y contraseña.');
     } catch (err: any) {
       setError(err.message || 'Error al conectar con la bóveda.');
     } finally {
@@ -259,8 +373,12 @@ export const Boveda: React.FC = () => {
       cliente: vault.clientName,
       proyecto: vault.project,
       fechaExportacion: new Date().toISOString(),
-      declaracion: 'Copia maestra de credenciales y soberanía tecnológica para el cliente.',
+      declaracion: 'Copia maestra de credenciales, documentos tributarios y soberanía tecnológica para el cliente.',
       credenciales: vault.credentials,
+      facturas: (vault.invoices || []).map(({ pdfDataUrl, ...rest }) => ({
+        ...rest,
+        tienePdfAdjunto: Boolean(pdfDataUrl),
+      })),
     };
     const blob = new Blob([JSON.stringify(cleanVault, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -269,6 +387,119 @@ export const Boveda: React.FC = () => {
     a.download = `Boveda-${vault.clientName.replace(/[^a-zA-Z0-9]/g, '_')}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handlePrintInvoiceVoucher = (inv: VaultInvoice) => {
+    if (!vault) return;
+    const w = window.open('', '_blank', 'width=840,height=920');
+    if (!w) return;
+    const formatClp = (n: number) => '$' + Math.round(n || 0).toLocaleString('es-CL');
+    w.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${inv.tipoDte} ${inv.folio} — ${vault.clientName}</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: #f8fafc; }
+          .sheet { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 36px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+          .top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 24px; margin-bottom: 24px; }
+          .brand h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; color: #0f172a; }
+          .brand p { margin: 4px 0 0; font-size: 12px; color: #475569; }
+          .sii-box { border: 2.5px solid #dc2626; padding: 12px 18px; text-align: center; color: #dc2626; font-weight: 800; border-radius: 6px; min-width: 210px; }
+          .sii-box .rut { font-size: 13px; }
+          .sii-box .tipo { font-size: 12px; margin: 4px 0; text-transform: uppercase; }
+          .sii-box .folio { font-size: 16px; }
+          .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f1f5f9; padding: 16px; border-radius: 8px; font-size: 12px; margin-bottom: 24px; }
+          .meta-grid div strong { display: block; color: #475569; text-transform: uppercase; font-size: 10px; margin-bottom: 2px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+          th { background: #0f172a; color: #fff; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; }
+          td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; }
+          .totals { margin-left: auto; width: 260px; font-size: 13px; }
+          .totals .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; }
+          .totals .row.final { font-size: 16px; font-weight: 900; border-bottom: 2px solid #0f172a; color: #0f172a; padding-top: 10px; }
+          .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: #dcfce7; color: #166534; }
+          .footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed #cbd5e1; font-size: 11px; color: #64748b; text-align: center; }
+          @media print { body { background: #fff; padding: 0; } .sheet { border: none; box-shadow: none; } .no-print { display: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="sheet">
+          <div class="top">
+            <div class="brand">
+              <h1>UNIVERSO693 SpA</h1>
+              <p>Ingeniería de Software, Plataformas Cloud & Soberanía Digital</p>
+              <p>Villa Alemana / Viña del Mar, Región de Valparaíso, Chile</p>
+              <p>contacto@universo693.com · https://universo693.com</p>
+            </div>
+            <div class="sii-box">
+              <div class="rut">COMPROBANTE TRIBUTARIO</div>
+              <div class="tipo">${inv.tipoDte}</div>
+              <div class="folio">FOLIO N° ${inv.folio}</div>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <strong>Cliente / Razón Social</strong>
+              <span>${vault.clientName}</span>
+            </div>
+            <div>
+              <strong>Fecha de Emisión</strong>
+              <span>${inv.fechaEmision}</span>
+            </div>
+            <div>
+              <strong>Proyecto Asociado</strong>
+              <span>${vault.project}</span>
+            </div>
+            <div>
+              <strong>Estado del Documento</strong>
+              <span class="badge">${inv.estado.toUpperCase()}</span>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Descripción / Glosa del Servicio</th>
+                <th style="text-align:right; width:130px;">Total Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>${inv.concepto}</strong>
+                  ${inv.notas ? `<div style="margin-top:6px; font-size:11px; color:#64748b;">${inv.notas}</div>` : ''}
+                </td>
+                <td style="text-align:right; font-weight:700;">${formatClp(inv.montoNeto)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div class="row">
+              <span>Monto Neto:</span>
+              <strong>${formatClp(inv.montoNeto)}</strong>
+            </div>
+            <div class="row">
+              <span>19% I.V.A.:</span>
+              <strong>${formatClp(inv.iva)}</strong>
+            </div>
+            <div class="row final">
+              <span>TOTAL CLP:</span>
+              <span>${formatClp(inv.montoTotal)}</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            Respaldo tributario emitido y custodiado en la Bóveda Digital de UNIVERSO693 SpA.<br/>
+            <button class="no-print" onclick="window.print()" style="margin-top:14px; padding:8px 18px; background:#0f172a; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700;">Imprimir / Guardar como PDF</button>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+    w.document.close();
   };
 
   const filteredCredentials = useMemo(() => {
@@ -421,23 +652,25 @@ export const Boveda: React.FC = () => {
         ) : (
           /* Authenticated Vault Dashboard */
           <div className="space-y-6">
-            {/* Top Navigation Bar: Insumos vs Credenciales */}
+            {/* Top Navigation Bar: Insumos vs Credenciales vs Facturas Electrónicas */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0a1626] border border-white/10 rounded-2xl p-2 shadow-lg">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setMainTab('insumos')}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                    mainTab === 'insumos'
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  <FileText className="h-4 w-4" />
-                  <span>Configuración & Recepción de Insumos</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Fase 1
-                  </span>
-                </button>
+              <div className="flex flex-wrap items-center gap-2">
+                {!(vault.id === 'vlt-asvid-spa' || vault.clientEmail?.includes('asvid')) && (
+                  <button
+                    onClick={() => setMainTab('insumos')}
+                    className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                      mainTab === 'insumos'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
+                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Configuración & Recepción de Insumos</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Fase 1
+                    </span>
+                  </button>
+                )}
                 <button
                   onClick={() => setMainTab('credenciales')}
                   className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
@@ -450,16 +683,155 @@ export const Boveda: React.FC = () => {
                   <span>Bóveda de Credenciales & Soberanía</span>
                   <span className="text-xs text-slate-400">({vault.credentials?.length || 0})</span>
                 </button>
+                <button
+                  onClick={() => setMainTab('facturas')}
+                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                    mainTab === 'facturas'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <Receipt className="h-4 w-4" />
+                  <span>Facturas Electrónicas & DTE (SII)</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    {vault.invoices?.length || 0}
+                  </span>
+                </button>
               </div>
 
               <div className="text-[11px] text-slate-400 px-3 hidden md:flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Gestión Unificada · UNIVERSO693 Bóveda v2.4</span>
+                <span>Gestión Unificada · UNIVERSO693 Bóveda v2.5</span>
               </div>
             </div>
 
             {mainTab === 'insumos' ? (
               <OnboardingModule slug="igneo" embedded={true} onGoToCredentials={() => setMainTab('credenciales')} />
+            ) : mainTab === 'facturas' ? (
+              <div className="space-y-6">
+                {/* Invoices Header Banner */}
+                <div className="bg-gradient-to-r from-[#0b1f1d] via-[#0c2627] to-[#0c1c2e] border border-emerald-500/30 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 mb-3">
+                        <Receipt className="h-3.5 w-3.5" />
+                        Repositorio Tributario & Contable (SII)
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        Facturas Electrónicas y Documentos Tributarios
+                      </h2>
+                      <p className="text-sm text-emerald-300 mt-1 font-medium">{vault.clientName}</p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Custodia permanente de tus documentos tributarios electrónicos (DTE) y comprobantes emitidos por UNIVERSO693 SpA.
+                      </p>
+                    </div>
+                    <div className="text-left sm:text-right bg-white/[0.03] sm:bg-transparent p-4 sm:p-0 rounded-2xl border border-white/5 sm:border-none">
+                      <span className="text-xs text-slate-400 block">Documentos Registrados</span>
+                      <span className="text-3xl font-black text-emerald-400">{vault.invoices?.length || 0}</span>
+                      <span className="text-[11px] text-slate-500 block mt-1">Respaldo SII verificado</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Invoices List */}
+                {(!vault.invoices || vault.invoices.length === 0) ? (
+                  <div className="text-center py-16 bg-[#0c1827] border border-white/10 rounded-3xl">
+                    <Receipt className="h-10 w-10 text-slate-500 mx-auto mb-3" />
+                    <p className="text-sm font-semibold text-white">Aún no hay facturas electrónicas registradas en esta bóveda</p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Cuando se emita un documento tributario (DTE) aparecerá aquí con su archivo PDF descargable.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {vault.invoices.map((inv) => {
+                      const isPaid = inv.estado === 'pagada';
+                      const isPending = inv.estado === 'pendiente';
+                      return (
+                        <div
+                          key={inv.id}
+                          className="bg-[#0c1827] border border-white/10 hover:border-emerald-500/30 rounded-2xl p-5 sm:p-6 transition-all shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                        >
+                          <div className="space-y-2.5 flex-1">
+                            <div className="flex flex-wrap items-center gap-2.5">
+                              <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">
+                                {inv.folio || 'S/F'}
+                              </span>
+                              <span className="text-xs font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
+                                {inv.tipoDte}
+                              </span>
+                              <span
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${
+                                  isPaid
+                                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                    : isPending
+                                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                                    : 'bg-red-500/15 text-red-300 border-red-500/30'
+                                }`}
+                              >
+                                {isPaid ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                                {inv.estado}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                Emitida: <strong className="text-slate-200">{inv.fechaEmision}</strong>
+                              </span>
+                            </div>
+
+                            <h3 className="text-base sm:text-lg font-bold text-white leading-snug">{inv.concepto}</h3>
+
+                            {inv.notas && <p className="text-xs text-slate-400">{inv.notas}</p>}
+
+                            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                              <span>
+                                Neto:{' '}
+                                <strong className="text-slate-200 font-mono">
+                                  ${Math.round(inv.montoNeto || 0).toLocaleString('es-CL')}
+                                </strong>
+                              </span>
+                              <span>
+                                IVA (19%):{' '}
+                                <strong className="text-slate-200 font-mono">
+                                  ${Math.round(inv.iva || 0).toLocaleString('es-CL')}
+                                </strong>
+                              </span>
+                              <span className="text-sm text-emerald-300 font-bold">
+                                Total:{' '}
+                                <strong className="font-mono">
+                                  ${Math.round(inv.montoTotal || 0).toLocaleString('es-CL')} CLP
+                                </strong>
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-2.5 shrink-0 border-t lg:border-t-0 border-white/10 pt-4 lg:pt-0">
+                            {inv.pdfDataUrl ? (
+                              <a
+                                href={inv.pdfDataUrl}
+                                download={inv.pdfFileName || `Factura_${inv.folio}.pdf`}
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 transition-all"
+                              >
+                                <Download className="h-4 w-4" />
+                                <span>Descargar Factura PDF (SII)</span>
+                              </a>
+                            ) : (
+                              <span className="text-[11px] text-slate-400 bg-white/[0.03] border border-white/10 px-3 py-1.5 rounded-lg text-center">
+                                PDF original SII pronto disponible
+                              </span>
+                            )}
+                            <button
+                              onClick={() => handlePrintInvoiceVoucher(inv)}
+                              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-colors"
+                            >
+                              <Printer className="h-3.5 w-3.5 text-cyan-400" />
+                              <span>Ver / Imprimir Comprobante Tributario</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="space-y-6">
                 {/* Client Banner */}

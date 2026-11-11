@@ -3461,6 +3461,21 @@ interface AdminVaultCred {
   notes?: string;
 }
 
+interface AdminVaultInvoice {
+  id: string;
+  folio: string;
+  tipoDte: string;
+  concepto: string;
+  fechaEmision: string;
+  montoNeto?: number;
+  iva?: number;
+  montoTotal: number;
+  estado: 'Pagada' | 'Pendiente' | 'Anulada';
+  pdfDataUrl?: string;
+  pdfFileName?: string;
+  notas?: string;
+}
+
 interface AdminVault {
   id: string;
   clientName: string;
@@ -3470,6 +3485,7 @@ interface AdminVault {
   hasPassword?: boolean;
   lastLoginAt?: string;
   credentials: AdminVaultCred[];
+  invoices?: AdminVaultInvoice[];
 }
 
 const CATEGORY_NAMES: Record<AdminVaultCred['category'], string> = {
@@ -3615,6 +3631,64 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     ],
   };
 
+  const defaultAsvidData: AdminVault = {
+    id: 'vlt-asvid-spa',
+    clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+    project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
+    clientEmail: 'contacto.asvid@gmail.com',
+    updatedAt: new Date().toISOString(),
+    credentials: [
+      {
+        id: 'asvid-admin-web',
+        category: 'admin',
+        title: 'Portal Interno Autoadministrable (/interno)',
+        url: 'https://asvid-multiservicios.vercel.app/interno',
+        username: 'Administrador AsviD SpA',
+        password: 'asvid2026',
+        notes: 'Permite publicar nuevas obras con fotos desde el celular, actualizar WhatsApp/teléfono y activar comunicados de faena.',
+      },
+      {
+        id: 'asvid-cloud',
+        category: 'servidor',
+        title: 'Hosting Cloud Alta Velocidad & SSL Bancario (Producción)',
+        url: 'https://asvid-multiservicios.vercel.app',
+        username: 'asvid-multiservicios (Vercel Edge Network)',
+        password: 'Incluido por 1 año (Plan Start)',
+        notes: 'Infraestructura distribuida con CDN global, HTTP/2 y certificado SSL TLS 1.3 activo.',
+      },
+      {
+        id: 'asvid-github',
+        category: 'admin',
+        title: 'Repositorio de Código Fuente Soberano (GitHub)',
+        url: 'https://github.com/AlexSantanam/asvid-multiservicios',
+        username: 'AlexSantanam/asvid-multiservicios',
+        notes: 'Soberanía total del código fuente HTML5, Tailwind CSS y motor de sincronización Modo Dueño.',
+      },
+      {
+        id: 'asvid-dns',
+        category: 'dominio',
+        title: 'Dominio Oficial NIC Chile (.CL por 1 Año)',
+        url: 'https://www.nic.cl',
+        username: 'Opciones disponibles: asvidingenieria.cl / asvidspa.cl',
+        notes: 'Inscripción oficial por 1 año incluida en Plan Start Oficial.',
+      },
+    ],
+    invoices: [
+      {
+        id: 'inv-asvid-001',
+        folio: 'F-0001',
+        tipoDte: 'Factura Electrónica / Exenta (SII)',
+        concepto: 'Desarrollo Plataforma Web Corporativa Plan Start Oficial + Sistema Autoadministrable + Hosting Cloud & Dominio .CL 1 Año — AsviD SpA',
+        fechaEmision: '2026-11-11',
+        montoNeto: 126050,
+        iva: 23950,
+        montoTotal: 150000,
+        estado: 'Pagada',
+        notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Cliente: Manuel Videla / Asvid SpA (RUT: 78.521.951-1)',
+      },
+    ],
+  };
+
   const handlePreloadIgneo = () => {
     setEditing({
       ...defaultIgneoData,
@@ -3622,6 +3696,15 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       updatedAt: new Date().toISOString(),
     });
     setNewPassword('Bomberos2026!');
+  };
+
+  const handlePreloadAsvid = () => {
+    setEditing({
+      ...defaultAsvidData,
+      id: 'vlt-asvid-spa',
+      updatedAt: new Date().toISOString(),
+    });
+    setNewPassword('Asvid2026!');
   };
 
   const handleQuickActivateIgneo = async () => {
@@ -3636,6 +3719,25 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       });
       await loadVaults();
       alert('¡Bóveda Oficial de OTEC Ígneo activada exitosamente!');
+    } catch (err: any) {
+      alert(err.message || 'Error al activar bóveda.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleQuickActivateAsvid = async () => {
+    setSaving(true);
+    try {
+      await api('/api/admin?action=vault-save', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...defaultAsvidData,
+          newPassword: 'Asvid2026!',
+        }),
+      });
+      await loadVaults();
+      alert('¡Bóveda Oficial de AsviD SpA activada exitosamente con sus credenciales y factura!');
     } catch (err: any) {
       alert(err.message || 'Error al activar bóveda.');
     } finally {
@@ -3777,6 +3879,61 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     setEditing({ ...editing, credentials: editing.credentials.filter((_, i) => i !== idx) });
   };
 
+  const handleAddInvoice = () => {
+    if (!editing) return;
+    const inv: AdminVaultInvoice = {
+      id: `inv-${Date.now()}`,
+      folio: `F-00${(editing.invoices?.length || 0) + 1}`,
+      tipoDte: 'Factura Electrónica / Exenta (SII)',
+      concepto: `Servicios Tecnológicos — ${editing.project || editing.clientName || 'Cliente'}`,
+      fechaEmision: new Date().toISOString().slice(0, 10),
+      montoNeto: 126050,
+      iva: 23950,
+      montoTotal: 150000,
+      estado: 'Pagada',
+      notas: '',
+    };
+    setEditing({ ...editing, invoices: [...(editing.invoices || []), inv] });
+  };
+
+  const handleUpdateInvoice = (idx: number, patch: Partial<AdminVaultInvoice>) => {
+    if (!editing) return;
+    const list = [...(editing.invoices || [])];
+    const updated = { ...list[idx], ...patch };
+    if (patch.montoTotal !== undefined) {
+      const total = Number(patch.montoTotal) || 0;
+      updated.montoTotal = total;
+      updated.montoNeto = Math.round(total / 1.19);
+      updated.iva = total - updated.montoNeto;
+    }
+    list[idx] = updated;
+    setEditing({ ...editing, invoices: list });
+  };
+
+  const handleDeleteInvoice = (idx: number) => {
+    if (!editing) return;
+    setEditing({ ...editing, invoices: (editing.invoices || []).filter((_, i) => i !== idx) });
+  };
+
+  const handleInvoiceFileUpload = (idx: number, file: File | null) => {
+    if (!editing || !file) return;
+    if (file.size > 4.5 * 1024 * 1024) {
+      alert('El archivo PDF o imagen supera el límite de 4.5 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const result = evt.target?.result as string;
+      if (result) {
+        handleUpdateInvoice(idx, {
+          pdfDataUrl: result,
+          pdfFileName: file.name,
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const copyPortalLink = () => {
     navigator.clipboard.writeText('https://universo693.com/boveda');
     setCopiedLink(true);
@@ -3789,25 +3946,33 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white">Bóvedas de Credenciales</h1>
+            <h1 className="text-2xl font-black text-white">Bóvedas de Credenciales & Facturas</h1>
             <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20">
-              Soberanía Tecnológica
+              Soberanía Tecnológica & DTE
             </Badge>
           </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Gestiona los accesos maestros que entregas a tus clientes. Cada cliente puede iniciar sesión en{' '}
+            Gestiona los accesos maestros y las facturas electrónicas que entregas a tus clientes. Cada cliente puede iniciar sesión en{' '}
             <code className="text-cyan-300 bg-white/5 px-1.5 py-0.5 rounded">/boveda</code> con su correo y contraseña
-            para ver y copiar sus claves o descargar su respaldo maestro.
+            para ver sus claves, descargar sus facturas electrónicas (PDF) o bajar su respaldo maestro.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button onClick={copyPortalLink} className={btnGhost} title="Copiar enlace de acceso para clientes">
             {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-cyan-400" />}
             {copiedLink ? '¡Enlace copiado!' : 'Copiar link /boveda'}
           </button>
           {!editing && (
             <>
+              <button
+                onClick={handlePreloadAsvid}
+                className={`${btnGhost} text-orange-300 hover:text-orange-200 border-orange-500/30 hover:border-orange-500/60`}
+                title="Cargar o editar bóveda y factura de AsviD SpA"
+              >
+                <Sparkles className="w-4 h-4 text-orange-400" />
+                Precargar AsviD SpA
+              </button>
               <button
                 onClick={handlePreloadIgneo}
                 className={`${btnGhost} text-amber-300 hover:text-amber-200 border-amber-500/30 hover:border-amber-500/60`}
@@ -3827,7 +3992,7 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
       {editing ? (
         /* Vault Editor */
         <div className="space-y-6 bg-white/[0.02] border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
               <button onClick={() => setEditing(null)} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">
                 <ArrowLeft className="w-5 h-5" />
@@ -3836,9 +4001,12 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
                 {editing.clientName ? `Editando Bóveda: ${editing.clientName}` : 'Nueva Bóveda de Cliente'}
               </h2>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <button onClick={handlePreloadAsvid} className={`${btnGhost} text-xs text-orange-300 hover:text-orange-200 border-orange-500/30`}>
+                ⚡ Plantilla AsviD SpA
+              </button>
               <button onClick={handlePreloadIgneo} className={`${btnGhost} text-xs text-amber-300 hover:text-amber-200 border-amber-500/30`}>
-                ⚡ Cargar Plantilla OTEC Ígneo
+                ⚡ Plantilla OTEC Ígneo
               </button>
               <button onClick={handleSave} disabled={saving} className={btnPrimary}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Guardar Bóveda
@@ -4072,6 +4240,174 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
               </div>
             )}
           </div>
+
+          {/* Facturas Electrónicas (DTE / SII) Section */}
+          <div className="space-y-4 pt-6 border-t border-white/10">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Facturas Electrónicas y Documentos Tributarios (SII) ({editing.invoices?.length || 0})</span>
+                  <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20 text-[10px]">
+                    Respaldo Tributario
+                  </Badge>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Guarda las facturas electrónicas emitidas a este cliente. Puedes adjuntar el archivo PDF original del SII para que quede almacenado en la bóveda.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddInvoice}
+                className="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> + Agregar Factura Electrónica
+              </button>
+            </div>
+
+            {(!editing.invoices || editing.invoices.length === 0) ? (
+              <div className="text-center py-8 border border-dashed border-white/10 rounded-xl text-slate-400 text-xs">
+                No hay facturas electrónicas registradas en esta bóveda. Haz clic en "+ Agregar Factura Electrónica" para registrar y subir el PDF del SII.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {editing.invoices.map((inv, idx) => (
+                  <div key={inv.id || idx} className="p-4 rounded-xl bg-emerald-950/15 border border-emerald-500/20 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Folio SII</label>
+                        <input
+                          type="text"
+                          placeholder="ej. F-0045"
+                          value={inv.folio}
+                          onChange={(e) => handleUpdateInvoice(idx, { folio: e.target.value })}
+                          className={`${input} font-mono font-bold text-emerald-300`}
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Tipo de Documento (DTE)</label>
+                        <select
+                          value={inv.tipoDte}
+                          onChange={(e) => handleUpdateInvoice(idx, { tipoDte: e.target.value })}
+                          className={`${selectSm} w-full`}
+                        >
+                          <option value="Factura Electrónica / Exenta (SII)">Factura Electrónica / Exenta (SII)</option>
+                          <option value="Factura Electrónica Afecta (33)">Factura Electrónica Afecta (Cód. 33)</option>
+                          <option value="Factura No Afecta o Exenta (34)">Factura No Afecta o Exenta (Cód. 34)</option>
+                          <option value="Boleta Electrónica (39)">Boleta Electrónica (Cód. 39)</option>
+                          <option value="Nota de Crédito Electrónica (61)">Nota de Crédito Electrónica (Cód. 61)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Fecha Emisión</label>
+                        <input
+                          type="date"
+                          value={inv.fechaEmision}
+                          onChange={(e) => handleUpdateInvoice(idx, { fechaEmision: e.target.value })}
+                          className={input}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Estado de Pago</label>
+                        <select
+                          value={inv.estado}
+                          onChange={(e) => handleUpdateInvoice(idx, { estado: e.target.value as any })}
+                          className={`${selectSm} w-full`}
+                        >
+                          <option value="Pagada">Pagada</option>
+                          <option value="Pendiente">Pendiente</option>
+                          <option value="Anulada">Anulada</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div className="sm:col-span-3">
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Glosa / Concepto Facturado</label>
+                        <input
+                          type="text"
+                          placeholder="ej. Desarrollo Plataforma Web Plan Start Oficial + Autoadministrable — AsviD SpA"
+                          value={inv.concepto}
+                          onChange={(e) => handleUpdateInvoice(idx, { concepto: e.target.value })}
+                          className={input}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">Monto Total (CLP $)</label>
+                        <input
+                          type="number"
+                          placeholder="150000"
+                          value={inv.montoTotal}
+                          onChange={(e) => handleUpdateInvoice(idx, { montoTotal: Number(e.target.value) })}
+                          className={`${input} font-mono font-bold text-white`}
+                        />
+                      </div>
+                    </div>
+
+                    {/* PDF Upload & Actions */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-white/10">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-cyan-300 transition-colors">
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>{inv.pdfDataUrl ? 'Reemplazar PDF SII' : 'Subir PDF Factura SII'}</span>
+                          <input
+                            type="file"
+                            accept=".pdf,application/pdf,image/*"
+                            className="hidden"
+                            onChange={(e) => handleInvoiceFileUpload(idx, e.target.files?.[0] || null)}
+                          />
+                        </label>
+
+                        {inv.pdfDataUrl ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                              <Check className="w-3.5 h-3.5" />
+                              {inv.pdfFileName || 'Factura_SII.pdf'}
+                            </span>
+                            <a
+                              href={inv.pdfDataUrl}
+                              download={inv.pdfFileName || `Factura_${inv.folio}.pdf`}
+                              className="text-xs text-cyan-400 hover:text-cyan-300 underline font-semibold"
+                            >
+                              Descargar PDF
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateInvoice(idx, { pdfDataUrl: undefined, pdfFileName: undefined })}
+                              className="text-xs text-red-400 hover:text-red-300 ml-1"
+                            >
+                              Quitar PDF
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-slate-400">
+                            Sin archivo PDF adjunto aún (puedes adjuntar el PDF descargado del SII).
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Notas internas (ej. RUT receptor, forma de pago)"
+                          value={inv.notas || ''}
+                          onChange={(e) => handleUpdateInvoice(idx, { notas: e.target.value })}
+                          className={`${input} text-xs text-slate-300 min-w-[220px]`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteInvoice(idx)}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
+                          title="Eliminar factura"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         /* Vaults List Table */
@@ -4087,10 +4423,18 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
               </div>
               <h3 className="text-base font-bold text-white">Bóvedas Centrales de Clientes</h3>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                Aquí se listan y gestionan los repositorios soberanos de credenciales para tus clientes. 
-                Puedes inicializar de inmediato la bóveda oficial de <strong className="text-amber-300">OTEC Ígneo</strong> (Cuerpo de Bomberos de Viña del Mar) con un solo clic, o crear una nueva en blanco.
+                Aquí se listan y gestionan los repositorios soberanos de credenciales y facturas para tus clientes. 
+                Puedes inicializar de inmediato la bóveda oficial de <strong className="text-orange-300">AsviD SpA</strong> o de <strong className="text-amber-300">OTEC Ígneo</strong> con un solo clic.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+                <button
+                  onClick={handleQuickActivateAsvid}
+                  disabled={saving}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all cursor-pointer"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin text-slate-950" /> : <Sparkles className="w-4 h-4 text-slate-950" />}
+                  ¡Activar Bóveda AsviD SpA (1-Clic)!
+                </button>
                 <button
                   onClick={handleQuickActivateIgneo}
                   disabled={saving}
@@ -4098,12 +4442,6 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin text-slate-950" /> : <Sparkles className="w-4 h-4 text-slate-950" />}
                   ¡Activar Bóveda OTEC Ígneo (1-Clic)!
-                </button>
-                <button
-                  onClick={handlePreloadIgneo}
-                  className={`${btnGhost} w-full sm:w-auto text-xs`}
-                >
-                  Revisar y Editar antes de guardar
                 </button>
               </div>
             </div>) : (
@@ -4116,9 +4454,14 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="text-sm font-bold text-white leading-snug">{v.clientName}</h3>
-                      <Badge className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 shrink-0">
-                        {v.credentials?.length || 0} claves
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <Badge className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20">
+                          {v.credentials?.length || 0} claves
+                        </Badge>
+                        <Badge className="bg-emerald-500/10 text-emerald-300 border-emerald-500/20">
+                          {v.invoices?.length || 0} facturas
+                        </Badge>
+                      </div>
                     </div>
                     <p className="text-xs text-cyan-400 font-medium">{v.project}</p>
                     <p className="text-xs text-slate-400 mt-1">Login: {v.clientEmail}</p>
@@ -4132,7 +4475,7 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
                       onClick={() => setEditing(v)}
                       className="font-bold text-cyan-300 hover:text-cyan-200"
                     >
-                      Editar Accesos
+                      Editar Accesos & Facturas
                     </button>
                     <button
                       onClick={() => handleDelete(v.id, v.clientName)}
