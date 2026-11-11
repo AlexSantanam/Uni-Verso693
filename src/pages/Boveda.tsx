@@ -205,7 +205,7 @@ export const Boveda: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Selector de pestaña principal (Insumos vs Credenciales vs Facturas Electrónicas)
-  const [mainTab, setMainTab] = useState<'insumos' | 'credenciales' | 'facturas'>('insumos');
+  const [mainTab, setMainTab] = useState<'insumos' | 'credenciales' | 'facturas'>('credenciales');
 
   const [sessionToken, setSessionToken] = useState<string | null>(() => {
     return typeof window !== 'undefined' ? localStorage.getItem('u693_vault_token') : null;
@@ -655,7 +655,7 @@ export const Boveda: React.FC = () => {
             {/* Top Navigation Bar: Insumos vs Credenciales vs Facturas Electrónicas */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0a1626] border border-white/10 rounded-2xl p-2 shadow-lg">
               <div className="flex flex-wrap items-center gap-2">
-                {!(vault.id === 'vlt-asvid-spa' || vault.clientEmail?.includes('asvid')) && (
+                {vault.id === 'vault-igneo' && (
                   <button
                     onClick={() => setMainTab('insumos')}
                     className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
@@ -674,7 +674,7 @@ export const Boveda: React.FC = () => {
                 <button
                   onClick={() => setMainTab('credenciales')}
                   className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
-                    mainTab === 'credenciales'
+                    mainTab === 'credenciales' || (mainTab === 'insumos' && vault.id !== 'vault-igneo')
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
                       : 'text-slate-300 hover:bg-white/5 hover:text-white'
                   }`}
@@ -705,7 +705,7 @@ export const Boveda: React.FC = () => {
               </div>
             </div>
 
-            {mainTab === 'insumos' ? (
+            {mainTab === 'insumos' && vault.id === 'vault-igneo' ? (
               <OnboardingModule slug="igneo" embedded={true} onGoToCredentials={() => setMainTab('credenciales')} />
             ) : mainTab === 'facturas' ? (
               <div className="space-y-6">
