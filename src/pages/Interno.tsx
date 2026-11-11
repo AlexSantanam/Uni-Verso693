@@ -3639,6 +3639,15 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     updatedAt: new Date().toISOString(),
     credentials: [
       {
+        id: 'asvid-google-matriz',
+        category: 'admin',
+        title: 'Cuenta Matriz Google / Soberanía de Infraestructura Cloud',
+        url: 'https://accounts.google.com',
+        username: 'asvid.uv693@gmail.com',
+        password: 'Asvid2026!',
+        notes: 'Cuenta raíz aislada (Protocolo Cero Secuestro Tecnológico) para asociar repositorio GitHub, Hosting Cloud, NIC Chile y Google Search Console. Permite traspaso total e inmediato de toda la infraestructura cuando el cliente lo requiera.',
+      },
+      {
         id: 'asvid-admin-web',
         category: 'admin',
         title: 'Portal Interno Autoadministrable (/interno)',

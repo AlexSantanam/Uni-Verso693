@@ -3075,6 +3075,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             updatedAt: now,
             credentials: [
               {
+                id: 'asvid-google-matriz',
+                category: 'admin',
+                title: 'Cuenta Matriz Google / Soberanía de Infraestructura Cloud',
+                url: 'https://accounts.google.com',
+                username: 'asvid.uv693@gmail.com',
+                password: 'Asvid2026!',
+                notes: 'Cuenta raíz aislada (Protocolo Cero Secuestro Tecnológico) para asociar repositorio GitHub, Hosting Cloud, NIC Chile y Google Search Console. Permite traspaso total e inmediato de toda la infraestructura cuando el cliente lo requiera.',
+              },
+              {
                 id: 'asvid-admin-web',
                 category: 'admin',
                 title: 'Portal Interno Autoadministrable (/interno)',
@@ -4226,6 +4235,15 @@ ${SITE_URL}/interno#ebs`);
             createdAt: now,
             updatedAt: now,
             credentials: [
+              {
+                id: 'asvid-google-matriz',
+                category: 'admin',
+                title: 'Cuenta Matriz Google / Soberanía de Infraestructura Cloud',
+                url: 'https://accounts.google.com',
+                username: 'asvid.uv693@gmail.com',
+                password: 'Asvid2026!',
+                notes: 'Cuenta raíz aislada (Protocolo Cero Secuestro Tecnológico) para asociar repositorio GitHub, Hosting Cloud, NIC Chile y Google Search Console. Permite traspaso total e inmediato de toda la infraestructura cuando el cliente lo requiera.',
+              },
               {
                 id: 'asvid-admin-web',
                 category: 'admin',
