@@ -3633,7 +3633,7 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
 
   const defaultAsvidData: AdminVault = {
     id: 'vlt-asvid-spa',
-    clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+    clientName: 'Ingeniería y Construcción Asvid SpA (RUT: 77.391.792-2)',
     project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
     clientEmail: 'contacto.asvid@gmail.com',
     updatedAt: new Date().toISOString(),
@@ -3684,7 +3684,7 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
         iva: 23950,
         montoTotal: 150000,
         estado: 'Pagada',
-        notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Cliente: Manuel Videla / Asvid SpA (RUT: 78.521.951-1)',
+        notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Razón Social: Ingeniería y Construcción Asvid SpA · RUT: 77.391.792-2 · Giro: Obras menores de construcción · Dirección: Los Diamantes #740 Cs2, Lote 2, Concón',
       },
     ],
   };

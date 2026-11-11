@@ -3066,7 +3066,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const now = new Date().toISOString();
           vault = {
             id: asvidId,
-            clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+            clientName: 'Ingeniería y Construcción Asvid SpA (RUT: 77.391.792-2)',
             project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
             clientEmail: 'contacto.asvid@gmail.com',
             passwordHash: asvidHash,
@@ -3120,7 +3120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 iva: 23950,
                 montoTotal: 150000,
                 estado: 'pagada',
-                notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Cliente: Manuel Videla / Asvid SpA (RUT: 78.521.951-1)',
+                notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Razón Social: Ingeniería y Construcción Asvid SpA · RUT: 77.391.792-2 · Giro: Obras menores de construcción · Dirección: Los Diamantes #740 Cs2, Lote 2, Concón',
               },
             ],
           };
@@ -4218,7 +4218,7 @@ ${SITE_URL}/interno#ebs`);
           const now = new Date().toISOString();
           const asvidVault: ClientVault = {
             id: asvidId,
-            clientName: 'Asvid SpA — Ingeniería, Obras Civiles y Construcción (RUT: 78.521.951-1)',
+            clientName: 'Ingeniería y Construcción Asvid SpA (RUT: 77.391.792-2)',
             project: 'Plataforma Web Corporativa & Sistema Autoadministrable (Plan Start Oficial)',
             clientEmail: 'contacto.asvid@gmail.com',
             passwordHash: asvidHash,
@@ -4272,7 +4272,7 @@ ${SITE_URL}/interno#ebs`);
                 iva: 23950,
                 montoTotal: 150000,
                 estado: 'Pagada',
-                notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Cliente: Manuel Videla / Asvid SpA (RUT: 78.521.951-1)',
+                notas: 'Plan Start Oficial ($150.000 IVA Inc.) — Razón Social: Ingeniería y Construcción Asvid SpA · RUT: 77.391.792-2 · Giro: Obras menores de construcción · Dirección: Los Diamantes #740 Cs2, Lote 2, Concón',
               },
             ],
           };
