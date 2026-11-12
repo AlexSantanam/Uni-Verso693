@@ -3216,6 +3216,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    if (action === 'vault-client-invoice-save' && req.method === 'POST') {
+      const authHeader = req.headers.authorization ?? '';
+      const sessionToken = authHeader.replace(/^Bearer\s+/i, '').trim();
+      let vaultId = str(body.vaultId, 80);
+      if (sessionToken) {
+        const session = await redis.get<{ vaultId: string; email: string }>(K.vaultSession(sessionToken));
+        if (session?.vaultId) vaultId = session.vaultId;
+      }
+      if (!vaultId) {
+        res.status(401).json({ error: 'Sesión no válida.' });
+        return;
+      }
+      const vault = await redis.get<ClientVault>(K.vault(vaultId));
+      if (!vault) {
+        res.status(404).json({ error: 'Bóveda no encontrada.' });
+        return;
+      }
+      const incoming = Array.isArray(body.invoices) ? body.invoices : [];
+      const sanitizedInvoices: VaultInvoice[] = incoming.map((inv: any) => ({
+        id: str(inv.id, 60) || randomUUID(),
+        folio: str(inv.folio, 60) || 'F-0001',
+        tipoDte: str(inv.tipoDte, 80) || 'Factura Electrónica (33)',
+        concepto: str(inv.concepto, 500),
+        fechaEmision: str(inv.fechaEmision, 30) || new Date().toISOString().slice(0, 10),
+        montoNeto: Number(inv.montoNeto) || 0,
+        iva: Number(inv.iva) || 0,
+        montoTotal: Number(inv.montoTotal) || 0,
+        estado: (['Pagada', 'Pendiente', 'Anulada', 'pagada', 'pendiente', 'anulada'].includes(inv.estado) ? inv.estado : 'pagada') as any,
+        pdfDataUrl: typeof inv.pdfDataUrl === 'string' && inv.pdfDataUrl.startsWith('data:') ? inv.pdfDataUrl : undefined,
+        pdfFileName: str(inv.pdfFileName, 180) || undefined,
+        notas: str(inv.notas, 500) || undefined,
+      }));
+      const updated: ClientVault = {
+        ...vault,
+        invoices: sanitizedInvoices,
+        updatedAt: new Date().toISOString(),
+      };
+      await redis.set(K.vault(vault.id), updated);
+      res.status(200).json({
+        ok: true,
+        vault: {
+          id: updated.id,
+          clientName: updated.clientName,
+          project: updated.project,
+          clientEmail: updated.clientEmail,
+          credentials: updated.credentials ?? [],
+          invoices: updated.invoices ?? [],
+          updatedAt: updated.updatedAt,
+        },
+      });
+      return;
+    }
+
     // ---------- public: interactive EBS (private link, 30 days) ----------
     if (action === 'ebs-view' || action === 'ebs-advance' || action === 'ebs-view-pdf') {
       const token = str(action === 'ebs-advance' ? body.token : req.query.token, 64);

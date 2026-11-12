@@ -26,6 +26,9 @@ import {
   CheckCircle2,
   Clock,
   Building2,
+  Upload,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { OnboardingModule } from './Onboarding';
 
@@ -249,6 +252,105 @@ export const Boveda: React.FC = () => {
   const [search, setSearch] = useState('');
   const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [uploadingInvId, setUploadingInvId] = useState<string | null>(null);
+  const [showNewInvoiceForm, setShowNewInvoiceForm] = useState(false);
+  const [newInv, setNewInv] = useState<{
+    folio: string;
+    tipoDte: VaultInvoice['tipoDte'];
+    concepto: string;
+    fechaEmision: string;
+    montoTotal: number;
+    estado: VaultInvoice['estado'];
+    notas: string;
+    pdfDataUrl?: string;
+    pdfFileName?: string;
+  }>({
+    folio: '',
+    tipoDte: 'Factura Electrónica (33)',
+    concepto: '',
+    fechaEmision: new Date().toISOString().slice(0, 10),
+    montoTotal: 150000,
+    estado: 'pagada',
+    notas: '',
+  });
+
+  const persistInvoicesToVault = async (nextInvoices: VaultInvoice[]) => {
+    if (!vault) return;
+    setVault({ ...vault, invoices: nextInvoices, updatedAt: new Date().toISOString() });
+    try {
+      const res = await fetch('/api/admin?action=vault-client-invoice-save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
+        },
+        body: JSON.stringify({
+          vaultId: vault.id,
+          invoices: nextInvoices,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.vault) setVault(data.vault);
+      }
+    } catch (e) {
+      console.error('Error guardando factura en bóveda:', e);
+    }
+  };
+
+  const handleAttachPdfToExistingInvoice = (invId: string, file: File | null) => {
+    if (!file || !vault) return;
+    if (file.size > 4.5 * 1024 * 1024) {
+      alert('El archivo PDF supera el límite de 4.5 MB.');
+      return;
+    }
+    setUploadingInvId(invId);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+      const nextInvoices = (vault.invoices || []).map((inv) =>
+        inv.id === invId ? { ...inv, pdfDataUrl: dataUrl, pdfFileName: file.name } : inv
+      );
+      await persistInvoicesToVault(nextInvoices);
+      setUploadingInvId(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCreateNewInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vault) return;
+    const total = Number(newInv.montoTotal) || 0;
+    const isExenta = newInv.tipoDte.includes('Exenta');
+    const neto = isExenta ? total : Math.round(total / 1.19);
+    const iva = isExenta ? 0 : total - neto;
+    const created: VaultInvoice = {
+      id: `inv-${Date.now()}`,
+      folio: newInv.folio.trim() || `F-000${(vault.invoices?.length || 0) + 1}`,
+      tipoDte: newInv.tipoDte,
+      concepto: newInv.concepto.trim() || 'Servicios de Ingeniería y Desarrollo Digital',
+      fechaEmision: newInv.fechaEmision || new Date().toISOString().slice(0, 10),
+      montoNeto: neto,
+      iva,
+      montoTotal: total,
+      estado: newInv.estado,
+      notas: newInv.notas.trim() || undefined,
+      pdfDataUrl: newInv.pdfDataUrl,
+      pdfFileName: newInv.pdfFileName,
+    };
+    const nextInvoices = [created, ...(vault.invoices || [])];
+    await persistInvoicesToVault(nextInvoices);
+    setShowNewInvoiceForm(false);
+    setNewInv({
+      folio: '',
+      tipoDte: 'Factura Electrónica (33)',
+      concepto: '',
+      fechaEmision: new Date().toISOString().slice(0, 10),
+      montoTotal: 150000,
+      estado: 'pagada',
+      notas: '',
+    });
+  };
 
   // Auto-fetch vault if sessionToken exists
   useEffect(() => {
@@ -747,13 +849,137 @@ export const Boveda: React.FC = () => {
                         Custodia permanente de tus documentos tributarios electrónicos (DTE) y comprobantes emitidos por UNIVERSO693 SpA.
                       </p>
                     </div>
-                    <div className="text-left sm:text-right bg-white/[0.03] sm:bg-transparent p-4 sm:p-0 rounded-2xl border border-white/5 sm:border-none">
-                      <span className="text-xs text-slate-400 block">Documentos Registrados</span>
-                      <span className="text-3xl font-black text-emerald-400">{vault.invoices?.length || 0}</span>
-                      <span className="text-[11px] text-slate-500 block mt-1">Respaldo SII verificado</span>
+                    <div className="flex flex-col sm:items-end gap-3">
+                      <div className="text-left sm:text-right bg-white/[0.03] sm:bg-transparent p-4 sm:p-0 rounded-2xl border border-white/5 sm:border-none">
+                        <span className="text-xs text-slate-400 block">Documentos Registrados</span>
+                        <span className="text-3xl font-black text-emerald-400">{vault.invoices?.length || 0}</span>
+                        <span className="text-[11px] text-slate-500 block mt-1">Respaldo SII verificado</span>
+                      </div>
+                      <button
+                        onClick={() => setShowNewInvoiceForm((prev) => !prev)}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 transition-all"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>{showNewInvoiceForm ? 'Cerrar Formulario' : '+ Cargar Nueva Factura Electrónica (PDF SII)'}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
+
+                {showNewInvoiceForm && (
+                  <form
+                    onSubmit={handleCreateNewInvoice}
+                    className="bg-[#0c1827] border border-emerald-500/30 rounded-3xl p-6 space-y-4 shadow-xl"
+                  >
+                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                      <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        Cargar Nueva Factura Electrónica / DTE (SII) en la Bóveda
+                      </h3>
+                      <span className="text-[11px] text-slate-400">Quedará guardada de forma permanente en esta bóveda</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Folio SII</label>
+                        <input
+                          type="text"
+                          value={newInv.folio}
+                          onChange={(e) => setNewInv({ ...newInv, folio: e.target.value })}
+                          placeholder="Ej: F-0002"
+                          required
+                          className="w-full px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tipo de Documento</label>
+                        <select
+                          value={newInv.tipoDte}
+                          onChange={(e) => setNewInv({ ...newInv, tipoDte: e.target.value as VaultInvoice['tipoDte'] })}
+                          className="w-full px-3 py-2 bg-[#0a1420] border border-white/10 rounded-xl text-xs text-white"
+                        >
+                          <option value="Factura Electrónica (33)">Factura Electrónica (33)</option>
+                          <option value="Factura Exenta (34)">Factura Exenta (34)</option>
+                          <option value="Boleta Electrónica (39)">Boleta Electrónica (39)</option>
+                          <option value="Nota de Crédito (61)">Nota de Crédito (61)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Fecha Emisión</label>
+                        <input
+                          type="date"
+                          value={newInv.fechaEmision}
+                          onChange={(e) => setNewInv({ ...newInv, fechaEmision: e.target.value })}
+                          className="w-full px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Monto Total CLP</label>
+                        <input
+                          type="number"
+                          value={newInv.montoTotal}
+                          onChange={(e) => setNewInv({ ...newInv, montoTotal: Number(e.target.value) })}
+                          className="w-full px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Concepto / Glosa del Servicio</label>
+                        <input
+                          type="text"
+                          value={newInv.concepto}
+                          onChange={(e) => setNewInv({ ...newInv, concepto: e.target.value })}
+                          placeholder="Ej: Plan Start Oficial — Plataforma Web Corporativa AsviD SpA"
+                          required
+                          className="w-full px-3 py-2 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1">Archivo PDF Oficial (SII)</label>
+                        <label className="w-full px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 font-semibold flex items-center justify-center gap-2 cursor-pointer transition-colors">
+                          <Upload className="h-3.5 w-3.5" />
+                          <span className="truncate">{newInv.pdfFileName || 'Seleccionar PDF / Imagen...'}</span>
+                          <input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                setNewInv((prev) => ({
+                                  ...prev,
+                                  pdfDataUrl: typeof reader.result === 'string' ? reader.result : undefined,
+                                  pdfFileName: f.name,
+                                }));
+                              };
+                              reader.readAsDataURL(f);
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowNewInvoiceForm(false)}
+                        className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20"
+                      >
+                        Guardar Factura en la Bóveda
+                      </button>
+                    </div>
+                  </form>
+                )}
 
                 {/* Invoices List */}
                 {(!vault.invoices || vault.invoices.length === 0) ? (
@@ -835,11 +1061,25 @@ export const Boveda: React.FC = () => {
                                 <Download className="h-4 w-4" />
                                 <span>Descargar Factura PDF (SII)</span>
                               </a>
-                            ) : (
-                              <span className="text-[11px] text-slate-400 bg-white/[0.03] border border-white/10 px-3 py-1.5 rounded-lg text-center">
-                                PDF original SII pronto disponible
+                            ) : null}
+
+                            <label className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 cursor-pointer transition-colors">
+                              <Upload className="h-3.5 w-3.5" />
+                              <span>
+                                {uploadingInvId === inv.id
+                                  ? 'Guardando PDF...'
+                                  : inv.pdfDataUrl
+                                  ? 'Reemplazar PDF Oficial (SII)'
+                                  : 'Subir Factura PDF (SII)'}
                               </span>
-                            )}
+                              <input
+                                type="file"
+                                accept="application/pdf,image/*"
+                                className="hidden"
+                                onChange={(e) => handleAttachPdfToExistingInvoice(inv.id, e.target.files?.[0] || null)}
+                              />
+                            </label>
+
                             <button
                               onClick={() => handlePrintInvoiceVoucher(inv)}
                               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-colors"
