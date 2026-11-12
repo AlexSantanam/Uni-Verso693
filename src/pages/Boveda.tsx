@@ -134,15 +134,16 @@ const ASVID_VAULT: ClientVaultData = {
   ],
   invoices: [
     {
-      id: 'inv-asvid-001',
-      folio: 'F-0001',
+      id: 'inv-1794496455280',
+      folio: '12',
       tipoDte: 'Factura Electrónica (33)',
-      concepto: 'Plan Start Oficial — Diseño y Desarrollo Plataforma Web Corporativa AsviD SpA + Portal Autoadministrable (/interno) + Hosting Cloud 1 Año + Dominio .CL',
-      fechaEmision: new Date().toISOString().slice(0, 10),
+      concepto: 'Creación Pagina Web',
+      fechaEmision: '2026-11-11',
       montoNeto: 126050,
       iva: 23950,
       montoTotal: 150000,
       estado: 'pagada',
+      pdfFileName: 'Asvid-Fact12.pdf',
       notas: 'Razón Social: Ingeniería y Construcción Asvid SpA · RUT: 77.391.792-2 · Giro: Obras menores de construcción · Dirección: Los Diamantes #740 Cs2, Lote 2, Concón · DTE: contacto.asvid@gmail.com',
     },
   ],
@@ -350,6 +351,13 @@ export const Boveda: React.FC = () => {
       estado: 'pagada',
       notas: '',
     });
+  };
+
+  const handleDeleteInvoice = async (invId: string, folio: string) => {
+    if (!vault) return;
+    if (!window.confirm(`¿Estás seguro de eliminar el documento Folio "${folio}" de la bóveda?`)) return;
+    const nextInvoices = (vault.invoices || []).filter((inv) => inv.id !== invId);
+    await persistInvoicesToVault(nextInvoices);
   };
 
   // Auto-fetch vault if sessionToken exists
@@ -860,7 +868,7 @@ export const Boveda: React.FC = () => {
                         className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 transition-all"
                       >
                         <Plus className="h-4 w-4" />
-                        <span>{showNewInvoiceForm ? 'Cerrar Formulario' : '+ Cargar Nueva Factura Electrónica (PDF SII)'}</span>
+                        <span>{showNewInvoiceForm ? 'Cerrar Formulario' : 'Cargar Nueva Factura Electrónica (PDF SII)'}</span>
                       </button>
                     </div>
                   </div>
@@ -1086,6 +1094,16 @@ export const Boveda: React.FC = () => {
                             >
                               <Printer className="h-3.5 w-3.5 text-cyan-400" />
                               <span>Ver / Imprimir Comprobante Tributario</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteInvoice(inv.id, inv.folio)}
+                              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/25 transition-colors"
+                              title="Eliminar este documento de la bóveda"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                              <span>Eliminar Documento</span>
                             </button>
                           </div>
                         </div>

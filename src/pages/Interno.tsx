@@ -3695,10 +3695,10 @@ const BovedaAdmin = ({ api }: { api: <T = any>(path: string, init?: RequestInit)
     ],
     invoices: [
       {
-        id: 'inv-asvid-001',
-        folio: 'F-0001',
-        tipoDte: 'Factura Electrónica / Exenta (SII)',
-        concepto: 'Desarrollo Plataforma Web Corporativa Plan Start Oficial + Sistema Autoadministrable + Hosting Cloud & Dominio .CL 1 Año — AsviD SpA',
+        id: 'inv-1794496455280',
+        folio: '12',
+        tipoDte: 'Factura Electrónica (33)',
+        concepto: 'Creación Pagina Web',
         fechaEmision: '2026-11-11',
         montoNeto: 126050,
         iva: 23950,
