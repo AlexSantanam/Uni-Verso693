@@ -34,37 +34,70 @@ interface PresetItem {
 
 const ITEMS: PresetItem[] = [
   {
+    id: 'sokify-esencial-mensual',
+    title: 'Zokify · Plan Esencial (Mensual)',
+    category: 'sokify',
+    amount: 5900,
+    amountUsd: 6,
+    description: 'Menú Digital QR Ilimitado, recepción de pedidos 0% comisión y POS esencial (tras 3 meses gratis).',
+    frequency: 'CLP / mes ($6 USD)',
+    badge: '3 Meses $0',
+    icon: '🌱',
+  },
+  {
+    id: 'sokify-esencial-anual',
+    title: 'Zokify · Plan Esencial (Anual)',
+    category: 'sokify',
+    amount: 39900,
+    amountUsd: 39,
+    description: '1 año completo de Plan Esencial. Equivale a solo $3.325 CLP / $3.25 USD al mes (Ahorra 44%).',
+    frequency: 'CLP / año ($39 USD)',
+    badge: 'Ahorro 44%',
+    icon: '✨',
+  },
+  {
     id: 'sokify-mensual',
-    title: 'Sokify · Plan Mensual',
+    title: 'Zokify · Plan Avanzado (Mensual)',
     category: 'sokify',
     amount: 15900,
     amountUsd: 16,
-    description: 'Sistema Operativo Gastronómico (Menú QR, KDS Cocina, POS y pedidos ilimitados).',
+    description: 'Sistema Operativo Gastronómico completo (Menú QR, KDS Cocina en vivo, POS salón/delivery y caja).',
     frequency: 'CLP / mes ($16 USD)',
-    badge: 'Popular',
+    badge: 'Más Elegido',
     icon: '🍽️',
   },
   {
     id: 'sokify-anual',
-    title: 'Sokify · Plan Anual Fundador',
+    title: 'Zokify · Plan Avanzado (Anual)',
     category: 'sokify',
-    amount: 69000,
+    amount: 69900,
     amountUsd: 69,
-    description: '1 año completo de Sokify todo incluido. Equivale a solo $5.750 CLP / $5.75 USD al mes.',
+    description: '1 año completo de Plan Avanzado todo incluido. Equivale a solo $5.825 CLP / $5.75 USD al mes.',
     frequency: 'CLP / año ($69 USD)',
-    badge: 'Ahorro 64%',
+    badge: 'Ahorro 63%',
     icon: '💎',
   },
   {
-    id: 'sokify-anual-ia',
-    title: 'Sokify · Anual + Copiloto IA WhatsApp',
+    id: 'sokify-pro-mensual',
+    title: 'Zokify · Plan Pro (Mensual)',
     category: 'sokify',
-    amount: 88900,
-    amountUsd: 89,
-    description: '1 año de sistema completo + Copiloto Sofi IA 24/7 atendiendo tu WhatsApp.',
-    frequency: 'CLP / año ($89 USD)',
-    badge: 'Pack Completo',
-    icon: '🤖',
+    amount: 24900,
+    amountUsd: 25,
+    description: 'Todo el Plan Avanzado sin límites + Multi-caja, reportes avanzados, CRM y Soporte VIP 24/7.',
+    frequency: 'CLP / mes ($25 USD)',
+    badge: 'Full Pro',
+    icon: '🚀',
+  },
+  {
+    id: 'sokify-pro-anual',
+    title: 'Zokify · Plan Pro (Anual)',
+    category: 'sokify',
+    amount: 119900,
+    amountUsd: 119,
+    description: '1 año completo de Plan Pro VIP. Equivale a solo $9.990 CLP / $9.90 USD al mes (Ahorra 60%).',
+    frequency: 'CLP / año ($119 USD)',
+    badge: 'Ahorro 60%',
+    icon: '👑',
   },
   {
     id: 'sokify-dominio',
@@ -205,7 +238,7 @@ export const Pago: React.FC = () => {
 
   const handleCopyBankDetails = () => {
     const text = `UNIVERSO693 SpA
-RUT: 77.834.693-1
+RUT: 78.521.951-1
 Banco Santander
 Cuenta Corriente: 84729104
 Email: contacto@universo693.com
@@ -664,7 +697,7 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
                         <span className="text-slate-400">Razón Social:</span> <strong className="text-white">UNIVERSO693 SpA</strong>
                       </div>
                       <div>
-                        <span className="text-slate-400">RUT:</span> <strong className="text-white">77.834.693-1</strong>
+                        <span className="text-slate-400">RUT:</span> <strong className="text-white">78.521.951-1</strong>
                       </div>
                       <div>
                         <span className="text-slate-400">Banco:</span> <strong className="text-white">Banco Santander Chile</strong>
