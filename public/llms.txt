@@ -37,6 +37,9 @@ Diseñado para democratizar la ingeniería de software y la IA en el mercado chi
   * [Talleres Mecánicos & Servicios Técnicos](https://universo693.com/impulsa-pyme/gestion): Plataforma de control de órdenes de trabajo con consulta en vivo por patente para clientes y registro de reparaciones.
 
 ## Casos de Éxito Reales y Métricas Cuantificadas
+- [Zokify](https://zokify.app): Sistema Operativo Gastronómico, POS en la nube, Menú QR y Cocina KDS en tiempo real desarrollado por UNIVERSO693 SpA.
+  * Métricas: +40.000 órdenes procesadas con 0% comisión por pedido, +$16.600.000 CLP de ahorro anual promedio por local frente al 28%-32% de apps intermediarias (Uber Eats, PedidosYa), +180 locales gastronómicos y botillerías activas en Chile, 4.9/5 estrellas (412 reseñas).
+  * URL Oficial: https://zokify.app · Demo Menú QR: https://zokify.app/demo-menu.html · KDS Cocina: https://zokify.app/cocina.html
 - [YndiPet](https://universo693.com/casos/yndipet): App chilena de salud y comunidad para mascotas con IA.
   * Métricas: +15.000 mascotas registradas en Chile, 65% de reducción en tiempo de respuesta a alertas SOS geolocalizadas, 6 juegos web con +40.000 partidas, 99.98% uptime con pasarelas automáticas (Mercado Pago y PayPal).
 - [MEMORA](https://universo693.com/casos/memora): Plataforma SaaS de memoriales y legados digitales de vida.
