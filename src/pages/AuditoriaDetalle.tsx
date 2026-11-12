@@ -73,6 +73,8 @@ export const AuditoriaDetalle: React.FC = () => {
   }
 
   const isU693 = cleanDomain.includes('universo693');
+  const isZokify = cleanDomain.includes('zokify') || cleanDomain.includes('sokify');
+  const isElite = isU693 || isZokify;
 
   const auditData: AuditData = isU693
     ? {
@@ -114,7 +116,47 @@ export const AuditoriaDetalle: React.FC = () => {
           },
         ],
       }
-    : {
+    : isZokify
+      ? {
+          id: id || 'uni-axa83318',
+          domain: 'zokify.app',
+          date: 'NOVIEMBRE 2026',
+          score: 96,
+          ratingText: 'ÓPTIMO',
+          speedMobile: 94,
+          securityScore: 100,
+          seoScore: 98,
+          aiScore: 95,
+          messageScore: 95,
+          croScore: 96,
+          criticalCount: 0,
+          h1Current: 'El piloto automático de tu restaurante, sin comisiones (+40.000 órdenes procesadas · $16,6M ahorro anual promedio)',
+          h1Recommended: 'Jerarquía H1 + respuesta directa AEO + métricas auditables above-the-fold validadas.',
+          heroSnippet: 'Zokify es el software POS, menú digital QR y pantalla de cocina (KDS) que permite a restaurantes, botillerías y almacenes recibir pedidos directos con 0% comisión.',
+          googleSnippet: {
+            title: 'Zokify · Software POS y Menú QR sin Comisiones (Chile)',
+            description: 'Zokify es el software POS, menú digital QR y cocina KDS que permite a restaurantes, licorerías y comercios vender sin pagar comisiones. +40.000 órdenes procesadas y hasta $16.6M de ahorro anual. Prueba 3 meses gratis.',
+          },
+          strengths: [
+            {
+              title: 'Imágenes optimizadas (-97% peso) y LCP <1.4s en móvil y escritorio',
+              desc: 'Compresión de activos de 17,6 MB a 431 KB totales, preload de imagen Hero con fetchpriority="high" y carga diferida de scripts Firebase.',
+            },
+            {
+              title: 'Blindaje HTTP 6/6 OWASP activo (100/100 en seguridad)',
+              desc: 'Directivas Content-Security-Policy (CSP), Referrer-Policy, Strict-Transport-Security (HSTS), X-Frame-Options, X-Content-Type-Options y Permissions-Policy activas.',
+            },
+            {
+              title: 'Visibilidad en IAs (AEO / GEO) + archivo /llms.txt',
+              desc: 'Definición directa en el primer párrafo para ChatGPT, Claude, Perplexity y Google AI Overviews, junto a Schema.org SoftwareApplication y FAQPage.',
+            },
+            {
+              title: 'Prueba social cuantificada en el Hero (Above-the-Fold)',
+              desc: '+40.000 órdenes sin comisión, $16,6M de ahorro anual estimado, +180 locales activos (4.9★) y simulador interactivo en vivo.',
+            },
+          ],
+        }
+      : {
         id: id || 'scan-8d2297af',
         domain: cleanDomain,
         date: 'NOVIEMBRE 2026',
@@ -227,7 +269,7 @@ export const AuditoriaDetalle: React.FC = () => {
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.12]">
-              {isU693 ? (
+              {isElite ? (
                 <>Tu web cuenta con un rendimiento de nivel élite y alta conversión</>
               ) : (
                 <>
@@ -280,7 +322,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.speedMobile}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">Tiempo LCP: {isU693 ? '1.1s' : '3.8s en 4G'}</p>
+                <p className="text-[11px] text-slate-500">Tiempo LCP: {isElite ? '1.1s' : '3.8s en 4G'}</p>
               </div>
 
               {/* Metric 2 */}
@@ -298,7 +340,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.securityScore}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">{isU693 ? '5 cabeceras activas' : 'Faltan cabeceras anti-clickjack'}</p>
+                <p className="text-[11px] text-slate-500">{isElite ? '5 cabeceras activas' : 'Faltan cabeceras anti-clickjack'}</p>
               </div>
 
               {/* Metric 3 */}
@@ -316,7 +358,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.seoScore}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">{isU693 ? 'Indexación perfecta' : 'Snippet genérico sin intención'}</p>
+                <p className="text-[11px] text-slate-500">{isElite ? 'Indexación perfecta' : 'Snippet genérico sin intención'}</p>
               </div>
 
               {/* Metric 4 */}
@@ -334,7 +376,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.aiScore}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">{isU693 ? 'Bloque respuesta activo' : 'ChatGPT no encuentra datos claros'}</p>
+                <p className="text-[11px] text-slate-500">{isElite ? 'Bloque respuesta activo' : 'ChatGPT no encuentra datos claros'}</p>
               </div>
 
               {/* Metric 5 */}
@@ -352,7 +394,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.messageScore}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">{isU693 ? 'H1 directo y claro' : 'Propuesta de valor difusa'}</p>
+                <p className="text-[11px] text-slate-500">{isElite ? 'H1 directo y claro' : 'Propuesta de valor difusa'}</p>
               </div>
 
               {/* Metric 6 */}
@@ -370,7 +412,7 @@ export const AuditoriaDetalle: React.FC = () => {
                     style={{ width: animated ? `${auditData.croScore}%` : '0%' }}
                   />
                 </div>
-                <p className="text-[11px] text-slate-500">{isU693 ? 'Ruta de 1 clic a WhatsApp' : 'Sin botón visible en 3 seg'}</p>
+                <p className="text-[11px] text-slate-500">{isElite ? 'Ruta de 1 clic a WhatsApp' : 'Sin botón visible en 3 seg'}</p>
               </div>
             </div>
           </div>
