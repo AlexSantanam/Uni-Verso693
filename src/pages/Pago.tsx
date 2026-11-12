@@ -312,7 +312,7 @@ Asunto: Pago ${finalTitle} (${restaurantSlug || 'Web'})`;
             </div>
             {restaurantSlug ? (
               <a
-                href={`https://sokify.app/panel.html?r=${encodeURIComponent(restaurantSlug)}`}
+                href={`https://zokify.app/panel.html?r=${encodeURIComponent(restaurantSlug)}`}
                 className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition"
               >
                 Volver a mi Panel Sokify &rarr;

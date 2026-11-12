@@ -82,12 +82,12 @@ export const SokifySpotlight: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <a
-                  href="https://sokify.app"
+                  href="https://zokify.app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02]"
                 >
-                  {es ? 'Ir a Sokify.app (3 Meses Gratis)' : 'Visit Sokify.app (3 Months Free)'}
+                  {es ? 'Ir a Zokify.app (3 Meses Gratis)' : 'Visit Zokify.app (3 Months Free)'}
                   <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
 

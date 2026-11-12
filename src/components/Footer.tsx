@@ -73,8 +73,8 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="https://sokify.app" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 text-purple-200 transition-colors flex items-center gap-1.5 font-medium">
-                  <span>🍽️</span> Sokify.app (FoodTech SaaS)
+                <a href="https://zokify.app" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 text-purple-200 transition-colors flex items-center gap-1.5 font-medium">
+                  <span>🍽️</span> Zokify.app (FoodTech SaaS)
                 </a>
               </li>
               <li>

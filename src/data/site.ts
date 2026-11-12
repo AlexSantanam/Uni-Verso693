@@ -364,40 +364,40 @@ export interface CaseStudy {
 export const cases: CaseStudy[] = [
   {
     slug: 'sokify',
-    client: 'Sokify',
+    client: 'Zokify',
     sector: { es: 'SaaS Gastronómico & Operaciones en Vivo', en: 'FoodTech SaaS & Live Kitchen Operations' },
     title: {
-      es: 'Sokify: El sistema operativo inteligente para restaurantes',
-      en: 'Sokify: The intelligent operating system for restaurants',
+      es: 'Zokify: El sistema operativo inteligente para restaurantes y comercios',
+      en: 'Zokify: The intelligent operating system for restaurants & stores',
     },
     challenge: {
-      es: 'Los locales gastronómicos, bares y cafeterías en Chile perdían hasta un 30% de cada pedido en comisiones de plataformas intermediarias, además de lidiar con comandas en papel desordenadas, retrasos en cocina y nula fidelización directa de sus clientes.',
-      en: 'Restaurants, bars, and cafes in Chile were losing up to 30% of every sale to intermediary platform commissions, while struggling with chaotic paper tickets, kitchen delays, and zero direct client retention.',
+      es: 'Los locales gastronómicos, botillerías y cafeterías en Chile perdían hasta un 30% de cada pedido en comisiones de plataformas intermediarias, además de lidiar con comandas en papel desordenadas, retrasos en cocina y nula fidelización directa de sus clientes.',
+      en: 'Restaurants, bars, liquor stores, and cafes in Chile were losing up to 30% of every sale to intermediary platform commissions, while struggling with chaotic paper tickets, kitchen delays, and zero direct client retention.',
     },
     solution: {
-      es: 'Diseñamos y desarrollamos Sokify como un ecosistema en la nube de alta disponibilidad: Menú interactivo QR sincronizado en tiempo real, pantalla de cocina (KDS) con alertas sonoras inmediatas vía Web Audio API, pedidos directos por WhatsApp, control de caja/POS y asistente Sofi IA para atención 24/7 sin intermediarios.',
-      en: 'We designed and engineered Sokify as a high-availability cloud ecosystem: real-time synchronized QR interactive menus, live kitchen display system (KDS) with instant Web Audio sound alerts, direct WhatsApp ordering, cash/POS controls, and Sofi AI assistant for 24/7 automated support.',
+      es: 'Diseñamos y desarrollamos Zokify como un ecosistema en la nube de alta disponibilidad: Menú interactivo QR sincronizado en tiempo real, pantalla de cocina (KDS) con alertas sonoras inmediatas vía Web Audio API, pedidos directos por WhatsApp, control de caja/POS y asistente Sofi IA para atención 24/7 sin intermediarios.',
+      en: 'We designed and engineered Zokify as a high-availability cloud ecosystem: real-time synchronized QR interactive menus, live kitchen display system (KDS) with instant Web Audio sound alerts, direct WhatsApp ordering, cash/POS controls, and Sofi AI assistant for 24/7 automated support.',
     },
     results: {
       es: [
         '0% comisiones por venta en pedidos directos (ahorro estimado de +$16M CLP/año)',
         'Sincronización instantánea (<100ms) entre el celular del comensal y el KDS de cocina',
         'Gestión unificada de comanda: mesa, retiro en barra y delivery directo propio',
-        'Modelo de masificación de entrada con 3 meses 100% gratuitos y planes desde $15.900/mes',
+        'Modelo de masificación de entrada con 3 meses 100% gratuitos y planes desde $5.900/mes ($39.900/año)',
       ],
       en: [
         '0% sales commissions on direct orders (estimated savings of +$16M CLP/year)',
         'Instant sync (<100ms) between customer smartphones and kitchen KDS display',
         'Unified order routing: dine-in table, bar takeout, and direct in-house delivery',
-        'High-penetration acquisition model with 3 months 100% free and plans from $15,900 CLP/mo',
+        'High-penetration acquisition model with 3 months 100% free and plans from $5,900 CLP/mo ($39,900/yr)',
       ],
     },
     tags: ['React', 'Firebase Realtime', 'Web Audio API', 'KDS Cocina', 'SaaS', '0% Comisiones', 'PWA'],
-    url: 'https://sokify.app',
+    url: 'https://zokify.app',
     links: [
-      { label: { es: 'Ingresar a Sokify.app', en: 'Open Sokify.app' }, url: 'https://sokify.app' },
-      { label: { es: 'Demo Menú QR', en: 'Live QR Menu Demo' }, url: 'https://sokify.app/menu.html?demo=1' },
-      { label: { es: 'Demo Pantalla Cocina (KDS)', en: 'Kitchen KDS Demo' }, url: 'https://sokify.app/cocina.html?demo=1' },
+      { label: { es: 'Ingresar a Zokify.app', en: 'Open Zokify.app' }, url: 'https://zokify.app' },
+      { label: { es: 'Demo Menú QR', en: 'Live QR Menu Demo' }, url: 'https://zokify.app/demo-menu.html' },
+      { label: { es: 'Demo Pantalla Cocina (KDS)', en: 'Kitchen KDS Demo' }, url: 'https://zokify.app/cocina.html' },
     ],
     visual: 'sokify',
     features: [
