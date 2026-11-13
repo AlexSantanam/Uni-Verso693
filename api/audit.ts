@@ -10,11 +10,16 @@ let redis: Redis | null = null;
 let perIp: Ratelimit | null = null;
 let daily: Ratelimit | null = null;
 
+const CACHE_DOMAIN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 días (1 semana)
+const CACHE_ID_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 días para enlaces permanentes
+
 try {
   if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
     redis = Redis.fromEnv();
-    perIp = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 h'), prefix: 'u693AuditIp' });
-    daily = new Ratelimit({ redis, limiter: Ratelimit.fixedWindow(150, '1 d'), prefix: 'u693AuditDay' });
+    // Máximo 5 escaneos nuevos por IP cada 1 hora
+    perIp = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 h'), prefix: 'u693AuditIp' });
+    // Máximo 80 escaneos nuevos diarios totales
+    daily = new Ratelimit({ redis, limiter: Ratelimit.fixedWindow(80, '1 d'), prefix: 'u693AuditDay' });
   }
 } catch (e) {
   console.warn('Redis init bypassed or failed', e);
@@ -66,6 +71,8 @@ export interface RealAuditData {
   date: string;
   score: number;
   ratingText: 'CRÍTICO' | 'MEJORABLE' | 'BUENO' | 'ÓPTIMO';
+  cached?: boolean;
+  cachedAt?: string;
   speedMobile: number;
   securityScore: number;
   seoScore: number;
@@ -593,31 +600,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 1. Manejo de GET (recuperar auditoría por ID o consultar dominio en vivo)
+  // 1. Manejo de GET (recuperar auditoría por ID o consultar dominio con caché de 7 días)
   if (req.method === 'GET') {
     const auditId = (req.query.id as string || '').trim();
     const domainQuery = (req.query.domain as string || req.query.d as string || '').trim();
+    const cleanHost = domainQuery.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].trim();
 
-    // Buscar en caché de Redis por ID
+    // 1.1 Buscar en caché de Redis por ID
     if (auditId && redis) {
       try {
         const cached = await redis.get<RealAuditData | string>(`u693:audit:${auditId}`);
         if (cached) {
           const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached;
+          parsed.cached = true;
           res.status(200).json(parsed);
           return;
         }
       } catch (err) {
-        console.error('Error reading from redis', err);
+        console.error('Error reading audit by id from redis', err);
       }
     }
 
-    // Si no está por ID pero viene un dominio, auditar en vivo
-    if (domainQuery) {
+    // 1.2 Buscar en caché por dominio (vigencia: 7 días por empresa)
+    if (cleanHost && redis) {
       try {
-        const audit = await performDeepAudit(domainQuery, auditId || undefined);
+        const cachedDomain = await redis.get<RealAuditData | string>(`u693:audit:domain:${cleanHost}`);
+        if (cachedDomain) {
+          const parsed = typeof cachedDomain === 'string' ? JSON.parse(cachedDomain) : cachedDomain;
+          parsed.cached = true;
+          res.status(200).json(parsed);
+          return;
+        }
+      } catch (err) {
+        console.error('Error reading audit by domain from redis', err);
+      }
+    }
+
+    // 1.3 Si no está en caché de los últimos 7 días, auditar en vivo
+    if (cleanHost) {
+      try {
+        const audit = await performDeepAudit(cleanHost, auditId || undefined);
         if (redis) {
-          await redis.set(`u693:audit:${audit.id}`, JSON.stringify(audit), { ex: 60 * 60 * 24 * 30 });
+          // Guardar por ID (30 días) y por Dominio (7 días de vigencia)
+          await Promise.all([
+            redis.set(`u693:audit:${audit.id}`, JSON.stringify(audit), { ex: CACHE_ID_TTL_SECONDS }),
+            redis.set(`u693:audit:domain:${cleanHost}`, JSON.stringify(audit), { ex: CACHE_DOMAIN_TTL_SECONDS }),
+          ]);
         }
         res.status(200).json(audit);
         return;
@@ -631,7 +659,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 2. Manejo de POST (crear auditoría desde el formulario de la landing)
+  // 2. Manejo de POST (crear o recuperar auditoría desde la landing)
   if (req.method === 'POST') {
     const body = (req.body ?? {}) as {
       url?: string;
@@ -658,12 +686,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // Rate limiting básico
+    const cleanHost = target.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].trim();
+
+    // 2.1 Verificación de caché por Empresa (1 vez por semana por dominio)
+    // Si ya fue auditada en los últimos 7 días, se devuelve de inmediato SIN gastar cuota de IP ni tokens
+    if (redis && cleanHost) {
+      try {
+        const cachedDomain = await redis.get<RealAuditData | string>(`u693:audit:domain:${cleanHost}`);
+        if (cachedDomain) {
+          const parsed: RealAuditData = typeof cachedDomain === 'string' ? JSON.parse(cachedDomain) : cachedDomain;
+          parsed.cached = true;
+
+          // Registrar nuevo lead si vino con email
+          if (email) {
+            const leadId = `lead-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+            await redis.set(`u693:lead:${leadId}`, {
+              id: leadId,
+              status: 'nuevo',
+              createdAt: new Date().toISOString(),
+              source: 'uniscan_cached',
+              name: fullName,
+              email,
+              phone,
+              url: parsed.url,
+              score: parsed.score,
+              rating: parsed.ratingText,
+            });
+            await redis.zadd('u693:leads', { score: Date.now(), member: leadId });
+          }
+
+          res.status(200).json(parsed);
+          return;
+        }
+      } catch (err) {
+        console.warn('Error reading domain cache on POST', err);
+      }
+    }
+
+    // 2.2 Control de cuota por IP (solo para escaneos NUEVOS que no estaban en caché)
     if (perIp && daily) {
       try {
-        const [ip, day] = await Promise.all([perIp.limit(clientKey(req)), daily.limit('global')]);
-        if (!ip.success || !day.success) {
-          res.status(429).json({ error: 'Has alcanzado el límite de consultas por ahora. Intenta en unos minutos.' });
+        const ipKey = clientKey(req);
+        const [ip, day] = await Promise.all([perIp.limit(ipKey), daily.limit('global')]);
+        if (!ip.success) {
+          res.status(429).json({
+            error: 'Has alcanzado el límite de 5 auditorías nuevas por hora desde tu conexión. Si necesitas auditar más sitios, contáctanos por WhatsApp.',
+          });
+          return;
+        }
+        if (!day.success) {
+          res.status(429).json({
+            error: 'Alcanzamos el cupo diario de auditorías gratuitas. Intenta mañana o escríbenos directamente por WhatsApp.',
+          });
           return;
         }
       } catch (e) {
@@ -672,12 +746,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-      // Ejecutar inspección profunda en vivo
+      // 2.3 Ejecutar inspección profunda en vivo (sitio nuevo o caché expirada)
       const audit = await performDeepAudit(target);
+      audit.cached = false;
+      audit.cachedAt = new Date().toISOString();
 
-      // Guardar en Redis
+      // Guardar en Redis con TTL de 7 días para el dominio y 30 días para el ID
       if (redis) {
-        await redis.set(`u693:audit:${audit.id}`, JSON.stringify(audit), { ex: 60 * 60 * 24 * 30 });
+        await Promise.all([
+          redis.set(`u693:audit:${audit.id}`, JSON.stringify(audit), { ex: CACHE_ID_TTL_SECONDS }),
+          redis.set(`u693:audit:domain:${cleanHost}`, JSON.stringify(audit), { ex: CACHE_DOMAIN_TTL_SECONDS }),
+        ]);
         
         // Guardar lead si hay email
         if (email) {

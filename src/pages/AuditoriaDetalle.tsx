@@ -352,9 +352,17 @@ export const AuditoriaDetalle: React.FC = () => {
         <Container className="max-w-4xl space-y-12">
           {/* Header Title Section */}
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3.5 py-1 text-xs font-bold text-orange-400 uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-ping" />
-              <span>Auditoría Técnica Real · {auditData.date}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3.5 py-1 text-xs font-bold text-orange-400 uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-ping" />
+                <span>Auditoría Técnica Real · {auditData.date}</span>
+              </div>
+              {auditData.cached && (
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                  <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Informe certificado en caché (vigencia: 7 días)</span>
+                </div>
+              )}
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.12]">
