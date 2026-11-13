@@ -131,6 +131,7 @@ export interface RealAuditData {
     title: string;
     desc: string;
     category: string;
+    impact?: string;
   }>;
   strengths: Array<{
     title: string;
