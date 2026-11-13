@@ -52,7 +52,7 @@ export const PaginasWeb: React.FC = () => {
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [emailSentNotice, setEmailSentNotice] = useState(false);
 
-  const handleScan = (e: React.FormEvent) => {
+  const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanDomain = domainInput.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
     const cleanEmail = emailInput.trim();
@@ -63,85 +63,45 @@ export const PaginasWeb: React.FC = () => {
     setEmailSentNotice(false);
     setScanStep(1);
 
-    setTimeout(() => setScanStep(2), 700);
-    setTimeout(() => setScanStep(3), 1500);
-    setTimeout(() => {
-      setIsScanning(false);
-      const isSlow = !cleanDomain.includes('universo693');
-      
-      const resultData: AuditResult = {
-        domain: cleanDomain,
-        email: cleanEmail,
-        phone: phoneInput.trim() || undefined,
-        score: isSlow ? 55 : 98,
-        speedMobile: isSlow ? 42 : 96,
-        seoScore: isSlow ? 68 : 100,
-        securityScore: isSlow ? 50 : 100,
-        issues: isSlow
-          ? [
-              {
-                type: 'danger',
-                title: 'Tiempo de carga en móviles deficiente (>3.6s)',
-                text: 'El 80% de tus visitas entra desde celulares. Un retraso superior a 3 segundos duplica la tasa de rebote antes de que lean tu propuesta.',
-              },
-              {
-                type: 'danger',
-                title: 'Sin botón de WhatsApp directo en los primeros 3 segundos',
-                text: 'El visitante no encuentra un camino de 1 clic para cotizar de inmediato. La mayoría se va sin completar formularios largos.',
-              },
-              {
-                type: 'warning',
-                title: 'Invisibilidad en buscadores de Inteligencia Artificial',
-                text: 'Tu sitio no cuenta con un párrafo de respuesta ejecutiva que motores como ChatGPT, Perplexity o Google AI Overviews puedan citar.',
-              },
-              {
-                type: 'warning',
-                title: 'Cabeceras de seguridad del servidor incompletas',
-                text: 'Faltan directivas HTTP críticas de protección contra clickjacking y robo de información sensible.',
-              },
-            ]
-          : [
-              {
-                type: 'warning',
-                title: 'Oportunidad de ampliación comercial',
-                text: 'El sitio tiene excelente base técnica; se recomienda activar catálogo interactivo o módulo de agendamiento.',
-              },
-            ],
-        positives: isSlow
-          ? [
-              'Dominio web registrado y certificado de seguridad SSL activo.',
-              'Texto y descripción básica legibles por navegadores convencionales.',
-              'Estructura adaptable a pantallas estándar.',
-            ]
-          : [
-              'Velocidad de carga ultrarrápida (<1.2s en red móvil 4G).',
-              'Estructura semántica optimizada para Google y motores de IA.',
-              'Cabeceras de blindaje HTTP completas (100/100 en seguridad).',
-              'Llamado a la acción directo a WhatsApp en pantalla principal.',
-            ],
-        recommendation: isSlow
-          ? 'Tu sitio actual tiene una base recuperable pero está perdiendo al menos el 50% de sus potenciales clientes por lentitud móvil y falta de conversión directa a WhatsApp. Una modernización con código limpio duplicará tus consultas.'
-          : '¡Excelente estado técnico y comercial! Cumple con los más altos estándares de velocidad y posicionamiento moderno.',
-      };
+    const stepInterval = setInterval(() => {
+      setScanStep((prev) => (prev < 3 ? prev + 1 : prev));
+    }, 900);
 
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: `https://${cleanDomain}`,
+          domain: cleanDomain,
+          email: cleanEmail,
+          fullName: cleanDomain,
+          phone: phoneInput.trim() || undefined,
+          lang: 'es',
+        }),
+      });
+
+      clearInterval(stepInterval);
+      const data = await res.json();
+
+      if (res.ok && data.id) {
+        try {
+          sessionStorage.setItem(`audit_${data.id}`, JSON.stringify(data));
+          sessionStorage.setItem(`audit_domain_${cleanDomain}`, JSON.stringify(data));
+        } catch {}
+
+        navigate(`/auditoria/${data.id}?d=${encodeURIComponent(data.domain || cleanDomain)}&e=${encodeURIComponent(cleanEmail)}`);
+      } else {
+        throw new Error(data.error || 'No pudimos analizar el sitio.');
+      }
+    } catch (err) {
+      clearInterval(stepInterval);
+      console.warn('Real scan fallback:', err);
       const uniqueId = `uni-${Math.random().toString(36).substring(2, 10)}`;
       navigate(`/auditoria/${uniqueId}?d=${encodeURIComponent(cleanDomain)}&e=${encodeURIComponent(cleanEmail)}`);
-
-      // Best effort background sync with serverless lead collector
-      try {
-        fetch('/api/audit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: `https://${cleanDomain}`,
-            email: cleanEmail,
-            fullName: cleanDomain,
-            company: phoneInput.trim() ? `Tel: ${phoneInput.trim()}` : cleanDomain,
-            lang: 'es',
-          }),
-        }).catch(() => {});
-      } catch (err) {}
-    }, 2400);
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   const getWaLinkForAudit = () => {
