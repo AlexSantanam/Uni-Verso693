@@ -37,6 +37,10 @@ export const DemoPage: React.FC = () => {
   const telefonoParam = searchParams.get('tel') || searchParams.get('t') || '+56 9 4419 4618';
   const comunaParam = searchParams.get('comuna') || searchParams.get('c') || 'Valparaíso & Región Metropolitana';
   const rutParam = searchParams.get('rut') || '76.892.411-K';
+  const fotoParam = searchParams.get('foto') || searchParams.get('f') || '';
+
+  // Foto de fondo dinámica para el Hero (si viene foto de Facebook/Web del cliente, se usa esa; sino la default Asvid)
+  const heroBackground = fotoParam || 'https://images.unsplash.com/photo-1541888946425-d0fbb1861593?auto=format&fit=crop&w=1920&q=80';
 
   // Nombre de la Empresa
   const nombreEmpresa = useMemo(() => {
@@ -232,11 +236,11 @@ export const DemoPage: React.FC = () => {
       {/* ============================================================ */}
       <section className="relative bg-[#14171C] text-white overflow-hidden py-20 sm:py-28 border-b-4 border-[#FF6412]">
         
-        {/* Imagen de fondo de faena con filtro técnico industrial */}
-        <div className="absolute inset-0 z-0 opacity-25">
+        {/* Imagen de fondo de faena con filtro técnico industrial (dinámica o default Asvid) */}
+        <div className="absolute inset-0 z-0 opacity-30">
           <img
-            src="https://images.unsplash.com/photo-1541888946425-d0fbb1861593?auto=format&fit=crop&w=1920&q=80"
-            alt="Faena pesada"
+            src={heroBackground}
+            alt={nombreEmpresa}
             className="w-full h-full object-cover"
           />
         </div>

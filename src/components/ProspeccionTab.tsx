@@ -709,6 +709,7 @@ export const ProspeccionTab: React.FC<{
   const [pilotTelefono, setPilotTelefono] = useState('');
   const [pilotComuna, setPilotComuna] = useState('');
   const [pilotRut, setPilotRut] = useState('');
+  const [pilotFoto, setPilotFoto] = useState('');
   const [pilotResult, setPilotResult] = useState<{ url: string; pitch: string; waLink: string } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -909,6 +910,7 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
         if (data.extracted.telefono) setPilotTelefono(data.extracted.telefono);
         if (data.extracted.comuna) setPilotComuna(data.extracted.comuna);
         if (data.extracted.rut) setPilotRut(data.extracted.rut);
+        if (data.extracted.foto) setPilotFoto(data.extracted.foto);
       } else {
         alert('No se pudieron extraer datos automáticos del enlace. Puedes ingresarlos manualmente.');
       }
@@ -928,7 +930,8 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
     }
     const cleanPhone = pilotTelefono.replace(/[^0-9]/g, '');
     const rutParam = pilotRut ? `&rut=${encodeURIComponent(pilotRut)}` : '';
-    const demoUrl = `https://universo693.com/demo?e=${encodeURIComponent(pilotEmpresa)}&r=${pilotRubro}&t=${cleanPhone}&c=${encodeURIComponent(pilotComuna || 'Chile')}${rutParam}`;
+    const fotoParam = pilotFoto ? `&f=${encodeURIComponent(pilotFoto)}` : '';
+    const demoUrl = `https://universo693.com/demo?e=${encodeURIComponent(pilotEmpresa)}&r=${pilotRubro}&t=${cleanPhone}&c=${encodeURIComponent(pilotComuna || 'Chile')}${rutParam}${fotoParam}`;
     const pitch = `Hola ${pilotEmpresa}, buen día. Alexis por acá de UniVerso 693.
 
 Vi su contacto de ${pilotEmpresa} en ${pilotComuna || 'su zona'}. Noté que quienes buscan servicios como el suyo en Google desde el celular no encuentran una web rápida para cotizarles directo, y terminan llamando a la competencia.
@@ -1419,6 +1422,22 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
                   onChange={e => setPilotRut(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
                 />
+              </div>
+
+              <div className="sm:col-span-2 lg:col-span-5 pt-1">
+                <div className="flex items-center gap-2 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+                  <label className="text-slate-400 font-bold uppercase text-[10px] shrink-0">🖼️ Foto Fondo Faena (Opcional):</label>
+                  <input
+                    type="text"
+                    placeholder="URL de foto de maquinaria o faena (si se extrae de Facebook o web se rellena sola)"
+                    value={pilotFoto}
+                    onChange={e => setPilotFoto(e.target.value)}
+                    className="flex-1 px-2.5 py-1 bg-slate-950 border border-slate-700 rounded text-white text-xs focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
+                  />
+                  {pilotFoto && (
+                    <img src={pilotFoto} alt="Preview fondo" className="w-7 h-7 rounded object-cover border border-amber-500/40 shrink-0" />
+                  )}
+                </div>
               </div>
             </div>
 
