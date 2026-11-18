@@ -35,6 +35,9 @@
     },
     "api/whatsapp.ts": {
       "maxDuration": 60
+    },
+    "api/demo.ts": {
+      "maxDuration": 60
     }
   },
   "headers": [
@@ -98,6 +101,10 @@
     {
       "source": "/auditoria/:id",
       "destination": "/auditoria"
+    },
+    {
+      "source": "/demo/:slug",
+      "destination": "/demo"
     }
   ]
 }

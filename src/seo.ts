@@ -616,7 +616,16 @@ const pagoPage: PageSeo = {
   jsonLd: graph(breadcrumb([{ name: 'Portal de Pagos', path: '/pago' }])),
 };
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage];
+const demoPage: PageSeo = {
+  path: '/demo',
+  title: 'Vista Previa de Catálogo y Página Web | Uni-Verso693',
+  description: clip('Vista previa interactiva de sitio web móvil de alta conversión para empresas y contratistas en Chile.'),
+  priority: 0.5,
+  noindex: true,
+  jsonLd: [],
+};
+
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, demoPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
