@@ -702,10 +702,13 @@ export const ProspeccionTab: React.FC<{
 
   // PagePilot Instant Generator state
   const [showPagePilot, setShowPagePilot] = useState(true);
+  const [pilotInputUrl, setPilotInputUrl] = useState('');
+  const [isExtractingPilot, setIsExtractingPilot] = useState(false);
   const [pilotEmpresa, setPilotEmpresa] = useState('');
   const [pilotRubro, setPilotRubro] = useState('maquinaria');
   const [pilotTelefono, setPilotTelefono] = useState('');
   const [pilotComuna, setPilotComuna] = useState('');
+  const [pilotRut, setPilotRut] = useState('');
   const [pilotResult, setPilotResult] = useState<{ url: string; pitch: string; waLink: string } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -887,6 +890,36 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleExtractFromUrl = async () => {
+    if (!pilotInputUrl.trim()) {
+      alert('Pega primero un enlace de Facebook, Instagram, Google Maps o texto del cliente.');
+      return;
+    }
+    setIsExtractingPilot(true);
+    try {
+      const res = await fetch('/api/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rawInput: pilotInputUrl, extractOnly: true })
+      });
+      const data = await res.json();
+      if (data.success && data.extracted) {
+        if (data.extracted.nombre) setPilotEmpresa(data.extracted.nombre);
+        if (data.extracted.rubro) setPilotRubro(data.extracted.rubro);
+        if (data.extracted.telefono) setPilotTelefono(data.extracted.telefono);
+        if (data.extracted.comuna) setPilotComuna(data.extracted.comuna);
+        if (data.extracted.rut) setPilotRut(data.extracted.rut);
+      } else {
+        alert('No se pudieron extraer datos automáticos del enlace. Puedes ingresarlos manualmente.');
+      }
+    } catch (err) {
+      console.error('Error al extraer datos:', err);
+      alert('Error al conectar con el extractor de datos.');
+    } finally {
+      setIsExtractingPilot(false);
+    }
+  };
+
   const handleGeneratePilotDemo = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pilotEmpresa || !pilotTelefono) {
@@ -894,7 +927,8 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
       return;
     }
     const cleanPhone = pilotTelefono.replace(/[^0-9]/g, '');
-    const demoUrl = `https://universo693.com/demo?e=${encodeURIComponent(pilotEmpresa)}&r=${pilotRubro}&t=${cleanPhone}&c=${encodeURIComponent(pilotComuna || 'Chile')}`;
+    const rutParam = pilotRut ? `&rut=${encodeURIComponent(pilotRut)}` : '';
+    const demoUrl = `https://universo693.com/demo?e=${encodeURIComponent(pilotEmpresa)}&r=${pilotRubro}&t=${cleanPhone}&c=${encodeURIComponent(pilotComuna || 'Chile')}${rutParam}`;
     const pitch = `Hola ${pilotEmpresa}, buen día. Alexis por acá de UniVerso 693.
 
 Vi su contacto de ${pilotEmpresa} en ${pilotComuna || 'su zona'}. Noté que quienes buscan servicios como el suyo en Google desde el celular no encuentran una web rápida para cotizarles directo, y terminan llamando a la competencia.
@@ -1296,7 +1330,37 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
 
         {showPagePilot && (
           <form onSubmit={handleGeneratePilotDemo} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            {/* Input Rápido: Pegar Enlace o Texto al estilo PagePilot */}
+            <div className="bg-slate-950/80 border border-amber-500/20 rounded-xl p-3.5 space-y-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                    <Globe className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Pega el link de Facebook, Instagram, Google Maps, web o texto copiado del cliente..."
+                    value={pilotInputUrl}
+                    onChange={e => setPilotInputUrl(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-amber-400 placeholder:text-slate-500"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExtractFromUrl}
+                  disabled={isExtractingPilot || !pilotInputUrl.trim()}
+                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black text-xs uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow"
+                >
+                  <Sparkles className="w-3.5 h-3.5 fill-current" />
+                  <span>{isExtractingPilot ? 'Extrayendo con IA...' : '⚡ Extraer con IA'}</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                💡 <strong className="text-amber-400">Modo PagePilot:</strong> Pega el enlace y la IA completará los datos comerciales abajo. También puedes escribirlos o afinarlos manualmente.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
               <div>
                 <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Nombre del Negocio *</label>
                 <input
@@ -1339,9 +1403,20 @@ Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfon
                 <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Comuna / Ciudad *</label>
                 <input
                   type="text"
-                  placeholder="Ej: Lampa / Concón / Las Condes"
+                  placeholder="Ej: Lampa / Concón"
                   value={pilotComuna}
                   onChange={e => setPilotComuna(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">RUT Empresa (Opcional)</label>
+                <input
+                  type="text"
+                  placeholder="Ej: 77.123.456-7"
+                  value={pilotRut}
+                  onChange={e => setPilotRut(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
                 />
               </div>

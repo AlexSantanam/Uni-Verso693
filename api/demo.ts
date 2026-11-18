@@ -39,6 +39,54 @@ const slugify = (text: string) => {
     .slice(0, 50);
 };
 
+async function extractWithGroq(text: string): Promise<{ nombre?: string; rubro?: string; telefono?: string; comuna?: string; rut?: string } | null> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const prompt = `Eres un extractor de datos comerciales para contratistas y pymes en Chile.
+Analiza la siguiente información (extraída de un enlace de Facebook, Instagram, Google Maps, web o texto copiado de un prospecto) y devuelve ÚNICAMENTE un objeto JSON válido con este formato:
+{
+  "nombre": "Nombre de la empresa o contratista",
+  "rubro": "maquinaria" | "clima" | "fletes" | "gasfiteria" | "general",
+  "telefono": "Teléfono chileno limpio con formato 569XXXXXXXX (ej: 56991234567)",
+  "comuna": "Comuna o ciudad en Chile (ej: Lampa, Melipilla, Viña del Mar, San Bernardo)",
+  "rut": "RUT chileno si se menciona, o vacío"
+}
+
+Si falta algún campo, deduce el más razonable según el contexto (por ejemplo si habla de retroexcavadoras, rubro es "maquinaria").
+
+Texto a procesar:
+"""
+${text.slice(0, 3000)}
+"""`;
+
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-20b',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.1,
+        response_format: { type: 'json_object' }
+      }),
+      signal: AbortSignal.timeout(6000)
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) return null;
+    return JSON.parse(content);
+  } catch (err) {
+    console.warn('Groq extraction fallback:', err);
+    return null;
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -69,57 +117,80 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: 'Demo no encontrada en caché' });
   }
 
-  // POST: Generar nueva demo personalizada
+  // POST: Generar nueva demo personalizada o extraer desde enlace/texto
   if (req.method === 'POST') {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-      const { url, nombre, rubro, telefono, comuna, foto } = body;
+      const { url, rawInput, extractOnly, nombre, rubro, telefono, comuna, foto } = body;
+
+      const inputUrlOrText = (url || rawInput || '').trim();
 
       let parsedNombre = (nombre || '').trim();
       let parsedRubro = (rubro || 'maquinaria').trim().toLowerCase();
       let parsedTelefono = cleanPhone(telefono || '');
-      let parsedComuna = (comuna || 'Chile').trim();
+      let parsedComuna = (comuna || '').trim();
       let parsedFoto = (foto || '').trim();
+      let parsedRut = (body.rut || '').trim();
 
-      // Si viene una URL pública (Facebook, Maps, Web), intentamos raspar metadatos básicos
-      if (url && !parsedNombre) {
-        try {
-          const resp = await fetch(url, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': 'text/html,application/xhtml+xml'
-            },
-            signal: AbortSignal.timeout(5000)
-          });
-          if (resp.ok) {
-            const html = await resp.text();
-            
-            // Extraer título
-            const ogTitle = html.match(/<meta property=["']og:title["'] content=["']([^"']+)["']/i);
-            const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
-            const foundTitle = ogTitle?.[1] || titleMatch?.[1];
-            if (foundTitle) {
-              parsedNombre = foundTitle.split('|')[0].split('-')[0].split('•')[0].trim();
-            }
+      // Si viene una URL o texto crudo, procesar extracción inteligente
+      if (inputUrlOrText && (!parsedNombre || !parsedTelefono || extractOnly)) {
+        let extractedContext = inputUrlOrText;
 
-            // Extraer imagen si no venía
-            if (!parsedFoto) {
+        if (inputUrlOrText.startsWith('http://') || inputUrlOrText.startsWith('https://')) {
+          try {
+            const resp = await fetch(inputUrlOrText, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml'
+              },
+              signal: AbortSignal.timeout(5000)
+            });
+
+            if (resp.ok) {
+              const html = await resp.text();
+              const ogTitle = html.match(/<meta property=["']og:title["'] content=["']([^"']+)["']/i);
+              const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
+              const ogDesc = html.match(/<meta property=["']og:description["'] content=["']([^"']+)["']/i);
+              const metaDesc = html.match(/<meta name=["']description["'] content=["']([^"']+)["']/i);
               const ogImage = html.match(/<meta property=["']og:image["'] content=["']([^"']+)["']/i);
+
               if (ogImage?.[1] && !ogImage[1].includes('favicon')) {
                 parsedFoto = ogImage[1];
               }
-            }
 
-            // Extraer teléfono si está en el texto
-            if (!parsedTelefono) {
-              const phoneMatch = html.match(/(\+?56\s?9\s?\d{4}\s?\d{4}|\b9\d{8}\b)/);
-              if (phoneMatch) {
-                parsedTelefono = cleanPhone(phoneMatch[0]);
-              }
+              extractedContext = `URL: ${inputUrlOrText}\n` +
+                `Título: ${ogTitle?.[1] || titleMatch?.[1] || ''}\n` +
+                `Descripción: ${ogDesc?.[1] || metaDesc?.[1] || ''}\n` +
+                `Texto página: ${html.replace(/<[^>]+>/g, ' ').slice(0, 2000)}`;
             }
+          } catch (fetchErr) {
+            console.warn('Direct fetch failed, relying on URL path context:', fetchErr);
           }
-        } catch (scrapErr) {
-          console.warn('Scraping error (falling back to manual fields):', scrapErr);
+        }
+
+        // Ejecutar extracción con IA (Groq ultra-rápido)
+        const aiExtracted = await extractWithGroq(extractedContext);
+        if (aiExtracted) {
+          if (!parsedNombre && aiExtracted.nombre) parsedNombre = aiExtracted.nombre;
+          if ((!rubro || rubro === 'maquinaria') && aiExtracted.rubro) parsedRubro = aiExtracted.rubro;
+          if (!parsedTelefono && aiExtracted.telefono) parsedTelefono = cleanPhone(aiExtracted.telefono);
+          if (!parsedComuna && aiExtracted.comuna) parsedComuna = aiExtracted.comuna;
+          if (!parsedRut && aiExtracted.rut) parsedRut = aiExtracted.rut;
+        }
+
+        // Si solo se pidió extraer datos para rellenar formulario en UI:
+        if (extractOnly) {
+          return res.status(200).json({
+            success: true,
+            extracted: {
+              nombre: parsedNombre,
+              rubro: parsedRubro,
+              telefono: parsedTelefono,
+              comuna: parsedComuna,
+              rut: parsedRut,
+              foto: parsedFoto
+            }
+          });
         }
       }
 
@@ -159,6 +230,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         c: parsedComuna
       });
       if (parsedFoto) queryParams.set('f', parsedFoto);
+      if (parsedRut) queryParams.set('rut', parsedRut);
 
       const demoUrl = `https://universo693.com/demo?${queryParams.toString()}`;
       const demoSlugUrl = `https://universo693.com/demo/${slug}`;
