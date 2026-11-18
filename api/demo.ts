@@ -72,7 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // POST: Generar nueva demo personalizada
   if (req.method === 'POST') {
     try {
-      const { url, nombre, rubro, telefono, comuna, foto } = req.body || {};
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+      const { url, nombre, rubro, telefono, comuna, foto } = body;
 
       let parsedNombre = (nombre || '').trim();
       let parsedRubro = (rubro || 'maquinaria').trim().toLowerCase();
