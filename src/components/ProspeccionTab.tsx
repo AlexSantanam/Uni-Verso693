@@ -700,6 +700,14 @@ export const ProspeccionTab: React.FC<{
   const [isSendingBatch, setIsSendingBatch] = useState(false);
   const [antiSpamFilter, setAntiSpamFilter] = useState(true); // Omitir leads que ya recibieron correo
 
+  // PagePilot Instant Generator state
+  const [showPagePilot, setShowPagePilot] = useState(true);
+  const [pilotEmpresa, setPilotEmpresa] = useState('');
+  const [pilotRubro, setPilotRubro] = useState('maquinaria');
+  const [pilotTelefono, setPilotTelefono] = useState('');
+  const [pilotComuna, setPilotComuna] = useState('');
+  const [pilotResult, setPilotResult] = useState<{ url: string; pitch: string; waLink: string } | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Nuevo lead form state
@@ -822,24 +830,40 @@ export const ProspeccionTab: React.FC<{
     setLeads(newLeads);
   };
 
-  // WhatsApp con mensaje enriquecido con preview de imagen y enlace corporativo
+  // Helper para deducir rubro
+  const getRubroKey = (rubro: string) => {
+    const r = (rubro || '').toLowerCase();
+    if (r.includes('maquin') || r.includes('retro') || r.includes('tolva') || r.includes('arriendo') || r.includes('obra')) return 'maquinaria';
+    if (r.includes('clima') || r.includes('aire') || r.includes('hvac') || r.includes('refrig')) return 'clima';
+    if (r.includes('flete') || r.includes('muda') || r.includes('transp') || r.includes('carga')) return 'fletes';
+    if (r.includes('gasf') || r.includes('destape') || r.includes('fuga') || r.includes('plomer')) return 'gasfiteria';
+    return 'maquinaria';
+  };
+
+  const getDemoUrlForLead = (lead: ProspeccionLead) => {
+    const phone = lead.telefono.replace(/[^0-9]/g, '') || '56944194618';
+    const rubroKey = getRubroKey(lead.rubro);
+    return `https://universo693.com/demo?e=${encodeURIComponent(lead.nombreEmpresa)}&r=${rubroKey}&t=${phone}&c=${encodeURIComponent(lead.comuna || 'Chile')}`;
+  };
+
+  const getDemoPitchForLead = (lead: ProspeccionLead) => {
+    const demoUrl = getDemoUrlForLead(lead);
+    return `Hola ${lead.contacto || lead.nombreEmpresa}, buen día. Alexis por acá de UniVerso 693.
+
+Vi su contacto de ${lead.nombreEmpresa} en ${lead.comuna}. Noté que quienes buscan servicios como el suyo en Google desde el celular no encuentran una página directa de ustedes para cotizar rápido, y terminan llamando a la competencia.
+
+Les armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:
+👉 ${demoUrl}
+
+Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfono por $85.000 pago único (sin mensualidades obligatorias).
+
+¿Le damos una mirada y se las dejamos andando hoy? Saludos!`;
+  };
+
+  // WhatsApp con mensaje enriquecido con demo personalizada e impacto inmediato
   const handleOpenWhatsApp = (lead: ProspeccionLead) => {
     const phone = lead.telefono.replace(/[^0-9]/g, '');
-    
-    // Mensaje con URL oficial para que WhatsApp active el OpenGraph card (banner e imagen de empresa)
-    const msg = `Hola ${lead.contacto}, buen día. ${activeSender.greeting}.
-
-Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
-
-Trabajamos con tarifas transparentes y accesibles para cuidar su flujo de caja:
-• 1. Compra Directa Contado: desde $150.000 a $285.000 IVA Inc. (100% código propio en Bóveda Digital desde el Día 1).
-• 2. Leasing con Derecho a Compra: en 24 cuotas ($14.000 a $27.000/mes) o 12 cuotas ($22.000 a $42.000/mes), con 100% de propiedad al terminar.
-• 3. Arriendo Mensual Todo Incluido: desde $15.000 a $29.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
-
-👉 Puedes revisar los planes y simular en vivo acá:
-https://universo693.com/impulsa-pyme
-
-Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
+    const msg = getDemoPitchForLead(lead);
 
     const now = new Date().toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' });
     
@@ -857,23 +881,60 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
   };
 
   const handleCopyPitch = (lead: ProspeccionLead) => {
-    const msg = `Hola ${lead.contacto}, buen día. ${activeSender.greeting}.
-
-Te envié un correo breve con una propuesta para ${lead.nombreEmpresa}: ${lead.anguloWhatsapp}.
-
-Trabajamos con tarifas transparentes y accesibles para cuidar su flujo de caja:
-• 1. Compra Directa Contado: desde $150.000 a $285.000 IVA Inc. (100% código propio en Bóveda Digital desde el Día 1).
-• 2. Leasing con Derecho a Compra: en 24 cuotas ($14.000 a $27.000/mes) o 12 cuotas ($22.000 a $42.000/mes), con 100% de propiedad al terminar.
-• 3. Arriendo Mensual Todo Incluido: desde $15.000 a $29.000/mes (hosting de alta velocidad, dominio .CL y soporte inc.).
-
-👉 Puedes revisar los planes y simular en vivo acá:
-https://universo693.com/impulsa-pyme
-
-Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja principal. Saludos!`;
-
+    const msg = getDemoPitchForLead(lead);
     navigator.clipboard.writeText(msg);
     setCopiedId(lead.id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleGeneratePilotDemo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pilotEmpresa || !pilotTelefono) {
+      alert('Por favor ingrese el nombre de la empresa y el teléfono de contacto.');
+      return;
+    }
+    const cleanPhone = pilotTelefono.replace(/[^0-9]/g, '');
+    const demoUrl = `https://universo693.com/demo?e=${encodeURIComponent(pilotEmpresa)}&r=${pilotRubro}&t=${cleanPhone}&c=${encodeURIComponent(pilotComuna || 'Chile')}`;
+    const pitch = `Hola ${pilotEmpresa}, buen día. Alexis por acá de UniVerso 693.
+
+Vi su contacto de ${pilotEmpresa} en ${pilotComuna || 'su zona'}. Noté que quienes buscan servicios como el suyo en Google desde el celular no encuentran una web rápida para cotizarles directo, y terminan llamando a la competencia.
+
+Les armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:
+👉 ${demoUrl}
+
+Se las dejamos 100% activa con su propio dominio .CL, su catálogo y su teléfono por $85.000 pago único (sin mensualidades obligatorias).
+
+¿Le damos una mirada y se las dejamos andando hoy? Saludos!`;
+
+    const waLink = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(pitch)}`;
+
+    setPilotResult({
+      url: demoUrl,
+      pitch,
+      waLink
+    });
+
+    navigator.clipboard.writeText(pitch);
+
+    // Si no está en leads, agregarlo automáticamente para seguimiento
+    if (!leads.some(l => l.nombreEmpresa.toLowerCase() === pilotEmpresa.toLowerCase())) {
+      const nuevoLead: ProspeccionLead = {
+        id: `CL-${String(leads.length + 1).padStart(3, '0')}`,
+        nombreEmpresa: pilotEmpresa,
+        contacto: pilotEmpresa,
+        rubro: pilotRubro === 'maquinaria' ? 'Maquinaria Pesada' : pilotRubro === 'fletes' ? 'Fletes & Mudanzas' : pilotRubro === 'clima' ? 'Climatización' : 'Servicios Generales',
+        comuna: pilotComuna || 'Chile',
+        region: 'Chile',
+        email: '',
+        telefono: pilotTelefono,
+        sitioWeb: demoUrl,
+        estadoTecnico: 'Demo Creada',
+        oportunidad: 'Demo instantánea enviada por WhatsApp ($85.000)',
+        anguloWhatsapp: 'demo personalizada de catálogo web',
+        estado: 'pendiente'
+      };
+      persistLeads([nuevoLead, ...leads]);
+    }
   };
 
   const handleToggleLeadStatus = (lead: ProspeccionLead) => {
@@ -1204,6 +1265,134 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
             <Plus className="w-4 h-4" /> Agregar Empresa
           </button>
         </div>
+      </div>
+
+      {/* ============================================================ */}
+      {/* PAGEPILOT UNIVERSO: GENERADOR INSTANTÁNEO DE DEMOS & PITCH   */}
+      {/* ============================================================ */}
+      <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/30 border border-amber-500/30 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-white uppercase tracking-wide flex items-center gap-2">
+                PagePilot UniVerso <span className="px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded font-bold">Generador Instantáneo de Demos</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Ingresa los datos de cualquier negocio y genera al instante su web personalizada con catálogo + mensaje persuasivo para WhatsApp ($85.000).
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPagePilot(!showPagePilot)}
+            className="text-xs text-slate-400 hover:text-white px-2.5 py-1 bg-slate-800 rounded border border-slate-700"
+          >
+            {showPagePilot ? 'Ocultar Panel' : 'Mostrar Panel'}
+          </button>
+        </div>
+
+        {showPagePilot && (
+          <form onSubmit={handleGeneratePilotDemo} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Nombre del Negocio *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Transportes y Maquinarias Don Pepe"
+                  value={pilotEmpresa}
+                  onChange={e => setPilotEmpresa(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Rubro / Especialidad *</label>
+                <select
+                  value={pilotRubro}
+                  onChange={e => setPilotRubro(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  <option value="maquinaria">🚜 Maquinaria Pesada & Mov. Tierras</option>
+                  <option value="clima">❄️ Climatización & Aire Acondicionado</option>
+                  <option value="fletes">🚚 Fletes, Mudanzas & Carga</option>
+                  <option value="gasfiteria">🔧 Gasfitería & Destapes 24/7</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Teléfono / WhatsApp *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="+56 9 XXXX XXXX"
+                  value={pilotTelefono}
+                  onChange={e => setPilotTelefono(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase text-[10px] mb-1">Comuna / Ciudad *</label>
+                <input
+                  type="text"
+                  placeholder="Ej: Lampa / Concón / Las Condes"
+                  value={pilotComuna}
+                  onChange={e => setPilotComuna(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-amber-400 placeholder:text-slate-600"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 fill-current" />
+                <span>⚡ Generar Demo y Copiar Mensaje</span>
+              </button>
+
+              {pilotResult && (
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <a
+                    href={pilotResult.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-lg border border-amber-500/40 flex items-center gap-1.5 transition"
+                  >
+                    <span>👁️ Ver Demo en Vivo</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <a
+                    href={pilotResult.waLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold rounded-lg shadow-md flex items-center gap-1.5 transition"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-current" />
+                    <span>Abrir WhatsApp con Mensaje Listo</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {pilotResult && (
+              <div className="mt-3 p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1 text-xs">
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                  <Check className="w-3 h-3" /> ¡Mensaje copiado al portapapeles y Demo lista!
+                </span>
+                <p className="text-slate-300 font-mono text-[11px] whitespace-pre-wrap bg-slate-900/60 p-2.5 rounded border border-slate-800">
+                  {pilotResult.pitch}
+                </p>
+              </div>
+            )}
+          </form>
+        )}
       </div>
 
       {/* Stats Counter Bar */}
@@ -1558,12 +1747,21 @@ Te escribo por acá solo para confirmar si te llegó bien el correo a tu bandeja
                           </button>
 
                           <div className="flex items-center justify-center gap-1.5 w-full">
+                            <a
+                              href={getDemoUrlForLead(lead)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Abrir la demo web personalizada de esta empresa"
+                              className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 px-2 py-1 bg-amber-950/50 border border-amber-800/60 rounded font-bold transition hover:bg-amber-900/50"
+                            >
+                              <Sparkles className="w-3 h-3 text-amber-400" /> Demo
+                            </a>
                             <button
                               onClick={() => setPreviewEmailLead(lead)}
                               title="Ver el correo personalizado que se le enviará"
                               className="text-[11px] text-sky-400 hover:text-sky-300 flex items-center gap-1 px-2 py-1 bg-sky-950/40 border border-sky-800/50 rounded"
                             >
-                              <Eye className="w-3 h-3" /> Ver Correo
+                              <Eye className="w-3 h-3" /> Correo
                             </button>
                             <button
                               onClick={() => handleCopyPitch(lead)}

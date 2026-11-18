@@ -25,6 +25,7 @@ const EbsView = React.lazy(() => import('./pages/EbsView'));
 // Client Vault (Bóveda de Credenciales & Soberanía Tecnológica): own chunk, outside the layout, noindex.
 const Boveda = React.lazy(() => import('./pages/Boveda'));
 const Onboarding = React.lazy(() => import('./pages/Onboarding'));
+const DemoPage = React.lazy(() => import('./pages/DemoPage').then(m => ({ default: m.DemoPage })));
 
 const NotFound: React.FC = () => (
   <Container className="py-32 text-center space-y-4">
@@ -84,6 +85,22 @@ export const AppRoutes: React.FC = () => (
             element={
               <React.Suspense fallback={null}>
                 <Onboarding />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="demo"
+            element={
+              <React.Suspense fallback={null}>
+                <DemoPage />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="demo/:slug"
+            element={
+              <React.Suspense fallback={null}>
+                <DemoPage />
               </React.Suspense>
             }
           />
