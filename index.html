@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="es">
   <head>
-    <script>document.documentElement.classList.add('js')</script>
+    <script>
+      // Normalizar URLs malformadas que vienen con %3F en vez de ? desde WhatsApp o codificadores
+      if (location.href.indexOf('%3F') !== -1 || location.href.indexOf('%3f') !== -1) {
+        location.replace(location.href.replace(/%3[Ff]/, '?'));
+      }
+      document.documentElement.classList.add('js');
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#02040a" />

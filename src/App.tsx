@@ -104,6 +104,14 @@ export const AppRoutes: React.FC = () => (
               </React.Suspense>
             }
           />
+          <Route
+            path="demo/*"
+            element={
+              <React.Suspense fallback={null}>
+                <DemoPage />
+              </React.Suspense>
+            }
+          />
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="paginas-web" element={<PaginasWeb />} />
