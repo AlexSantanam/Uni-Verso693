@@ -31,12 +31,22 @@ export const DemoPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { slug } = useParams<{ slug?: string }>();
 
+  const safeDecode = (raw: string) => {
+    if (!raw) return '';
+    let val = raw;
+    try {
+      if (val.includes('%')) val = decodeURIComponent(val);
+      if (val.includes('%')) val = decodeURIComponent(val);
+    } catch {}
+    return val.replace(/\+/g, ' ').trim();
+  };
+
   // Parámetros URL dinámicos
-  const empresaParam = searchParams.get('empresa') || searchParams.get('e') || '';
-  const rubroParam = (searchParams.get('rubro') || searchParams.get('r') || 'maquinaria').toLowerCase();
-  const telefonoParam = searchParams.get('tel') || searchParams.get('t') || '+56 9 4419 4618';
-  const comunaParam = searchParams.get('comuna') || searchParams.get('c') || 'Valparaíso & Región Metropolitana';
-  const rutParam = searchParams.get('rut') || '76.892.411-K';
+  const empresaParam = safeDecode(searchParams.get('empresa') || searchParams.get('e') || '');
+  const rubroParam = safeDecode(searchParams.get('rubro') || searchParams.get('r') || 'maquinaria').toLowerCase();
+  const telefonoParam = safeDecode(searchParams.get('tel') || searchParams.get('t') || '+56 9 4419 4618');
+  const comunaParam = safeDecode(searchParams.get('comuna') || searchParams.get('c') || 'Valparaíso & Región Metropolitana');
+  const rutParam = safeDecode(searchParams.get('rut') || '76.892.411-K');
   const fotoParam = searchParams.get('foto') || searchParams.get('f') || '';
 
   // Foto de fondo dinámica para el Hero (si viene foto de Facebook/Web del cliente, se usa esa; sino la default Asvid)
