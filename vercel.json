@@ -103,7 +103,7 @@
       "destination": "/auditoria"
     },
     {
-      "source": "/demo/:slug",
+      "source": "/demo(.*)",
       "destination": "/demo"
     }
   ]
