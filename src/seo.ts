@@ -633,7 +633,7 @@ const pilotPage: PageSeo = {
   jsonLd: [],
 };
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, demoPage, pilotPage];
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, pilotPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
