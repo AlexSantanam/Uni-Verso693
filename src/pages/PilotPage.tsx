@@ -157,6 +157,13 @@ export const PilotPage: React.FC = () => {
         const data = await res.json();
         if (data.success && data.extracted) {
           const { nombre, rubro, telefono: tel, comuna: com, foto } = data.extracted;
+
+          // Si vino un enlace de Facebook y Facebook devolvió datos vacíos por login wall
+          if (!nombre && !tel && textToProcess.includes('facebook.com')) {
+            setExtractFeedback('⚠️ Facebook bloqueó la lectura del enlace (exige inicio de sesión). Por favor copia el texto o título del anuncio en Marketplace y pégalo aquí para que la IA arme la demo al instante.');
+            return;
+          }
+
           if (nombre) setEmpresa(nombre);
           if (rubro && RUBROS_CATALOG[rubro]) {
             setRubroId(rubro);
@@ -331,10 +338,20 @@ export const PilotPage: React.FC = () => {
           </div>
 
           {extractFeedback && (
-            <div className="text-xs px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-slate-300 flex items-center gap-2">
+            <div className={`text-xs px-3.5 py-2 rounded-lg border flex items-center gap-2 ${
+              extractFeedback.startsWith('⚠️')
+                ? 'bg-amber-950/40 border-amber-800/40 text-amber-200'
+                : extractFeedback.startsWith('✨')
+                ? 'bg-emerald-950/40 border-emerald-800/40 text-emerald-200'
+                : 'bg-white/5 border-white/10 text-slate-300'
+            }`}>
               <span>{extractFeedback}</span>
             </div>
           )}
+
+          <p className="text-[11px] text-slate-400">
+            💡 <strong>Tip Marketplace:</strong> Si Facebook bloquea el enlace privado, copia y pega directamente el texto del anuncio (título, descripción o fono) en esta caja. La IA extrae el rubro y arma la demo en 1 segundo.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
