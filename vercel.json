@@ -37,6 +37,7 @@
       "maxDuration": 60
     },
     "api/demo.ts": {
+      "includeFiles": "dist/**",
       "maxDuration": 60
     }
   },
@@ -103,8 +104,12 @@
       "destination": "/auditoria"
     },
     {
-      "source": "/demo(.*)",
-      "destination": "/demo"
+      "source": "/demo",
+      "destination": "/api/demo"
+    },
+    {
+      "source": "/demo/(.*)",
+      "destination": "/api/demo"
     },
     {
       "source": "/pilot(.*)",

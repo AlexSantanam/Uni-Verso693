@@ -100,8 +100,103 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  // GET: Obtener demo por slug
+  // GET: Obtener demo por slug O servir HTML dinámico con OpenGraph personalizado para WhatsApp/Meta/Twitter
   if (req.method === 'GET') {
+    const isHtmlRequest = (req.headers.accept || '').includes('text/html') || 
+                          Boolean(req.query.e || req.query.empresa || req.query.r || req.query.rubro || !req.query.slug);
+
+    if (isHtmlRequest) {
+      const empresa = (req.query.e || req.query.empresa || '').toString().trim();
+      const rubro = (req.query.r || req.query.rubro || 'maquinaria').toString().trim().toLowerCase();
+      const comuna = (req.query.c || req.query.comuna || '').toString().trim();
+      const customFoto = (req.query.f || req.query.foto || '').toString().trim();
+
+      const RUBRO_INFO: Record<string, { title: string; image: string; desc: string }> = {
+        maquinaria: {
+          title: 'Arriendo de Maquinaria Pesada & Movimiento de Tierras',
+          image: 'https://universo693.com/assets/maquinaria/hero-maquinaria-pesada.jpg',
+          desc: 'Catálogo móvil para cotizaciones directas a WhatsApp.'
+        },
+        camion_pluma: {
+          title: 'Arriendo de Camión Pluma, Grúa Móvil & Izaje',
+          image: 'https://universo693.com/assets/camion_pluma/hero-camion-pluma.jpg',
+          desc: 'Catálogo móvil para cotizaciones directas a WhatsApp.'
+        },
+        transporte_pasajeros: {
+          title: 'Transporte Privado de Pasajeros, Vans & Personal',
+          image: 'https://universo693.com/assets/pasajeros/hero-transporte-pasajeros.jpg',
+          desc: 'Flota de vans ejecutivas y minibuses para cotizar en 1 clic directo a WhatsApp.'
+        },
+        transporte: {
+          title: 'Transporte de Carga & Fletes',
+          image: 'https://universo693.com/assets/transporte/hero-transporte-carga.jpg',
+          desc: 'Flota de camiones y logística para cotizaciones directas.'
+        },
+        maestranza: {
+          title: 'Taller de Maestranza, Estructuras & Soldadura',
+          image: 'https://universo693.com/assets/maestranza/hero-maestranza-soldadura.jpg',
+          desc: 'Catálogo técnico de fabricación y montaje industrial.'
+        },
+        construccion: {
+          title: 'Construcción & Obras Civiles',
+          image: 'https://universo693.com/assets/construccion/hero-construccion-obras.jpg',
+          desc: 'Catálogo de obras y presupuestos directos.'
+        },
+        seguridad: {
+          title: 'Seguridad Privada & Vigilancia OS-10',
+          image: 'https://universo693.com/assets/seguridad/hero-seguridad-vigilancia.jpg',
+          desc: 'Propuestas de seguridad y vigilancia en terreno.'
+        }
+      };
+
+      const info = RUBRO_INFO[rubro] || RUBRO_INFO['maquinaria'];
+      const pageTitle = empresa
+        ? `${empresa}${comuna ? ` (${comuna})` : ''} · Catálogo Web Móvil`
+        : `Vista Previa de Catálogo y Página Web | Uni-Verso693`;
+      const pageDesc = empresa
+        ? `Vista previa de catálogo para ${empresa}${comuna ? ` en ${comuna}` : ''}. Cotización directa en 1 clic a WhatsApp.`
+        : info.desc;
+      const pageImage = customFoto || info.image;
+
+      let html = '';
+      try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const filePath = path.join(process.cwd(), 'dist', 'demo', 'index.html');
+        if (fs.existsSync(filePath)) {
+          html = fs.readFileSync(filePath, 'utf8');
+        } else {
+          const rootPath = path.join(process.cwd(), 'dist', 'index.html');
+          if (fs.existsSync(rootPath)) {
+            html = fs.readFileSync(rootPath, 'utf8');
+          }
+        }
+      } catch (e) {
+        console.warn('Could not read HTML from dist:', e);
+      }
+
+      if (html) {
+        const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const safeTitle = esc(pageTitle);
+        const safeDesc = esc(pageDesc);
+
+        html = html
+          .replace(/<title>[^<]*<\/title>/, `<title>${safeTitle}</title>`)
+          .replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${safeTitle}" />`)
+          .replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${safeDesc}" />`)
+          .replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${pageImage}" />`)
+          .replace(/<meta property="og:image:secure_url" content="[^"]*" \/>/, `<meta property="og:image:secure_url" content="${pageImage}" />`)
+          .replace(/<meta name="twitter:title" content="[^"]*" \/>/, `<meta name="twitter:title" content="${safeTitle}" />`)
+          .replace(/<meta name="twitter:description" content="[^"]*" \/>/, `<meta name="twitter:description" content="${safeDesc}" />`)
+          .replace(/<meta name="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${pageImage}" />`)
+          .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="index, follow, max-image-preview:large" />');
+
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=3600');
+        return res.status(200).send(html);
+      }
+    }
+
     const slug = (req.query.slug || req.query.id) as string;
     if (!slug) {
       return res.status(400).json({ error: 'Falta el parámetro slug' });

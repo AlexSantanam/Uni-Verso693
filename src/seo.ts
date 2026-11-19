@@ -621,7 +621,6 @@ const demoPage: PageSeo = {
   title: 'Vista Previa de Catálogo y Página Web | Uni-Verso693',
   description: clip('Vista previa interactiva de sitio web móvil de alta conversión para empresas y contratistas en Chile.'),
   priority: 0.5,
-  noindex: true,
   jsonLd: [],
 };
 
