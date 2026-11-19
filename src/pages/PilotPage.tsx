@@ -283,7 +283,14 @@ export const PilotPage: React.FC = () => {
               rows={2}
               value={rawPasted}
               onChange={e => handleParsePasted(e.target.value)}
-              placeholder="Pega aquí el enlace de Facebook Marketplace (o copia y pega el texto del anuncio, ej: 'Fletes y mudanzas en San Bernardo fono 988341122...')"
+              onPaste={e => {
+                const text = e.clipboardData.getData('text');
+                if (text && text.trim().length > 3) {
+                  setRawPasted(text);
+                  handleExtraerConIA(text);
+                }
+              }}
+              placeholder="Pega aquí el enlace de Facebook Marketplace o copia y pega el texto del anuncio (ej: 'Fletes y mudanzas en San Bernardo fono 988341122...')"
               className="flex-1 bg-[#0E1116] border border-white/15 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6412] font-sans"
             />
             <button
