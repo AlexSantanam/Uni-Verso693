@@ -106,10 +106,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                           Boolean(req.query.e || req.query.empresa || req.query.r || req.query.rubro || !req.query.slug);
 
     if (isHtmlRequest) {
-      const empresa = (req.query.e || req.query.empresa || '').toString().trim();
-      const rubro = (req.query.r || req.query.rubro || 'maquinaria').toString().trim().toLowerCase();
-      const comuna = (req.query.c || req.query.comuna || '').toString().trim();
-      const customFoto = (req.query.f || req.query.foto || '').toString().trim();
+      let rawUrl = req.url || '';
+      if (rawUrl.includes('%3F') || rawUrl.includes('%3f')) {
+        rawUrl = rawUrl.replace(/%3[Ff]/g, '?');
+      }
+      let extraParams: URLSearchParams | null = null;
+      if (rawUrl.includes('?')) {
+        try {
+          extraParams = new URLSearchParams(rawUrl.split('?')[1]);
+        } catch {}
+      }
+
+      const empresa = (
+        req.query.e || req.query.empresa || extraParams?.get('e') || extraParams?.get('empresa') || ''
+      ).toString().trim();
+      const rubro = (
+        req.query.r || req.query.rubro || extraParams?.get('r') || extraParams?.get('rubro') || 'maquinaria'
+      ).toString().trim().toLowerCase();
+      const comuna = (
+        req.query.c || req.query.comuna || extraParams?.get('c') || extraParams?.get('comuna') || ''
+      ).toString().trim();
+      const customFoto = (
+        req.query.f || req.query.foto || extraParams?.get('f') || extraParams?.get('foto') || ''
+      ).toString().trim();
 
       const RUBRO_INFO: Record<string, { title: string; image: string; desc: string }> = {
         maquinaria: {

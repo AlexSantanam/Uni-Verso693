@@ -104,11 +104,7 @@
       "destination": "/auditoria"
     },
     {
-      "source": "/demo",
-      "destination": "/api/demo"
-    },
-    {
-      "source": "/demo/(.*)",
+      "source": "/demo(.*)",
       "destination": "/api/demo"
     },
     {

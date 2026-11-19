@@ -92,7 +92,9 @@ export const PilotPage: React.FC = () => {
   const mensajeWhatsApp = mensajeEditado !== null ? mensajeEditado : mensajeWhatsAppCalculado;
 
   const urlWhatsAppDirecto = useMemo(() => {
-    return `https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+    // Mantener '?' literal para que WhatsApp no lo convierta en %3F en el texto del chat
+    const encoded = encodeURIComponent(mensajeWhatsApp).replace(/%3F/g, '?');
+    return `https://wa.me/${telefonoLimpio}?text=${encoded}`;
   }, [telefonoLimpio, mensajeWhatsApp]);
 
   // Extractor inteligente con IA (Groq) para Marketplace, enlaces y anuncios copiados
