@@ -113,6 +113,80 @@ export const RUBROS_CATALOG: Record<string, RubroConfig> = {
     pitchWhatsAppTemplate: 'Hola {empresa}, buen día. Alexis por acá de UniVerso 693. Vi su contacto buscando arriendo de maquinaria en {comuna}. Noté que quienes buscan máquinas en Google desde el celular no encuentran una página directa de ustedes para cotizar rápido, y terminan llamando a la competencia.\n\nLes armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:\n👉 {linkDemo}\n\nSe las dejamos 100% activa con su propio dominio .CL, su flota y su teléfono por $85.000 IVA inc. pago único (sin mensualidades obligatorias). ¿Le damos una mirada y se las dejamos andando hoy? Saludos!'
   },
 
+  camion_pluma: {
+    id: 'camion_pluma',
+    nombreRubro: 'Arriendo de Camión Pluma, Grúa Móvil & Servicios de Izaje',
+    rubroSubheader: 'Camión Pluma & Servicios de Izaje',
+    keywords: ['pluma', 'camion pluma', 'grua movil', 'grua camion', 'izaje', 'grua horquilla', 'telescopica'],
+    heroImg: '/assets/camion_pluma/hero-camion-pluma.jpg',
+    aboutImg: '/assets/camion_pluma/about-camion-pluma.jpg',
+    tagline: 'Flota y Operaciones en {comuna}',
+    bajadaHero: 'Arriendo de camión pluma y grúa móvil para izaje, montaje y descarga de materiales en {comuna}. Operadores certificados, pluma telescópica y respuesta inmediata en faena.',
+    trustBadges: [
+      { label: 'Disponibilidad:', valor: 'En el Día' },
+      { label: 'Normativa:', valor: 'Mutual CChC / DS N°594' },
+      { label: 'Facturación:', valor: 'Inmediata (SII)' },
+      { label: 'Capacidad:', valor: 'Hasta 20 Toneladas' }
+    ],
+    serviciosTitle: 'Flota y Servicios de Izaje en Arriendo',
+    serviciosDesc: 'Equipos de izaje y camiones pluma preparados para montaje, carga y descarga de materiales en {comuna}.',
+    cards: [
+      {
+        linea: 'Línea 01 · Izaje en Altura',
+        titulo: 'Camión Pluma con Grúa Telescópica',
+        descripcion: 'Izaje de estructuras, paneles, equipos y materiales de construcción en altura con operador certificado y rigger a cargo de maniobra.',
+        foto: '/assets/camion_pluma/izaje-grua-boom.jpg',
+        eett: 'Pluma telescópica · Capacidad hasta 20 Ton · Gancho doble',
+        disponibilidad: 'Turnos por Hora y Jornada',
+        cta: 'Cotizar Camión Pluma'
+      },
+      {
+        linea: 'Línea 02 · Carga y Descarga',
+        titulo: 'Carga y Descarga de Materiales & Contenedores',
+        descripcion: 'Descarga de camiones, movimiento de contenedores, maquinaria liviana y materiales paletizados directo en bodega o faena.',
+        foto: '/assets/camion_pluma/carga-descarga-material.jpg',
+        eett: 'Brazo hidráulico extensible · Descarga lateral y trasera',
+        disponibilidad: 'Arriendo con Operador',
+        cta: 'Cotizar Carga y Descarga'
+      },
+      {
+        linea: 'Línea 03 · Traslado de Equipos',
+        titulo: 'Traslado de Maquinaria en Cama Baja',
+        descripcion: 'Transporte de maquinaria pesada, equipos industriales y vehículos fuera de ruta entre faenas con permisos de carga.',
+        foto: '/assets/camion_pluma/traslado-cama-baja.jpg',
+        eett: 'Cama baja multieje · Rampas hidráulicas · Amarre certificado',
+        disponibilidad: 'Flota Disponible en Faena',
+        cta: 'Cotizar Traslado'
+      },
+      {
+        linea: 'Línea 04 · Servicio General',
+        titulo: 'Grúa Móvil para Faenas y Montajes Programados',
+        descripcion: 'Servicio de grúa móvil para montajes programados, mantenimiento industrial y apoyo a cuadrillas en terreno.',
+        foto: '/assets/camion_pluma/grua-movil-faena.jpg',
+        eett: 'Grúa móvil sobre camión · Operador y rigger incluidos',
+        disponibilidad: 'Jornada Completa y Media Jornada',
+        cta: 'Cotizar Grúa Móvil'
+      }
+    ],
+    sectoresTitle: 'Faenas Habituales & Sectores de Operación',
+    sectores: [
+      { nombre: 'Constructoras & Edificación', desc: 'Montaje de Estructuras y Paneles' },
+      { nombre: 'Bodegas & Centros Logísticos', desc: 'Carga y Descarga de Contenedores' },
+      { nombre: 'Parques Industriales', desc: 'Mantenimiento de Equipos en Altura' },
+      { nombre: 'Instalación de Letreros & Postes', desc: 'Izaje Puntual en Vía Pública' },
+      { nombre: 'Eventos & Montajes Temporales', desc: 'Estructuras de Escenario y Toldos' },
+      { nombre: 'Traslado de Maquinaria', desc: 'Entre Faenas y Bodegas' }
+    ],
+    normativas: [
+      { tag: 'Prevención de Riesgos', titulo: 'Mutual de Seguridad CChC', desc: 'Afiliación activa, charlas de seguridad diarias antes de iniciar maniobras y política permanente de Cero Daño.' },
+      { tag: 'Personal en Terreno', titulo: 'Operadores y Rigger Certificados', desc: 'Licencias de conducir al día, certificación de maniobrista (rigger) y acreditación para izaje en faenas industriales.' },
+      { tag: 'Mantenimiento Mecánico', titulo: 'Pauta Preventiva Rigurosa', desc: 'Revisión diaria de niveles hidráulicos, cables de acero y control de horómetro para garantizar cero fallas.' },
+      { tag: 'Administración & SII', titulo: 'Facturación Inmediata', desc: 'Emisión de Factura Electrónica con detalle de horas de maniobra, estado de pago formal y recepción conforme.' }
+    ],
+    leadMsgTemplate: 'Hola {empresa}, vi su sitio web oficial y necesito cotizar un servicio de camión pluma / izaje en {comuna}. ¿Tienen disponibilidad?',
+    pitchWhatsAppTemplate: 'Hola {empresa}, buen día. Alexis por acá de UniVerso 693. Vi su contacto buscando arriendo de camión pluma en {comuna}. Noté que quienes buscan grúas o izaje en Google desde el celular no encuentran una página directa de ustedes para cotizar rápido, y terminan llamando a la competencia.\n\nLes armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:\n👉 {linkDemo}\n\nSe las dejamos 100% activa con su propio dominio .CL, su flota y su teléfono por $85.000 IVA inc. pago único (sin mensualidades obligatorias). ¿Le damos una mirada y se las dejamos andando hoy? Saludos!'
+  },
+
   transporte_pasajeros: {
     id: 'transporte_pasajeros',
     nombreRubro: 'Transporte Privado de Pasajeros, Vans & Personal',
