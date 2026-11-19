@@ -25,6 +25,7 @@ export interface RubroConfig {
   rubroSubheader: string;
   keywords: string[];
   heroImg: string;
+  aboutImg?: string;
   tagline: string;
   bajadaHero: string;
   trustBadges: Array<{ label: string; valor: string }>;
@@ -118,6 +119,7 @@ export const RUBROS_CATALOG: Record<string, RubroConfig> = {
     rubroSubheader: 'Transporte de Pasajeros & Viajes Especiales',
     keywords: ['pasajero', 'personal', 'van', 'vans', 'minibus', 'turismo', 'aeropuerto', 'viajes especiales', 'viaje especial', 'traslado', 'sprinter', 'paseo', 'bus', 'concierto', 'matrimonio', 'gira'],
     heroImg: '/assets/pasajeros/hero-transporte-pasajeros.jpg',
+    aboutImg: '/assets/pasajeros/about-transporte-pasajeros.jpg',
     tagline: 'Flota de Vans & Minibuses en {comuna} y Cobertura Nacional',
     bajadaHero: 'Servicio de transporte privado de pasajeros, traslado de personal a faenas y empresas, viajes especiales, traslados al aeropuerto y paseos turísticos desde {comuna}. Vans ejecutivas modernas, choferes profesionales con licencia A-2 y máxima puntualidad.',
     trustBadges: [

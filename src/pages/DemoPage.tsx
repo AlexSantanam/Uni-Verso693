@@ -368,7 +368,7 @@ export const DemoPage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="border border-[#E2E4E8] p-2 bg-[#F4F5F7]">
                 <img
-                  src={rubroConfig.cards[1]?.foto || rubroConfig.heroImg}
+                  src={rubroConfig.aboutImg || rubroConfig.cards[1]?.foto || rubroConfig.heroImg}
                   alt={`Operación de ${rubroConfig.nombreRubro}`}
                   className="w-full h-80 object-cover"
                 />
