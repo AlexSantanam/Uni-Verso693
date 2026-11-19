@@ -112,6 +112,79 @@ export const RUBROS_CATALOG: Record<string, RubroConfig> = {
     pitchWhatsAppTemplate: 'Hola {empresa}, buen día. Alexis por acá de UniVerso 693. Vi su contacto buscando arriendo de maquinaria en {comuna}. Noté que quienes buscan máquinas en Google desde el celular no encuentran una página directa de ustedes para cotizar rápido, y terminan llamando a la competencia.\n\nLes armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:\n👉 {linkDemo}\n\nSe las dejamos 100% activa con su propio dominio .CL, su flota y su teléfono por $85.000 IVA inc. pago único (sin mensualidades obligatorias). ¿Le damos una mirada y se las dejamos andando hoy? Saludos!'
   },
 
+  transporte_pasajeros: {
+    id: 'transporte_pasajeros',
+    nombreRubro: 'Transporte Privado de Pasajeros, Vans & Personal',
+    rubroSubheader: 'Transporte de Pasajeros & Viajes Especiales',
+    keywords: ['pasajero', 'personal', 'van', 'vans', 'minibus', 'turismo', 'aeropuerto', 'viajes especiales', 'viaje especial', 'traslado', 'sprinter', 'paseo', 'bus', 'concierto', 'matrimonio', 'gira'],
+    heroImg: '/assets/pasajeros/hero-transporte-pasajeros.jpg',
+    tagline: 'Flota de Vans & Minibuses en {comuna} y Cobertura Nacional',
+    bajadaHero: 'Servicio de transporte privado de pasajeros, traslado de personal a faenas y empresas, viajes especiales, traslados al aeropuerto y paseos turísticos desde {comuna}. Vans ejecutivas modernas, choferes profesionales con licencia A-2 y máxima puntualidad.',
+    trustBadges: [
+      { label: 'Normativa:', valor: 'Decreto 80 / MTT' },
+      { label: 'Conductores:', valor: 'Licencia Profesional A-2' },
+      { label: 'Equipamiento:', valor: 'Climatizador & GPS 24/7' },
+      { label: 'Facturación:', valor: 'Inmediata (SII)' }
+    ],
+    serviciosTitle: 'Flota de Vans & Servicios de Pasajeros',
+    serviciosDesc: 'Vehículos ejecutivos y minibuses acondicionados para el confort y seguridad de pasajeros en trayectos urbanos, interurbanos y viajes especiales desde {comuna}.',
+    cards: [
+      {
+        linea: 'Línea 01 · Corporativo & Faenas',
+        titulo: 'Transporte de Personal para Empresas & Faenas',
+        descripcion: 'Turnos rotativos, traslados de acercamiento para cuadrillas, operarios y personal administrativo con retiro y retorno directo a faena o planta.',
+        foto: '/assets/pasajeros/van-transporte-personal.jpg',
+        eett: 'Vans 11 a 19 asientos · Asientos reclinables · GPS en vivo',
+        disponibilidad: 'Contratos Mensuales y Turnos Diarios',
+        cta: 'Cotizar Transporte Personal'
+      },
+      {
+        linea: 'Línea 02 · Aeropuerto & Negocios',
+        titulo: 'Traslados al Aeropuerto & Viajes Ejecutivos',
+        descripcion: 'Recepción y salidas a terminales aéreos 24/7 (ida y regreso), hoteles, embajadas y eventos corporativos con monitoreo de vuelo.',
+        foto: '/assets/pasajeros/traslado-aeropuerto.jpg',
+        eett: 'Vehículo ejecutivo · Maletero amplio · Chofer formal',
+        disponibilidad: 'Reservas 24/7 con Anticipación',
+        cta: 'Cotizar Traslado Aeropuerto'
+      },
+      {
+        linea: 'Línea 03 · Turismo & Delegaciones',
+        titulo: 'Viajes Turísticos, Paseos de Curso & Grupos',
+        descripcion: 'Viajes a la playa, nieve, viñas, paseos escolares, delegaciones deportivas y giras con chofer dedicado por jornada completa.',
+        foto: '/assets/pasajeros/minibus-turismo.jpg',
+        eett: 'Minibuses de turismo · Micrófono a bordo · Cargadores USB',
+        disponibilidad: 'Salidas Programadas y Feriados',
+        cta: 'Cotizar Viaje Turístico'
+      },
+      {
+        linea: 'Línea 04 · Eventos & Matrimonios',
+        titulo: 'Traslados para Conciertos, Fiestas & Matrimonios',
+        descripcion: 'Transporte seguro de invitados y familias para matrimonios, conciertos y celebraciones especiales con retorno nocturno garantizado.',
+        foto: '/assets/pasajeros/van-eventos.jpg',
+        eett: 'Servicio puerta a puerta · Coordinación de retornos seguros',
+        disponibilidad: 'Disponibilidad Nocturna y Fines de Semana',
+        cta: 'Cotizar Eventos Especiales'
+      }
+    ],
+    sectoresTitle: 'Modalidades Habituales de Traslado de Pasajeros',
+    sectores: [
+      { nombre: 'Empresas & Faenas Industriales', desc: 'Turnos y Acercamiento de Trabajadores' },
+      { nombre: 'Aeropuertos & Hotelería', desc: 'Traslados Ejecutivos 24/7' },
+      { nombre: 'Colegios & Universidades', desc: 'Paseos de Curso y Giras de Estudio' },
+      { nombre: 'Productoras & Conciertos', desc: 'Traslado de Staff, Artistas y Asistentes' },
+      { nombre: 'Familias & Grupos Particulares', desc: 'Vacaciones y Viajes a Regiones' },
+      { nombre: 'Matrimonios & Celebraciones', desc: 'Retornos Seguros y Coordinación de Horarios' }
+    ],
+    normativas: [
+      { tag: 'Ministerio de Transportes', titulo: 'Cumplimiento Decreto 80 MTT', desc: 'Inscripción reglamentaria en el Registro Nacional de Servicios de Transporte Remunerado de Pasajeros.' },
+      { tag: 'Conductores', titulo: 'Licencia Profesional Clase A-2', desc: 'Choferes con antecedentes intachables, exámenes psicotécnicos rigurosos y amplia experiencia en carretera.' },
+      { tag: 'Seguridad a Bordo', titulo: 'Cinturones de 3 Puntas & Extintores', desc: 'Todas las butacas cuentan con cinturón inercial, botiquín de primeros auxilios y revisión técnica al día.' },
+      { tag: 'Administración', titulo: 'Facturación Electrónica SII', desc: 'Emisión inmediata de Factura exenta o afecta para rendición corporativa o reembolso de empresas.' }
+    ],
+    leadMsgTemplate: 'Hola {empresa}, vi su sitio web oficial y necesito cotizar un servicio de van / transporte de pasajeros en {comuna}. ¿Tienen disponibilidad?',
+    pitchWhatsAppTemplate: 'Hola {empresa}, buen día. Alexis por acá de UniVerso 693. Vi su servicio de vans y transporte de pasajeros en {comuna}. Noté que cuando empresas o grupos buscan traslados o vans en Google desde el celular, no encuentran una página directa de ustedes con su flota y botón para cotizar en 1 clic.\n\nLes armé una vista previa de cómo quedaría su sitio web en el celular con sus vans y cotización directa a su WhatsApp:\n👉 {linkDemo}\n\nSe las dejamos 100% activa con su propio dominio .CL y su teléfono por $85.000 IVA inc. pago único (sin mensualidades obligatorias). ¿Le damos una mirada y se las dejamos funcionando hoy? Saludos!'
+  },
+
   transporte: {
     id: 'transporte',
     nombreRubro: 'Transporte de Carga, Fletes & Logística Terrestre',

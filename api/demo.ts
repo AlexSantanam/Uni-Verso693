@@ -47,14 +47,14 @@ async function extractWithGroq(text: string): Promise<{ nombre?: string; rubro?:
     const prompt = `Eres un extractor de datos comerciales para contratistas, transportistas y pymes en Chile.
 Analiza la siguiente información (extraída de un anuncio de Marketplace, Facebook, Instagram, Google Maps, web o texto copiado de un prospecto) y devuelve ÚNICAMENTE un objeto JSON válido con este formato:
 {
-  "nombre": "Nombre de la empresa o contratista (ej: 'Transportes San Bernardo', 'Maquinarias Gonzalez', 'Fletes Don Carlos', 'Maestranza El Roble')",
-  "rubro": "maquinaria" | "transporte" | "maestranza" | "construccion" | "seguridad",
+  "nombre": "Nombre de la empresa o contratista (ej: 'VIAJES ESPECIALES', 'Transportes San Bernardo', 'Maquinarias Gonzalez', 'Fletes Don Carlos', 'Maestranza El Roble')",
+  "rubro": "maquinaria" | "transporte" | "transporte_pasajeros" | "maestranza" | "construccion" | "seguridad",
   "telefono": "Teléfono chileno limpio con formato 569XXXXXXXX (ej: 56991234567)",
-  "comuna": "Comuna o ciudad en Chile (ej: Lampa, Colina, San Bernardo, Melipilla, Viña del Mar, Rancagua)"
+  "comuna": "Comuna o ciudad en Chile (ej: Quilpué, Lampa, Colina, San Bernardo, Melipilla, Viña del Mar, Rancagua)"
 }
 
-Si falta el nombre exacto, genera uno formal a partir del rubro y la comuna (ej: 'Arriendo de Maquinaria Lampa' o 'Transportes y Fletes San Bernardo').
-Si habla de camiones, fletes, ramplas, distribución o mudanzas, rubro es 'transporte'.
+Si habla de viajes especiales, vans, traslado de personal, aeropuerto, paseos de curso, turismo, matrimonios, traslados privados o pasajeros, rubro es 'transporte_pasajeros'.
+Si habla de camiones, fletes de carga, ramplas, distribución, tolvas o mudanzas, rubro es 'transporte'.
 Si habla de retroexcavadoras, excavadoras, tolvas o movimiento de tierras, rubro es 'maquinaria'.
 Si habla de soldadura, estructuras metálicas, galpones o calderería, rubro es 'maestranza'.
 Si habla de radier, hormigón, obras civiles o remodelaciones, rubro es 'construccion'.

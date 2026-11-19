@@ -390,6 +390,22 @@ export const PilotPage: React.FC = () => {
 
                   <button
                     type="button"
+                    onClick={() => setRubroId('transporte_pasajeros')}
+                    className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                      rubroId === 'transporte_pasajeros'
+                        ? 'border-[#FF6412] bg-[#FF6412]/15 text-white font-bold shadow-md shadow-[#FF6412]/10'
+                        : 'border-white/10 bg-[#0E1116] text-slate-400 hover:border-white/20'
+                    }`}
+                  >
+                    <span className="text-lg">🚐</span>
+                    <div>
+                      <strong className="block leading-tight text-white">Pasajeros & Vans</strong>
+                      <span className="text-[10px] text-slate-400">Personal & Viajes</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => setRubroId('transporte')}
                     className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
                       rubroId === 'transporte'
@@ -399,8 +415,8 @@ export const PilotPage: React.FC = () => {
                   >
                     <span className="text-lg">🚛</span>
                     <div>
-                      <strong className="block leading-tight text-white">Transporte</strong>
-                      <span className="text-[10px] text-slate-400">Carga & Fletes</span>
+                      <strong className="block leading-tight text-white">Carga & Fletes</strong>
+                      <span className="text-[10px] text-slate-400">Camiones & Ramplas</span>
                     </div>
                   </button>
 
