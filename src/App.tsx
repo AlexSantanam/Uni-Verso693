@@ -26,6 +26,7 @@ const EbsView = React.lazy(() => import('./pages/EbsView'));
 const Boveda = React.lazy(() => import('./pages/Boveda'));
 const Onboarding = React.lazy(() => import('./pages/Onboarding'));
 const DemoPage = React.lazy(() => import('./pages/DemoPage').then(m => ({ default: m.DemoPage })));
+const PilotPage = React.lazy(() => import('./pages/PilotPage').then(m => ({ default: m.PilotPage })));
 
 const NotFound: React.FC = () => (
   <Container className="py-32 text-center space-y-4">
@@ -109,6 +110,22 @@ export const AppRoutes: React.FC = () => (
             element={
               <React.Suspense fallback={null}>
                 <DemoPage />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="pilot"
+            element={
+              <React.Suspense fallback={null}>
+                <PilotPage />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="piloto"
+            element={
+              <React.Suspense fallback={null}>
+                <PilotPage />
               </React.Suspense>
             }
           />

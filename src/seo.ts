@@ -625,7 +625,16 @@ const demoPage: PageSeo = {
   jsonLd: [],
 };
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, demoPage];
+const pilotPage: PageSeo = {
+  path: '/pilot',
+  title: 'Pilot Page Engine · Generador de Demos B2B | Uni-Verso693',
+  description: clip('Generador interno de demos dinámicas y mensajes de WhatsApp para prospección comercial.'),
+  priority: 0.1,
+  noindex: true,
+  jsonLd: [],
+};
+
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, demoPage, pilotPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
