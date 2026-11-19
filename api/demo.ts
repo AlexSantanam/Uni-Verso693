@@ -154,9 +154,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
           try {
-            const resp = await fetch(targetUrl, {
+            // Si es Facebook Marketplace, usar endpoint móvil que no exige login
+            let fetchUrl = targetUrl;
+            let ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+            if (targetUrl.includes('facebook.com')) {
+              fetchUrl = targetUrl.replace('www.facebook.com', 'm.facebook.com');
+              ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1';
+            }
+
+            const resp = await fetch(fetchUrl, {
               headers: {
-                'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php) Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': ua,
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
               },
               signal: AbortSignal.timeout(6000)
