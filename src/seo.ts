@@ -618,8 +618,8 @@ const pagoPage: PageSeo = {
 
 const demoPage: PageSeo = {
   path: '/demo',
-  title: 'Vista Previa de Catálogo y Página Web | Uni-Verso693',
-  description: clip('Vista previa interactiva de sitio web móvil de alta conversión para empresas y contratistas en Chile.'),
+  title: `Uni-Verso693 | Desarrollo de software, IA y Plataformas SaaS`,
+  description: clip('Desarrollo de software a medida, agentes de IA y apps móviles para empresas.'),
   priority: 0.5,
   jsonLd: [],
 };
@@ -633,7 +633,7 @@ const pilotPage: PageSeo = {
   jsonLd: [],
 };
 
-export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, pilotPage];
+export const allPages: PageSeo[] = [home, paginasWebPage, servicesPage, ...servicePages, casesPage, ...casePages, about, bovedaPage, diagnosticoPage, auditPage, impulsaPymePage, ...impulsaRubroPages, ...industryPages, blogPage, ...postPages, contact, pagoPage, internoPage, ebsViewPage, auditoriaPage, demoPage, pilotPage];
 
 export const getSeo = (pathname: string): PageSeo => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;

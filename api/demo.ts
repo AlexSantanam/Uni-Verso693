@@ -168,14 +168,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       };
 
-      const info = RUBRO_INFO[rubro] || RUBRO_INFO['maquinaria'];
-      const pageTitle = empresa
-        ? `${empresa}${comuna ? ` (${comuna})` : ''} · Catálogo Web Móvil`
-        : `Vista Previa de Catálogo y Página Web | Uni-Verso693`;
-      const pageDesc = empresa
-        ? `Vista previa de catálogo para ${empresa}${comuna ? ` en ${comuna}` : ''}. Cotización directa en 1 clic a WhatsApp.`
-        : info.desc;
-      const pageImage = customFoto || info.image;
+      // Tarjeta base institucional de Uni-Verso 693 para WhatsApp / Meta / Redes Sociales
+      const baseTitle = 'Uni-Verso693 | Desarrollo de software, IA y Plataformas SaaS';
+      const baseDesc = 'Desarrollo de software a medida, agentes de IA y apps móviles para empresas.';
+      const baseImage = 'https://universo693.com/og-image.jpg';
 
       let html = '';
       try {
@@ -196,18 +192,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (html) {
         const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const safeTitle = esc(pageTitle);
-        const safeDesc = esc(pageDesc);
+        const safeTitle = esc(baseTitle);
+        const safeDesc = esc(baseDesc);
 
         html = html
           .replace(/<title>[^<]*<\/title>/, `<title>${safeTitle}</title>`)
           .replace(/<meta property="og:title" content="[^"]*" \/>/, `<meta property="og:title" content="${safeTitle}" />`)
           .replace(/<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${safeDesc}" />`)
-          .replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${pageImage}" />`)
-          .replace(/<meta property="og:image:secure_url" content="[^"]*" \/>/, `<meta property="og:image:secure_url" content="${pageImage}" />`)
+          .replace(/<meta property="og:image" content="[^"]*" \/>/, `<meta property="og:image" content="${baseImage}" />`)
+          .replace(/<meta property="og:image:secure_url" content="[^"]*" \/>/, `<meta property="og:image:secure_url" content="${baseImage}" />`)
           .replace(/<meta name="twitter:title" content="[^"]*" \/>/, `<meta name="twitter:title" content="${safeTitle}" />`)
           .replace(/<meta name="twitter:description" content="[^"]*" \/>/, `<meta name="twitter:description" content="${safeDesc}" />`)
-          .replace(/<meta name="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${pageImage}" />`)
+          .replace(/<meta name="twitter:image" content="[^"]*" \/>/, `<meta name="twitter:image" content="${baseImage}" />`)
           .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="index, follow, max-image-preview:large" />');
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
