@@ -44,17 +44,21 @@ async function extractWithGroq(text: string): Promise<{ nombre?: string; rubro?:
   if (!apiKey) return null;
 
   try {
-    const prompt = `Eres un extractor de datos comerciales para contratistas y pymes en Chile.
-Analiza la siguiente información (extraída de un enlace de Facebook, Instagram, Google Maps, web o texto copiado de un prospecto) y devuelve ÚNICAMENTE un objeto JSON válido con este formato:
+    const prompt = `Eres un extractor de datos comerciales para contratistas, transportistas y pymes en Chile.
+Analiza la siguiente información (extraída de un anuncio de Marketplace, Facebook, Instagram, Google Maps, web o texto copiado de un prospecto) y devuelve ÚNICAMENTE un objeto JSON válido con este formato:
 {
-  "nombre": "Nombre de la empresa o contratista",
-  "rubro": "maquinaria" | "clima" | "fletes" | "gasfiteria" | "general",
+  "nombre": "Nombre de la empresa o contratista (ej: 'Transportes San Bernardo', 'Maquinarias Gonzalez', 'Fletes Don Carlos', 'Maestranza El Roble')",
+  "rubro": "maquinaria" | "transporte" | "maestranza" | "construccion" | "seguridad",
   "telefono": "Teléfono chileno limpio con formato 569XXXXXXXX (ej: 56991234567)",
-  "comuna": "Comuna o ciudad en Chile (ej: Lampa, Melipilla, Viña del Mar, San Bernardo)",
-  "rut": "RUT chileno si se menciona, o vacío"
+  "comuna": "Comuna o ciudad en Chile (ej: Lampa, Colina, San Bernardo, Melipilla, Viña del Mar, Rancagua)"
 }
 
-Si falta algún campo, deduce el más razonable según el contexto (por ejemplo si habla de retroexcavadoras, rubro es "maquinaria").
+Si falta el nombre exacto, genera uno formal a partir del rubro y la comuna (ej: 'Arriendo de Maquinaria Lampa' o 'Transportes y Fletes San Bernardo').
+Si habla de camiones, fletes, ramplas, distribución o mudanzas, rubro es 'transporte'.
+Si habla de retroexcavadoras, excavadoras, tolvas o movimiento de tierras, rubro es 'maquinaria'.
+Si habla de soldadura, estructuras metálicas, galpones o calderería, rubro es 'maestranza'.
+Si habla de radier, hormigón, obras civiles o remodelaciones, rubro es 'construccion'.
+Si habla de guardias, vigilancia, cámaras o conserjería, rubro es 'seguridad'.
 
 Texto a procesar:
 """
@@ -140,10 +144,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           try {
             const resp = await fetch(inputUrlOrText, {
               headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml'
+                'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php) Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
               },
-              signal: AbortSignal.timeout(5000)
+              signal: AbortSignal.timeout(6000)
             });
 
             if (resp.ok) {

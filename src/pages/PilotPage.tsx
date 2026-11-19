@@ -39,6 +39,8 @@ export const PilotPage: React.FC = () => {
   const [precio, setPrecio] = useState('$85.000');
   const [fotoCustom, setFotoCustom] = useState('');
   const [rawPasted, setRawPasted] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractFeedback, setExtractFeedback] = useState<string | null>(null);
 
   const [copiadoLink, setCopiadoLink] = useState(false);
   const [copiadoMsg, setCopiadoMsg] = useState(false);
@@ -87,38 +89,93 @@ export const PilotPage: React.FC = () => {
     return `https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
   }, [telefonoLimpio, mensajeWhatsApp]);
 
-  // Parser inteligente si pega un link o texto crudo
-  const handleParsePasted = (text: string) => {
-    setRawPasted(text);
-    if (!text) return;
+  // Extractor inteligente con IA (Groq) para Marketplace, enlaces y anuncios copiados
+  const handleExtraerConIA = async (inputOverride?: string) => {
+    const textToProcess = (inputOverride !== undefined ? inputOverride : rawPasted).trim();
+    if (!textToProcess) return;
+
+    // 1. Detección rápida local si es un link con parámetros directos
+    if (textToProcess.includes('?')) {
+      const query = textToProcess.split('?')[1];
+      const sp = new URLSearchParams(query);
+      const e = sp.get('e') || sp.get('empresa');
+      const r = sp.get('r') || sp.get('rubro');
+      const t = sp.get('t') || sp.get('tel');
+      const c = sp.get('c') || sp.get('comuna');
+      if (e) setEmpresa(decodeURIComponent(e));
+      if (r && RUBROS_CATALOG[r]) setRubroId(r);
+      if (t) setTelefono(decodeURIComponent(t));
+      if (c) setComuna(decodeURIComponent(c));
+      setExtractFeedback('✅ Parámetros de URL cargados exitosamente');
+      return;
+    }
+
+    // 2. Línea clásica: "Empresa (Comuna) — https://wa.me/569..."
+    const matchLine = textToProcess.match(/^(.*?)\s*\((.*?)\)\s*—\s*https:\/\/wa\.me\/(\d+)/i);
+    if (matchLine) {
+      const [, empName, comName, telNum] = matchLine;
+      setEmpresa(empName.trim());
+      setComuna(comName.trim());
+      setTelefono(telNum.trim());
+      const detected = getRubroConfig('', empName);
+      setRubroId(detected.id);
+      setExtractFeedback(`✅ Datos extraídos: ${empName} (${detected.id})`);
+      return;
+    }
+
+    // 3. Procesamiento profundo con IA para anuncios de Marketplace, webs o texto libre
+    setIsExtracting(true);
+    setExtractFeedback('Analizando anuncio con IA...');
 
     try {
-      // Si es un link con query params (ej: demo?e=... o wa.me/?text=...)
-      if (text.includes('?')) {
-        const query = text.split('?')[1];
-        const sp = new URLSearchParams(query);
-        const e = sp.get('e') || sp.get('empresa');
-        const r = sp.get('r') || sp.get('rubro');
-        const t = sp.get('t') || sp.get('tel');
-        const c = sp.get('c') || sp.get('comuna');
-        if (e) setEmpresa(decodeURIComponent(e));
-        if (r && RUBROS_CATALOG[r]) setRubroId(r);
-        if (t) setTelefono(decodeURIComponent(t));
-        if (c) setComuna(decodeURIComponent(c));
-        return;
-      }
+      const isUrl = textToProcess.startsWith('http://') || textToProcess.startsWith('https://');
+      const res = await fetch('/api/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: isUrl ? textToProcess : undefined,
+          rawInput: textToProcess,
+          extractOnly: true
+        })
+      });
 
-      // Si es una línea de lista: "Empresa (Comuna) — https://wa.me/569..."
-      const matchPattern = text.match(/^(.*?)\s*\((.*?)\)\s*—\s*https:\/\/wa\.me\/(\d+)/i);
-      if (matchPattern) {
-        const [, empName, comName, telNum] = matchPattern;
-        setEmpresa(empName.trim());
-        setComuna(comName.trim());
-        setTelefono(telNum.trim());
-        const detected = getRubroConfig('', empName);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.extracted) {
+          const { nombre, rubro, telefono: tel, comuna: com, foto } = data.extracted;
+          if (nombre) setEmpresa(nombre);
+          if (rubro && RUBROS_CATALOG[rubro]) {
+            setRubroId(rubro);
+          } else if (rubro) {
+            const detected = getRubroConfig(rubro, nombre || '');
+            setRubroId(detected.id);
+          }
+          if (tel) setTelefono(tel);
+          if (com) setComuna(com);
+          if (foto) setFotoCustom(foto);
+
+          setExtractFeedback(`✨ ¡Anuncio analizado con éxito! Rubro detectado: ${rubro || 'general'}`);
+        } else {
+          setExtractFeedback('⚠️ No se pudieron extraer datos precisos. Revisa los campos manuales.');
+        }
+      } else {
+        // Fallback heurístico en el navegador si falla la API
+        const detected = getRubroConfig(textToProcess, textToProcess);
         setRubroId(detected.id);
+        setExtractFeedback(`ℹ️ Rubro aproximado detectado: ${detected.nombreRubro}`);
       }
-    } catch {}
+    } catch (err) {
+      console.warn('Error al extraer con IA:', err);
+      const detected = getRubroConfig(textToProcess, textToProcess);
+      setRubroId(detected.id);
+      setExtractFeedback(`ℹ️ Rubro detectado por palabras clave: ${detected.nombreRubro}`);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleParsePasted = (text: string) => {
+    setRawPasted(text);
   };
 
   const handleCopiarLink = () => {
@@ -209,27 +266,50 @@ export const PilotPage: React.FC = () => {
       {/* Contenedor Principal */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         
-        {/* Banner de entrada rápida (Paste link o prospecto) */}
-        <div className="mb-8 p-4 rounded-xl bg-[#161B22] border border-white/10 shadow-lg">
-          <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2">
-            <RefreshCw className="w-3.5 h-3.5 text-[#FF6412]" />
-            Pegar enlace o línea de cliente (Autocompletar formulario):
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
+        {/* Banner de entrada rápida con IA (Marketplace, Links, Anuncios o Texto) */}
+        <div className="mb-8 p-5 rounded-xl bg-[#161B22] border border-white/10 shadow-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#FF6412]" />
+              Pegar enlace de Marketplace, Google Maps o texto copiado del anuncio:
+            </label>
+            <span className="text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">
+              Powered by Groq AI
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+            <textarea
+              rows={2}
               value={rawPasted}
               onChange={e => handleParsePasted(e.target.value)}
-              placeholder="Ej: Transportes Lampa (Lampa) — https://wa.me/56976484015?text=... o pega una URL con ?e=...&r=..."
-              className="flex-1 bg-[#0E1116] border border-white/15 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6412]"
+              placeholder="Pega aquí el enlace de Facebook Marketplace (o copia y pega el texto del anuncio, ej: 'Fletes y mudanzas en San Bernardo fono 988341122...')"
+              className="flex-1 bg-[#0E1116] border border-white/15 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF6412] font-sans"
             />
             <button
-              onClick={() => handleParsePasted(rawPasted)}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold text-slate-200 transition-colors"
+              onClick={() => handleExtraerConIA()}
+              disabled={isExtracting || !rawPasted.trim()}
+              className="px-5 py-2.5 bg-[#FF6412] hover:bg-[#E0520A] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-xs font-bold text-white transition-all shadow-md shadow-[#FF6412]/20 flex items-center justify-center gap-2 shrink-0 active:scale-95"
             >
-              Procesar
+              {isExtracting ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Analizando con IA...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>⚡ Analizar con IA</span>
+                </>
+              )}
             </button>
           </div>
+
+          {extractFeedback && (
+            <div className="text-xs px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-slate-300 flex items-center gap-2">
+              <span>{extractFeedback}</span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
