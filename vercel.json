@@ -105,6 +105,14 @@
     {
       "source": "/demo(.*)",
       "destination": "/demo"
+    },
+    {
+      "source": "/pilot(.*)",
+      "destination": "/pilot"
+    },
+    {
+      "source": "/piloto(.*)",
+      "destination": "/pilot"
     }
   ]
 }
