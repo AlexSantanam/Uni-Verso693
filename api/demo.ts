@@ -140,9 +140,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (inputUrlOrText && (!parsedNombre || !parsedTelefono || extractOnly)) {
         let extractedContext = inputUrlOrText;
 
-        if (inputUrlOrText.startsWith('http://') || inputUrlOrText.startsWith('https://')) {
+        // Limpiar URL si viene duplicada
+        let targetUrl = inputUrlOrText;
+        const matchUrl = inputUrlOrText.match(/(https?:\/\/[^\s"'<>]+)/i);
+        if (matchUrl) {
+          let singleUrl = matchUrl[1];
+          const secondHttp = singleUrl.indexOf('http', 7);
+          if (secondHttp !== -1) {
+            singleUrl = singleUrl.substring(0, secondHttp);
+          }
+          targetUrl = singleUrl;
+        }
+
+        if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
           try {
-            const resp = await fetch(inputUrlOrText, {
+            const resp = await fetch(targetUrl, {
               headers: {
                 'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php) Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
@@ -159,12 +171,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               const ogImage = html.match(/<meta property=["']og:image["'] content=["']([^"']+)["']/i);
 
               if (ogImage?.[1] && !ogImage[1].includes('favicon')) {
-                parsedFoto = ogImage[1];
+                parsedFoto = ogImage[1].replace(/&amp;/g, '&');
               }
 
-              extractedContext = `URL: ${inputUrlOrText}\n` +
+              const cleanOgDesc = (ogDesc?.[1] || metaDesc?.[1] || '').replace(/&#x[0-9a-f]+;/gi, ' ');
+
+              extractedContext = `URL: ${targetUrl}\n` +
                 `Título: ${ogTitle?.[1] || titleMatch?.[1] || ''}\n` +
-                `Descripción: ${ogDesc?.[1] || metaDesc?.[1] || ''}\n` +
+                `Descripción: ${cleanOgDesc}\n` +
                 `Texto página: ${html.replace(/<[^>]+>/g, ' ').slice(0, 2000)}`;
             }
           } catch (fetchErr) {

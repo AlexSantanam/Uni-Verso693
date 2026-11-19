@@ -91,11 +91,25 @@ export const PilotPage: React.FC = () => {
 
   // Extractor inteligente con IA (Groq) para Marketplace, enlaces y anuncios copiados
   const handleExtraerConIA = async (inputOverride?: string) => {
-    const textToProcess = (inputOverride !== undefined ? inputOverride : rawPasted).trim();
+    let textToProcess = (inputOverride !== undefined ? inputOverride : rawPasted).trim();
     if (!textToProcess) return;
 
-    // 1. Detección rápida local si es un link con parámetros directos
-    if (textToProcess.includes('?')) {
+    // Limpiar si el usuario pegó dos URLs pegadas juntas (ej: https://...https://...)
+    if (textToProcess.includes('http')) {
+      const matchUrl = textToProcess.match(/(https?:\/\/[^\s"'<>]+)/i);
+      if (matchUrl) {
+        let singleUrl = matchUrl[1];
+        const secondHttp = singleUrl.indexOf('http', 7);
+        if (secondHttp !== -1) {
+          singleUrl = singleUrl.substring(0, secondHttp);
+        }
+        textToProcess = singleUrl;
+      }
+    }
+
+    // 1. Detección rápida local SOLO si es una URL de demo propia (universo693.com/demo?e=...)
+    const isOurDemoUrl = (textToProcess.includes('e=') || textToProcess.includes('empresa=')) && (textToProcess.includes('universo693') || textToProcess.includes('/demo'));
+    if (isOurDemoUrl && textToProcess.includes('?')) {
       const query = textToProcess.split('?')[1];
       const sp = new URLSearchParams(query);
       const e = sp.get('e') || sp.get('empresa');
@@ -106,11 +120,11 @@ export const PilotPage: React.FC = () => {
       if (r && RUBROS_CATALOG[r]) setRubroId(r);
       if (t) setTelefono(decodeURIComponent(t));
       if (c) setComuna(decodeURIComponent(c));
-      setExtractFeedback('✅ Parámetros de URL cargados exitosamente');
+      setExtractFeedback('✅ Parámetros de demo cargados exitosamente');
       return;
     }
 
-    // 2. Línea clásica: "Empresa (Comuna) — https://wa.me/569..."
+    // 2. Línea clásica de lista: "Empresa (Comuna) — https://wa.me/569..."
     const matchLine = textToProcess.match(/^(.*?)\s*\((.*?)\)\s*—\s*https:\/\/wa\.me\/(\d+)/i);
     if (matchLine) {
       const [, empName, comName, telNum] = matchLine;
@@ -125,7 +139,7 @@ export const PilotPage: React.FC = () => {
 
     // 3. Procesamiento profundo con IA para anuncios de Marketplace, webs o texto libre
     setIsExtracting(true);
-    setExtractFeedback('Analizando anuncio con IA...');
+    setExtractFeedback('Analizando anuncio de Marketplace con IA...');
 
     try {
       const isUrl = textToProcess.startsWith('http://') || textToProcess.startsWith('https://');
@@ -150,11 +164,15 @@ export const PilotPage: React.FC = () => {
             const detected = getRubroConfig(rubro, nombre || '');
             setRubroId(detected.id);
           }
-          if (tel) setTelefono(tel);
+          if (tel && tel !== '56991234567') {
+            setTelefono(tel);
+          } else if (tel) {
+            setTelefono(tel);
+          }
           if (com) setComuna(com);
-          if (foto) setFotoCustom(foto);
+          if (foto) setFotoCustom(foto.replace(/&amp;/g, '&'));
 
-          setExtractFeedback(`✨ ¡Anuncio analizado con éxito! Rubro detectado: ${rubro || 'general'}`);
+          setExtractFeedback(`✨ ¡Anuncio analizado con éxito! Rubro detectado: ${rubro || 'transporte'}`);
         } else {
           setExtractFeedback('⚠️ No se pudieron extraer datos precisos. Revisa los campos manuales.');
         }
