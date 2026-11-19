@@ -269,6 +269,8 @@ Vi su contacto buscando arriendo de maquinaria en ${parsedComuna}. Noté que qui
 Les armé una vista previa de cómo quedaría su catálogo en el celular para recibir cotizaciones en 1 clic directo a su WhatsApp:
 👉 ${demoUrl}
 
+*(Ojo: es solo una maqueta de referencia para que vea la idea; las fotos, textos, logo y servicios se adaptan 100% a su empresa y a su gusto).*
+
 Se las dejamos 100% instalada hoy mismo con su propio dominio .CL, su flota y su teléfono por $85.000 pago único (sin mensualidades obligatorias).
 
 ¿Le damos una mirada y se las dejamos lista hoy? Saludos!`;

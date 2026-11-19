@@ -76,14 +76,20 @@ export const PilotPage: React.FC = () => {
     return `${base}/demo?${params.toString()}`;
   }, [empresa, rubroId, telefonoLimpio, comuna, fotoCustom]);
 
-  // Construir mensaje de prospección WhatsApp
-  const mensajeWhatsApp = useMemo(() => {
+  // Construir mensaje de prospección WhatsApp base
+  const mensajeWhatsAppCalculado = useMemo(() => {
     const rawTemplate = rubroConfig.pitchWhatsAppTemplate;
     return rawTemplate
       .replace(/{empresa}/g, empresa.trim() || 'Estimados')
       .replace(/{comuna}/g, comuna.trim() || 'su comuna')
       .replace(/{linkDemo}/g, urlDemo);
   }, [rubroConfig, empresa, comuna, urlDemo]);
+
+  // Permitir edición libre del mensaje si el usuario quiere personalizarlo en el momento
+  const [mensajeEditado, setMensajeEditado] = useState<string | null>(null);
+
+  // Mensaje final activo
+  const mensajeWhatsApp = mensajeEditado !== null ? mensajeEditado : mensajeWhatsAppCalculado;
 
   const urlWhatsAppDirecto = useMemo(() => {
     return `https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensajeWhatsApp)}`;
@@ -614,13 +620,26 @@ export const PilotPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                   <Send className="w-4 h-4 text-[#25D366]" />
-                  Mensaje de Prospección WhatsApp (Calibrado para {rubroConfig.nombreRubro})
+                  Mensaje de Prospección WhatsApp (Editable en vivo)
                 </span>
+                {mensajeEditado !== null && (
+                  <button
+                    onClick={() => setMensajeEditado(null)}
+                    className="text-[11px] text-[#FF6412] hover:underline font-semibold"
+                    title="Volver al texto predeterminado"
+                  >
+                    ↺ Restaurar plantilla original
+                  </button>
+                )}
               </div>
 
-              <div className="p-4 bg-[#0E1116] border border-white/10 rounded-xl text-xs text-slate-300 whitespace-pre-line leading-relaxed font-sans max-h-48 overflow-y-auto select-all">
-                {mensajeWhatsApp}
-              </div>
+              <textarea
+                value={mensajeWhatsApp}
+                onChange={(e) => setMensajeEditado(e.target.value)}
+                rows={9}
+                className="w-full p-4 bg-[#0E1116] border border-white/10 rounded-xl text-xs text-slate-200 leading-relaxed font-sans focus:outline-none focus:border-[#25D366] transition-colors resize-y select-text shadow-inner"
+                placeholder="Escriba o ajuste el mensaje de prospección aquí..."
+              />
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <button
