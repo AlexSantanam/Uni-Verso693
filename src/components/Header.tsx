@@ -20,14 +20,14 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-[#050b13]/80 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-[92rem] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-3 group shrink-0">
+      <div className="max-w-[92rem] mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 sm:gap-4">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
           <img
             src={logo}
             alt="Uni-Verso693"
-            className="w-10 h-10 object-contain drop-shadow-[0_0_14px_rgba(168,85,247,0.55)] transition-transform duration-300 group-hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 object-contain drop-shadow-[0_0_14px_rgba(168,85,247,0.55)] transition-transform duration-300 group-hover:scale-110"
           />
-          <span className="font-extrabold text-xl tracking-tight text-white whitespace-nowrap">
+          <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white whitespace-nowrap truncate">
             Uni-Verso<span className="text-brand-500">693</span>
           </span>
         </Link>
@@ -90,23 +90,23 @@ export const Header: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 xl:hidden shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden shrink-0">
           <Link
             to="/boveda"
-            className="inline-flex items-center gap-1 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-2.5 py-1.5 text-xs font-bold text-cyan-200"
+            className="inline-flex items-center gap-1 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-2 sm:px-2.5 py-1.5 text-[11px] sm:text-xs font-bold text-cyan-200"
           >
             <KeyRound className="w-3.5 h-3.5 text-cyan-300" />
             {lang === 'es' ? 'Bóveda' : 'Vault'}
           </Link>
           <button
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-            className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-slate-300 cursor-pointer"
+            className="rounded-full border border-white/15 px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-bold text-slate-300 cursor-pointer"
           >
             {lang === 'es' ? 'EN' : 'ES'}
           </button>
           <button
             onClick={() => setOpen(!open)}
-            className="p-2 rounded-lg text-white cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg text-white cursor-pointer"
             aria-label="Menu"
             aria-expanded={open}
           >

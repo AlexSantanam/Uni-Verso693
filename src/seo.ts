@@ -138,7 +138,7 @@ const serviceTitles: Record<string, string> = {
 
 const home: PageSeo = {
   path: '/',
-  title: `Desarrollo de Software a Medida, IA & Soluciones ProPyme en Chile | ${SITE_NAME}`,
+  title: `Software a Medida, IA y SaaS en Chile | ${SITE_NAME}`,
   description:
     'Empresa chilena de ingeniería de software e IA aplicada: plataformas a medida, agentes de IA para WhatsApp, programa Impulsa ProPyme y soberanía tecnológica sin vendor lock-in.',
   priority: 1,
