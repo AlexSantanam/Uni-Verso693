@@ -20,6 +20,7 @@ import { Container } from './components/ui';
 
 // Internal workspace: separate chunk, outside the public layout, noindex (see src/seo.ts).
 const Interno = React.lazy(() => import('./pages/Interno'));
+const Mesa = React.lazy(() => import('./pages/Mesa'));
 // Interactive EBS the client opens from a private link (/ebs/<token>): own chunk, outside the layout, noindex.
 const EbsView = React.lazy(() => import('./pages/EbsView'));
 // Client Vault (Bóveda de Credenciales & Soberanía Tecnológica): own chunk, outside the layout, noindex.
@@ -54,6 +55,14 @@ export const AppRoutes: React.FC = () => (
             element={
               <React.Suspense fallback={null}>
                 <Interno />
+              </React.Suspense>
+            }
+          />
+          <Route
+            path="mesa"
+            element={
+              <React.Suspense fallback={null}>
+                <Mesa />
               </React.Suspense>
             }
           />
