@@ -22,6 +22,14 @@ import { Resend } from 'resend';
  * Env: WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_APP_SECRET, WHATSAPP_VERIFY_TOKEN
  *      optional: WHATSAPP_BOT=off (kill switch), WA_DAILY_CAP, WA_PAUSE_HOURS, CONTACT_NOTIFICATION_EMAIL, NOTIFY_WHATSAPP, CALLMEBOT_APIKEY
  *      tests only: WHATSAPP_API_BASE, WHATSAPP_KEY_PREFIX, WA_DRY=1 (no leads, no notices)
+ *
+ * Owner <-> Catalina bridge: when the sender's wa_id is OWNER_WA_ID (Alex's own number, digits only,
+ * e.g. "56973888336"), the message skips the whole sales/support agent above and is relayed instead to
+ * Catalina (the owner's local voice/code agent, see F:\UNI-VERSO693\catalina\catalina_app\server.py),
+ * reached through a Cloudflare quick tunnel to her /api/chat_sync endpoint.
+ * Env: OWNER_WA_ID, CATALINA_BRIDGE_URL (e.g. https://xxxx.trycloudflare.com/api/chat_sync — changes
+ *      every time the tunnel restarts, see catalina/iniciar_tunel_catalina.bat), CATALINA_BRIDGE_TOKEN
+ *      (shared secret, must match CATALINA_BRIDGE_TOKEN in catalina/.env)
  */
 
 const SITE = 'https://universo693.com';
@@ -469,10 +477,45 @@ const withChatLock = async (id: string, fn: () => Promise<void>) => {
   }
 };
 
+/** Relays a message from the owner's own number straight to Catalina, bypassing the sales/support agent entirely. */
+const handleOwnerToCatalina = async (m: InMsg) => {
+  const waId = m.from;
+  const text = textOf(m);
+  if (!text) {
+    await sendText(waId, 'Por ahora solo puedo leerte mensajes de texto por aquí.');
+    return;
+  }
+  const bridgeUrl = process.env.CATALINA_BRIDGE_URL;
+  const bridgeToken = process.env.CATALINA_BRIDGE_TOKEN;
+  if (!bridgeUrl || !bridgeToken) {
+    await sendText(waId, 'El puente con Catalina todavía no está configurado (falta CATALINA_BRIDGE_URL/TOKEN).');
+    return;
+  }
+  try {
+    const res = await fetch(bridgeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Bridge-Token': bridgeToken },
+      body: JSON.stringify({ text }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!res.ok) throw new Error(`Catalina bridge ${res.status}`);
+    const j = (await res.json().catch(() => ({}))) as { reply?: string };
+    await sendText(waId, j.reply?.trim() || 'Catalina no generó una respuesta.');
+  } catch (err) {
+    console.error('WA: Catalina bridge failed', err);
+    await sendText(waId, 'Catalina está desconectada ahora mismo (seguramente el PC está apagado o el túnel no está activo).');
+  }
+};
+
 const handleInbound = async (m: InMsg, profileName: string) => {
   const waId = m.from;
   // Meta retries a webhook it considers unanswered: process each message once
   if (!(await redis.set(`${P}:seen:${m.id}`, 1, { nx: true, ex: 86400 }))) return;
+  if (process.env.OWNER_WA_ID && waId === process.env.OWNER_WA_ID) {
+    await markRead(m.id);
+    await handleOwnerToCatalina(m);
+    return;
+  }
   if (await redis.get(`${P}:optout:${waId}`)) return;
   // a resolved chat reopens by itself when the contact writes again
   await redis.del(`${P}:resolved:${waId}`);
