@@ -1,0 +1,16 @@
+{
+  "name": "AI War Room • Uni-Verso693",
+  "short_name": "War Room",
+  "description": "Mesa Redonda Privada: Antigravity, Claude, Catalina y Terminal",
+  "lang": "es",
+  "start_url": "/mesa",
+  "scope": "/mesa",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

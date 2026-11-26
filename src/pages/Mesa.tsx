@@ -105,6 +105,11 @@ export default function Mesa() {
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', 'noindex, nofollow');
+
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+      manifestLink.setAttribute('href', '/mesa-manifest.webmanifest');
+    }
   }, []);
 
   useEffect(() => {
