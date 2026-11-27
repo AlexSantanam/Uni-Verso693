@@ -82,6 +82,7 @@ export default function Mesa() {
   const [prompt, setPrompt] = useState<string>('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isDeliberating, setIsDeliberating] = useState<boolean>(false);
+  const [typingAgents, setTypingAgents] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   // Terminal Drawer
@@ -156,27 +157,34 @@ export default function Mesa() {
 
   useEffect(() => {
     if (!unlocked) return;
+    const pollMs = typingAgents.length > 0 || isDeliberating ? 1500 : 4000;
     const id = window.setInterval(() => {
-      if (isDeliberating) return;
       apiFetch('/api/history')
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
-          if (data?.history && Array.isArray(data.history)) {
+          if (!data) return;
+          if (Array.isArray(data.typing)) {
+            setTypingAgents(data.typing);
+            if (data.typing.length === 0) {
+              setIsDeliberating(false);
+            }
+          }
+          if (Array.isArray(data.history)) {
             setTurns((prev) => {
-              const hasPending = prev.some((t) => Boolean(t._tempId));
-              if (hasPending) return prev;
-              return data.history.length !== prev.length ? data.history : prev;
+              const prevSig = prev.map((t) => `${t.query}:${(t.responses || []).length}`).join('|');
+              const nextSig = data.history.map((t: ChatTurn) => `${t.query}:${(t.responses || []).length}`).join('|');
+              return prevSig !== nextSig ? data.history : prev;
             });
           }
         })
         .catch(() => {});
-    }, 5000);
+    }, pollMs);
     return () => window.clearInterval(id);
-  }, [unlocked, isDeliberating, cleanBaseUrl, pin]);
+  }, [unlocked, isDeliberating, typingAgents.length, cleanBaseUrl, pin]);
 
   useEffect(() => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [turns.length, isDeliberating]);
+  }, [turns.length, typingAgents.length, isDeliberating]);
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,20 +232,25 @@ export default function Mesa() {
       if (!resp.ok || data.error) {
         throw new Error(data.error || `Error ${resp.status}`);
       }
-      setTurns((prev) =>
-        prev.map((t) =>
-          t._tempId === tempId
-            ? {
-                time_str: nowStr,
-                mode: data.mode || mode,
-                sender: 'Alex',
-                query: text,
-                attachments: currentAtts.map((a) => ({ name: a.name, isImage: a.isImage })),
-                responses: data.responses || [],
-              }
-            : t
-        )
-      );
+      if (data.async) {
+        setTypingAgents(Array.isArray(data.typing) && data.typing.length ? data.typing : ['Antigravity', 'Catalina', 'Claude']);
+      } else {
+        setTurns((prev) =>
+          prev.map((t) =>
+            t._tempId === tempId
+              ? {
+                  time_str: nowStr,
+                  mode: data.mode || mode,
+                  sender: 'Alex',
+                  query: text,
+                  attachments: currentAtts.map((a) => ({ name: a.name, isImage: a.isImage })),
+                  responses: data.responses || [],
+                }
+              : t
+          )
+        );
+        setIsDeliberating(false);
+      }
     } catch (e: any) {
       setErrorMsg(e?.message || 'Error conectando con la Mesa.');
       setTurns((prev) =>
@@ -245,7 +258,6 @@ export default function Mesa() {
           t._tempId === tempId ? { ...t, _tempId: undefined } : t
         )
       );
-    } finally {
       setIsDeliberating(false);
     }
   };
@@ -544,33 +556,30 @@ export default function Mesa() {
               </div>
             </div>
 
-            {/* Agent Responses */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {(t.responses || []).map((r, rIdx) => {
-                const spanFull = r.is_consensus || r.is_terminal || t.responses.length === 1;
-                return (
+            {/* Agent Responses (WhatsApp-style individual bubbles) */}
+            <div className="flex flex-col gap-2.5">
+              {(t.responses || []).map((r, rIdx) => (
+                <div key={rIdx} className="flex justify-start">
                   <div
-                    key={rIdx}
-                    className={`rounded-2xl p-3.5 border text-sm space-y-2 ${
-                      spanFull ? 'md:col-span-2 lg:col-span-3' : ''
-                    } ${
+                    className={`max-w-[90%] sm:max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-2.5 border text-sm space-y-1.5 ${
                       r.is_consensus
-                        ? 'bg-amber-950/25 border-amber-500/40'
+                        ? 'bg-amber-950/30 border-amber-500/40'
                         : r.is_terminal
                         ? 'bg-slate-950 border-emerald-500/40 font-mono text-xs'
-                        : 'bg-slate-900/80 border-slate-800'
+                        : 'bg-slate-900/90 border-slate-800'
                     }`}
+                    style={{ borderLeftWidth: '3px', borderLeftColor: r.color || '#38bdf8' }}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2">
                         <span className="font-extrabold text-xs" style={{ color: r.color || '#38bdf8' }}>
                           {r.name}
                         </span>
-                        <span className="block text-[10px] text-slate-400">{r.role}</span>
+                        <span className="text-[10px] text-slate-400 hidden sm:inline">{r.role}</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {r.time !== undefined && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-300">
                             {r.time}s
                           </span>
                         )}
@@ -603,16 +612,28 @@ export default function Mesa() {
                       </div>
                     )}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
           );
         })}
 
-        {isDeliberating && (
-          <div className="max-w-5xl mx-auto text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 rounded-xl px-4 py-2.5">
-            ⏳ El Consejo está deliberando / ejecutando en tu PC...
+        {(typingAgents.length > 0 || isDeliberating) && (
+          <div className="max-w-5xl mx-auto flex flex-wrap items-center gap-2">
+            {(typingAgents.length > 0 ? typingAgents : ['Antigravity', 'Catalina', 'Claude']).map((agent) => {
+              const color =
+                agent === 'Antigravity' ? '#38bdf8' : agent === 'Claude' ? '#fb923c' : '#c084fc';
+              return (
+                <span
+                  key={agent}
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-slate-200 animate-pulse"
+                >
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                  <span>{agent} escribiendo...</span>
+                </span>
+              );
+            })}
           </div>
         )}
 
@@ -731,6 +752,15 @@ export default function Mesa() {
               placeholder="Escribe o dicta tu orden para la Mesa..."
               className="flex-1 resize-none bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-400"
             />
+            <button
+              type="button"
+              disabled={isDeliberating || turns.length === 0}
+              onClick={() => handleSend('Sigan conversando entre ustedes: respondan o debatan lo último que dijeron en el grupo.')}
+              className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 hover:border-cyan-400 hover:text-cyan-300 font-semibold text-xs sm:text-sm whitespace-nowrap disabled:opacity-40"
+              title="Hacer que las 3 IAs sigan conversando entre ellas"
+            >
+              💬 <span className="hidden md:inline">Que sigan</span>
+            </button>
             <button
               type="button"
               disabled={isDeliberating}
