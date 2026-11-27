@@ -38,6 +38,7 @@ interface AgentResponse {
 }
 
 interface ChatTurn {
+  _tempId?: string;
   timestamp?: number;
   time_str?: string;
   mode: string;
@@ -153,6 +154,30 @@ export default function Mesa() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!unlocked) return;
+    const id = window.setInterval(() => {
+      if (isDeliberating) return;
+      apiFetch('/api/history')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data?.history && Array.isArray(data.history)) {
+            setTurns((prev) => {
+              const hasPending = prev.some((t) => Boolean(t._tempId));
+              if (hasPending) return prev;
+              return data.history.length !== prev.length ? data.history : prev;
+            });
+          }
+        })
+        .catch(() => {});
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [unlocked, isDeliberating, cleanBaseUrl, pin]);
+
+  useEffect(() => {
+    feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [turns.length, isDeliberating]);
+
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
@@ -171,6 +196,21 @@ export default function Mesa() {
     const currentAtts = [...attachments];
     setAttachments([]);
 
+    const tempId = `tmp-${Date.now()}`;
+    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setTurns((prev) => [
+      ...prev,
+      {
+        _tempId: tempId,
+        time_str: nowStr,
+        mode,
+        sender: 'Alex',
+        query: text,
+        attachments: currentAtts.map((a) => ({ name: a.name, isImage: a.isImage })),
+        responses: [],
+      },
+    ]);
+
     try {
       const resp = await apiFetch('/api/chat', {
         method: 'POST',
@@ -184,19 +224,27 @@ export default function Mesa() {
       if (!resp.ok || data.error) {
         throw new Error(data.error || `Error ${resp.status}`);
       }
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      setTurns((prev) => [
-        ...prev,
-        {
-          time_str: nowStr,
-          mode: data.mode || mode,
-          query: text,
-          attachments: currentAtts.map((a) => ({ name: a.name, isImage: a.isImage })),
-          responses: data.responses || [],
-        },
-      ]);
+      setTurns((prev) =>
+        prev.map((t) =>
+          t._tempId === tempId
+            ? {
+                time_str: nowStr,
+                mode: data.mode || mode,
+                sender: 'Alex',
+                query: text,
+                attachments: currentAtts.map((a) => ({ name: a.name, isImage: a.isImage })),
+                responses: data.responses || [],
+              }
+            : t
+        )
+      );
     } catch (e: any) {
       setErrorMsg(e?.message || 'Error conectando con la Mesa.');
+      setTurns((prev) =>
+        prev.map((t) =>
+          t._tempId === tempId ? { ...t, _tempId: undefined } : t
+        )
+      );
     } finally {
       setIsDeliberating(false);
     }
