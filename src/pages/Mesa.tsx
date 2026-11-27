@@ -48,7 +48,7 @@ interface ChatTurn {
   responses: AgentResponse[];
 }
 
-const DEFAULT_TUNNEL_URL = '';
+const DEFAULT_TUNNEL_URL = 'https://nsw-memo-suburban-gas.trycloudflare.com';
 
 const MODES: { id: Mode; label: string }[] = [
   { id: 'roundtable', label: '🎙️ Mesa Redonda' },
@@ -145,6 +145,24 @@ export default function Mesa() {
       setUnlocked(true);
       setAuthError('');
     } catch (e: any) {
+      if (DEFAULT_TUNNEL_URL && cleanBaseUrl !== DEFAULT_TUNNEL_URL) {
+        try {
+          const activePin = overridePin !== undefined ? overridePin : pin;
+          const fallbackResp = await fetch(`${DEFAULT_TUNNEL_URL}/api/history`, {
+            method: 'GET',
+            headers: { 'X-WarRoom-Pin': activePin },
+          });
+          if (fallbackResp.ok) {
+            const data = await fallbackResp.json();
+            setServerUrl(DEFAULT_TUNNEL_URL);
+            localStorage.setItem('war_room_url', DEFAULT_TUNNEL_URL);
+            setTurns(data.history || []);
+            setUnlocked(true);
+            setAuthError('');
+            return;
+          }
+        } catch {}
+      }
       setAuthError(e?.message || 'No se pudo conectar con el servidor War Room.');
     }
   };
