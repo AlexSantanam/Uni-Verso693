@@ -217,6 +217,24 @@ export const Pago: React.FC = () => {
     }
   }, [params]);
 
+  // Capturar automáticamente la orden de PayPal cuando vuelve con ?status=success&provider=paypal&token=...
+  useEffect(() => {
+    const providerParam = params.get('provider');
+    const tokenParam = params.get('token');
+    if (statusParam === 'success' && providerParam === 'paypal' && tokenParam) {
+      fetch('/api/pago?action=paypal-capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: tokenParam,
+          orderId: orderIdParam || '',
+          item: params.get('item') || '',
+          ref: params.get('ref') || '',
+        }),
+      }).catch((err) => console.error('PayPal capture error:', err));
+    }
+  }, [statusParam, orderIdParam, params]);
+
   const [fullName, setFullName] = useState<string>(initialName);
   const [email, setEmail] = useState<string>(initialEmail);
   const [phone, setPhone] = useState<string>(initialPhone);

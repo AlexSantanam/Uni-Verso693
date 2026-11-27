@@ -83,6 +83,26 @@ export const CATALOG: Record<
     frequency: 'CLP / año ($39 USD)',
     badge: 'Ahorro 44%',
   },
+  'sokify-basico-mensual': {
+    id: 'sokify-basico-mensual',
+    title: 'Zokify · Plan Básico (Mensual)',
+    category: 'sokify',
+    amount: 29900,
+    amountUsd: 30,
+    description: 'Plan Básico mensual de Sokify: Carta QR, pedidos directos 0% comisión, POS y KDS.',
+    frequency: 'CLP / mes ($30 USD)',
+    badge: 'Plan Básico',
+  },
+  'sokify-basico-anual': {
+    id: 'sokify-basico-anual',
+    title: 'Zokify · Plan Básico (Anual)',
+    category: 'sokify',
+    amount: 299000,
+    amountUsd: 299,
+    description: '1 año completo de Sokify Plan Básico (2 meses gratis · $24.916 CLP/mes).',
+    frequency: 'CLP / año ($299 USD)',
+    badge: '2 Meses Gratis',
+  },
   'sokify-mensual': {
     id: 'sokify-mensual',
     title: 'Zokify · Plan Avanzado (Mensual)',
@@ -219,6 +239,40 @@ const recordLead = async (lead: Record<string, unknown> & { id: string }) => {
   }
 };
 
+const activateSokifyRestaurant = async (payload: {
+  restaurantSlug?: string;
+  itemId?: string;
+  provider: string;
+  paymentId: string;
+  orderId?: string;
+  amount: number;
+  currency: string;
+  payerEmail?: string;
+}) => {
+  const slug = String(payload.restaurantSlug || '').trim();
+  const itemId = String(payload.itemId || '').trim();
+  const secret = process.env.SOKIFY_WEBHOOK_SECRET;
+  if (!slug || !itemId.startsWith('sokify-') || !secret) return;
+
+  const url = process.env.SOKIFY_ACTIVATION_URL || 'https://sokify.app/api/pago';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-sokify-secret': secret,
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) {
+      console.error('Sokify activation failed:', res.status, await res.text().catch(() => ''));
+    }
+  } catch (err) {
+    console.error('Sokify activation request error:', err);
+  }
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -241,6 +295,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if ((topic === 'payment' || req.query['data.id']) && paymentId && mpToken()) {
         const p = await mpApi(`/v1/payments/${encodeURIComponent(String(paymentId))}`);
         if (p?.status === 'approved') {
+          const restaurantSlug = p.metadata?.restaurant_slug || p.metadata?.restaurantSlug || '';
+          const itemId = p.metadata?.item_id || p.metadata?.itemId || '';
           try {
             const r = Redis.fromEnv();
             await r.set(`u693:payment:${p.id}`, {
@@ -249,11 +305,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               amount: p.transaction_amount,
               status: p.status,
               payerEmail: p.payer?.email,
+              restaurantSlug,
+              itemId,
               approvedAt: p.date_approved,
             });
           } catch (e) {
             console.error('Error saving payment in Redis', e);
           }
+          await activateSokifyRestaurant({
+            restaurantSlug,
+            itemId,
+            provider: 'mercadopago',
+            paymentId: String(p.id),
+            orderId: p.external_reference,
+            amount: Number(p.transaction_amount || 0),
+            currency: p.currency_id || 'CLP',
+            payerEmail: p.payer?.email,
+          });
         }
       }
       res.status(200).send('ok');
@@ -261,6 +329,76 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (err) {
       console.error('Webhook processing error', err);
       res.status(200).send('ok');
+      return;
+    }
+  }
+
+  // 1b. CAPTURA DE ORDEN PAYPAL AL VOLVER DEL CHECKOUT
+  if (action === 'paypal-capture' && req.method === 'POST') {
+    try {
+      if (!paypalReady()) {
+        res.status(503).json({ error: 'PayPal no configurado' });
+        return;
+      }
+      const b = (req.body ?? {}) as Record<string, any>;
+      const paypalOrderId = String(b.token || b.paypalOrderId || '').trim();
+      const restaurantSlug = String(b.ref || b.restaurantSlug || '').trim();
+      const itemId = String(b.item || '').trim();
+      const orderId = String(b.orderId || '').trim();
+
+      if (!paypalOrderId) {
+        res.status(400).json({ error: 'token de PayPal requerido' });
+        return;
+      }
+
+      const { ok, status, data } = await paypalApi(
+        `/v2/checkout/orders/${encodeURIComponent(paypalOrderId)}/capture`,
+        { method: 'POST' }
+      );
+      if (!ok) {
+        res.status(status || 500).json({ error: 'Error capturando orden PayPal', details: data });
+        return;
+      }
+
+      const captureUnit = data?.purchase_units?.[0]?.payments?.captures?.[0];
+      const capturedAmount = Number(captureUnit?.amount?.value || 0);
+      const capturedCurrency = String(captureUnit?.amount?.currency_code || 'USD');
+      const payerEmail = String(data?.payer?.email_address || '');
+
+      if (data?.status === 'COMPLETED') {
+        try {
+          const r = Redis.fromEnv();
+          await r.set(`u693:payment:pp-${data.id}`, {
+            paymentId: data.id,
+            orderId: orderId || data?.purchase_units?.[0]?.reference_id,
+            amount: capturedAmount,
+            currency: capturedCurrency,
+            status: data.status,
+            payerEmail,
+            restaurantSlug,
+            itemId,
+            approvedAt: new Date().toISOString(),
+          });
+        } catch (e) {
+          console.error('Error saving PayPal payment in Redis', e);
+        }
+        await activateSokifyRestaurant({
+          restaurantSlug,
+          itemId,
+          provider: 'paypal',
+          paymentId: String(data.id),
+          orderId,
+          amount: capturedAmount,
+          currency: capturedCurrency,
+          payerEmail,
+        });
+      }
+
+      res.status(200).json({ ok: true, status: data?.status, paypalOrderId: data?.id });
+      return;
+    } catch (err: any) {
+      console.error('PayPal capture error:', err);
+      res.status(500).json({ error: err?.message || 'Error capturando pago PayPal' });
       return;
     }
   }
