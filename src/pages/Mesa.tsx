@@ -41,6 +41,7 @@ interface ChatTurn {
   timestamp?: number;
   time_str?: string;
   mode: string;
+  sender?: string;
   query: string;
   attachments?: { name: string; isImage: boolean }[];
   responses: AgentResponse[];
@@ -465,13 +466,30 @@ export default function Mesa() {
           </div>
         )}
 
-        {turns.map((t, idx) => (
+        {turns.map((t, idx) => {
+          const senderLabel =
+            t.sender ||
+            (t.query?.startsWith('Reporte automático de') || t.query?.includes('(n8n)')
+              ? 'n8n / Sistema'
+              : 'Alex');
+          const isSystemSender = senderLabel !== 'Alex';
+          return (
           <div key={idx} className="space-y-3 max-w-5xl mx-auto">
-            {/* User Bubble */}
+            {/* User / System Bubble */}
             <div className="flex justify-end">
-              <div className="max-w-[85%] bg-emerald-950/50 border border-emerald-500/30 rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm">
-                <div className="flex items-center justify-between gap-4 mb-1 text-[11px] text-emerald-300 font-bold">
-                  <span>Alex</span>
+              <div
+                className={`max-w-[85%] rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm border ${
+                  isSystemSender
+                    ? 'bg-amber-950/35 border-amber-500/30'
+                    : 'bg-emerald-950/50 border-emerald-500/30'
+                }`}
+              >
+                <div
+                  className={`flex items-center justify-between gap-4 mb-1 text-[11px] font-bold ${
+                    isSystemSender ? 'text-amber-300' : 'text-emerald-300'
+                  }`}
+                >
+                  <span>{senderLabel}</span>
                   <span className="text-slate-400 font-normal">{t.time_str}</span>
                 </div>
                 <p className="whitespace-pre-wrap text-slate-100">{t.query}</p>
@@ -541,7 +559,8 @@ export default function Mesa() {
               })}
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {isDeliberating && (
           <div className="max-w-5xl mx-auto text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 rounded-xl px-4 py-2.5">
